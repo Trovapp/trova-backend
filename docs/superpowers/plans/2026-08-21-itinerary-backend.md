@@ -412,7 +412,7 @@ git commit -m "feat: SavedPlace에 dayNumber/orderInDay 컬럼 추가"
 - [ ] **Step 1: 실패하는 테스트 작성**
 
 `src/test/java/com/trova/backend/service/ProcessingJobLifecycleServiceIntegrationTest.java`
-상단 import에 아래 두 줄 추가:
+상단 import에 아래 세 줄 추가:
 
 ```java
 import com.trova.backend.entity.SavedPlace;
