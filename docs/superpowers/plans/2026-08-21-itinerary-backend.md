@@ -231,7 +231,7 @@ git commit -m "feat: ExtractedPlace에 dayNumber/orderInDay 필드 추가"
 
 **Interfaces:**
 - Consumes: 없음 (엔티티 자체 변경)
-- Produces: `SavedPlace`에 새 8-인자 생성자
+- Produces: `SavedPlace`에 새 9-인자 생성자
   `SavedPlace(ProcessingJob, User, String placeName, String region, String category, Double latitude, Double longitude, Integer dayNumber, Integer orderInDay)`
   및 `getDayNumber()`/`getOrderInDay()`. **기존 7-인자 생성자는 그대로
   유지**(내부적으로 새 생성자에 위임, dayNumber/orderInDay는 null) —
@@ -239,7 +239,7 @@ git commit -m "feat: ExtractedPlace에 dayNumber/orderInDay 필드 추가"
   `ProcessingJobLifecycleServiceIntegrationTest`, `UserAccountServiceTest`,
   `UsersControllerTest`)이 이미 7-인자 생성자를 쓰고 있으므로 시그니처를
   깨지 않기 위함. Task 4에서 `ProcessingJobLifecycleService.savePlace()`가
-  새 8-인자 생성자를 사용하게 됨.
+  새 9-인자 생성자를 사용하게 됨.
 
 - [ ] **Step 1: 실패하는 테스트 작성**
 
@@ -279,7 +279,7 @@ git commit -m "feat: ExtractedPlace에 dayNumber/orderInDay 필드 추가"
 - [ ] **Step 2: 테스트 실행해서 실패 확인**
 
 Run: `./gradlew test --tests "com.trova.backend.repository.SavedPlaceRepositoryTest"`
-Expected: 컴파일 에러 — 8-인자 `SavedPlace` 생성자가 없음
+Expected: 컴파일 에러 — 9-인자 `SavedPlace` 생성자가 없음
 
 - [ ] **Step 3: `SavedPlace`에 필드/생성자/getter 추가**
 
@@ -405,7 +405,7 @@ git commit -m "feat: SavedPlace에 dayNumber/orderInDay 컬럼 추가"
 
 **Interfaces:**
 - Consumes: `ExtractedPlace.dayNumber()`/`orderInDay()`(Task 2),
-  `SavedPlace`의 8-인자 생성자(Task 3)
+  `SavedPlace`의 9-인자 생성자(Task 3)
 - Produces: `savePlace()`가 저장하는 `SavedPlace`에 dayNumber/orderInDay가
   채워짐 — Task 5(`PlacesController`)가 이 값을 응답으로 노출
 
