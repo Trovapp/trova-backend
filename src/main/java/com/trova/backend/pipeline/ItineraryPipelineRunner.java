@@ -105,6 +105,12 @@ public class ItineraryPipelineRunner {
             if (stderrFile != null && !stderrFile.delete()) {
                 log.warn("일정 생성 stderr 임시 파일 삭제 실패: {}", stderrFile.getAbsolutePath());
             }
+            try {
+                Files.deleteIfExists(workDir.resolve("places.json"));
+                Files.deleteIfExists(workDir);
+            } catch (IOException e) {
+                log.warn("일정 생성 작업 디렉터리 정리 실패: {}", workDir, e);
+            }
         }
     }
 

@@ -299,6 +299,8 @@ class PlacesControllerTest {
     void 일정_생성_요청은_202를_반환하고_비동기_서비스를_호출한다() throws Exception {
         User me = userRepository.save(new User("google", "gen1", "생성1", null));
         ProcessingJob job = processingJobRepository.save(new ProcessingJob(me, "https://youtu.be/gen1", SourcePlatform.YOUTUBE));
+        job.markDone();
+        processingJobRepository.save(job);
         savedPlaceRepository.save(new SavedPlace(job, me, "장소", "부산", "cafe", 35.1, 129.0));
         doNothing().when(itineraryGenerationService).generate(anyLong());
 

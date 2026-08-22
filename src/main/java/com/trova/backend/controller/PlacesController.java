@@ -125,9 +125,8 @@ public class PlacesController {
             return ResponseEntity.badRequest().build();
         }
         User user = currentUserService.resolve(authentication);
-        return savedPlaceRepository.findByIdAndUser(id, user)
-                .map(place -> ResponseEntity.ok(
-                        PlaceResponse.from(itineraryEditService.moveToDay(place, body.dayNumber()))))
+        return itineraryEditService.moveToDay(id, user, body.dayNumber())
+                .map(place -> ResponseEntity.ok(PlaceResponse.from(place)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -139,9 +138,8 @@ public class PlacesController {
             return ResponseEntity.badRequest().build();
         }
         User user = currentUserService.resolve(authentication);
-        return savedPlaceRepository.findByIdAndUser(id, user)
-                .map(place -> ResponseEntity.ok(
-                        PlaceResponse.from(itineraryEditService.reorder(place, body.direction()))))
+        return itineraryEditService.reorder(id, user, body.direction())
+                .map(place -> ResponseEntity.ok(PlaceResponse.from(place)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -150,6 +148,7 @@ public class PlacesController {
         User user = currentUserService.resolve(authentication);
         return processingJobRepository.findById(jobId)
                 .filter(job -> job.getUser().getId().equals(user.getId()))
+                .filter(job -> job.getStatus() == JobStatus.DONE)
                 .map(job -> {
                     itineraryGenerationService.generate(jobId);
                     return ResponseEntity.accepted().<Void>build();

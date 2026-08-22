@@ -79,7 +79,8 @@ public class ProcessingJobLifecycleService {
         for (ItineraryAssignment assignment : assignments) {
             SavedPlace place = byId.get(assignment.id());
             if (place == null) {
-                continue;
+                throw new IllegalStateException(
+                        "일정 생성 결과에 존재하지 않는 장소 id가 포함되어 있습니다: " + assignment.id());
             }
             place.assignToDay(assignment.dayNumber(), assignment.orderInDay());
         }
