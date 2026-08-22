@@ -283,6 +283,19 @@ class PlacesControllerTest {
     }
 
     @Test
+    void direction이_없으면_400() throws Exception {
+        User me = userRepository.save(new User("google", "order4", "순서4", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(me, "https://youtu.be/order4", SourcePlatform.YOUTUBE));
+        SavedPlace place = savedPlaceRepository.save(new SavedPlace(job, me, "장소", "부산", "cafe", 35.1, 129.0, 1, 1));
+
+        mockMvc.perform(patch("/api/places/" + place.getId() + "/order")
+                        .with(loginAs("order4", "순서4"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void 일정_생성_요청은_202를_반환하고_비동기_서비스를_호출한다() throws Exception {
         User me = userRepository.save(new User("google", "gen1", "생성1", null));
         ProcessingJob job = processingJobRepository.save(new ProcessingJob(me, "https://youtu.be/gen1", SourcePlatform.YOUTUBE));

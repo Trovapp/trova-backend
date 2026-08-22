@@ -135,7 +135,7 @@ public class PlacesController {
     public ResponseEntity<PlaceResponse> reorder(
             OAuth2AuthenticationToken authentication, @PathVariable Long id, @RequestBody ReorderRequest body
     ) {
-        if (body == null || !VALID_DIRECTIONS.contains(body.direction())) {
+        if (body == null || body.direction() == null || !VALID_DIRECTIONS.contains(body.direction())) {
             return ResponseEntity.badRequest().build();
         }
         User user = currentUserService.resolve(authentication);
