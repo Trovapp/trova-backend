@@ -30,6 +30,12 @@ JSON 배열만 출력하세요. JSON 배열 외의 다른 텍스트는 출력하
 
 
 def _validate_assignments(assignments: list, expected_ids: set[int]) -> list:
+    if len(assignments) != len(expected_ids):
+        raise SystemExit(
+            f"일정 항목 개수가 입력과 일치하지 않습니다 "
+            f"(입력: {len(expected_ids)}개, 출력: {len(assignments)}개). "
+            f"중복 id나 누락이 있을 수 있습니다."
+        )
     result_ids: set[int] = set()
     for item in assignments:
         if not isinstance(item, dict):
