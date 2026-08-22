@@ -36,6 +36,7 @@ app:
   frontend-url: http://localhost:3000
   pipeline:
     script-path: pipeline-test/run_pipeline.py
+    itinerary-script-path: pipeline-test/generate_itinerary.py
     work-dir: build/tmp/pipeline-test-work
     gemini-api-key: test-key
   kakao:
