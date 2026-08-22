@@ -7,6 +7,7 @@ import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.User;
 import com.trova.backend.geocoding.GeocodingResult;
 import com.trova.backend.pipeline.ExtractedPlace;
+import com.trova.backend.pipeline.ItineraryAssignment;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.UserRepository;
@@ -156,5 +157,25 @@ class ProcessingJobLifecycleServiceIntegrationTest {
         assertThat(saved.getPhone()).isNull();
         assertThat(saved.getAddress()).isNull();
         assertThat(saved.getKakaoPlaceUrl()).isNull();
+    }
+
+    @Test
+    void applyItinerary는_id로_매칭되는_장소들의_day_order를_갱신한다() {
+        ProcessingJob job = newJob();
+        SavedPlace first = savedPlaceRepository.save(
+                new SavedPlace(job, job.getUser(), "첫 장소", "부산", "cafe", 35.1, 129.0));
+        SavedPlace second = savedPlaceRepository.save(
+                new SavedPlace(job, job.getUser(), "두번째 장소", "부산", "cafe", 35.2, 129.1));
+
+        lifecycleService.applyItinerary(job.getId(), List.of(
+                new ItineraryAssignment(first.getId(), 1, 1),
+                new ItineraryAssignment(second.getId(), 1, 2)
+        ));
+
+        SavedPlace updatedFirst = savedPlaceRepository.findById(first.getId()).orElseThrow();
+        SavedPlace updatedSecond = savedPlaceRepository.findById(second.getId()).orElseThrow();
+        assertThat(updatedFirst.getDayNumber()).isEqualTo(1);
+        assertThat(updatedFirst.getOrderInDay()).isEqualTo(1);
+        assertThat(updatedSecond.getOrderInDay()).isEqualTo(2);
     }
 }

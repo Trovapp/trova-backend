@@ -4,10 +4,15 @@ import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.geocoding.GeocodingResult;
 import com.trova.backend.pipeline.ExtractedPlace;
+import com.trova.backend.pipeline.ItineraryAssignment;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ProcessingJobLifecycleService {
@@ -64,6 +69,20 @@ public class ProcessingJobLifecycleService {
     @Transactional
     public void markDone(Long jobId) {
         getJob(jobId).markDone();
+    }
+
+    @Transactional
+    public void applyItinerary(Long jobId, List<ItineraryAssignment> assignments) {
+        ProcessingJob job = getJob(jobId);
+        Map<Long, SavedPlace> byId = savedPlaceRepository.findByProcessingJob(job).stream()
+                .collect(Collectors.toMap(SavedPlace::getId, place -> place));
+        for (ItineraryAssignment assignment : assignments) {
+            SavedPlace place = byId.get(assignment.id());
+            if (place == null) {
+                continue;
+            }
+            place.assignToDay(assignment.dayNumber(), assignment.orderInDay());
+        }
     }
 
     @Transactional
