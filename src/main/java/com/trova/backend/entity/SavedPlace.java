@@ -47,6 +47,19 @@ public class SavedPlace {
     @Column(name = "order_in_day")
     private Integer orderInDay;
 
+    private String phone;
+
+    private String address;
+
+    @Column(name = "road_address")
+    private String roadAddress;
+
+    @Column(name = "kakao_category_name")
+    private String kakaoCategoryName;
+
+    @Column(name = "kakao_place_url")
+    private String kakaoPlaceUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -55,12 +68,22 @@ public class SavedPlace {
 
     public SavedPlace(ProcessingJob processingJob, User user, String placeName, String region,
                        String category, Double latitude, Double longitude) {
-        this(processingJob, user, placeName, region, category, latitude, longitude, null, null);
+        this(processingJob, user, placeName, region, category, latitude, longitude, null, null,
+                null, null, null, null, null);
     }
 
     public SavedPlace(ProcessingJob processingJob, User user, String placeName, String region,
                        String category, Double latitude, Double longitude,
                        Integer dayNumber, Integer orderInDay) {
+        this(processingJob, user, placeName, region, category, latitude, longitude, dayNumber, orderInDay,
+                null, null, null, null, null);
+    }
+
+    public SavedPlace(ProcessingJob processingJob, User user, String placeName, String region,
+                       String category, Double latitude, Double longitude,
+                       Integer dayNumber, Integer orderInDay,
+                       String phone, String address, String roadAddress,
+                       String kakaoCategoryName, String kakaoPlaceUrl) {
         this.processingJob = processingJob;
         this.user = user;
         this.placeName = placeName;
@@ -73,6 +96,11 @@ public class SavedPlace {
         this.sourcePlatform = processingJob.getSourcePlatform();
         this.dayNumber = dayNumber;
         this.orderInDay = orderInDay;
+        this.phone = phone;
+        this.address = address;
+        this.roadAddress = roadAddress;
+        this.kakaoCategoryName = kakaoCategoryName;
+        this.kakaoPlaceUrl = kakaoPlaceUrl;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -89,5 +117,10 @@ public class SavedPlace {
     public SourcePlatform getSourcePlatform() { return sourcePlatform; }
     public Integer getDayNumber() { return dayNumber; }
     public Integer getOrderInDay() { return orderInDay; }
+    public String getPhone() { return phone; }
+    public String getAddress() { return address; }
+    public String getRoadAddress() { return roadAddress; }
+    public String getKakaoCategoryName() { return kakaoCategoryName; }
+    public String getKakaoPlaceUrl() { return kakaoPlaceUrl; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

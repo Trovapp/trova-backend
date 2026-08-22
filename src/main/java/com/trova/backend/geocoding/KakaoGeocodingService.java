@@ -41,7 +41,7 @@ public class KakaoGeocodingService {
         log.info("후보 이름 전부 매칭 실패, region만으로 재검색합니다(candidates={}, region={})",
                 nameCandidates, region);
         GeocodingResult fallback = search(region);
-        return new GeocodingResult(fallback.latitude(), fallback.longitude(), null);
+        return GeocodingResult.coordinatesOnly(fallback.latitude(), fallback.longitude());
     }
 
     private GeocodingResult search(String query) {
@@ -52,7 +52,9 @@ public class KakaoGeocodingService {
             }
             KakaoKeywordSearchResponse.Document first = response.documents().get(0);
             return new GeocodingResult(
-                    Double.parseDouble(first.y()), Double.parseDouble(first.x()), first.placeName());
+                    Double.parseDouble(first.y()), Double.parseDouble(first.x()), first.placeName(),
+                    first.phone(), first.addressName(), first.roadAddressName(),
+                    first.categoryName(), first.placeUrl());
         } catch (Exception e) {
             log.warn("카카오 지오코딩 실패(query={}) — 좌표 없이 저장합니다", query, e);
             return GeocodingResult.empty();

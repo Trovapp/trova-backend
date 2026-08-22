@@ -125,7 +125,9 @@ class ProcessingJobLifecycleServiceIntegrationTest {
         ProcessingJob job = newJob();
         ExtractedPlace extracted =
                 new ExtractedPlace("해운대", "부산", "attraction", 0.95, 2, 3, List.of("해운대"));
-        GeocodingResult geocoded = new GeocodingResult(35.16, 129.16, "해운대해수욕장");
+        GeocodingResult geocoded = new GeocodingResult(
+                35.16, 129.16, "해운대해수욕장", "051-123-4567", "부산 해운대구 우동", "부산 해운대구 해운대해변로",
+                "관광,명소 > 해수욕장", "http://place.map.kakao.com/1");
 
         lifecycleService.savePlace(job.getId(), extracted, geocoded);
 
@@ -133,6 +135,11 @@ class ProcessingJobLifecycleServiceIntegrationTest {
         assertThat(saved.getDayNumber()).isEqualTo(2);
         assertThat(saved.getOrderInDay()).isEqualTo(3);
         assertThat(saved.getPlaceName()).isEqualTo("해운대해수욕장");
+        assertThat(saved.getPhone()).isEqualTo("051-123-4567");
+        assertThat(saved.getAddress()).isEqualTo("부산 해운대구 우동");
+        assertThat(saved.getRoadAddress()).isEqualTo("부산 해운대구 해운대해변로");
+        assertThat(saved.getKakaoCategoryName()).isEqualTo("관광,명소 > 해수욕장");
+        assertThat(saved.getKakaoPlaceUrl()).isEqualTo("http://place.map.kakao.com/1");
     }
 
     @Test
@@ -140,11 +147,14 @@ class ProcessingJobLifecycleServiceIntegrationTest {
         ProcessingJob job = newJob();
         ExtractedPlace extracted =
                 new ExtractedPlace("광알리", "부산", "attraction", 0.6, null, null, List.of("광알리"));
-        GeocodingResult geocoded = new GeocodingResult(35.17, 129.07, null);
+        GeocodingResult geocoded = GeocodingResult.coordinatesOnly(35.17, 129.07);
 
         lifecycleService.savePlace(job.getId(), extracted, geocoded);
 
         SavedPlace saved = savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(job.getUser()).get(0);
         assertThat(saved.getPlaceName()).isEqualTo("광알리");
+        assertThat(saved.getPhone()).isNull();
+        assertThat(saved.getAddress()).isNull();
+        assertThat(saved.getKakaoPlaceUrl()).isNull();
     }
 }

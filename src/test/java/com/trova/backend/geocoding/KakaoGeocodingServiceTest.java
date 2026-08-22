@@ -21,10 +21,13 @@ class KakaoGeocodingServiceTest {
     private KakaoGeocodingService kakaoGeocodingService;
 
     @Test
-    void 검색_결과가_있으면_첫_번째_좌표와_확인된_이름을_반환한다() {
+    void 검색_결과가_있으면_좌표와_상세정보를_함께_반환한다() {
         when(kakaoLocalApiClient.searchKeyword("부산 해운대")).thenReturn(
                 new KakaoKeywordSearchResponse(List.of(
-                        new KakaoKeywordSearchResponse.Document("해운대해수욕장", "129.160384", "35.158698")
+                        new KakaoKeywordSearchResponse.Document(
+                                "해운대해수욕장", "129.160384", "35.158698", "051-749-4062",
+                                "부산 해운대구 우동", "부산 해운대구 해운대해변로 264", "관광,명소 > 해수욕장",
+                                "http://place.map.kakao.com/8achiudz")
                 )));
 
         GeocodingResult result = kakaoGeocodingService.geocode(List.of("해운대"), "부산");
@@ -32,6 +35,11 @@ class KakaoGeocodingServiceTest {
         assertThat(result.latitude()).isEqualTo(35.158698);
         assertThat(result.longitude()).isEqualTo(129.160384);
         assertThat(result.matchedName()).isEqualTo("해운대해수욕장");
+        assertThat(result.phone()).isEqualTo("051-749-4062");
+        assertThat(result.address()).isEqualTo("부산 해운대구 우동");
+        assertThat(result.roadAddress()).isEqualTo("부산 해운대구 해운대해변로 264");
+        assertThat(result.kakaoCategoryName()).isEqualTo("관광,명소 > 해수욕장");
+        assertThat(result.kakaoPlaceUrl()).isEqualTo("http://place.map.kakao.com/8achiudz");
     }
 
     @Test
@@ -49,12 +57,14 @@ class KakaoGeocodingServiceTest {
     }
 
     @Test
-    void 정확_매칭에_실패하면_region만으로_재검색해서_좌표를_반환하되_matchedName은_채우지_않는다() {
+    void 정확_매칭에_실패하면_region만으로_재검색해서_좌표만_반환하고_상세정보는_채우지_않는다() {
         when(kakaoLocalApiClient.searchKeyword("부산 광알리")).thenReturn(
                 new KakaoKeywordSearchResponse(List.of()));
         when(kakaoLocalApiClient.searchKeyword("부산")).thenReturn(
                 new KakaoKeywordSearchResponse(List.of(
-                        new KakaoKeywordSearchResponse.Document("부산광역시", "129.075642", "35.179554")
+                        new KakaoKeywordSearchResponse.Document(
+                                "부산광역시", "129.075642", "35.179554", "051-000-0000",
+                                "부산 연제구", "부산 연제구 중앙대로", "지역시설 > 관공서", "http://place.map.kakao.com/x")
                 )));
 
         GeocodingResult result = kakaoGeocodingService.geocode(List.of("광알리"), "부산");
@@ -62,6 +72,11 @@ class KakaoGeocodingServiceTest {
         assertThat(result.latitude()).isEqualTo(35.179554);
         assertThat(result.longitude()).isEqualTo(129.075642);
         assertThat(result.matchedName()).isNull();
+        assertThat(result.phone()).isNull();
+        assertThat(result.address()).isNull();
+        assertThat(result.roadAddress()).isNull();
+        assertThat(result.kakaoCategoryName()).isNull();
+        assertThat(result.kakaoPlaceUrl()).isNull();
     }
 
     @Test
@@ -81,7 +96,8 @@ class KakaoGeocodingServiceTest {
                 .thenThrow(new RuntimeException("카카오 API 오류"));
         when(kakaoLocalApiClient.searchKeyword("장애")).thenReturn(
                 new KakaoKeywordSearchResponse(List.of(
-                        new KakaoKeywordSearchResponse.Document("장애", "127.0", "37.0")
+                        new KakaoKeywordSearchResponse.Document(
+                                "장애", "127.0", "37.0", null, null, null, null, null)
                 )));
 
         GeocodingResult result = kakaoGeocodingService.geocode(List.of("지역"), "장애");
@@ -96,7 +112,8 @@ class KakaoGeocodingServiceTest {
                 new KakaoKeywordSearchResponse(List.of()));
         when(kakaoLocalApiClient.searchKeyword("인천 하늘길")).thenReturn(
                 new KakaoKeywordSearchResponse(List.of(
-                        new KakaoKeywordSearchResponse.Document("하늘길", "126.7", "37.4")
+                        new KakaoKeywordSearchResponse.Document(
+                                "하늘길", "126.7", "37.4", null, null, null, null, null)
                 )));
 
         GeocodingResult result = kakaoGeocodingService.geocode(List.of("하늘기", "하늘길"), "인천");
@@ -114,7 +131,8 @@ class KakaoGeocodingServiceTest {
                 new KakaoKeywordSearchResponse(List.of()));
         when(kakaoLocalApiClient.searchKeyword("인천")).thenReturn(
                 new KakaoKeywordSearchResponse(List.of(
-                        new KakaoKeywordSearchResponse.Document("인천광역시", "126.7", "37.45")
+                        new KakaoKeywordSearchResponse.Document(
+                                "인천광역시", "126.7", "37.45", null, null, null, null, null)
                 )));
 
         GeocodingResult result = kakaoGeocodingService.geocode(List.of("하늘기", "하늘길"), "인천");

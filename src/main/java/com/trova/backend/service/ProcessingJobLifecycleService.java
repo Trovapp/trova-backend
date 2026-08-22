@@ -52,7 +52,12 @@ public class ProcessingJobLifecycleService {
                 geocoded.latitude(),
                 geocoded.longitude(),
                 extracted.dayNumber(),
-                extracted.orderInDay()
+                extracted.orderInDay(),
+                geocoded.phone(),
+                geocoded.address(),
+                geocoded.roadAddress(),
+                geocoded.kakaoCategoryName(),
+                geocoded.kakaoPlaceUrl()
         ));
     }
 
