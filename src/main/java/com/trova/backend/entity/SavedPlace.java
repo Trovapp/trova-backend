@@ -123,4 +123,9 @@ public class SavedPlace {
     public String getKakaoCategoryName() { return kakaoCategoryName; }
     public String getKakaoPlaceUrl() { return kakaoPlaceUrl; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public void assignToDay(Integer dayNumber, Integer orderInDay) {
+        this.dayNumber = dayNumber;
+        this.orderInDay = orderInDay;
+    }
 }
