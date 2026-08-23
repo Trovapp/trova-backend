@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 public class PlaceExtractionService {
 
@@ -40,9 +43,15 @@ public class PlaceExtractionService {
 
             lifecycleService.setTitle(jobId, output.title());
 
+            // region-only 폴백이 같은 영상 안에서 이미 확정된 다른 장소와 좌표가 겹치는 걸
+            // 막으려면, 지금까지 확정된 좌표를 계속 누적해서 geocode() 호출마다 넘겨줘야 한다.
+            Set<String> usedCoordinateKeys = new HashSet<>();
             for (ExtractedPlace extracted : output.places()) {
-                GeocodingResult geocoded =
-                        kakaoGeocodingService.geocode(extracted.nameCandidates(), extracted.region());
+                GeocodingResult geocoded = kakaoGeocodingService.geocode(
+                        extracted.nameCandidates(), extracted.region(), usedCoordinateKeys);
+                if (geocoded.latitude() != null) {
+                    usedCoordinateKeys.add(geocoded.coordinateKey());
+                }
                 lifecycleService.savePlace(jobId, extracted, geocoded);
             }
 

@@ -16,4 +16,13 @@ public record GeocodingResult(
     public static GeocodingResult coordinatesOnly(Double latitude, Double longitude) {
         return new GeocodingResult(latitude, longitude, null, null, null, null, null, null);
     }
+
+    /**
+     * 같은 배치(영상) 안에서 이미 확정된 좌표와의 충돌을 감지하기 위한 키.
+     * 좌표(latitude)가 null인 결과에는 호출하지 않는다 — 호출 측(PlaceExtractionService)이
+     * 좌표가 있는 결과만 누적 Set에 넣는다.
+     */
+    public String coordinateKey() {
+        return latitude + "," + longitude;
+    }
 }

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class KakaoGeocodingService {
@@ -17,7 +18,7 @@ public class KakaoGeocodingService {
         this.kakaoLocalApiClient = kakaoLocalApiClient;
     }
 
-    public GeocodingResult geocode(List<String> nameCandidates, String region) {
+    public GeocodingResult geocode(List<String> nameCandidates, String region, Set<String> usedCoordinateKeys) {
         boolean hasRegion = region != null && !region.isBlank();
 
         // STT/화면 텍스트 오인식으로 name이 정확히 매칭 안 될 수 있음 — Gemini가 함께
@@ -41,6 +42,22 @@ public class KakaoGeocodingService {
         log.info("후보 이름 전부 매칭 실패, region만으로 재검색합니다(candidates={}, region={})",
                 nameCandidates, region);
         GeocodingResult fallback = search(region);
+        if (fallback.latitude() == null) {
+            return GeocodingResult.empty();
+        }
+
+        // region-only 검색은 "이 지역의 대표 지점 하나"를 반환할 뿐이라, 같은 영상에서
+        // 이미 확정된 다른 장소와 우연히 같은 지점으로 귀결될 수 있다(예: "전주"만으로
+        // 검색했더니 이 영상에 이미 있는 "전주한옥마을"이 1등으로 나오는 경우). 그 경우
+        // 틀린 좌표로 다른 장소를 가리는 것보다 좌표 없이 남기는 게 낫다.
+        if (usedCoordinateKeys.contains(fallback.coordinateKey())) {
+            log.warn(
+                    "region 폴백 결과가 같은 영상의 다른 장소와 좌표가 겹쳐 폐기합니다"
+                            + "(candidates={}, region={}, lat={}, lng={})",
+                    nameCandidates, region, fallback.latitude(), fallback.longitude());
+            return GeocodingResult.empty();
+        }
+
         return GeocodingResult.coordinatesOnly(fallback.latitude(), fallback.longitude());
     }
 
