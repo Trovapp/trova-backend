@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """URL 하나를 받아 끝까지 돌리는 파이프라인.
 
-어떤 영상이 들어올지 모르므로, 구할 수 있는 신호를 전부 모아 한 번에
-Gemini로 보낸다:
-  - 자막이 있으면 자막 텍스트 (가장 저렴, 우선)
-  - 자막이 없으면 오디오도 함께 (내레이션 대응)
-  - 프레임(화면 텍스트/위치 태그)은 자막 유무와 상관없이 항상 포함
-    (내레이션이 있어도 화면 캡션에만 장소가 적힌 경우가 많음을 실측 확인함)
+어떤 영상이 들어올지 모르므로, 구할 수 있는 신호(자막/오디오/화면 프레임)를
+전부 모아 한 번에 Gemini로 보낸다. 무료 티어는 토큰 자체를 과금하지 않으므로
+자막이 있다고 오디오를 생략할 이유가 없다 — 오히려 유튜브 자체 자막(ASR)도
+오인식이 있을 수 있어서, 자막/오디오/화면 텍스트가 서로 교차검증돼야 장소명
+정확도가 더 높아진다(예: 자막엔 없지만 화면 캡션에만 적힌 장소, 자막 오인식을
+오디오로 바로잡는 경우 등).
 """
 from __future__ import annotations
 
@@ -47,13 +47,12 @@ def run(url: str, work_dir: Path) -> dict:
     transcript = None
     if caption_path:
         transcript = download.vtt_to_text(caption_path)
-        print(f"[pipeline] 자막 발견 ({len(transcript)}자) — 오디오는 생략", file=sys.stderr)
+        print(f"[pipeline] 자막 발견 ({len(transcript)}자)", file=sys.stderr)
     else:
-        print("[pipeline] 자막 없음 — 오디오 추출", file=sys.stderr)
+        print("[pipeline] 자막 없음", file=sys.stderr)
 
-    audio_path = None
-    if not transcript:
-        audio_path = extract_audio(video_path, work_dir / "audio.mp3")
+    print("[pipeline] 오디오 추출", file=sys.stderr)
+    audio_path = extract_audio(video_path, work_dir / "audio.mp3")
 
     print(f"[pipeline] 프레임 추출 (최대 {MAX_FRAMES}장)", file=sys.stderr)
     frame_paths = frames_mod.extract_frames(video_path, work_dir / "frames", max_frames=MAX_FRAMES)
