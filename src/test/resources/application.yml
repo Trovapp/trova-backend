@@ -37,6 +37,7 @@ app:
   pipeline:
     script-path: pipeline-test/run_pipeline.py
     itinerary-script-path: pipeline-test/generate_itinerary.py
+    verify-script-path: pipeline-test/verify_places.py
     work-dir: build/tmp/pipeline-test-work
     gemini-api-key: test-key
   kakao:
