@@ -2,9 +2,12 @@ package com.trova.backend.service;
 
 import com.trova.backend.geocoding.GeocodingResult;
 import com.trova.backend.geocoding.KakaoGeocodingService;
+import com.trova.backend.geocoding.KakaoKeywordSearchResponse;
 import com.trova.backend.pipeline.ExtractedPlace;
 import com.trova.backend.pipeline.PipelineOutput;
 import com.trova.backend.pipeline.PipelineRunner;
+import com.trova.backend.pipeline.PlaceSelection;
+import com.trova.backend.pipeline.PlaceSelectionRunner;
 import com.trova.backend.pipeline.PlaceVerification;
 import com.trova.backend.pipeline.PlaceVerificationRunner;
 import org.slf4j.Logger;
@@ -30,17 +33,20 @@ public class PlaceExtractionService {
     private final ProcessingJobLifecycleService lifecycleService;
     private final PipelineRunner pipelineRunner;
     private final KakaoGeocodingService kakaoGeocodingService;
+    private final PlaceSelectionRunner placeSelectionRunner;
     private final PlaceVerificationRunner placeVerificationRunner;
 
     public PlaceExtractionService(
             ProcessingJobLifecycleService lifecycleService,
             PipelineRunner pipelineRunner,
             KakaoGeocodingService kakaoGeocodingService,
+            PlaceSelectionRunner placeSelectionRunner,
             PlaceVerificationRunner placeVerificationRunner
     ) {
         this.lifecycleService = lifecycleService;
         this.pipelineRunner = pipelineRunner;
         this.kakaoGeocodingService = kakaoGeocodingService;
+        this.placeSelectionRunner = placeSelectionRunner;
         this.placeVerificationRunner = placeVerificationRunner;
     }
 
@@ -70,6 +76,7 @@ public class PlaceExtractionService {
                 geocodedList.add(geocoded);
             }
 
+            geocodedList = selectAmongAlternatives(jobId, extractedList, geocodedList);
             geocodedList = verifyUncertainMatches(jobId, extractedList, geocodedList);
 
             for (int i = 0; i < extractedList.size(); i++) {
@@ -82,6 +89,63 @@ public class PlaceExtractionService {
             log.error("ProcessingJob {} 처리 실패", jobId, e);
             lifecycleService.markFailed(jobId, e.getMessage());
         }
+    }
+
+    /**
+     * 카카오 검색이 후보를 여러 개 반환한 장소만 모아서 Gemini로 한 번에 "문맥상 제일
+     * 맞는 후보"를 고르게 한다. candidateIndex 0(카카오 1등, 원래 채택값)을 그대로
+     * 유지하면 아무 변경도 하지 않고, 다른 후보를 고르면 그 후보의 좌표/이름/주소로
+     * 교체하며, 어느 후보도 안 맞다고 판단하면(null) 좌표를 비운다(틀린 좌표보다
+     * 없는 게 낫다는 원칙과 동일). 재검토 대상이 없으면 호출 자체를 생략한다.
+     */
+    private List<GeocodingResult> selectAmongAlternatives(
+            Long jobId, List<ExtractedPlace> extractedList, List<GeocodingResult> geocodedList
+    ) {
+        List<PlaceSelectionRunner.SelectionCandidate> candidates = new ArrayList<>();
+        for (int i = 0; i < extractedList.size(); i++) {
+            ExtractedPlace extracted = extractedList.get(i);
+            GeocodingResult geocoded = geocodedList.get(i);
+            if (geocoded.latitude() == null || geocoded.alternativeCandidates().isEmpty()) {
+                continue;
+            }
+
+            List<PlaceSelectionRunner.CandidateOption> options = new ArrayList<>();
+            options.add(new PlaceSelectionRunner.CandidateOption(
+                    0, geocoded.matchedName(), geocoded.address(), geocoded.roadAddress(), geocoded.kakaoCategoryName()));
+            int candidateIndex = 1;
+            for (KakaoKeywordSearchResponse.Document alt : geocoded.alternativeCandidates()) {
+                options.add(new PlaceSelectionRunner.CandidateOption(
+                        candidateIndex++, alt.placeName(), alt.addressName(), alt.roadAddressName(), alt.categoryName()));
+            }
+
+            candidates.add(new PlaceSelectionRunner.SelectionCandidate(i, extracted.name(), extracted.region(), options));
+        }
+
+        if (candidates.isEmpty()) {
+            return geocodedList;
+        }
+
+        log.info("ProcessingJob {} 장소 {}개 후보 재검토 시작", jobId, candidates.size());
+        List<PlaceSelection> selections = placeSelectionRunner.run(candidates, jobId);
+
+        List<GeocodingResult> result = new ArrayList<>(geocodedList);
+        for (PlaceSelection selection : selections) {
+            int index = selection.index();
+            Integer selectedCandidateIndex = selection.selectedCandidateIndex();
+            if (selectedCandidateIndex == null) {
+                log.info("ProcessingJob {} 어느 후보도 맞지 않아 좌표 폐기: {}",
+                        jobId, extractedList.get(index).name());
+                result.set(index, GeocodingResult.empty());
+            } else if (selectedCandidateIndex != 0) {
+                GeocodingResult original = geocodedList.get(index);
+                KakaoKeywordSearchResponse.Document chosen =
+                        original.alternativeCandidates().get(selectedCandidateIndex - 1);
+                log.info("ProcessingJob {} 카카오 1등 대신 다른 후보 채택: {} -> {}",
+                        jobId, original.matchedName(), chosen.placeName());
+                result.set(index, GeocodingResult.fromDocument(chosen));
+            }
+        }
+        return result;
     }
 
     /**

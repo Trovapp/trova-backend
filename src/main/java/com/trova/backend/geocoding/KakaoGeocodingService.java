@@ -61,17 +61,25 @@ public class KakaoGeocodingService {
         return GeocodingResult.coordinatesOnly(fallback.latitude(), fallback.longitude());
     }
 
+    // region-only 폴백까지 포함해 "선택 재검토" 대상으로 넘길 대안 후보 개수 상한
+    // (1등 제외, 최대 이만큼만) — 토큰 절약을 위해 상위 몇 개만 본다.
+    private static final int MAX_ALTERNATIVE_CANDIDATES = 4;
+
     private GeocodingResult search(String query) {
         try {
             KakaoKeywordSearchResponse response = kakaoLocalApiClient.searchKeyword(query);
             if (response == null || response.documents() == null || response.documents().isEmpty()) {
                 return GeocodingResult.empty();
             }
-            KakaoKeywordSearchResponse.Document first = response.documents().get(0);
+            List<KakaoKeywordSearchResponse.Document> documents = response.documents();
+            KakaoKeywordSearchResponse.Document first = documents.get(0);
+            List<KakaoKeywordSearchResponse.Document> alternatives = documents.size() > 1
+                    ? documents.subList(1, Math.min(documents.size(), 1 + MAX_ALTERNATIVE_CANDIDATES))
+                    : List.of();
             return new GeocodingResult(
                     Double.parseDouble(first.y()), Double.parseDouble(first.x()), first.placeName(),
                     first.phone(), first.addressName(), first.roadAddressName(),
-                    first.categoryName(), first.placeUrl());
+                    first.categoryName(), first.placeUrl(), alternatives);
         } catch (Exception e) {
             log.warn("카카오 지오코딩 실패(query={}) — 좌표 없이 저장합니다", query, e);
             return GeocodingResult.empty();

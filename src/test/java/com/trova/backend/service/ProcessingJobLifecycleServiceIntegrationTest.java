@@ -128,7 +128,7 @@ class ProcessingJobLifecycleServiceIntegrationTest {
                 new ExtractedPlace("해운대", "부산", "attraction", 0.95, 2, 3, List.of("해운대"));
         GeocodingResult geocoded = new GeocodingResult(
                 35.16, 129.16, "해운대해수욕장", "051-123-4567", "부산 해운대구 우동", "부산 해운대구 해운대해변로",
-                "관광,명소 > 해수욕장", "http://place.map.kakao.com/1");
+                "관광,명소 > 해수욕장", "http://place.map.kakao.com/1", java.util.List.of());
 
         lifecycleService.savePlace(job.getId(), extracted, geocoded);
 

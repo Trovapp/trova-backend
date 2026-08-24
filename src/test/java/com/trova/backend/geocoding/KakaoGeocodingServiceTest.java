@@ -182,4 +182,37 @@ class KakaoGeocodingServiceTest {
         assertThat(result.latitude()).isEqualTo(35.179554);
         assertThat(result.longitude()).isEqualTo(129.075642);
     }
+
+    @Test
+    void 검색_결과가_여러_개면_1등_외_나머지가_대안_후보로_담긴다() {
+        when(kakaoLocalApiClient.searchKeyword("서울 스타벅스")).thenReturn(
+                new KakaoKeywordSearchResponse(List.of(
+                        new KakaoKeywordSearchResponse.Document(
+                                "스타벅스 강남점", "127.0", "37.5", null, null, null, null, null),
+                        new KakaoKeywordSearchResponse.Document(
+                                "스타벅스 홍대점", "126.9", "37.55", null, null, null, null, null),
+                        new KakaoKeywordSearchResponse.Document(
+                                "스타벅스 잠실점", "127.1", "37.51", null, null, null, null, null)
+                )));
+
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("스타벅스"), "서울", Set.of());
+
+        assertThat(result.matchedName()).isEqualTo("스타벅스 강남점");
+        assertThat(result.alternativeCandidates()).hasSize(2);
+        assertThat(result.alternativeCandidates().get(0).placeName()).isEqualTo("스타벅스 홍대점");
+        assertThat(result.alternativeCandidates().get(1).placeName()).isEqualTo("스타벅스 잠실점");
+    }
+
+    @Test
+    void 검색_결과가_하나뿐이면_대안_후보가_비어있다() {
+        when(kakaoLocalApiClient.searchKeyword("부산 해운대")).thenReturn(
+                new KakaoKeywordSearchResponse(List.of(
+                        new KakaoKeywordSearchResponse.Document(
+                                "해운대해수욕장", "129.160384", "35.158698", null, null, null, null, null)
+                )));
+
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("해운대"), "부산", Set.of());
+
+        assertThat(result.alternativeCandidates()).isEmpty();
+    }
 }
