@@ -4,15 +4,22 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trova.backend.entity.ApiCallLog;
 import com.trova.backend.repository.ApiCallLogRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 유료 전환 가능성이 있는 외부 API(Gemini, 카카오 등) 호출 1건당 지연시간·토큰·성공여부를
  * 기록한다. 무료 티어를 쓰고 있어도 기록해서, 나중에 트래픽당 예상 비용을 계산할 근거로
  * 남긴다. 로깅 실패가 파이프라인 본 동작을 절대 막아선 안 되므로, 이 클래스의 메서드는
  * 예외를 던지지 않고 문제가 있으면 경고 로그만 남긴다.
+ *
+ * DB 기록과 별도로 Micrometer 지표(trova.api_call)도 같이 남겨서, Postgres를 직접
+ * 조회하지 않아도 Grafana에서 호출 현황을 바로 볼 수 있게 한다.
  */
 @Service
 public class ApiCallLogService {
@@ -23,9 +30,11 @@ public class ApiCallLogService {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     private final ApiCallLogRepository apiCallLogRepository;
+    private final MeterRegistry meterRegistry;
 
-    public ApiCallLogService(ApiCallLogRepository apiCallLogRepository) {
+    public ApiCallLogService(ApiCallLogRepository apiCallLogRepository, MeterRegistry meterRegistry) {
         this.apiCallLogRepository = apiCallLogRepository;
+        this.meterRegistry = meterRegistry;
     }
 
     public void record(
@@ -35,6 +44,13 @@ public class ApiCallLogService {
         apiCallLogRepository.save(new ApiCallLog(
                 provider, operation, jobId, latencyMs, success, errorMessage,
                 promptTokens, responseTokens, totalTokens));
+
+        Timer.builder("trova.api_call")
+                .tag("provider", provider)
+                .tag("operation", operation)
+                .tag("success", String.valueOf(success))
+                .register(meterRegistry)
+                .record(latencyMs, TimeUnit.MILLISECONDS);
     }
 
     /**

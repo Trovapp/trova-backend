@@ -45,6 +45,17 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
+management:
+  endpoints:
+    web:
+      exposure:
+        # 지금은 로컬 전용이라 바로 노출함. 실제로 외부에 배포하면(k3s 단계)
+        # 이 엔드포인트를 인증 뒤로 숨기거나 네트워크 레벨에서 막아야 함 — 아직 안 함.
+        include: health, prometheus
+  metrics:
+    tags:
+      application: trova-backend
+
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
   pipeline:

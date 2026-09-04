@@ -58,6 +58,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        // 로컬 Prometheus 스크랩용으로 인증 없이 열어둠 — 지금은 로컬 전용이라
+                        // 문제없지만, 실제로 외부에 배포하면(k3s 단계) 반드시 네트워크 레벨에서
+                        // 막거나 별도 인증을 걸어야 한다(application.yml의 management 설정 주석 참고).
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

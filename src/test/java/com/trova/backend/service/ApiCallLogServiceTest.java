@@ -2,10 +2,11 @@ package com.trova.backend.service;
 
 import com.trova.backend.entity.ApiCallLog;
 import com.trova.backend.repository.ApiCallLogRepository;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -22,8 +23,12 @@ class ApiCallLogServiceTest {
     @Mock
     private ApiCallLogRepository apiCallLogRepository;
 
-    @InjectMocks
     private ApiCallLogService apiCallLogService;
+
+    @BeforeEach
+    void setUp() {
+        apiCallLogService = new ApiCallLogService(apiCallLogRepository, new SimpleMeterRegistry());
+    }
 
     @Test
     void 마커_줄_하나를_파싱해서_저장한다() {
