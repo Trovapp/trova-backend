@@ -88,4 +88,8 @@ public class TripPlace {
     public void applySpace(String space) {
         this.space = space;
     }
+
+    public void applyVisitOrder(int visitOrder) {
+        this.visitOrder = visitOrder;
+    }
 }

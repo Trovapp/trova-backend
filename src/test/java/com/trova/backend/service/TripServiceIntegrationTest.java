@@ -1,16 +1,21 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.*;
+import com.trova.backend.geocoding.KakaoKeywordSearchResponse;
+import com.trova.backend.geocoding.KakaoLocalApiClient;
 import com.trova.backend.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class TripServiceIntegrationTest {
@@ -37,6 +42,9 @@ class TripServiceIntegrationTest {
 
     @Autowired
     private TripPlaceRepository tripPlaceRepository;
+
+    @MockitoBean
+    private KakaoLocalApiClient kakaoLocalApiClient;
 
     @AfterEach
     void tearDown() {
@@ -133,5 +141,101 @@ class TripServiceIntegrationTest {
         assertThat(itineraries).hasSize(2);
         assertThat(itineraries.get(0).getDate()).isEqualTo(LocalDate.of(2026, 10, 1));
         assertThat(itineraries.get(1).getDate()).isEqualTo(LocalDate.of(2026, 10, 3));
+    }
+
+    @Test
+    void createTrip은_기간만큼_Itinerary를_자동_생성한다() {
+        User user = newUser();
+
+        Trip trip = tripService.createTrip(
+                user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 3));
+
+        List<Itinerary> itineraries = itineraryRepository.findByTripOrderByDay(trip);
+        assertThat(itineraries).hasSize(3);
+        assertThat(itineraries.get(0).getDay()).isEqualTo(1);
+        assertThat(itineraries.get(0).getDate()).isEqualTo(LocalDate.of(2026, 11, 1));
+        assertThat(itineraries.get(2).getDay()).isEqualTo(3);
+        assertThat(itineraries.get(2).getDate()).isEqualTo(LocalDate.of(2026, 11, 3));
+    }
+
+    @Test
+    void addPlaceToDay는_카카오_검색_결과를_해당_일차_끝에_추가한다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        when(kakaoLocalApiClient.searchKeyword("제주 흑돼지")).thenReturn(new KakaoKeywordSearchResponse(List.of(
+                new KakaoKeywordSearchResponse.Document(
+                        "돈사돈", "126.5", "33.4", "064-000-0000", "제주 노형동", null, "음식점 > 한식", null)
+        )));
+
+        TripPlace created = tripService.addPlaceToDay(user, trip.getId(), 1, "제주 흑돼지").orElseThrow();
+
+        assertThat(created.getPlaceName()).isEqualTo("돈사돈");
+        assertThat(created.getSource()).isEqualTo(PlaceSource.NORMAL);
+        assertThat(created.getVisitOrder()).isEqualTo(1);
+        assertThat(created.getSavedPlaceId()).isNull();
+    }
+
+    @Test
+    void addPlaceToDay는_검색결과_없으면_아무것도_만들지_않는다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        when(kakaoLocalApiClient.searchKeyword("없는곳")).thenReturn(new KakaoKeywordSearchResponse(List.of()));
+
+        Optional<TripPlace> result = tripService.addPlaceToDay(user, trip.getId(), 1, "없는곳");
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void removePlace는_소유자_확인_후_삭제한다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        when(kakaoLocalApiClient.searchKeyword("돈사돈")).thenReturn(new KakaoKeywordSearchResponse(List.of(
+                new KakaoKeywordSearchResponse.Document("돈사돈", "126.5", "33.4", null, "제주", null, null, null)
+        )));
+        TripPlace place = tripService.addPlaceToDay(user, trip.getId(), 1, "돈사돈").orElseThrow();
+
+        boolean removed = tripService.removePlace(user, place.getId());
+
+        assertThat(removed).isTrue();
+        assertThat(tripPlaceRepository.findById(place.getId())).isEmpty();
+    }
+
+    @Test
+    void reorderPlace는_이웃과_순서를_맞바꾼다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        when(kakaoLocalApiClient.searchKeyword("첫번째")).thenReturn(new KakaoKeywordSearchResponse(List.of(
+                new KakaoKeywordSearchResponse.Document("첫번째", "126.5", "33.4", null, null, null, null, null)
+        )));
+        when(kakaoLocalApiClient.searchKeyword("두번째")).thenReturn(new KakaoKeywordSearchResponse(List.of(
+                new KakaoKeywordSearchResponse.Document("두번째", "126.6", "33.5", null, null, null, null, null)
+        )));
+        TripPlace first = tripService.addPlaceToDay(user, trip.getId(), 1, "첫번째").orElseThrow();
+        TripPlace second = tripService.addPlaceToDay(user, trip.getId(), 1, "두번째").orElseThrow();
+
+        tripService.reorderPlace(user, first.getId(), "DOWN");
+
+        TripPlace reloadedFirst = tripPlaceRepository.findById(first.getId()).orElseThrow();
+        TripPlace reloadedSecond = tripPlaceRepository.findById(second.getId()).orElseThrow();
+        assertThat(reloadedFirst.getVisitOrder()).isEqualTo(2);
+        assertThat(reloadedSecond.getVisitOrder()).isEqualTo(1);
+    }
+
+    @Test
+    void deleteTrip은_딸린_Itinerary와_TripPlace까지_전부_지운다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        when(kakaoLocalApiClient.searchKeyword("돈사돈")).thenReturn(new KakaoKeywordSearchResponse(List.of(
+                new KakaoKeywordSearchResponse.Document("돈사돈", "126.5", "33.4", null, null, null, null, null)
+        )));
+        TripPlace place = tripService.addPlaceToDay(user, trip.getId(), 1, "돈사돈").orElseThrow();
+
+        boolean deleted = tripService.deleteTrip(user, trip.getId());
+
+        assertThat(deleted).isTrue();
+        assertThat(tripRepository.findById(trip.getId())).isEmpty();
+        assertThat(tripPlaceRepository.findById(place.getId())).isEmpty();
+        assertThat(itineraryRepository.findByTripOrderByDay(trip)).isEmpty();
     }
 }
