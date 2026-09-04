@@ -6,6 +6,7 @@ import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -34,15 +35,24 @@ public class TripService {
         this.tripPlaceRepository = tripPlaceRepository;
     }
 
-    public Trip confirmVideoPlacesIntoTrip(User user, String title, List<SavedPlace> places) {
-        Trip trip = tripRepository.save(new Trip(user, title, null, null));
-
+    /**
+     * startDate가 있으면 각 Itinerary에 실제 날짜(startDate + (day-1))를 계산해서
+     * 넣는다 — 날씨 자동복구가 이 날짜를 기준으로 예보를 조회한다. startDate가 없으면
+     * (날짜 모르는 여행) 지금까지처럼 date는 null로 남는다.
+     */
+    public Trip confirmVideoPlacesIntoTrip(User user, String title, List<SavedPlace> places, LocalDate startDate) {
         Map<Integer, List<SavedPlace>> byDay = places.stream()
                 .filter(place -> place.getDayNumber() != null)
                 .collect(Collectors.groupingBy(SavedPlace::getDayNumber, TreeMap::new, Collectors.toList()));
 
+        LocalDate endDate = startDate != null && !byDay.isEmpty()
+                ? startDate.plusDays(byDay.keySet().stream().mapToInt(Integer::intValue).max().orElse(1) - 1)
+                : null;
+        Trip trip = tripRepository.save(new Trip(user, title, startDate, endDate));
+
         for (Map.Entry<Integer, List<SavedPlace>> entry : byDay.entrySet()) {
-            Itinerary itinerary = itineraryRepository.save(new Itinerary(trip, entry.getKey(), null));
+            LocalDate itineraryDate = startDate != null ? startDate.plusDays(entry.getKey() - 1) : null;
+            Itinerary itinerary = itineraryRepository.save(new Itinerary(trip, entry.getKey(), itineraryDate));
 
             List<SavedPlace> dayPlaces = entry.getValue().stream()
                     .sorted(Comparator.comparing(

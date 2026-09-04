@@ -46,3 +46,5 @@ app:
     rest-api-key: test-kakao-rest-api-key
   google:
     places-api-key: test-google-places-api-key
+  weather:
+    openweather-api-key: test-openweather-api-key

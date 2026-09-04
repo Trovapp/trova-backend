@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,7 +75,7 @@ class TripServiceIntegrationTest {
                 new SavedPlace(job, user, "미배정", "부산", "cafe", 35.4, 129.3, null, null));
 
         Trip trip = tripService.confirmVideoPlacesIntoTrip(
-                user, "부산 여행", List.of(day1First, day1Second, day2First, unassigned));
+                user, "부산 여행", List.of(day1First, day1Second, day2First, unassigned), null);
 
         assertThat(trip.getId()).isNotNull();
         assertThat(trip.getTitle()).isEqualTo("부산 여행");
@@ -106,9 +107,31 @@ class TripServiceIntegrationTest {
         SavedPlace unassigned = savedPlaceRepository.save(
                 new SavedPlace(job, user, "미배정", "부산", "cafe", 35.4, 129.3, null, null));
 
-        Trip trip = tripService.confirmVideoPlacesIntoTrip(user, "빈 여행", List.of(unassigned));
+        Trip trip = tripService.confirmVideoPlacesIntoTrip(user, "빈 여행", List.of(unassigned), null);
 
         assertThat(trip.getId()).isNotNull();
         assertThat(itineraryRepository.findByTripOrderByDay(trip)).isEmpty();
+    }
+
+    @Test
+    void startDate가_있으면_각_Itinerary에_실제_날짜를_계산해서_넣는다() {
+        User user = newUser();
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(user, "https://youtu.be/trip3", SourcePlatform.YOUTUBE));
+        SavedPlace day1 = savedPlaceRepository.save(
+                new SavedPlace(job, user, "1일차", "부산", "cafe", 35.1, 129.0, 1, 1));
+        SavedPlace day3 = savedPlaceRepository.save(
+                new SavedPlace(job, user, "3일차", "부산", "cafe", 35.2, 129.1, 3, 1));
+
+        LocalDate startDate = LocalDate.of(2026, 10, 1);
+        Trip trip = tripService.confirmVideoPlacesIntoTrip(user, "날짜있는 여행", List.of(day1, day3), startDate);
+
+        assertThat(trip.getStartDate()).isEqualTo(LocalDate.of(2026, 10, 1));
+        assertThat(trip.getEndDate()).isEqualTo(LocalDate.of(2026, 10, 3));
+
+        List<Itinerary> itineraries = itineraryRepository.findByTripOrderByDay(trip);
+        assertThat(itineraries).hasSize(2);
+        assertThat(itineraries.get(0).getDate()).isEqualTo(LocalDate.of(2026, 10, 1));
+        assertThat(itineraries.get(1).getDate()).isEqualTo(LocalDate.of(2026, 10, 3));
     }
 }

@@ -70,3 +70,5 @@ app:
     rest-api-key: ${KAKAO_REST_API_KEY:}
   google:
     places-api-key: ${GOOGLE_PLACES_API_KEY:}
+  weather:
+    openweather-api-key: ${OPENWEATHER_API_KEY:}

@@ -42,6 +42,9 @@ public class TripPlace {
     @Column(name = "saved_place_id")
     private Long savedPlaceId;
 
+    // 날씨 자동복구용 실내/실외 태그. Gemini가 필요할 때만 태깅한다(null이면 아직 안 함).
+    private String space;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -79,5 +82,10 @@ public class TripPlace {
     public int getVisitOrder() { return visitOrder; }
     public PlaceSource getSource() { return source; }
     public Long getSavedPlaceId() { return savedPlaceId; }
+    public String getSpace() { return space; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public void applySpace(String space) {
+        this.space = space;
+    }
 }
