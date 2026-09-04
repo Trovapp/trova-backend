@@ -143,6 +143,16 @@ public class PlacesController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/videos/{jobId}/days/{day}/optimize-route")
+    public ResponseEntity<List<PlaceResponse>> optimizeRoute(
+            OAuth2AuthenticationToken authentication, @PathVariable Long jobId, @PathVariable int day
+    ) {
+        User user = currentUserService.resolve(authentication);
+        return itineraryEditService.optimizeRoute(jobId, user, day)
+                .map(places -> ResponseEntity.ok(places.stream().map(PlaceResponse::from).toList()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/videos/{jobId}/itinerary")
     public ResponseEntity<Void> generateItinerary(OAuth2AuthenticationToken authentication, @PathVariable Long jobId) {
         User user = currentUserService.resolve(authentication);

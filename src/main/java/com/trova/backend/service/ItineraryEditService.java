@@ -3,6 +3,7 @@ package com.trova.backend.service;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.User;
+import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +16,13 @@ import java.util.Optional;
 public class ItineraryEditService {
 
     private final SavedPlaceRepository savedPlaceRepository;
+    private final ProcessingJobRepository processingJobRepository;
 
-    public ItineraryEditService(SavedPlaceRepository savedPlaceRepository) {
+    public ItineraryEditService(
+            SavedPlaceRepository savedPlaceRepository, ProcessingJobRepository processingJobRepository
+    ) {
         this.savedPlaceRepository = savedPlaceRepository;
+        this.processingJobRepository = processingJobRepository;
     }
 
     @Transactional
@@ -64,5 +69,25 @@ public class ItineraryEditService {
             neighbor.assignToDay(neighbor.getDayNumber(), placeOrder);
             return place;
         });
+    }
+
+    /**
+     * 하루 일정의 장소 순서를 총 이동거리가 최소가 되도록 재배열한다. 좌표 없는 장소는
+     * RouteOptimizer가 알아서 끝으로 밀어둔 채로 온다 — 여기서는 그 순서 그대로
+     * orderInDay 1..n을 다시 매긴다.
+     */
+    @Transactional
+    public Optional<List<SavedPlace>> optimizeRoute(Long jobId, User user, int dayNumber) {
+        return processingJobRepository.findById(jobId)
+                .filter(job -> job.getUser().getId().equals(user.getId()))
+                .map(job -> {
+                    List<SavedPlace> places = savedPlaceRepository
+                            .findByProcessingJobAndDayNumberOrderByOrderInDayAsc(job, dayNumber);
+                    List<SavedPlace> optimized = RouteOptimizer.optimize(places);
+                    for (int i = 0; i < optimized.size(); i++) {
+                        optimized.get(i).assignToDay(dayNumber, i + 1);
+                    }
+                    return optimized;
+                });
     }
 }
