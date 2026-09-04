@@ -1,5 +1,6 @@
 package com.trova.backend.geocoding;
 
+import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +19,9 @@ class KakaoGeocodingServiceTest {
     @Mock
     private KakaoLocalApiClient kakaoLocalApiClient;
 
+    @Mock
+    private ApiCallLogService apiCallLogService;
+
     @InjectMocks
     private KakaoGeocodingService kakaoGeocodingService;
 
@@ -31,7 +35,7 @@ class KakaoGeocodingServiceTest {
                                 "http://place.map.kakao.com/8achiudz")
                 )));
 
-        GeocodingResult result = kakaoGeocodingService.geocode(List.of("해운대"), "부산", Set.of());
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("해운대"), "부산", Set.of(), 1L);
 
         assertThat(result.latitude()).isEqualTo(35.158698);
         assertThat(result.longitude()).isEqualTo(129.160384);
@@ -50,7 +54,7 @@ class KakaoGeocodingServiceTest {
         when(kakaoLocalApiClient.searchKeyword("어딘가")).thenReturn(
                 new KakaoKeywordSearchResponse(List.of()));
 
-        GeocodingResult result = kakaoGeocodingService.geocode(List.of("없는곳"), "어딘가", Set.of());
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("없는곳"), "어딘가", Set.of(), 1L);
 
         assertThat(result.latitude()).isNull();
         assertThat(result.longitude()).isNull();
@@ -68,7 +72,7 @@ class KakaoGeocodingServiceTest {
                                 "부산 연제구", "부산 연제구 중앙대로", "지역시설 > 관공서", "http://place.map.kakao.com/x")
                 )));
 
-        GeocodingResult result = kakaoGeocodingService.geocode(List.of("광알리"), "부산", Set.of());
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("광알리"), "부산", Set.of(), 1L);
 
         assertThat(result.latitude()).isEqualTo(35.179554);
         assertThat(result.longitude()).isEqualTo(129.075642);
@@ -85,7 +89,7 @@ class KakaoGeocodingServiceTest {
         when(kakaoLocalApiClient.searchKeyword("없는곳")).thenReturn(
                 new KakaoKeywordSearchResponse(List.of()));
 
-        GeocodingResult result = kakaoGeocodingService.geocode(List.of("없는곳"), null, Set.of());
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("없는곳"), null, Set.of(), 1L);
 
         assertThat(result.latitude()).isNull();
         assertThat(result.longitude()).isNull();
@@ -101,7 +105,7 @@ class KakaoGeocodingServiceTest {
                                 "장애", "127.0", "37.0", null, null, null, null, null)
                 )));
 
-        GeocodingResult result = kakaoGeocodingService.geocode(List.of("지역"), "장애", Set.of());
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("지역"), "장애", Set.of(), 1L);
 
         assertThat(result.latitude()).isEqualTo(37.0);
         assertThat(result.longitude()).isEqualTo(127.0);
@@ -117,7 +121,7 @@ class KakaoGeocodingServiceTest {
                                 "하늘길", "126.7", "37.4", null, null, null, null, null)
                 )));
 
-        GeocodingResult result = kakaoGeocodingService.geocode(List.of("하늘기", "하늘길"), "인천", Set.of());
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("하늘기", "하늘길"), "인천", Set.of(), 1L);
 
         assertThat(result.latitude()).isEqualTo(37.4);
         assertThat(result.longitude()).isEqualTo(126.7);
@@ -136,7 +140,7 @@ class KakaoGeocodingServiceTest {
                                 "인천광역시", "126.7", "37.45", null, null, null, null, null)
                 )));
 
-        GeocodingResult result = kakaoGeocodingService.geocode(List.of("하늘기", "하늘길"), "인천", Set.of());
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("하늘기", "하늘길"), "인천", Set.of(), 1L);
 
         assertThat(result.latitude()).isEqualTo(37.45);
         assertThat(result.longitude()).isEqualTo(126.7);
@@ -158,7 +162,7 @@ class KakaoGeocodingServiceTest {
                 )));
 
         GeocodingResult result = kakaoGeocodingService.geocode(
-                List.of("청연로"), "전주", Set.of("35.814777443298,127.152557001422"));
+                List.of("청연로"), "전주", Set.of("35.814777443298,127.152557001422"), 1L);
 
         assertThat(result.latitude()).isNull();
         assertThat(result.longitude()).isNull();
@@ -177,7 +181,7 @@ class KakaoGeocodingServiceTest {
                 )));
 
         GeocodingResult result = kakaoGeocodingService.geocode(
-                List.of("광알리"), "부산", Set.of("37.0,127.0"));
+                List.of("광알리"), "부산", Set.of("37.0,127.0"), 1L);
 
         assertThat(result.latitude()).isEqualTo(35.179554);
         assertThat(result.longitude()).isEqualTo(129.075642);
@@ -195,7 +199,7 @@ class KakaoGeocodingServiceTest {
                                 "스타벅스 잠실점", "127.1", "37.51", null, null, null, null, null)
                 )));
 
-        GeocodingResult result = kakaoGeocodingService.geocode(List.of("스타벅스"), "서울", Set.of());
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("스타벅스"), "서울", Set.of(), 1L);
 
         assertThat(result.matchedName()).isEqualTo("스타벅스 강남점");
         assertThat(result.alternativeCandidates()).hasSize(2);
@@ -211,7 +215,7 @@ class KakaoGeocodingServiceTest {
                                 "해운대해수욕장", "129.160384", "35.158698", null, null, null, null, null)
                 )));
 
-        GeocodingResult result = kakaoGeocodingService.geocode(List.of("해운대"), "부산", Set.of());
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("해운대"), "부산", Set.of(), 1L);
 
         assertThat(result.alternativeCandidates()).isEmpty();
     }

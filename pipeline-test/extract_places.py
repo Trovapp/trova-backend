@@ -157,8 +157,33 @@ def _normalize_name_candidates(places: list[dict]) -> list[dict]:
 MAX_ATTEMPTS = 5
 RETRY_BASE_DELAY = 5.0  # 무료 티어 RPM 제한 대응 — 429/일시 오류 시 지수 백오프
 
+API_LOG_MARKER = "TROVA_API_LOG:"
 
-def call_gemini(parts: list[dict], model: str, api_key: str) -> dict:
+
+def _log_api_call(
+    operation: str, started_at: float, success: bool,
+    payload: dict | None = None, error: str | None = None,
+) -> None:
+    """포트폴리오용 트래픽/비용 근거 기록 — 호출 1건당 지연시간·토큰·성공여부를
+    stderr에 한 줄로 남긴다(Java Runner가 파싱해서 DB에 저장). stdout의 JSON
+    계약은 절대 건드리지 않는다."""
+    entry: dict = {
+        "provider": "gemini",
+        "operation": operation,
+        "latencyMs": round((time.monotonic() - started_at) * 1000),
+        "success": success,
+    }
+    if error is not None:
+        entry["errorMessage"] = error[:500]
+    usage = (payload or {}).get("usageMetadata") if payload else None
+    if usage:
+        entry["promptTokens"] = usage.get("promptTokenCount")
+        entry["responseTokens"] = usage.get("candidatesTokenCount")
+        entry["totalTokens"] = usage.get("totalTokenCount")
+    print(f"{API_LOG_MARKER}{json.dumps(entry, ensure_ascii=False)}", file=sys.stderr)
+
+
+def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> dict:
     url = f"{API_BASE}/{model}:generateContent?key={api_key}"
     body = json.dumps({
         "contents": [{"role": "user", "parts": parts}],
@@ -168,6 +193,7 @@ def call_gemini(parts: list[dict], model: str, api_key: str) -> dict:
         },
     }).encode("utf-8")
 
+    started_at = time.monotonic()
     last_detail = ""
     for attempt in range(MAX_ATTEMPTS):
         request = urllib.request.Request(
@@ -175,13 +201,16 @@ def call_gemini(parts: list[dict], model: str, api_key: str) -> dict:
         )
         try:
             with urllib.request.urlopen(request, timeout=120) as response:
-                return json.loads(response.read().decode("utf-8"))
+                payload = json.loads(response.read().decode("utf-8"))
+                _log_api_call(operation, started_at, True, payload=payload)
+                return payload
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")
             last_detail = detail
 
             # 429(요청 초과) 또는 5xx(서버 일시 오류)만 재시도. 그 외 4xx는 재시도해도 소용없음.
             if exc.code != 429 and not (500 <= exc.code < 600):
+                _log_api_call(operation, started_at, False, error=f"Gemini API error {exc.code}: {detail[:500]}")
                 raise SystemExit(f"Gemini API error {exc.code}: {detail[:500]}")
 
             if attempt < MAX_ATTEMPTS - 1:
@@ -204,6 +233,7 @@ def call_gemini(parts: list[dict], model: str, api_key: str) -> dict:
                 )
                 time.sleep(delay)
 
+    _log_api_call(operation, started_at, False, error=f"{MAX_ATTEMPTS}번 시도 후 실패: {last_detail[:500]}")
     raise SystemExit(f"Gemini API 요청이 {MAX_ATTEMPTS}번 시도 후 실패: {last_detail[:500]}")
 
 
@@ -216,7 +246,7 @@ def collect_candidates(
 ) -> list[str]:
     """1단계: 필터링 없이 장소일 가능성이 있는 고유명사를 최대한 후하게 나열한다."""
     parts = build_parts(transcript, audio_path, frame_paths, prompt=COLLECT_PROMPT)
-    payload = call_gemini(parts, model, api_key)
+    payload = call_gemini(parts, model, api_key, "extract_places.collect")
     text = _extract_text(payload)
     try:
         candidates = json.loads(text)
@@ -240,7 +270,7 @@ def extract_places(
     candidates = collect_candidates(transcript, audio_path, frame_paths, model, api_key)
 
     parts = build_parts(transcript, audio_path, frame_paths, prompt=FILTER_PROMPT, candidates=candidates)
-    payload = call_gemini(parts, model, api_key)
+    payload = call_gemini(parts, model, api_key, "extract_places.filter")
     text = _extract_text(payload)
     try:
         places = json.loads(text)

@@ -73,7 +73,7 @@ def select_place_match(candidates: list[dict], model: str = DEFAULT_MODEL) -> li
         {"text": f"선택 대상 목록: {json.dumps(candidates, ensure_ascii=False)}"},
         {"text": SELECT_PROMPT},
     ]
-    payload = call_gemini(parts, model, api_key)
+    payload = call_gemini(parts, model, api_key, "select_place_match")
     text = _extract_text(payload)
     try:
         selections = json.loads(text)

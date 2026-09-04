@@ -1,5 +1,6 @@
 package com.trova.backend.pipeline;
 
+import com.trova.backend.service.ApiCallLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,15 +25,18 @@ public class PipelineRunner {
     private final String scriptPath;
     private final String workDirBase;
     private final String geminiApiKey;
+    private final ApiCallLogService apiCallLogService;
 
     public PipelineRunner(
             @Value("${app.pipeline.script-path}") String scriptPath,
             @Value("${app.pipeline.work-dir}") String workDirBase,
-            @Value("${app.pipeline.gemini-api-key}") String geminiApiKey
+            @Value("${app.pipeline.gemini-api-key}") String geminiApiKey,
+            ApiCallLogService apiCallLogService
     ) {
         this.scriptPath = scriptPath;
         this.workDirBase = workDirBase;
         this.geminiApiKey = geminiApiKey;
+        this.apiCallLogService = apiCallLogService;
     }
 
     public PipelineOutput run(String url, Long jobId) {
@@ -69,11 +73,13 @@ public class PipelineRunner {
 
             stdoutReader.join(STDOUT_JOIN_TIMEOUT_MILLIS);
 
+            String stderrContent = readStderr(stderrFile);
+            apiCallLogService.recordFromStderr(stderrContent, jobId);
+
             int exitCode = process.exitValue();
             if (exitCode != 0) {
-                String stderr = readStderr(stderrFile);
-                log.error("ProcessingJob {} 파이프라인 실행 실패(exit={}): {}", jobId, exitCode, stderr);
-                throw new PipelineException("파이프라인 실행 실패(exit=" + exitCode + "): " + stderr);
+                log.error("ProcessingJob {} 파이프라인 실행 실패(exit={}): {}", jobId, exitCode, stderrContent);
+                throw new PipelineException("파이프라인 실행 실패(exit=" + exitCode + "): " + stderrContent);
             }
 
             return PipelineOutputParser.parse(stdoutBuffer.toString());

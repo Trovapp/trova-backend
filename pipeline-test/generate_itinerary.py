@@ -65,7 +65,7 @@ def generate_itinerary(places: list[dict], model: str = DEFAULT_MODEL) -> list[d
         {"text": f"장소 목록: {json.dumps(places, ensure_ascii=False)}"},
         {"text": ITINERARY_PROMPT},
     ]
-    payload = call_gemini(parts, model, api_key)
+    payload = call_gemini(parts, model, api_key, "generate_itinerary")
     text = _extract_text(payload)
     try:
         assignments = json.loads(text)

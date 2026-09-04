@@ -65,7 +65,7 @@ def verify_places(candidates: list[dict], model: str = DEFAULT_MODEL) -> list[di
         {"text": f"검증 대상 목록: {json.dumps(candidates, ensure_ascii=False)}"},
         {"text": VERIFY_PROMPT},
     ]
-    payload = call_gemini(parts, model, api_key)
+    payload = call_gemini(parts, model, api_key, "verify_places")
     text = _extract_text(payload)
     try:
         verdicts = json.loads(text)

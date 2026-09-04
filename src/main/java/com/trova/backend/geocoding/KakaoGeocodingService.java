@@ -1,5 +1,6 @@
 package com.trova.backend.geocoding;
 
+import com.trova.backend.service.ApiCallLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,16 @@ public class KakaoGeocodingService {
     private static final Logger log = LoggerFactory.getLogger(KakaoGeocodingService.class);
 
     private final KakaoLocalApiClient kakaoLocalApiClient;
+    private final ApiCallLogService apiCallLogService;
 
-    public KakaoGeocodingService(KakaoLocalApiClient kakaoLocalApiClient) {
+    public KakaoGeocodingService(KakaoLocalApiClient kakaoLocalApiClient, ApiCallLogService apiCallLogService) {
         this.kakaoLocalApiClient = kakaoLocalApiClient;
+        this.apiCallLogService = apiCallLogService;
     }
 
-    public GeocodingResult geocode(List<String> nameCandidates, String region, Set<String> usedCoordinateKeys) {
+    public GeocodingResult geocode(
+            List<String> nameCandidates, String region, Set<String> usedCoordinateKeys, Long jobId
+    ) {
         boolean hasRegion = region != null && !region.isBlank();
 
         // STT/화면 텍스트 오인식으로 name이 정확히 매칭 안 될 수 있음 — Gemini가 함께
@@ -26,7 +31,7 @@ public class KakaoGeocodingService {
         // 결과가 나오는) 첫 후보를 채택한다. 후보를 지어내는 게 아니라 실존 여부를
         // 카카오 검색으로 검증하는 것이므로, 다 실패해도 지금보다 나빠지진 않는다.
         for (String name : nameCandidates) {
-            GeocodingResult result = search(hasRegion ? region + " " + name : name);
+            GeocodingResult result = search(hasRegion ? region + " " + name : name, jobId);
             if (result.latitude() != null) {
                 return result;
             }
@@ -41,7 +46,7 @@ public class KakaoGeocodingService {
         // 검색 결과(예: "부산광역시")라 실제 장소 이름이 아니므로 절대 채택하지 않는다.
         log.info("후보 이름 전부 매칭 실패, region만으로 재검색합니다(candidates={}, region={})",
                 nameCandidates, region);
-        GeocodingResult fallback = search(region);
+        GeocodingResult fallback = search(region, jobId);
         if (fallback.latitude() == null) {
             return GeocodingResult.empty();
         }
@@ -65,9 +70,13 @@ public class KakaoGeocodingService {
     // (1등 제외, 최대 이만큼만) — 토큰 절약을 위해 상위 몇 개만 본다.
     private static final int MAX_ALTERNATIVE_CANDIDATES = 4;
 
-    private GeocodingResult search(String query) {
+    private GeocodingResult search(String query, Long jobId) {
+        long start = System.currentTimeMillis();
         try {
             KakaoKeywordSearchResponse response = kakaoLocalApiClient.searchKeyword(query);
+            apiCallLogService.record(
+                    "kakao", "keyword_search", jobId, System.currentTimeMillis() - start,
+                    true, null, null, null, null);
             if (response == null || response.documents() == null || response.documents().isEmpty()) {
                 return GeocodingResult.empty();
             }
@@ -81,6 +90,9 @@ public class KakaoGeocodingService {
                     first.phone(), first.addressName(), first.roadAddressName(),
                     first.categoryName(), first.placeUrl(), alternatives);
         } catch (Exception e) {
+            apiCallLogService.record(
+                    "kakao", "keyword_search", jobId, System.currentTimeMillis() - start,
+                    false, e.getMessage(), null, null, null);
             log.warn("카카오 지오코딩 실패(query={}) — 좌표 없이 저장합니다", query, e);
             return GeocodingResult.empty();
         }
