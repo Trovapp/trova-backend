@@ -63,7 +63,10 @@ app:
     itinerary-script-path: ${ITINERARY_SCRIPT_PATH:pipeline-test/generate_itinerary.py}
     verify-script-path: ${VERIFY_SCRIPT_PATH:pipeline-test/verify_places.py}
     select-script-path: ${SELECT_SCRIPT_PATH:pipeline-test/select_place_match.py}
+    tag-places-script-path: ${TAG_PLACES_SCRIPT_PATH:pipeline-test/tag_places.py}
     work-dir: ${PIPELINE_WORK_DIR:pipeline-test/work}
     gemini-api-key: ${GEMINI_API_KEY:}
   kakao:
     rest-api-key: ${KAKAO_REST_API_KEY:}
+  google:
+    places-api-key: ${GOOGLE_PLACES_API_KEY:}
