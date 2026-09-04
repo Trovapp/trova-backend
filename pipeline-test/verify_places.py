@@ -11,7 +11,7 @@ import json
 import sys
 from pathlib import Path
 
-from extract_places import DEFAULT_MODEL, call_gemini, load_api_key, _extract_text
+from extract_places import DEFAULT_MODEL, call_gemini_with_repair, load_api_key
 
 VERIFY_PROMPT = """당신은 여행 영상에서 추출된 장소 이름이 실제로 존재하는 곳인지 엄격하게 검증하는 도구입니다.
 아래 "검증 대상 목록"의 각 장소에 대해, name이라는 이름을 가진 곳이 **정확히 region으로 명시된
@@ -33,26 +33,26 @@ JSON 배열만 출력하세요. JSON 배열 외의 다른 텍스트는 출력하
 
 def _validate_verdicts(verdicts: list, expected_indices: set[int]) -> list[dict]:
     if len(verdicts) != len(expected_indices):
-        raise SystemExit(
+        raise ValueError(
             f"검증 결과 개수가 입력과 다릅니다 (입력 {len(expected_indices)}건, 응답 {len(verdicts)}건)"
         )
 
     result_indices: set[int] = set()
     for item in verdicts:
         if not isinstance(item, dict):
-            raise SystemExit(f"배열 항목이 객체가 아닙니다: {item!r}")
+            raise ValueError(f"배열 항목이 객체가 아닙니다: {item!r}")
         idx = item.get("index")
         valid = item.get("valid")
         if not isinstance(idx, int) or isinstance(idx, bool):
-            raise SystemExit(f"index가 정수가 아닙니다: {item!r}")
+            raise ValueError(f"index가 정수가 아닙니다: {item!r}")
         if not isinstance(valid, bool):
-            raise SystemExit(f"valid가 boolean이 아닙니다: {item!r}")
+            raise ValueError(f"valid가 boolean이 아닙니다: {item!r}")
         result_indices.add(idx)
 
     if result_indices != expected_indices:
         missing = expected_indices - result_indices
         extra = result_indices - expected_indices
-        raise SystemExit(f"검증 결과 index가 입력과 일치하지 않습니다 (누락: {missing}, 초과: {extra})")
+        raise ValueError(f"검증 결과 index가 입력과 일치하지 않습니다 (누락: {missing}, 초과: {extra})")
 
     return verdicts
 
@@ -65,17 +65,18 @@ def verify_places(candidates: list[dict], model: str = DEFAULT_MODEL) -> list[di
         {"text": f"검증 대상 목록: {json.dumps(candidates, ensure_ascii=False)}"},
         {"text": VERIFY_PROMPT},
     ]
-    payload = call_gemini(parts, model, api_key, "verify_places")
-    text = _extract_text(payload)
-    try:
-        verdicts = json.loads(text)
-    except json.JSONDecodeError:
-        raise SystemExit(f"Gemini did not return valid JSON: {text[:500]}")
-    if not isinstance(verdicts, list):
-        raise SystemExit(f"Gemini 응답이 배열이 아닙니다: {text[:500]}")
-
     expected_indices = {c["index"] for c in candidates}
-    return _validate_verdicts(verdicts, expected_indices)
+
+    def _parse(text: str) -> list[dict]:
+        try:
+            verdicts = json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError(f"유효한 JSON이 아님: {text[:500]}")
+        if not isinstance(verdicts, list):
+            raise ValueError(f"응답이 배열이 아님: {text[:500]}")
+        return _validate_verdicts(verdicts, expected_indices)
+
+    return call_gemini_with_repair(parts, model, api_key, "verify_places", _parse)
 
 
 if __name__ == "__main__":

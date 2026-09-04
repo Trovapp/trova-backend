@@ -9,7 +9,7 @@ import json
 import sys
 from pathlib import Path
 
-from extract_places import DEFAULT_MODEL, call_gemini, load_api_key, _extract_text
+from extract_places import DEFAULT_MODEL, call_gemini_with_repair, load_api_key
 
 ITINERARY_PROMPT = """당신은 여러 장소를 며칠짜리 여행 일정으로 묶어주는 도구입니다.
 아래 "장소 목록"의 각 장소를 하루 단위(day)로 묶고, 하루 안에서 방문 순서를 정하세요.
@@ -31,7 +31,7 @@ JSON 배열만 출력하세요. JSON 배열 외의 다른 텍스트는 출력하
 
 def _validate_assignments(assignments: list, expected_ids: set[int]) -> list:
     if len(assignments) != len(expected_ids):
-        raise SystemExit(
+        raise ValueError(
             f"일정 항목 개수가 입력과 일치하지 않습니다 "
             f"(입력: {len(expected_ids)}개, 출력: {len(assignments)}개). "
             f"중복 id나 누락이 있을 수 있습니다."
@@ -39,21 +39,21 @@ def _validate_assignments(assignments: list, expected_ids: set[int]) -> list:
     result_ids: set[int] = set()
     for item in assignments:
         if not isinstance(item, dict):
-            raise SystemExit(f"배열 항목이 객체가 아닙니다: {item!r}")
+            raise ValueError(f"배열 항목이 객체가 아닙니다: {item!r}")
         place_id = item.get("id")
         day_number = item.get("dayNumber")
         order_in_day = item.get("orderInDay")
         if not isinstance(place_id, int) or isinstance(place_id, bool):
-            raise SystemExit(f"id가 정수가 아닙니다: {item!r}")
+            raise ValueError(f"id가 정수가 아닙니다: {item!r}")
         if not isinstance(day_number, int) or isinstance(day_number, bool) or day_number < 1:
-            raise SystemExit(f"dayNumber가 1 이상의 정수가 아닙니다: {item!r}")
+            raise ValueError(f"dayNumber가 1 이상의 정수가 아닙니다: {item!r}")
         if not isinstance(order_in_day, int) or isinstance(order_in_day, bool) or order_in_day < 1:
-            raise SystemExit(f"orderInDay가 1 이상의 정수가 아닙니다: {item!r}")
+            raise ValueError(f"orderInDay가 1 이상의 정수가 아닙니다: {item!r}")
         result_ids.add(place_id)
     if result_ids != expected_ids:
         missing = expected_ids - result_ids
         extra = result_ids - expected_ids
-        raise SystemExit(f"장소 id가 입력과 일치하지 않습니다 (누락: {missing}, 초과: {extra})")
+        raise ValueError(f"장소 id가 입력과 일치하지 않습니다 (누락: {missing}, 초과: {extra})")
     return assignments
 
 
@@ -65,17 +65,18 @@ def generate_itinerary(places: list[dict], model: str = DEFAULT_MODEL) -> list[d
         {"text": f"장소 목록: {json.dumps(places, ensure_ascii=False)}"},
         {"text": ITINERARY_PROMPT},
     ]
-    payload = call_gemini(parts, model, api_key, "generate_itinerary")
-    text = _extract_text(payload)
-    try:
-        assignments = json.loads(text)
-    except json.JSONDecodeError:
-        raise SystemExit(f"Gemini did not return valid JSON: {text[:500]}")
-    if not isinstance(assignments, list):
-        raise SystemExit(f"Gemini 응답이 배열이 아닙니다: {text[:500]}")
-
     expected_ids = {p["id"] for p in places}
-    return _validate_assignments(assignments, expected_ids)
+
+    def _parse(text: str) -> list[dict]:
+        try:
+            assignments = json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError(f"유효한 JSON이 아님: {text[:500]}")
+        if not isinstance(assignments, list):
+            raise ValueError(f"응답이 배열이 아님: {text[:500]}")
+        return _validate_assignments(assignments, expected_ids)
+
+    return call_gemini_with_repair(parts, model, api_key, "generate_itinerary", _parse)
 
 
 if __name__ == "__main__":

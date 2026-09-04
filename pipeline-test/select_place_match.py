@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 
-from extract_places import DEFAULT_MODEL, call_gemini, load_api_key, _extract_text
+from extract_places import DEFAULT_MODEL, call_gemini_with_repair, load_api_key
 
 SELECT_PROMPT = """당신은 여행 영상에서 인식된 장소 이름에 대해, 카카오 지도 검색이 반환한 여러
 후보 중 실제로 그 영상에서 언급된 곳이 어느 것인지 고르는 도구입니다.
@@ -39,28 +39,28 @@ JSON 배열만 출력하세요. JSON 배열 외의 다른 텍스트는 출력하
 
 def _validate_selections(selections: list, expected_indices: set[int]) -> list[dict]:
     if len(selections) != len(expected_indices):
-        raise SystemExit(
+        raise ValueError(
             f"선택 결과 개수가 입력과 다릅니다 (입력 {len(expected_indices)}건, 응답 {len(selections)}건)"
         )
 
     result_indices: set[int] = set()
     for item in selections:
         if not isinstance(item, dict):
-            raise SystemExit(f"배열 항목이 객체가 아닙니다: {item!r}")
+            raise ValueError(f"배열 항목이 객체가 아닙니다: {item!r}")
         idx = item.get("index")
         if not isinstance(idx, int) or isinstance(idx, bool):
-            raise SystemExit(f"index가 정수가 아닙니다: {item!r}")
+            raise ValueError(f"index가 정수가 아닙니다: {item!r}")
         if "selectedCandidateIndex" not in item:
-            raise SystemExit(f"selectedCandidateIndex가 없습니다: {item!r}")
+            raise ValueError(f"selectedCandidateIndex가 없습니다: {item!r}")
         selected = item.get("selectedCandidateIndex")
         if selected is not None and (not isinstance(selected, int) or isinstance(selected, bool)):
-            raise SystemExit(f"selectedCandidateIndex가 정수도 null도 아닙니다: {item!r}")
+            raise ValueError(f"selectedCandidateIndex가 정수도 null도 아닙니다: {item!r}")
         result_indices.add(idx)
 
     if result_indices != expected_indices:
         missing = expected_indices - result_indices
         extra = result_indices - expected_indices
-        raise SystemExit(f"선택 결과 index가 입력과 일치하지 않습니다 (누락: {missing}, 초과: {extra})")
+        raise ValueError(f"선택 결과 index가 입력과 일치하지 않습니다 (누락: {missing}, 초과: {extra})")
 
     return selections
 
@@ -73,17 +73,18 @@ def select_place_match(candidates: list[dict], model: str = DEFAULT_MODEL) -> li
         {"text": f"선택 대상 목록: {json.dumps(candidates, ensure_ascii=False)}"},
         {"text": SELECT_PROMPT},
     ]
-    payload = call_gemini(parts, model, api_key, "select_place_match")
-    text = _extract_text(payload)
-    try:
-        selections = json.loads(text)
-    except json.JSONDecodeError:
-        raise SystemExit(f"Gemini did not return valid JSON: {text[:500]}")
-    if not isinstance(selections, list):
-        raise SystemExit(f"Gemini 응답이 배열이 아닙니다: {text[:500]}")
-
     expected_indices = {c["index"] for c in candidates}
-    return _validate_selections(selections, expected_indices)
+
+    def _parse(text: str) -> list[dict]:
+        try:
+            selections = json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError(f"유효한 JSON이 아님: {text[:500]}")
+        if not isinstance(selections, list):
+            raise ValueError(f"응답이 배열이 아님: {text[:500]}")
+        return _validate_selections(selections, expected_indices)
+
+    return call_gemini_with_repair(parts, model, api_key, "select_place_match", _parse)
 
 
 if __name__ == "__main__":

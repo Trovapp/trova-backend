@@ -237,6 +237,31 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
     raise SystemExit(f"Gemini API 요청이 {MAX_ATTEMPTS}번 시도 후 실패: {last_detail[:500]}")
 
 
+def call_gemini_with_repair(parts: list[dict], model: str, api_key: str, operation: str, parse_and_validate):
+    """Gemini 응답을 parse_and_validate(text)로 검증하고, 실패하면(ValueError) 같은 대화에
+    "방금 응답이 왜 잘못됐는지"를 덧붙여 딱 한 번만 재질의(self-repair)한다. 재시도도
+    실패하면 SystemExit으로 작업 전체를 실패시킨다(기존 동작과 동일 — 무한 재시도 아님).
+
+    parse_and_validate: text(str) -> 파싱된 값. 형식이 잘못됐으면 ValueError를 던져야 한다.
+    """
+    payload = call_gemini(parts, model, api_key, operation)
+    text = _extract_text(payload)
+    try:
+        return parse_and_validate(text)
+    except ValueError as first_error:
+        repair_parts = list(parts) + [
+            {"text": f"방금 당신의 응답: {text}"},
+            {"text": f"이 응답이 유효하지 않습니다({first_error}). 같은 형식 요구사항을 지켜서 "
+                     "다시 출력하세요. JSON 외 다른 텍스트는 출력하지 마세요."},
+        ]
+        payload2 = call_gemini(repair_parts, model, api_key, f"{operation}.repair")
+        text2 = _extract_text(payload2)
+        try:
+            return parse_and_validate(text2)
+        except ValueError as second_error:
+            raise SystemExit(f"self-repair 재질의 이후에도 실패: {second_error}")
+
+
 def collect_candidates(
     transcript: str | None,
     audio_path: Path | None,
@@ -245,16 +270,17 @@ def collect_candidates(
     api_key: str,
 ) -> list[str]:
     """1단계: 필터링 없이 장소일 가능성이 있는 고유명사를 최대한 후하게 나열한다."""
+    def _parse(text: str) -> list[str]:
+        try:
+            candidates = json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError(f"유효한 JSON이 아님: {text[:500]}")
+        if not isinstance(candidates, list):
+            raise ValueError(f"응답이 배열이 아님: {text[:500]}")
+        return candidates
+
     parts = build_parts(transcript, audio_path, frame_paths, prompt=COLLECT_PROMPT)
-    payload = call_gemini(parts, model, api_key, "extract_places.collect")
-    text = _extract_text(payload)
-    try:
-        candidates = json.loads(text)
-    except json.JSONDecodeError:
-        raise SystemExit(f"Gemini did not return valid JSON (1단계): {text[:500]}")
-    if not isinstance(candidates, list):
-        raise SystemExit(f"Gemini 1단계 응답이 배열이 아닙니다: {text[:500]}")
-    return candidates
+    return call_gemini_with_repair(parts, model, api_key, "extract_places.collect", _parse)
 
 
 def extract_places(
@@ -269,13 +295,17 @@ def extract_places(
 
     candidates = collect_candidates(transcript, audio_path, frame_paths, model, api_key)
 
+    def _parse(text: str) -> list[dict]:
+        try:
+            places = json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError(f"유효한 JSON이 아님: {text[:500]}")
+        if not isinstance(places, list):
+            raise ValueError(f"응답이 배열이 아님: {text[:500]}")
+        return places
+
     parts = build_parts(transcript, audio_path, frame_paths, prompt=FILTER_PROMPT, candidates=candidates)
-    payload = call_gemini(parts, model, api_key, "extract_places.filter")
-    text = _extract_text(payload)
-    try:
-        places = json.loads(text)
-    except json.JSONDecodeError:
-        raise SystemExit(f"Gemini did not return valid JSON (2단계): {text[:500]}")
+    places = call_gemini_with_repair(parts, model, api_key, "extract_places.filter", _parse)
     return _normalize_name_candidates(_normalize_day_fields(places))
 
 
