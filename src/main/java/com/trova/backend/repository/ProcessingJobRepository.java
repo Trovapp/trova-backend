@@ -10,5 +10,6 @@ import java.util.List;
 public interface ProcessingJobRepository extends JpaRepository<ProcessingJob, Long> {
     List<ProcessingJob> findByUserOrderByCreatedAtDescIdDesc(User user);
     List<ProcessingJob> findByUserAndStatusIn(User user, List<JobStatus> statuses);
+    List<ProcessingJob> findByUserAndSourceUrlAndStatusIn(User user, String sourceUrl, List<JobStatus> statuses);
     void deleteByUser(User user);
 }

@@ -1,5 +1,7 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.UserRepository;
@@ -74,6 +76,29 @@ class SharesControllerTest {
         org.assertj.core.api.Assertions.assertThat(processingJobRepository.findAll()).hasSize(1);
         verify(placeExtractionService).process(
                 processingJobRepository.findAll().get(0).getId());
+    }
+
+    @Test
+    void 같은_URL이_이미_처리중이면_새_job을_만들지_않고_기존_job을_반환한다() throws Exception {
+        User user = userRepository.save(new User("google", "1234567890", "테스트유저", null));
+        ProcessingJob existing = processingJobRepository.save(
+                new ProcessingJob(user, "https://www.youtube.com/shorts/dup", SourcePlatform.YOUTUBE));
+
+        mockMvc.perform(post("/api/shares")
+                        .with(oauth2Login()
+                                .clientRegistration(googleRegistration())
+                                .attributes(attrs -> {
+                                    attrs.put("sub", "1234567890");
+                                    attrs.put("name", "테스트유저");
+                                    attrs.put("picture", "https://example.com/p.jpg");
+                                }))
+                        .contentType("application/json")
+                        .content("{\"url\":\"https://www.youtube.com/shorts/dup\"}"))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.jobId").value(existing.getId()));
+
+        org.assertj.core.api.Assertions.assertThat(processingJobRepository.findAll()).hasSize(1);
+        verify(placeExtractionService, org.mockito.Mockito.never()).process(anyLong());
     }
 
     @ParameterizedTest

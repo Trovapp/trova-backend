@@ -1,5 +1,6 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -63,6 +65,19 @@ public class SharesController {
         }
 
         User user = currentUserService.resolve(authentication);
+
+        // 같은 URL이 이미 처리 대기/진행 중이면 새 job을 또 만들지 않는다 — 중복 제출로
+        // Gemini/카카오 호출이 두 번 나가는 걸 막기 위함. Trova는 단일 인스턴스라 분산 락
+        // 없이 이 조회-후-생성만으로 충분하지만, 두 요청이 정말 동시에 도착하는 극히 드문
+        // 경우까지 완벽히 막지는 못한다(체크와 저장 사이 짧은 틈은 남아있음).
+        List<ProcessingJob> inFlight = processingJobRepository.findByUserAndSourceUrlAndStatusIn(
+                user, url, List.of(JobStatus.PENDING, JobStatus.PROCESSING));
+        if (!inFlight.isEmpty()) {
+            ProcessingJob existing = inFlight.get(0);
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(new ShareResponse(existing.getId(), existing.getStatus().name()));
+        }
+
         ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, url, platform));
         placeExtractionService.process(job.getId());
 
