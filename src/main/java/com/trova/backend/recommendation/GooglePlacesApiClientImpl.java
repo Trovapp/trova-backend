@@ -12,6 +12,7 @@ import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @Component
 public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
@@ -25,11 +26,13 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
     private static final int MAX_RESULT_COUNT = 20;
 
     // 비용을 낮은 티어(Basic + Pro Data)로만 유지하려고 최소 필드만 요청한다.
-    // editorialSummary 등 Enterprise 티어 필드는 의도적으로 뺐다(0-1: Plan B는 넣었지만
-    // 비용이 더 비싼 티어라 Trova에서는 뺌).
-    private static final String FIELD_MASK = String.join(",",
+    // editorialSummary 등 Enterprise 티어 필드는 의도적으로 뺐다.
+    private static final String SEARCH_FIELD_MASK = String.join(",",
             "places.id", "places.displayName", "places.types", "places.rating",
             "places.userRatingCount", "places.priceLevel", "places.location", "places.formattedAddress");
+
+    // reviews는 Enterprise + Atmosphere 티어라 유료 — getDetails()에서만 요청한다.
+    private static final String DETAILS_FIELD_MASK = "id,reviews";
 
     private final RestClient restClient;
 
@@ -41,18 +44,31 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
         this.restClient = RestClient.builder()
                 .baseUrl("https://places.googleapis.com")
                 .defaultHeader("X-Goog-Api-Key", apiKey)
-                .defaultHeader("X-Goog-FieldMask", FIELD_MASK)
                 .requestFactory(requestFactory)
                 .build();
     }
 
     @Override
     public GooglePlacesNearbySearchResponse searchNearby(double latitude, double longitude, double radiusMeters) {
+        return withRetry(() -> doSearchNearby(latitude, longitude, radiusMeters));
+    }
+
+    @Override
+    public GooglePlacesNearbySearchResponse searchText(String query) {
+        return withRetry(() -> doSearchText(query));
+    }
+
+    @Override
+    public GooglePlacesDetailsResponse getDetails(String googlePlaceId) {
+        return withRetry(() -> doGetDetails(googlePlaceId));
+    }
+
+    private <T> T withRetry(Supplier<T> call) {
         RuntimeException lastFailure = null;
 
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
             try {
-                return doSearchNearby(latitude, longitude, radiusMeters);
+                return call.get();
             } catch (HttpClientErrorException.TooManyRequests
                      | HttpServerErrorException
                      | ResourceAccessException e) {
@@ -83,9 +99,32 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
 
         return restClient.post()
                 .uri("/v1/places:searchNearby")
+                .header("X-Goog-FieldMask", SEARCH_FIELD_MASK)
                 .body(body)
                 .retrieve()
                 .body(GooglePlacesNearbySearchResponse.class);
+    }
+
+    private GooglePlacesNearbySearchResponse doSearchText(String query) {
+        Map<String, Object> body = Map.of(
+                "textQuery", query,
+                "maxResultCount", MAX_RESULT_COUNT
+        );
+
+        return restClient.post()
+                .uri("/v1/places:searchText")
+                .header("X-Goog-FieldMask", SEARCH_FIELD_MASK)
+                .body(body)
+                .retrieve()
+                .body(GooglePlacesNearbySearchResponse.class);
+    }
+
+    private GooglePlacesDetailsResponse doGetDetails(String googlePlaceId) {
+        return restClient.get()
+                .uri("/v1/places/{id}", googlePlaceId)
+                .header("X-Goog-FieldMask", DETAILS_FIELD_MASK)
+                .retrieve()
+                .body(GooglePlacesDetailsResponse.class);
     }
 
     private void sleep(long millis) {
