@@ -1,8 +1,11 @@
 package com.trova.backend.controller;
 
 import com.trova.backend.entity.Place;
+import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.RecommendationService;
+import com.trova.backend.service.CurrentUserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,13 +35,17 @@ public class RecommendationController {
     }
 
     private final RecommendationService recommendationService;
+    private final CurrentUserService currentUserService;
 
-    public RecommendationController(RecommendationService recommendationService) {
+    public RecommendationController(RecommendationService recommendationService, CurrentUserService currentUserService) {
         this.recommendationService = recommendationService;
+        this.currentUserService = currentUserService;
     }
 
     @PostMapping("/api/recommendations")
-    public ResponseEntity<?> recommend(@RequestBody RecommendRequest request) {
+    public ResponseEntity<?> recommend(
+            OAuth2AuthenticationToken authentication, @RequestBody RecommendRequest request
+    ) {
         if (request == null || request.latitude() == null || request.longitude() == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -47,7 +54,8 @@ public class RecommendationController {
             return ResponseEntity.badRequest().build();
         }
 
-        List<Place> places = recommendationService.recommend(request.latitude(), request.longitude(), radius);
+        User user = currentUserService.resolve(authentication);
+        List<Place> places = recommendationService.recommend(user, request.latitude(), request.longitude(), radius);
         return ResponseEntity.ok(places.stream().map(PlaceRecommendationResponse::from).toList());
     }
 }

@@ -1,9 +1,12 @@
 package com.trova.backend.recommendation;
 
 import com.trova.backend.entity.Place;
+import com.trova.backend.entity.User;
+import com.trova.backend.entity.UserPreference;
 import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
 import com.trova.backend.repository.PlaceRepository;
+import com.trova.backend.repository.UserPreferenceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,22 +30,27 @@ public class RecommendationService {
     private static final int MIN_REVIEW_COUNT = 1;
     private static final int FUNNEL_TOP_N = 7;
     private static final int FINAL_TOP_N = 5;
+    // 북마크 선호점수를 최종 랭킹에 얼마나 반영할지 — 감으로 정함, 실측 아님(0-5 원칙).
+    private static final double PREFERENCE_BOOST_WEIGHT = 0.5;
 
     private final GooglePlacesApiClient googlePlacesApiClient;
     private final PlaceRepository placeRepository;
     private final PlaceTaggingRunner placeTaggingRunner;
+    private final UserPreferenceRepository userPreferenceRepository;
 
     public RecommendationService(
             GooglePlacesApiClient googlePlacesApiClient,
             PlaceRepository placeRepository,
-            PlaceTaggingRunner placeTaggingRunner
+            PlaceTaggingRunner placeTaggingRunner,
+            UserPreferenceRepository userPreferenceRepository
     ) {
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeRepository = placeRepository;
         this.placeTaggingRunner = placeTaggingRunner;
+        this.userPreferenceRepository = userPreferenceRepository;
     }
 
-    public List<Place> recommend(double latitude, double longitude, double radiusMeters) {
+    public List<Place> recommend(User user, double latitude, double longitude, double radiusMeters) {
         List<GooglePlacesNearbySearchResponse.Place> rawCandidates =
                 googlePlacesApiClient.searchNearby(latitude, longitude, radiusMeters).places();
         if (rawCandidates == null || rawCandidates.isEmpty()) {
@@ -59,10 +67,20 @@ public class RecommendationService {
 
         tagMissing(funnel);
 
+        // 태깅이 끝난 뒤에야 mood를 알 수 있어서, 선호도 반영 랭킹은 여기서만 가능하다.
+        Map<String, Double> preferenceByMood = userPreferenceRepository.findByUser(user).stream()
+                .collect(Collectors.toMap(UserPreference::getMood, UserPreference::getScore));
+
         return funnel.stream()
-                .sorted(Comparator.comparingDouble(this::score).reversed())
+                .sorted(Comparator.comparingDouble((Place p) -> scoreWithPreference(p, preferenceByMood)).reversed())
                 .limit(FINAL_TOP_N)
                 .toList();
+    }
+
+    private double scoreWithPreference(Place place, Map<String, Double> preferenceByMood) {
+        double base = score(place);
+        double preference = place.getMood() != null ? preferenceByMood.getOrDefault(place.getMood(), 0.0) : 0.0;
+        return base + preference * PREFERENCE_BOOST_WEIGHT;
     }
 
     private List<Place> upsert(List<GooglePlacesNearbySearchResponse.Place> rawCandidates) {
