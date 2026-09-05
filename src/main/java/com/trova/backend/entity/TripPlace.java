@@ -3,6 +3,7 @@ package com.trova.backend.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "trip_places")
@@ -45,6 +46,22 @@ public class TripPlace {
     // 날씨 자동복구용 실내/실외 태그. Gemini가 필요할 때만 태깅한다(null이면 아직 안 함).
     private String space;
 
+    @Column(name = "google_place_id")
+    private String googlePlaceId;
+
+    @Column(name = "visit_start_time")
+    private LocalTime visitStartTime;
+
+    @Column(name = "visit_end_time")
+    private LocalTime visitEndTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "arrival_transport_mode")
+    private TransportMode arrivalTransportMode;
+
+    @Column(columnDefinition = "TEXT")
+    private String memo;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -84,6 +101,11 @@ public class TripPlace {
     public Long getSavedPlaceId() { return savedPlaceId; }
     public String getSpace() { return space; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public String getGooglePlaceId() { return googlePlaceId; }
+    public LocalTime getVisitStartTime() { return visitStartTime; }
+    public LocalTime getVisitEndTime() { return visitEndTime; }
+    public TransportMode getArrivalTransportMode() { return arrivalTransportMode; }
+    public String getMemo() { return memo; }
 
     public void applySpace(String space) {
         this.space = space;
@@ -91,5 +113,18 @@ public class TripPlace {
 
     public void applyVisitOrder(int visitOrder) {
         this.visitOrder = visitOrder;
+    }
+
+    public void applyGooglePlaceId(String googlePlaceId) {
+        this.googlePlaceId = googlePlaceId;
+    }
+
+    public void applyDetails(
+            LocalTime visitStartTime, LocalTime visitEndTime, TransportMode arrivalTransportMode, String memo
+    ) {
+        if (visitStartTime != null) this.visitStartTime = visitStartTime;
+        if (visitEndTime != null) this.visitEndTime = visitEndTime;
+        if (arrivalTransportMode != null) this.arrivalTransportMode = arrivalTransportMode;
+        if (memo != null) this.memo = memo;
     }
 }

@@ -50,6 +50,12 @@ public class Place {
     @Column(name = "last_synced_at", nullable = false)
     private LocalDateTime lastSyncedAt;
 
+    @Column(name = "review_summary", columnDefinition = "TEXT")
+    private String reviewSummary;
+
+    @Column(name = "review_summary_generated_at")
+    private LocalDateTime reviewSummaryGeneratedAt;
+
     protected Place() {
     }
 
@@ -74,6 +80,11 @@ public class Place {
         this.space = space;
     }
 
+    public void applyReviewSummary(String reviewSummary) {
+        this.reviewSummary = reviewSummary;
+        this.reviewSummaryGeneratedAt = LocalDateTime.now();
+    }
+
     public Long getId() { return id; }
     public String getGooglePlaceId() { return googlePlaceId; }
     public String getName() { return name; }
@@ -87,4 +98,6 @@ public class Place {
     public Double getLongitude() { return longitude; }
     public String getAddress() { return address; }
     public LocalDateTime getLastSyncedAt() { return lastSyncedAt; }
+    public String getReviewSummary() { return reviewSummary; }
+    public LocalDateTime getReviewSummaryGeneratedAt() { return reviewSummaryGeneratedAt; }
 }
