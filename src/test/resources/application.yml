@@ -40,6 +40,7 @@ app:
     verify-script-path: pipeline-test/verify_places.py
     select-script-path: pipeline-test/select_place_match.py
     tag-places-script-path: pipeline-test/tag_places.py
+    summarize-reviews-script-path: pipeline-test/summarize_reviews.py
     work-dir: build/tmp/pipeline-test-work
     gemini-api-key: test-key
   kakao:
