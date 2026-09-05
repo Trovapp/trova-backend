@@ -2,6 +2,7 @@ package com.trova.backend.recommendation;
 
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.User;
+import com.trova.backend.entity.UserPreference;
 import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
 import com.trova.backend.repository.PlaceRepository;
@@ -26,6 +27,9 @@ class RecommendationServiceTest {
 
     @Mock
     private GooglePlacesApiClient googlePlacesApiClient;
+
+    @Mock
+    private PlaceCatalogService placeCatalogService;
 
     @Mock
     private PlaceRepository placeRepository;
@@ -56,8 +60,10 @@ class RecommendationServiceTest {
         var noReviews = rawPlace("g2", "무명카페", "cafe", null, 0);
         when(googlePlacesApiClient.searchNearby(37.5, 127.0, 1000))
                 .thenReturn(new GooglePlacesNearbySearchResponse(List.of(withReviews, noReviews)));
-        when(placeRepository.findByGooglePlaceIdIn(any())).thenReturn(List.of());
-        when(placeRepository.save(any(Place.class))).thenAnswer(inv -> inv.getArgument(0));
+        Place placeWithReviews = new Place("g1", "카페A", "cafe", 4.5, 100, "PRICE_LEVEL_MODERATE", 37.5, 127.0, "서울 어딘가");
+        Place placeNoReviews = new Place("g2", "무명카페", "cafe", null, 0, "PRICE_LEVEL_MODERATE", 37.5, 127.0, "서울 어딘가");
+        when(placeCatalogService.upsertAll(List.of(withReviews, noReviews)))
+                .thenReturn(List.of(placeWithReviews, placeNoReviews));
         when(placeTaggingRunner.run(any(), anyLong()))
                 .thenReturn(List.of(new PlaceTag(0, "TRENDY", "INDOOR")));
         when(userPreferenceRepository.findByUser(user)).thenReturn(List.of());
@@ -72,6 +78,7 @@ class RecommendationServiceTest {
         ArgumentCaptor<List<PlaceTaggingRunner.TagCandidate>> captor = ArgumentCaptor.forClass(List.class);
         verify(placeTaggingRunner).run(captor.capture(), anyLong());
         assertThat(captor.getValue()).hasSize(1);
+        verify(placeRepository).save(placeWithReviews);
     }
 
     @Test
@@ -82,7 +89,7 @@ class RecommendationServiceTest {
 
         Place alreadyTagged = new Place("g1", "카페A", "cafe", 4.5, 100, "PRICE_LEVEL_MODERATE", 37.5, 127.0, "주소");
         alreadyTagged.applyTags("CALM", "INDOOR");
-        when(placeRepository.findByGooglePlaceIdIn(any())).thenReturn(List.of(alreadyTagged));
+        when(placeCatalogService.upsertAll(List.of(raw))).thenReturn(List.of(alreadyTagged));
         when(userPreferenceRepository.findByUser(user)).thenReturn(List.of());
 
         List<Place> result = recommendationService.recommend(user, 37.5, 127.0, 1000);
@@ -101,19 +108,20 @@ class RecommendationServiceTest {
         List<Place> result = recommendationService.recommend(user, 37.5, 127.0, 1000);
 
         assertThat(result).isEmpty();
-        verify(placeRepository, never()).findByGooglePlaceIdIn(any());
+        verify(placeCatalogService, never()).upsertAll(any());
         verify(placeTaggingRunner, never()).run(any(), anyLong());
     }
 
     @Test
     void 선호_mood와_일치하면_점수가_낮아도_더_위로_올라간다() {
-        // A: 평점 높음, mood 태그 없음(선호 매칭 안 됨) / B: 평점 낮음, 선호 mood와 일치
         var high = rawPlace("gA", "높은평점", "cafe", 5.0, 1000);
         var low = rawPlace("gB", "선호매칭", "cafe", 3.0, 10);
         when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble()))
                 .thenReturn(new GooglePlacesNearbySearchResponse(List.of(high, low)));
-        when(placeRepository.findByGooglePlaceIdIn(any())).thenReturn(List.of());
-        when(placeRepository.save(any(Place.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Place placeHigh = new Place("gA", "높은평점", "cafe", 5.0, 1000, "PRICE_LEVEL_MODERATE", 37.5, 127.0, "주소");
+        Place placeLow = new Place("gB", "선호매칭", "cafe", 3.0, 10, "PRICE_LEVEL_MODERATE", 37.5, 127.0, "주소");
+        when(placeCatalogService.upsertAll(List.of(high, low))).thenReturn(List.of(placeHigh, placeLow));
         when(placeTaggingRunner.run(any(), anyLong())).thenAnswer(inv -> {
             List<PlaceTaggingRunner.TagCandidate> candidates = inv.getArgument(0);
             return candidates.stream()
@@ -121,7 +129,7 @@ class RecommendationServiceTest {
                     .toList();
         });
         when(userPreferenceRepository.findByUser(user))
-                .thenReturn(List.of(new com.trova.backend.entity.UserPreference(user, "CALM", 100.0)));
+                .thenReturn(List.of(new UserPreference(user, "CALM", 100.0)));
 
         List<Place> result = recommendationService.recommend(user, 37.5, 127.0, 1000);
 
