@@ -215,3 +215,11 @@ Gemini 연동(`extract_places.py`, `verify_places.py`,
 
 CLAUDE.md 규칙대로 `./gradlew build` 실행 (백엔드), 프론트엔드는
 `npx next build` + `npx tsc --noEmit`.
+
+## 승인 후 변경사항
+
+구현 도중 사용자가 실제로 요청해서 추가된 것 — 원래 스펙 범위에는 없었다.
+`Place`에 `reviewSnippets`(리뷰 원문, 최대 3개)를 추가해 AI 요약과 함께
+캐시한다. 저장 시점과 캐시 정책(영구 캐시, Details API 실패 시 미캐시)은
+기존 `reviewSummary`와 동일하게 맞췄다. 최종 리뷰에서 이 스펙 문서가
+갱신되지 않은 점이 지적되어 여기 기록한다.
