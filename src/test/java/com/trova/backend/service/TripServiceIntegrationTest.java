@@ -182,6 +182,21 @@ class TripServiceIntegrationTest {
     }
 
     @Test
+    void addPlaceToDay는_다른_사용자_소유_여행은_거부한다() {
+        User owner = newUser();
+        Trip trip = tripService.createTrip(owner, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-ownership", "돈사돈", null, null, null, null, 33.4, 126.5, null));
+        User stranger = userRepository.save(new User("google", "trip-service-integration-stranger-2", "다른유저", null));
+
+        try {
+            Optional<TripPlace> result = tripService.addPlaceToDay(stranger, trip.getId(), 1, "trip-place-test-ownership");
+            assertThat(result).isEmpty();
+        } finally {
+            userRepository.delete(stranger);
+        }
+    }
+
+    @Test
     void removePlace는_소유자_확인_후_삭제한다() {
         User user = newUser();
         Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
