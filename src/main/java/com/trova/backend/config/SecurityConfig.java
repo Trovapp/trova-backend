@@ -2,6 +2,7 @@ package com.trova.backend.config;
 
 import com.trova.backend.security.CustomOAuth2UserService;
 import com.trova.backend.security.JwtAuthenticationFilter;
+import com.trova.backend.security.MobileLoginFlagFilter;
 import com.trova.backend.security.OAuth2LoginFailureHandler;
 import com.trova.backend.security.OAuth2LoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -28,6 +30,7 @@ public class SecurityConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final MobileLoginFlagFilter mobileLoginFlagFilter;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -35,11 +38,13 @@ public class SecurityConfig {
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
                            OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
                            OAuth2LoginFailureHandler oAuth2LoginFailureHandler,
-                           JwtAuthenticationFilter jwtAuthenticationFilter) {
+                           JwtAuthenticationFilter jwtAuthenticationFilter,
+                           MobileLoginFlagFilter mobileLoginFlagFilter) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
         this.oAuth2LoginFailureHandler = oAuth2LoginFailureHandler;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.mobileLoginFlagFilter = mobileLoginFlagFilter;
     }
 
     @Bean
@@ -86,7 +91,8 @@ public class SecurityConfig {
                                 PathPatternRequestMatcher.pathPattern("/api/**")
                         )
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(mobileLoginFlagFilter, OAuth2AuthorizationRequestRedirectFilter.class);
 
         return http.build();
     }
