@@ -1,5 +1,7 @@
 package com.trova.backend.recommendation;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trova.backend.entity.Place;
 import com.trova.backend.pipeline.ReviewSummary;
 import com.trova.backend.pipeline.ReviewSummaryRunner;
@@ -13,23 +15,34 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 장소 리뷰요약+원문 스니펫(최대 3개)을 캐시-우선으로 제공한다. Place Details API는
- * 유료 티어라, 캐시가 있으면 절대 다시 부르지 않는다(영구 캐시 — 갱신 정책 없음).
+ * 장소 리뷰요약(구조화: highlights/pros/cons/hours/fee/tips/checklist)+원문 스니펫
+ * (최대 3개)을 캐시-우선으로 제공한다. Place Details API는 유료 티어라, 캐시가 있으면
+ * 절대 다시 부르지 않는다(영구 캐시 — 갱신 정책 없음).
+ *
+ * Place.reviewSummary(TEXT 컬럼)에는 이제 구조화된 ReviewSummary를 JSON 문자열로
+ * 직렬화해서 저장한다 — 기존 스키마를 그대로 재사용하되(마이그레이션 불필요), 예전
+ * 포맷(평문 문장)으로 저장된 캐시는 역직렬화가 실패하면 캐시 미스로 취급해서 새
+ * 포맷으로 다시 생성한다(개발 단계라 소수의 기존 캐시만 영향받음).
  */
 @Service
 public class PlaceReviewService {
 
     private static final Logger log = LoggerFactory.getLogger(PlaceReviewService.class);
-    private static final String NO_REVIEWS_MESSAGE = "리뷰 정보 없음";
-    private static final String FETCH_FAILED_MESSAGE = "리뷰를 불러오지 못했어요";
+    private static final ObjectMapper MAPPER = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private static final int MAX_SNIPPETS = 3;
+
+    private static final ReviewSummary NO_REVIEWS_SUMMARY = new ReviewSummary(
+            "리뷰 정보가 없어요.", List.of(), List.of(), null, null, List.of(), List.of());
+    private static final ReviewSummary FETCH_FAILED_SUMMARY = new ReviewSummary(
+            "리뷰를 불러오지 못했어요.", List.of(), List.of(), null, null, List.of(), List.of());
 
     private final PlaceRepository placeRepository;
     private final GooglePlacesApiClient googlePlacesApiClient;
     private final ReviewSummaryRunner reviewSummaryRunner;
     private final ApiCallLogService apiCallLogService;
 
-    public record PlaceReviewInfo(String summary, List<String> snippets) {
+    public record PlaceReviewInfo(ReviewSummary summary, List<String> snippets) {
     }
 
     private record PlaceState(Place place, PlaceReviewInfo cachedInfo) {
@@ -49,25 +62,18 @@ public class PlaceReviewService {
 
     /**
      * @ElementCollection(reviewSnippets)은 LAZY라, 트랜잭션 밖(open-in-view: false)에서
-     * 읽으면 LazyInitializationException이 난다. 처음엔 이 메서드에 자체
-     * @Transactional(readOnly=true)을 붙여 짧은 읽기 전용 트랜잭션을 열려 했지만,
-     * getOrGenerateSummary가 같은 빈 안에서 this.loadPlaceState(...)로 호출하는
-     * self-invocation이라 Spring 프록시(AOP)를 거치지 않아 트랜잭션이 전혀 시작되지
-     * 않는다는 게 PlaceReviewServiceIntegrationTest로 실제 검증됐다(수정 전 코드로
-     * 돌려서 LazyInitializationException 재현 확인). 그래서 실제 방어는 여기가 아니라
+     * 읽으면 LazyInitializationException이 난다. 실제 방어는 이 메서드가 아니라
      * PlaceRepository.findById()에 붙인 @EntityGraph(attributePaths = "reviewSnippets")
      * 쪽에서 한다 — findById 쿼리 시점에 reviewSnippets까지 JOIN FETCH로 즉시
-     * 초기화되므로, 이후 트랜잭션이 끝나고 엔티티가 detach돼도 이미 메모리에 로드된
-     * 컬렉션이라 안전하게 읽힌다(self-invocation 문제 자체가 발생하지 않는 방식).
-     * 이 메서드는 그 결과를 List.copyOf(...)로 한 번 더 방어적으로 복사해서 반환할
-     * 뿐이다. Google Places/Gemini 같은 외부 호출은 이 메서드에도, getOrGenerateSummary
-     * 어디에도 트랜잭션으로 감싸지 않는다(paid API 호출 + 2분 타임아웃 서브프로세스를
-     * 트랜잭션으로 감싸면 더 위험하다).
+     * 초기화되므로, 이후 트랜잭션이 끝나고 엔티티가 detach돼도 안전하게 읽힌다.
      */
     private Optional<PlaceState> loadPlaceState(Long placeId) {
         return placeRepository.findById(placeId).map(place -> {
-            PlaceReviewInfo cached = place.getReviewSummary() != null
-                    ? new PlaceReviewInfo(place.getReviewSummary(), List.copyOf(place.getReviewSnippets()))
+            ReviewSummary cachedSummary = place.getReviewSummary() != null
+                    ? deserializeSummary(place.getReviewSummary())
+                    : null;
+            PlaceReviewInfo cached = cachedSummary != null
+                    ? new PlaceReviewInfo(cachedSummary, List.copyOf(place.getReviewSnippets()))
                     : null;
             return new PlaceState(place, cached);
         });
@@ -95,17 +101,15 @@ public class PlaceReviewService {
                     "google-places", "place-details", null, System.currentTimeMillis() - start,
                     false, e.getMessage(), null, null, null);
             log.warn("Place Details 조회 실패(placeId={}) — 리뷰요약 없이 반환합니다", placeId, e);
-            return Optional.of(new PlaceReviewInfo(FETCH_FAILED_MESSAGE, List.of()));
+            return Optional.of(new PlaceReviewInfo(FETCH_FAILED_SUMMARY, List.of()));
         }
 
         List<String> reviewTexts = extractReviewTexts(details);
         if (reviewTexts.isEmpty()) {
             // 리뷰가 없다는 사실 자체도 캐시한다 — 안 그러면 이 장소의 상세보기를
             // 누를 때마다(다른 사용자여도) 매번 유료 Details API를 다시 부르게 된다.
-            place.applyReviewSummary(NO_REVIEWS_MESSAGE);
-            place.applyReviewSnippets(List.of());
-            placeRepository.save(place);
-            return Optional.of(new PlaceReviewInfo(NO_REVIEWS_MESSAGE, List.of()));
+            cache(place, NO_REVIEWS_SUMMARY, List.of());
+            return Optional.of(new PlaceReviewInfo(NO_REVIEWS_SUMMARY, List.of()));
         }
 
         List<String> snippets = reviewTexts.stream().limit(MAX_SNIPPETS).toList();
@@ -120,13 +124,34 @@ public class PlaceReviewService {
             // Details 호출은 이미 유료로 나갔지만, 여기서 실패하면 아무것도 캐시하지
             // 않아 다음 요청에서 처음부터 다시 시도할 수 있게 한다.
             log.warn("리뷰 요약 생성 실패(placeId={}) — 캐시하지 않고 반환합니다", placeId, e);
-            return Optional.of(new PlaceReviewInfo(FETCH_FAILED_MESSAGE, List.of()));
+            return Optional.of(new PlaceReviewInfo(FETCH_FAILED_SUMMARY, List.of()));
         }
 
-        place.applyReviewSummary(summary.summary());
+        cache(place, summary, snippets);
+        return Optional.of(new PlaceReviewInfo(summary, snippets));
+    }
+
+    private void cache(Place place, ReviewSummary summary, List<String> snippets) {
+        place.applyReviewSummary(serializeSummary(summary));
         place.applyReviewSnippets(snippets);
         placeRepository.save(place);
-        return Optional.of(new PlaceReviewInfo(summary.summary(), snippets));
+    }
+
+    private String serializeSummary(ReviewSummary summary) {
+        try {
+            return MAPPER.writeValueAsString(summary);
+        } catch (Exception e) {
+            throw new IllegalStateException("리뷰 요약 직렬화 실패", e);
+        }
+    }
+
+    private ReviewSummary deserializeSummary(String json) {
+        try {
+            return MAPPER.readValue(json, ReviewSummary.class);
+        } catch (Exception e) {
+            log.warn("캐시된 리뷰요약 파싱 실패(예전 포맷으로 추정) — 새로 생성합니다: {}", e.getMessage());
+            return null;
+        }
     }
 
     private List<String> extractReviewTexts(GooglePlacesDetailsResponse details) {

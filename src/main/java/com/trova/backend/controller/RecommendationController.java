@@ -2,6 +2,7 @@ package com.trova.backend.controller;
 
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.User;
+import com.trova.backend.pipeline.ReviewSummary;
 import com.trova.backend.recommendation.PlaceReviewService;
 import com.trova.backend.recommendation.PlaceSearchService;
 import com.trova.backend.recommendation.RecommendationService;
@@ -38,15 +39,20 @@ public class RecommendationController {
     public record PlaceDetailResponse(
             Long id, String googlePlaceId, String name, String category,
             Double rating, Integer userRatingCount, String priceLevel,
-            Double latitude, Double longitude, String address, String reviewSummary,
+            Double latitude, Double longitude, String address,
+            String highlights, List<String> pros, List<String> cons,
+            String hours, String fee, List<String> tips, List<String> checklist,
             List<String> reviewSnippets
     ) {
         static PlaceDetailResponse from(Place place, PlaceReviewService.PlaceReviewInfo reviewInfo) {
+            ReviewSummary summary = reviewInfo.summary();
             return new PlaceDetailResponse(
                     place.getId(), place.getGooglePlaceId(), place.getName(), place.getCategory(),
                     place.getRating(), place.getUserRatingCount(), place.getPriceLevel(),
                     place.getLatitude(), place.getLongitude(), place.getAddress(),
-                    reviewInfo.summary(), reviewInfo.snippets());
+                    summary.highlights(), summary.pros(), summary.cons(),
+                    summary.hours(), summary.fee(), summary.tips(), summary.checklist(),
+                    reviewInfo.snippets());
         }
     }
 

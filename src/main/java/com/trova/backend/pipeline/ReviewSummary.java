@@ -1,4 +1,14 @@
 package com.trova.backend.pipeline;
 
-public record ReviewSummary(String summary) {
+import java.util.List;
+
+public record ReviewSummary(
+        String highlights,
+        List<String> pros,
+        List<String> cons,
+        String hours,
+        String fee,
+        List<String> tips,
+        List<String> checklist
+) {
 }
