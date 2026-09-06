@@ -73,3 +73,4 @@ app:
     places-api-key: ${GOOGLE_PLACES_API_KEY:}
   weather:
     openweather-api-key: ${OPENWEATHER_API_KEY:}
+  jwt-secret: ${JWT_SECRET}

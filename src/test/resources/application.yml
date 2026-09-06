@@ -50,3 +50,4 @@ app:
     places-api-key: test-google-places-api-key
   weather:
     openweather-api-key: test-openweather-api-key
+  jwt-secret: test-jwt-secret-please-do-not-use-in-production-environment
