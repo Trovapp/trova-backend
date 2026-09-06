@@ -112,5 +112,5 @@ public class Place {
     public LocalDateTime getLastSyncedAt() { return lastSyncedAt; }
     public String getReviewSummary() { return reviewSummary; }
     public LocalDateTime getReviewSummaryGeneratedAt() { return reviewSummaryGeneratedAt; }
-    public List<String> getReviewSnippets() { return reviewSnippets; }
+    public List<String> getReviewSnippets() { return List.copyOf(reviewSnippets); }
 }

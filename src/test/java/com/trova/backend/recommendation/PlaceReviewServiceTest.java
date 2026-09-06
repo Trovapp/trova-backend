@@ -66,7 +66,7 @@ class PlaceReviewServiceTest {
                         new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("좋아요")),
                         new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("친절해요"))
                 )));
-        when(reviewSummaryRunner.run(List.of("좋아요", "친절해요"), 1L))
+        when(reviewSummaryRunner.run(eq(List.of("좋아요", "친절해요")), anyLong()))
                 .thenReturn(new ReviewSummary("전반적으로 만족도가 높은 곳이에요."));
 
         Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
@@ -90,7 +90,7 @@ class PlaceReviewServiceTest {
                         new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("리뷰3")),
                         new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("리뷰4"))
                 )));
-        when(reviewSummaryRunner.run(List.of("리뷰1", "리뷰2", "리뷰3", "리뷰4"), 1L))
+        when(reviewSummaryRunner.run(eq(List.of("리뷰1", "리뷰2", "리뷰3", "리뷰4")), anyLong()))
                 .thenReturn(new ReviewSummary("요약"));
 
         Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
@@ -109,7 +109,10 @@ class PlaceReviewServiceTest {
         assertThat(result.get().summary()).isEqualTo("리뷰 정보 없음");
         assertThat(result.get().snippets()).isEmpty();
         verify(reviewSummaryRunner, never()).run(any(), anyLong());
-        verify(placeRepository, never()).save(any());
+        // 리뷰가 없다는 사실 자체도 캐시해야, 이후 요청에서 유료 Details API를
+        // 다시 부르지 않는다 — 최종 리뷰에서 지적된 캐시 미스 버그 수정.
+        verify(placeRepository).save(place);
+        assertThat(place.getReviewSummary()).isEqualTo("리뷰 정보 없음");
     }
 
     @Test
