@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -55,7 +56,7 @@ class CurrentUserServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> currentUserService.resolve(tokenFor("99")))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InsufficientAuthenticationException.class);
     }
 
     @Test
@@ -73,6 +74,12 @@ class CurrentUserServiceTest {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> currentUserService.resolve(new JwtAuthenticationToken(99L)))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(InsufficientAuthenticationException.class);
+    }
+
+    @Test
+    void authentication이_null이면_예외를_던진다() {
+        assertThatThrownBy(() -> currentUserService.resolve(null))
+                .isInstanceOf(InsufficientAuthenticationException.class);
     }
 }

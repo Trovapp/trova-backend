@@ -1,7 +1,7 @@
 package com.trova.backend.security;
 
 import com.trova.backend.entity.User;
-import com.trova.backend.repository.UserRepository;
+import com.trova.backend.service.CurrentUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -17,7 +17,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,7 +25,7 @@ import static org.mockito.Mockito.when;
 class OAuth2LoginSuccessHandlerTest {
 
     @Mock
-    private UserRepository userRepository;
+    private CurrentUserService currentUserService;
     @Mock
     private JwtService jwtService;
     @Mock
@@ -40,7 +39,7 @@ class OAuth2LoginSuccessHandlerTest {
 
     @BeforeEach
     void setUp() {
-        handler = new OAuth2LoginSuccessHandler(userRepository, jwtService);
+        handler = new OAuth2LoginSuccessHandler(currentUserService, jwtService);
         ReflectionTestUtils.setField(handler, "frontendUrl", "http://localhost:3000");
         ReflectionTestUtils.setField(handler, "mobileRedirectScheme", "trova");
     }
@@ -57,12 +56,13 @@ class OAuth2LoginSuccessHandlerTest {
     @Test
     void 모바일_로그인이면_JWT를_발급해서_딥링크로_리다이렉트한다() throws Exception {
         User user = new User("google", "42", "테스트", null);
+        OAuth2AuthenticationToken authentication = tokenFor("42");
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("MOBILE_LOGIN")).thenReturn(Boolean.TRUE);
-        when(userRepository.findByProviderAndProviderUserId("google", "42")).thenReturn(Optional.of(user));
+        when(currentUserService.resolve(authentication)).thenReturn(user);
         when(jwtService.issue(user)).thenReturn("jwt-token-value");
 
-        handler.onAuthenticationSuccess(request, response, tokenFor("42"));
+        handler.onAuthenticationSuccess(request, response, authentication);
 
         verify(session).removeAttribute("MOBILE_LOGIN");
         verify(response).sendRedirect("trova://auth?token=jwt-token-value");
