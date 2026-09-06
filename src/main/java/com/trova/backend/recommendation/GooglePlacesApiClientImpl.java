@@ -89,6 +89,8 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
     private GooglePlacesNearbySearchResponse doSearchNearby(double latitude, double longitude, double radiusMeters) {
         Map<String, Object> body = Map.of(
                 "maxResultCount", MAX_RESULT_COUNT,
+                "languageCode", "ko",
+                "regionCode", "KR",
                 "locationRestriction", Map.of(
                         "circle", Map.of(
                                 "center", Map.of("latitude", latitude, "longitude", longitude),
@@ -108,7 +110,9 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
     private GooglePlacesNearbySearchResponse doSearchText(String query) {
         Map<String, Object> body = Map.of(
                 "textQuery", query,
-                "maxResultCount", MAX_RESULT_COUNT
+                "maxResultCount", MAX_RESULT_COUNT,
+                "languageCode", "ko",
+                "regionCode", "KR"
         );
 
         return restClient.post()
@@ -121,7 +125,7 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
 
     private GooglePlacesDetailsResponse doGetDetails(String googlePlaceId) {
         return restClient.get()
-                .uri("/v1/places/{id}", googlePlaceId)
+                .uri("/v1/places/{id}?languageCode=ko&regionCode=KR", googlePlaceId)
                 .header("X-Goog-FieldMask", DETAILS_FIELD_MASK)
                 .retrieve()
                 .body(GooglePlacesDetailsResponse.class);

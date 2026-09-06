@@ -14,6 +14,7 @@ from extract_places import DEFAULT_MODEL, call_gemini_with_repair, load_api_key
 
 SUMMARY_PROMPT = """당신은 장소 리뷰들을 읽고 핵심을 2~3문장으로 요약하는 도구입니다.
 장점/단점이 갈리면 균형 있게 담으세요. 과장하지 말고 리뷰에 실제로 있는 내용만 쓰세요.
+리뷰가 영어 등 다른 언어로 되어 있어도 요약은 반드시 한국어로 작성하세요.
 
 다음 형식의 JSON 객체만 출력하세요. 다른 텍스트는 출력하지 마세요.
 {"summary": "..."}
