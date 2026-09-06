@@ -38,13 +38,15 @@ public class RecommendationController {
     public record PlaceDetailResponse(
             Long id, String googlePlaceId, String name, String category,
             Double rating, Integer userRatingCount, String priceLevel,
-            Double latitude, Double longitude, String address, String reviewSummary
+            Double latitude, Double longitude, String address, String reviewSummary,
+            List<String> reviewSnippets
     ) {
-        static PlaceDetailResponse from(Place place, String reviewSummary) {
+        static PlaceDetailResponse from(Place place, PlaceReviewService.PlaceReviewInfo reviewInfo) {
             return new PlaceDetailResponse(
                     place.getId(), place.getGooglePlaceId(), place.getName(), place.getCategory(),
                     place.getRating(), place.getUserRatingCount(), place.getPriceLevel(),
-                    place.getLatitude(), place.getLongitude(), place.getAddress(), reviewSummary);
+                    place.getLatitude(), place.getLongitude(), place.getAddress(),
+                    reviewInfo.summary(), reviewInfo.snippets());
         }
     }
 
@@ -98,7 +100,7 @@ public class RecommendationController {
     public ResponseEntity<PlaceDetailResponse> details(@PathVariable Long id) {
         return placeRepository.findById(id)
                 .flatMap(place -> placeReviewService.getOrGenerateSummary(id)
-                        .map(summary -> PlaceDetailResponse.from(place, summary)))
+                        .map(reviewInfo -> PlaceDetailResponse.from(place, reviewInfo)))
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

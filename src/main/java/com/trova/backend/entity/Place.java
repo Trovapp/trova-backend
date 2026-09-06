@@ -3,6 +3,8 @@ package com.trova.backend.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Google Places 기반 장소 카탈로그(추천엔진 전용) — 영상에서 추출된 SavedPlace와는
@@ -56,6 +58,12 @@ public class Place {
     @Column(name = "review_summary_generated_at")
     private LocalDateTime reviewSummaryGeneratedAt;
 
+    @ElementCollection
+    @CollectionTable(name = "place_review_snippets", joinColumns = @JoinColumn(name = "place_id"))
+    @OrderColumn(name = "snippet_order")
+    @Column(name = "snippet", columnDefinition = "TEXT")
+    private List<String> reviewSnippets = new ArrayList<>();
+
     protected Place() {
     }
 
@@ -85,6 +93,10 @@ public class Place {
         this.reviewSummaryGeneratedAt = LocalDateTime.now();
     }
 
+    public void applyReviewSnippets(List<String> reviewSnippets) {
+        this.reviewSnippets = new ArrayList<>(reviewSnippets);
+    }
+
     public Long getId() { return id; }
     public String getGooglePlaceId() { return googlePlaceId; }
     public String getName() { return name; }
@@ -100,4 +112,5 @@ public class Place {
     public LocalDateTime getLastSyncedAt() { return lastSyncedAt; }
     public String getReviewSummary() { return reviewSummary; }
     public LocalDateTime getReviewSummaryGeneratedAt() { return reviewSummaryGeneratedAt; }
+    public List<String> getReviewSnippets() { return reviewSnippets; }
 }

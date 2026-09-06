@@ -3,6 +3,7 @@ package com.trova.backend.recommendation;
 import com.trova.backend.entity.Place;
 import com.trova.backend.pipeline.ReviewSummary;
 import com.trova.backend.pipeline.ReviewSummaryRunner;
+import com.trova.backend.recommendation.PlaceReviewService.PlaceReviewInfo;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
@@ -44,11 +45,14 @@ class PlaceReviewServiceTest {
     void 캐시된_요약이_있으면_API를_호출하지_않고_그대로_반환한다() {
         Place place = newPlace();
         place.applyReviewSummary("이미 있는 요약");
+        place.applyReviewSnippets(List.of("좋아요", "친절해요"));
         when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
 
-        Optional<String> result = placeReviewService.getOrGenerateSummary(1L);
+        Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
 
-        assertThat(result).contains("이미 있는 요약");
+        assertThat(result).isPresent();
+        assertThat(result.get().summary()).isEqualTo("이미 있는 요약");
+        assertThat(result.get().snippets()).containsExactly("좋아요", "친절해요");
         verify(googlePlacesApiClient, never()).getDetails(any());
         verify(reviewSummaryRunner, never()).run(any(), anyLong());
     }
@@ -65,11 +69,33 @@ class PlaceReviewServiceTest {
         when(reviewSummaryRunner.run(List.of("좋아요", "친절해요"), 1L))
                 .thenReturn(new ReviewSummary("전반적으로 만족도가 높은 곳이에요."));
 
-        Optional<String> result = placeReviewService.getOrGenerateSummary(1L);
+        Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
 
-        assertThat(result).contains("전반적으로 만족도가 높은 곳이에요.");
+        assertThat(result).isPresent();
+        assertThat(result.get().summary()).isEqualTo("전반적으로 만족도가 높은 곳이에요.");
+        assertThat(result.get().snippets()).containsExactly("좋아요", "친절해요");
         assertThat(place.getReviewSummary()).isEqualTo("전반적으로 만족도가 높은 곳이에요.");
+        assertThat(place.getReviewSnippets()).containsExactly("좋아요", "친절해요");
         verify(placeRepository).save(place);
+    }
+
+    @Test
+    void 리뷰가_3개_초과면_최대_3개까지만_스니펫으로_저장한다() {
+        Place place = newPlace();
+        when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(googlePlacesApiClient.getDetails("g1")).thenReturn(new GooglePlacesDetailsResponse(
+                "g1", List.of(
+                        new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("리뷰1")),
+                        new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("리뷰2")),
+                        new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("리뷰3")),
+                        new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("리뷰4"))
+                )));
+        when(reviewSummaryRunner.run(List.of("리뷰1", "리뷰2", "리뷰3", "리뷰4"), 1L))
+                .thenReturn(new ReviewSummary("요약"));
+
+        Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
+
+        assertThat(result.get().snippets()).containsExactly("리뷰1", "리뷰2", "리뷰3");
     }
 
     @Test
@@ -78,9 +104,10 @@ class PlaceReviewServiceTest {
         when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
         when(googlePlacesApiClient.getDetails("g1")).thenReturn(new GooglePlacesDetailsResponse("g1", List.of()));
 
-        Optional<String> result = placeReviewService.getOrGenerateSummary(1L);
+        Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
 
-        assertThat(result).contains("리뷰 정보 없음");
+        assertThat(result.get().summary()).isEqualTo("리뷰 정보 없음");
+        assertThat(result.get().snippets()).isEmpty();
         verify(reviewSummaryRunner, never()).run(any(), anyLong());
         verify(placeRepository, never()).save(any());
     }
@@ -91,9 +118,9 @@ class PlaceReviewServiceTest {
         when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
         when(googlePlacesApiClient.getDetails("g1")).thenThrow(new RuntimeException("timeout"));
 
-        Optional<String> result = placeReviewService.getOrGenerateSummary(1L);
+        Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
 
-        assertThat(result).contains("리뷰를 불러오지 못했어요");
+        assertThat(result.get().summary()).isEqualTo("리뷰를 불러오지 못했어요");
         assertThat(place.getReviewSummary()).isNull();
         verify(placeRepository, never()).save(any());
     }
@@ -102,7 +129,7 @@ class PlaceReviewServiceTest {
     void 존재하지_않는_장소면_빈_Optional을_반환한다() {
         when(placeRepository.findById(999L)).thenReturn(Optional.empty());
 
-        Optional<String> result = placeReviewService.getOrGenerateSummary(999L);
+        Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(999L);
 
         assertThat(result).isEmpty();
     }

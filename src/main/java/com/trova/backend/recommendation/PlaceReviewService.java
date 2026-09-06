@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 장소 리뷰요약을 캐시-우선으로 제공한다. Place Details API는 유료 티어라, 캐시가
- * 있으면 절대 다시 부르지 않는다(영구 캐시 — 갱신 정책 없음, 스펙 참고).
+ * 장소 리뷰요약+원문 스니펫(최대 3개)을 캐시-우선으로 제공한다. Place Details API는
+ * 유료 티어라, 캐시가 있으면 절대 다시 부르지 않는다(영구 캐시 — 갱신 정책 없음).
  */
 @Service
 public class PlaceReviewService {
@@ -22,11 +22,15 @@ public class PlaceReviewService {
     private static final Logger log = LoggerFactory.getLogger(PlaceReviewService.class);
     private static final String NO_REVIEWS_MESSAGE = "리뷰 정보 없음";
     private static final String FETCH_FAILED_MESSAGE = "리뷰를 불러오지 못했어요";
+    private static final int MAX_SNIPPETS = 3;
 
     private final PlaceRepository placeRepository;
     private final GooglePlacesApiClient googlePlacesApiClient;
     private final ReviewSummaryRunner reviewSummaryRunner;
     private final ApiCallLogService apiCallLogService;
+
+    public record PlaceReviewInfo(String summary, List<String> snippets) {
+    }
 
     public PlaceReviewService(
             PlaceRepository placeRepository,
@@ -40,14 +44,14 @@ public class PlaceReviewService {
         this.apiCallLogService = apiCallLogService;
     }
 
-    public Optional<String> getOrGenerateSummary(Long placeId) {
+    public Optional<PlaceReviewInfo> getOrGenerateSummary(Long placeId) {
         Optional<Place> maybePlace = placeRepository.findById(placeId);
         if (maybePlace.isEmpty()) {
             return Optional.empty();
         }
         Place place = maybePlace.get();
         if (place.getReviewSummary() != null) {
-            return Optional.of(place.getReviewSummary());
+            return Optional.of(new PlaceReviewInfo(place.getReviewSummary(), place.getReviewSnippets()));
         }
 
         long start = System.currentTimeMillis();
@@ -62,18 +66,20 @@ public class PlaceReviewService {
                     "google-places", "place-details", null, System.currentTimeMillis() - start,
                     false, e.getMessage(), null, null, null);
             log.warn("Place Details 조회 실패(placeId={}) — 리뷰요약 없이 반환합니다", placeId, e);
-            return Optional.of(FETCH_FAILED_MESSAGE);
+            return Optional.of(new PlaceReviewInfo(FETCH_FAILED_MESSAGE, List.of()));
         }
 
         List<String> reviewTexts = extractReviewTexts(details);
         if (reviewTexts.isEmpty()) {
-            return Optional.of(NO_REVIEWS_MESSAGE);
+            return Optional.of(new PlaceReviewInfo(NO_REVIEWS_MESSAGE, List.of()));
         }
 
+        List<String> snippets = reviewTexts.stream().limit(MAX_SNIPPETS).toList();
         ReviewSummary summary = reviewSummaryRunner.run(reviewTexts, placeId);
         place.applyReviewSummary(summary.summary());
+        place.applyReviewSnippets(snippets);
         placeRepository.save(place);
-        return Optional.of(summary.summary());
+        return Optional.of(new PlaceReviewInfo(summary.summary(), snippets));
     }
 
     private List<String> extractReviewTexts(GooglePlacesDetailsResponse details) {
