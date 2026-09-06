@@ -45,6 +45,12 @@ Trova는 지금까지 백엔드(Spring Boot API, `trova-backend`)와 웹
   TanStack Query
 - **레포 위치**: 새 레포 `trova-app` (기존 백엔드/프론트와 동일하게
   분리된 레포 구조를 유지)
+- **폰트/플랫폼 배치**: iOS/Android 기본 폰트(San Francisco vs
+  Roboto) 대신 웹과 동일한 IBM Plex Mono를 앱에도 적용해 브랜드
+  일관성을 유지한다. 헤더 타이틀 정렬(iOS는 기본 중앙, Android는 기본
+  좌측), 키보드가 올라올 때 레이아웃 처리, 카드 그림자(iOS
+  shadow*/Android elevation) 등 두 플랫폼의 기본 동작 차이가 있는
+  지점은 명시적으로 통일한다
 
 ## 아키텍처
 
