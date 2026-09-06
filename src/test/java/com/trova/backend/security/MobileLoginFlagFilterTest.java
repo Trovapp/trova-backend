@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -31,6 +30,7 @@ class MobileLoginFlagFilterTest {
     @Test
     void mobile_파라미터가_true면_세션에_플래그를_저장한다() throws Exception {
         when(request.getParameter("mobile")).thenReturn("true");
+        when(request.getRequestURI()).thenReturn("/oauth2/authorization/google");
         when(request.getSession(true)).thenReturn(session);
 
         filter.doFilterInternal(request, response, chain);
@@ -42,6 +42,17 @@ class MobileLoginFlagFilterTest {
     @Test
     void mobile_파라미터가_없으면_세션을_건드리지_않는다() throws Exception {
         when(request.getParameter("mobile")).thenReturn(null);
+
+        filter.doFilterInternal(request, response, chain);
+
+        verifyNoInteractions(session);
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    void oauth2_authorization_경로가_아니면_mobile이_true여도_세션을_건드리지_않는다() throws Exception {
+        when(request.getParameter("mobile")).thenReturn("true");
+        when(request.getRequestURI()).thenReturn("/api/places");
 
         filter.doFilterInternal(request, response, chain);
 
