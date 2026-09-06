@@ -6,7 +6,7 @@ import com.trova.backend.entity.User;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.service.CurrentUserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class NotificationController {
     }
 
     @GetMapping
-    public List<NotificationResponse> list(OAuth2AuthenticationToken authentication) {
+    public List<NotificationResponse> list(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
         return notificationRepository.findByUserAndIsReadFalseOrderByCreatedAtDesc(user).stream()
                 .map(NotificationResponse::from)
@@ -51,7 +51,7 @@ public class NotificationController {
     }
 
     @PostMapping("/{id}/dismiss")
-    public ResponseEntity<Void> dismiss(OAuth2AuthenticationToken authentication, @PathVariable Long id) {
+    public ResponseEntity<Void> dismiss(Authentication authentication, @PathVariable Long id) {
         User user = currentUserService.resolve(authentication);
         return notificationRepository.findById(id)
                 .filter(n -> n.getUser().getId().equals(user.getId()))

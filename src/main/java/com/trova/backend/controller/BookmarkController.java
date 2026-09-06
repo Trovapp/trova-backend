@@ -6,7 +6,7 @@ import com.trova.backend.repository.BookmarkRepository;
 import com.trova.backend.service.BookmarkService;
 import com.trova.backend.service.CurrentUserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class BookmarkController {
     }
 
     @GetMapping
-    public List<BookmarkResponse> list(OAuth2AuthenticationToken authentication) {
+    public List<BookmarkResponse> list(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
         return bookmarkRepository.findByUserOrderByCreatedAtDesc(user).stream()
                 .map(BookmarkResponse::from)
@@ -52,7 +52,7 @@ public class BookmarkController {
 
     @PostMapping
     public ResponseEntity<BookmarkResponse> create(
-            OAuth2AuthenticationToken authentication, @RequestBody CreateBookmarkRequest request
+            Authentication authentication, @RequestBody CreateBookmarkRequest request
     ) {
         if (request == null || request.placeId() == null) {
             return ResponseEntity.badRequest().build();
@@ -64,7 +64,7 @@ public class BookmarkController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(OAuth2AuthenticationToken authentication, @PathVariable Long id) {
+    public ResponseEntity<Void> delete(Authentication authentication, @PathVariable Long id) {
         User user = currentUserService.resolve(authentication);
         boolean removed = bookmarkService.removeBookmark(user, id);
         return removed ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();

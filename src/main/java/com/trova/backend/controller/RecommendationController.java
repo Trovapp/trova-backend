@@ -9,7 +9,7 @@ import com.trova.backend.recommendation.RecommendationService;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.service.CurrentUserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -78,7 +78,7 @@ public class RecommendationController {
 
     @PostMapping("/api/recommendations")
     public ResponseEntity<?> recommend(
-            OAuth2AuthenticationToken authentication, @RequestBody RecommendRequest request
+            Authentication authentication, @RequestBody RecommendRequest request
     ) {
         if (request == null || request.latitude() == null || request.longitude() == null) {
             return ResponseEntity.badRequest().build();

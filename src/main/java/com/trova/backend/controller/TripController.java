@@ -10,7 +10,7 @@ import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.TripService;
 import com.trova.backend.service.WeatherRecoveryService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -105,7 +105,7 @@ public class TripController {
 
     @PostMapping("/api/trips")
     public ResponseEntity<TripResponse> createTrip(
-            OAuth2AuthenticationToken authentication, @RequestBody CreateTripRequest request
+            Authentication authentication, @RequestBody CreateTripRequest request
     ) {
         if (request == null || request.title() == null || request.title().isBlank()
                 || request.startDate() == null || request.endDate() == null
@@ -118,14 +118,14 @@ public class TripController {
     }
 
     @GetMapping("/api/trips")
-    public List<TripResponse> listTrips(OAuth2AuthenticationToken authentication) {
+    public List<TripResponse> listTrips(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
         return tripRepository.findByUserOrderByCreatedAtDesc(user).stream().map(TripResponse::from).toList();
     }
 
     @GetMapping("/api/trips/{id}")
     public ResponseEntity<TripDetailResponse> getTrip(
-            OAuth2AuthenticationToken authentication, @PathVariable Long id
+            Authentication authentication, @PathVariable Long id
     ) {
         User user = currentUserService.resolve(authentication);
         return tripRepository.findById(id)
@@ -145,7 +145,7 @@ public class TripController {
     }
 
     @DeleteMapping("/api/trips/{id}")
-    public ResponseEntity<Void> deleteTrip(OAuth2AuthenticationToken authentication, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteTrip(Authentication authentication, @PathVariable Long id) {
         User user = currentUserService.resolve(authentication);
         boolean deleted = tripService.deleteTrip(user, id);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
@@ -153,7 +153,7 @@ public class TripController {
 
     @PostMapping("/api/trips/{tripId}/days/{day}/places")
     public ResponseEntity<TripPlaceResponse> addPlace(
-            OAuth2AuthenticationToken authentication, @PathVariable Long tripId, @PathVariable int day,
+            Authentication authentication, @PathVariable Long tripId, @PathVariable int day,
             @RequestBody AddPlaceRequest request
     ) {
         if (request == null || request.googlePlaceId() == null || request.googlePlaceId().isBlank()) {
@@ -166,7 +166,7 @@ public class TripController {
     }
 
     @DeleteMapping("/api/trip-places/{id}")
-    public ResponseEntity<Void> removePlace(OAuth2AuthenticationToken authentication, @PathVariable Long id) {
+    public ResponseEntity<Void> removePlace(Authentication authentication, @PathVariable Long id) {
         User user = currentUserService.resolve(authentication);
         boolean removed = tripService.removePlace(user, id);
         return removed ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
@@ -174,7 +174,7 @@ public class TripController {
 
     @PatchMapping("/api/trip-places/{id}/order")
     public ResponseEntity<TripPlaceResponse> reorderPlace(
-            OAuth2AuthenticationToken authentication, @PathVariable Long id, @RequestBody ReorderRequest request
+            Authentication authentication, @PathVariable Long id, @RequestBody ReorderRequest request
     ) {
         if (request == null || request.direction() == null || !VALID_DIRECTIONS.contains(request.direction())) {
             return ResponseEntity.badRequest().build();
@@ -187,7 +187,7 @@ public class TripController {
 
     @PatchMapping("/api/trip-places/{id}/details")
     public ResponseEntity<TripPlaceResponse> updateDetails(
-            OAuth2AuthenticationToken authentication, @PathVariable Long id, @RequestBody UpdateDetailsRequest request
+            Authentication authentication, @PathVariable Long id, @RequestBody UpdateDetailsRequest request
     ) {
         if (request == null) {
             return ResponseEntity.badRequest().build();
@@ -209,7 +209,7 @@ public class TripController {
 
     @PostMapping("/api/places/videos/{jobId}/confirm-trip")
     public ResponseEntity<TripResponse> confirmTrip(
-            OAuth2AuthenticationToken authentication, @PathVariable Long jobId, @RequestBody ConfirmTripRequest request
+            Authentication authentication, @PathVariable Long jobId, @RequestBody ConfirmTripRequest request
     ) {
         if (request == null || request.title() == null || request.title().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -227,7 +227,7 @@ public class TripController {
 
     @PostMapping("/api/trips/{tripId}/days/{day}/weather-check")
     public ResponseEntity<WeatherCheckResponse> weatherCheck(
-            OAuth2AuthenticationToken authentication, @PathVariable Long tripId, @PathVariable int day
+            Authentication authentication, @PathVariable Long tripId, @PathVariable int day
     ) {
         User user = currentUserService.resolve(authentication);
         return tripRepository.findById(tripId)

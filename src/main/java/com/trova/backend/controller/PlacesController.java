@@ -10,7 +10,7 @@ import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.ItineraryEditService;
 import com.trova.backend.service.ItineraryGenerationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -79,7 +79,7 @@ public class PlacesController {
     }
 
     @GetMapping
-    public List<PlaceResponse> list(OAuth2AuthenticationToken authentication) {
+    public List<PlaceResponse> list(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
         return savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(user).stream()
                 .map(PlaceResponse::from)
@@ -87,7 +87,7 @@ public class PlacesController {
     }
 
     @GetMapping("/pending")
-    public List<PendingJobResponse> pending(OAuth2AuthenticationToken authentication) {
+    public List<PendingJobResponse> pending(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
         // FAILED도 포함한다 — 실패한 job은 SavedPlace가 안 생겨서, 여기서 빼면
         // 사용자 입장에서 요청이 이유 없이 사라진 것처럼 보인다.
@@ -99,7 +99,7 @@ public class PlacesController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PlaceResponse> get(OAuth2AuthenticationToken authentication, @PathVariable Long id) {
+    public ResponseEntity<PlaceResponse> get(Authentication authentication, @PathVariable Long id) {
         User user = currentUserService.resolve(authentication);
         return savedPlaceRepository.findByIdAndUser(id, user)
                 .map(place -> ResponseEntity.ok(PlaceResponse.from(place)))
@@ -107,7 +107,7 @@ public class PlacesController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(OAuth2AuthenticationToken authentication, @PathVariable Long id) {
+    public ResponseEntity<Void> delete(Authentication authentication, @PathVariable Long id) {
         User user = currentUserService.resolve(authentication);
         return savedPlaceRepository.findByIdAndUser(id, user)
                 .map(place -> {
@@ -119,7 +119,7 @@ public class PlacesController {
 
     @PatchMapping("/{id}/day")
     public ResponseEntity<PlaceResponse> moveDay(
-            OAuth2AuthenticationToken authentication, @PathVariable Long id, @RequestBody MoveDayRequest body
+            Authentication authentication, @PathVariable Long id, @RequestBody MoveDayRequest body
     ) {
         if (body == null || body.dayNumber() == null || body.dayNumber() < 1) {
             return ResponseEntity.badRequest().build();
@@ -132,7 +132,7 @@ public class PlacesController {
 
     @PatchMapping("/{id}/order")
     public ResponseEntity<PlaceResponse> reorder(
-            OAuth2AuthenticationToken authentication, @PathVariable Long id, @RequestBody ReorderRequest body
+            Authentication authentication, @PathVariable Long id, @RequestBody ReorderRequest body
     ) {
         if (body == null || body.direction() == null || !VALID_DIRECTIONS.contains(body.direction())) {
             return ResponseEntity.badRequest().build();
@@ -145,7 +145,7 @@ public class PlacesController {
 
     @PostMapping("/videos/{jobId}/days/{day}/optimize-route")
     public ResponseEntity<List<PlaceResponse>> optimizeRoute(
-            OAuth2AuthenticationToken authentication, @PathVariable Long jobId, @PathVariable int day
+            Authentication authentication, @PathVariable Long jobId, @PathVariable int day
     ) {
         User user = currentUserService.resolve(authentication);
         return itineraryEditService.optimizeRoute(jobId, user, day)
@@ -154,7 +154,7 @@ public class PlacesController {
     }
 
     @PostMapping("/videos/{jobId}/itinerary")
-    public ResponseEntity<Void> generateItinerary(OAuth2AuthenticationToken authentication, @PathVariable Long jobId) {
+    public ResponseEntity<Void> generateItinerary(Authentication authentication, @PathVariable Long jobId) {
         User user = currentUserService.resolve(authentication);
         return processingJobRepository.findById(jobId)
                 .filter(job -> job.getUser().getId().equals(user.getId()))

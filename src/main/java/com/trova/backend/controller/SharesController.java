@@ -9,7 +9,7 @@ import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.PlaceExtractionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,7 +54,7 @@ public class SharesController {
 
     @PostMapping("/api/shares")
     public ResponseEntity<?> create(
-            OAuth2AuthenticationToken authentication,
+            Authentication authentication,
             @RequestBody CreateShareRequest request
     ) {
         String url = request == null ? null : request.url();

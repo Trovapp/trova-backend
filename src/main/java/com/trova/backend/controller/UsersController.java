@@ -6,7 +6,7 @@ import com.trova.backend.service.UserAccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +29,7 @@ public class UsersController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<MeResponse> me(OAuth2AuthenticationToken authentication) {
+    public ResponseEntity<MeResponse> me(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
         return ResponseEntity.ok(new MeResponse(
                 user.getId(), user.getNickname(), user.getProfileImageUrl(),
@@ -39,7 +39,7 @@ public class UsersController {
 
     @DeleteMapping("/me")
     public ResponseEntity<Void> withdraw(
-            OAuth2AuthenticationToken authentication,
+            Authentication authentication,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
