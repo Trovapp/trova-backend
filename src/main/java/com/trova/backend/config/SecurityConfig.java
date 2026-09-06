@@ -6,6 +6,7 @@ import com.trova.backend.security.MobileLoginFlagFilter;
 import com.trova.backend.security.OAuth2LoginFailureHandler;
 import com.trova.backend.security.OAuth2LoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -95,6 +96,28 @@ public class SecurityConfig {
                 .addFilterBefore(mobileLoginFlagFilter, OAuth2AuthorizationRequestRedirectFilter.class);
 
         return http.build();
+    }
+
+    // JwtAuthenticationFilter/MobileLoginFlagFilter는 @Component가 붙은 OncePerRequestFilter라
+    // Spring Boot가 서블릿 컨테이너에 일반 필터로도 자동 등록해버린다(ServletContextInitializerBeans).
+    // 이 자동 등록은 지금은 securityFilterChain(순서 -100)이 먼저 실행되며 OncePerRequestFilter의
+    // "이미 처리됨" 마커를 세팅해줘서 우연히 무해하지만, 필터 순서가 바뀌면 아무 증상 없이
+    // 인증이 조용히 깨질 수 있다. 아래 두 빈으로 자동 등록을 꺼서 .addFilterBefore(...)로
+    // 등록한 시큐리티 체인 안에서만 실행되게 한다.
+    @Bean
+    public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilterRegistration(
+            JwtAuthenticationFilter filter) {
+        FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean<MobileLoginFlagFilter> mobileLoginFlagFilterRegistration(
+            MobileLoginFlagFilter filter) {
+        FilterRegistrationBean<MobileLoginFlagFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
     }
 
     private CorsConfigurationSource corsConfigurationSource() {
