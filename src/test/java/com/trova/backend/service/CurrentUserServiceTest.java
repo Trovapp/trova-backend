@@ -2,6 +2,7 @@ package com.trova.backend.service;
 
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.UserRepository;
+import com.trova.backend.security.JwtAuthenticationToken;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -54,6 +55,24 @@ class CurrentUserServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> currentUserService.resolve(tokenFor("99")))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void JWT_토큰이면_userId로_사용자를_찾아서_반환한다() {
+        User user = new User("google", "42", "테스트", null);
+        when(userRepository.findById(7L)).thenReturn(Optional.of(user));
+
+        User resolved = currentUserService.resolve(new JwtAuthenticationToken(7L));
+
+        assertThat(resolved).isEqualTo(user);
+    }
+
+    @Test
+    void JWT_토큰인데_사용자가_없으면_예외를_던진다() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> currentUserService.resolve(new JwtAuthenticationToken(99L)))
                 .isInstanceOf(IllegalStateException.class);
     }
 }
