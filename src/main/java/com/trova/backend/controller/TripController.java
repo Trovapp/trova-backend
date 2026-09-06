@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -63,6 +64,11 @@ public class TripController {
     public record ReorderRequest(String direction) {
     }
 
+    public record UpdateDetailsRequest(
+            LocalTime visitStartTime, LocalTime visitEndTime, String arrivalTransportMode, String memo
+    ) {
+    }
+
     public record TripResponse(Long id, String title, LocalDate startDate, LocalDate endDate) {
         static TripResponse from(Trip trip) {
             return new TripResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate());
@@ -72,13 +78,17 @@ public class TripController {
     public record TripPlaceResponse(
             Long id, String placeName, String region, String category,
             Double latitude, Double longitude, String phone, String address,
-            int visitOrder, String source
+            int visitOrder, String source, String googlePlaceId,
+            LocalTime visitStartTime, LocalTime visitEndTime, String arrivalTransportMode, String memo
     ) {
         static TripPlaceResponse from(TripPlace p) {
             return new TripPlaceResponse(
                     p.getId(), p.getPlaceName(), p.getRegion(), p.getCategory(),
                     p.getLatitude(), p.getLongitude(), p.getPhone(), p.getAddress(),
-                    p.getVisitOrder(), p.getSource().name());
+                    p.getVisitOrder(), p.getSource().name(), p.getGooglePlaceId(),
+                    p.getVisitStartTime(), p.getVisitEndTime(),
+                    p.getArrivalTransportMode() != null ? p.getArrivalTransportMode().name() : null,
+                    p.getMemo());
         }
     }
 
@@ -171,6 +181,28 @@ public class TripController {
         }
         User user = currentUserService.resolve(authentication);
         return tripService.reorderPlace(user, id, request.direction())
+                .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/api/trip-places/{id}/details")
+    public ResponseEntity<TripPlaceResponse> updateDetails(
+            OAuth2AuthenticationToken authentication, @PathVariable Long id, @RequestBody UpdateDetailsRequest request
+    ) {
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        TransportMode transportMode = null;
+        if (request.arrivalTransportMode() != null) {
+            try {
+                transportMode = TransportMode.valueOf(request.arrivalTransportMode());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        User user = currentUserService.resolve(authentication);
+        return tripService.updateDetails(
+                        user, id, request.visitStartTime(), request.visitEndTime(), transportMode, request.memo())
                 .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -223,5 +224,43 @@ class TripServiceIntegrationTest {
         assertThat(tripRepository.findById(trip.getId())).isEmpty();
         assertThat(tripPlaceRepository.findById(place.getId())).isEmpty();
         assertThat(itineraryRepository.findByTripOrderByDay(trip)).isEmpty();
+    }
+
+    @Test
+    void updateDetails는_보낸_필드만_부분적으로_갱신한다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-details", "돈사돈", null, null, null, null, 33.4, 126.5, null));
+        TripPlace place = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-details").orElseThrow();
+
+        tripService.updateDetails(
+                user, place.getId(), LocalTime.of(11, 0), LocalTime.of(12, 30), TransportMode.WALK, "고기 맛집");
+        TripPlace afterFirstUpdate = tripPlaceRepository.findById(place.getId()).orElseThrow();
+        assertThat(afterFirstUpdate.getVisitStartTime()).isEqualTo(LocalTime.of(11, 0));
+        assertThat(afterFirstUpdate.getArrivalTransportMode()).isEqualTo(TransportMode.WALK);
+        assertThat(afterFirstUpdate.getMemo()).isEqualTo("고기 맛집");
+
+        tripService.updateDetails(user, place.getId(), null, null, TransportMode.CAR, null);
+        TripPlace afterSecondUpdate = tripPlaceRepository.findById(place.getId()).orElseThrow();
+        assertThat(afterSecondUpdate.getVisitStartTime()).isEqualTo(LocalTime.of(11, 0));
+        assertThat(afterSecondUpdate.getArrivalTransportMode()).isEqualTo(TransportMode.CAR);
+        assertThat(afterSecondUpdate.getMemo()).isEqualTo("고기 맛집");
+    }
+
+    @Test
+    void updateDetails는_다른_사용자_소유_장소는_거부한다() {
+        User owner = newUser();
+        Trip trip = tripService.createTrip(owner, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-owner-check", "돈사돈", null, null, null, null, 33.4, 126.5, null));
+        TripPlace place = tripService.addPlaceToDay(owner, trip.getId(), 1, "trip-place-test-owner-check").orElseThrow();
+        User stranger = userRepository.save(new User("google", "trip-service-integration-stranger", "다른유저", null));
+
+        try {
+            Optional<TripPlace> result =
+                    tripService.updateDetails(stranger, place.getId(), null, null, TransportMode.WALK, null);
+            assertThat(result).isEmpty();
+        } finally {
+            userRepository.delete(stranger);
+        }
     }
 }

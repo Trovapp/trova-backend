@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -97,6 +98,19 @@ public class TripService {
                     tripPlace.applyGooglePlaceId(place.getGooglePlaceId());
                     return tripPlaceRepository.save(tripPlace);
                 }));
+    }
+
+    /** 보낸 필드만 부분적으로 갱신한다(null인 필드는 기존 값 유지 — TripPlace.applyDetails 참고). */
+    public Optional<TripPlace> updateDetails(
+            User user, Long tripPlaceId, LocalTime visitStartTime, LocalTime visitEndTime,
+            TransportMode arrivalTransportMode, String memo
+    ) {
+        return tripPlaceRepository.findById(tripPlaceId)
+                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .map(place -> {
+                    place.applyDetails(visitStartTime, visitEndTime, arrivalTransportMode, memo);
+                    return tripPlaceRepository.save(place);
+                });
     }
 
     public boolean removePlace(User user, Long tripPlaceId) {
