@@ -31,12 +31,14 @@ public class BookmarkController {
     }
 
     public record BookmarkResponse(
-            Long id, Long placeId, String placeName, String googlePlaceId, String mood, String space, String createdAt
+            Long id, Long placeId, String placeName, String googlePlaceId, String mood, String space,
+            Double latitude, Double longitude, String createdAt
     ) {
         static BookmarkResponse from(Bookmark b) {
             return new BookmarkResponse(
                     b.getId(), b.getPlace().getId(), b.getPlace().getName(), b.getPlace().getGooglePlaceId(),
-                    b.getPlace().getMood(), b.getPlace().getSpace(), b.getCreatedAt().toString());
+                    b.getPlace().getMood(), b.getPlace().getSpace(),
+                    b.getPlace().getLatitude(), b.getPlace().getLongitude(), b.getCreatedAt().toString());
         }
     }
 
