@@ -74,3 +74,4 @@ app:
   weather:
     openweather-api-key: ${OPENWEATHER_API_KEY:}
   jwt-secret: ${JWT_SECRET}
+  mobile-redirect-scheme: ${MOBILE_REDIRECT_SCHEME:trova}
