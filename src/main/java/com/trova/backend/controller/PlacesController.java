@@ -2,6 +2,7 @@ package com.trova.backend.controller;
 
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.ProcessingStage;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.ProcessingJobRepository;
@@ -62,12 +63,17 @@ public class PlacesController {
     }
 
     public record PendingJobResponse(
-            Long jobId, String sourceUrl, String title, String sourcePlatform, String status, String createdAt
+            Long jobId, String sourceUrl, String title, String sourcePlatform, String status, String createdAt,
+            String currentStage, Integer progressPercent, String stageMessage
     ) {
         static PendingJobResponse from(ProcessingJob job) {
+            ProcessingStage stage = job.getCurrentStage();
             return new PendingJobResponse(
                     job.getId(), job.getSourceUrl(), job.getTitle(), job.getSourcePlatform().name(),
-                    job.getStatus().name(), job.getCreatedAt().toString()
+                    job.getStatus().name(), job.getCreatedAt().toString(),
+                    stage != null ? stage.name() : null,
+                    stage != null ? stage.percent() : null,
+                    stage != null ? stage.message() : null
             );
         }
     }

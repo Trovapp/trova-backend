@@ -30,6 +30,10 @@ public class ProcessingJob {
     @Column(nullable = false)
     private JobStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "current_stage")
+    private ProcessingStage currentStage;
+
     @Column(name = "error_message", length = 2000)
     private String errorMessage;
 
@@ -65,6 +69,11 @@ public class ProcessingJob {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void updateStage(ProcessingStage stage) {
+        this.currentStage = stage;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void markDone() {
         this.status = JobStatus.DONE;
         this.updatedAt = LocalDateTime.now();
@@ -83,6 +92,7 @@ public class ProcessingJob {
     public String getTitle() { return title; }
     public SourcePlatform getSourcePlatform() { return sourcePlatform; }
     public JobStatus getStatus() { return status; }
+    public ProcessingStage getCurrentStage() { return currentStage; }
     public String getErrorMessage() { return errorMessage; }
     public int getRetryCount() { return retryCount; }
     public LocalDateTime getCreatedAt() { return createdAt; }

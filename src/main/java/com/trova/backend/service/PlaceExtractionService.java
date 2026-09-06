@@ -1,5 +1,6 @@
 package com.trova.backend.service;
 
+import com.trova.backend.entity.ProcessingStage;
 import com.trova.backend.geocoding.GeocodingResult;
 import com.trova.backend.geocoding.KakaoGeocodingService;
 import com.trova.backend.geocoding.KakaoKeywordSearchResponse;
@@ -56,6 +57,7 @@ public class PlaceExtractionService {
             String sourceUrl = lifecycleService.markProcessing(jobId);
             log.info("ProcessingJob {} 파이프라인 시작: {}", jobId, sourceUrl);
 
+            lifecycleService.updateStage(jobId, ProcessingStage.EXTRACTING);
             PipelineOutput output = pipelineRunner.run(sourceUrl, jobId);
             log.info("ProcessingJob {} 파이프라인 완료: {}개 장소 추출", jobId, output.places().size());
 
@@ -66,6 +68,7 @@ public class PlaceExtractionService {
 
             // region-only 폴백이 같은 영상 안에서 이미 확정된 다른 장소와 좌표가 겹치는 걸
             // 막으려면, 지금까지 확정된 좌표를 계속 누적해서 geocode() 호출마다 넘겨줘야 한다.
+            lifecycleService.updateStage(jobId, ProcessingStage.GEOCODING);
             Set<String> usedCoordinateKeys = new HashSet<>();
             for (ExtractedPlace extracted : extractedList) {
                 GeocodingResult geocoded = kakaoGeocodingService.geocode(
@@ -76,9 +79,13 @@ public class PlaceExtractionService {
                 geocodedList.add(geocoded);
             }
 
+            lifecycleService.updateStage(jobId, ProcessingStage.SELECTING);
             geocodedList = selectAmongAlternatives(jobId, extractedList, geocodedList);
+
+            lifecycleService.updateStage(jobId, ProcessingStage.VERIFYING);
             geocodedList = verifyUncertainMatches(jobId, extractedList, geocodedList);
 
+            lifecycleService.updateStage(jobId, ProcessingStage.SAVING);
             for (int i = 0; i < extractedList.size(); i++) {
                 lifecycleService.savePlace(jobId, extractedList.get(i), geocodedList.get(i));
             }

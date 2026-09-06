@@ -2,6 +2,7 @@ package com.trova.backend.service;
 
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.ProcessingStage;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.User;
@@ -109,6 +110,16 @@ class ProcessingJobLifecycleServiceIntegrationTest {
         ProcessingJob reloaded = processingJobRepository.findById(job.getId()).orElseThrow();
         assertThat(reloaded.getStatus()).isEqualTo(JobStatus.FAILED);
         assertThat(reloaded.getErrorMessage()).isNull();
+    }
+
+    @Test
+    void updateStage가_현재_단계를_저장한다() {
+        ProcessingJob job = newJob();
+
+        lifecycleService.updateStage(job.getId(), ProcessingStage.GEOCODING);
+
+        ProcessingJob reloaded = processingJobRepository.findById(job.getId()).orElseThrow();
+        assertThat(reloaded.getCurrentStage()).isEqualTo(ProcessingStage.GEOCODING);
     }
 
     @Test

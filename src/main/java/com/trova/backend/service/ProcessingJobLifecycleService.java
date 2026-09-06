@@ -1,6 +1,7 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.ProcessingStage;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.geocoding.GeocodingResult;
 import com.trova.backend.pipeline.ExtractedPlace;
@@ -40,6 +41,11 @@ public class ProcessingJobLifecycleService {
     @Transactional
     public void setTitle(Long jobId, String title) {
         getJob(jobId).setTitle(title);
+    }
+
+    @Transactional
+    public void updateStage(Long jobId, ProcessingStage stage) {
+        getJob(jobId).updateStage(stage);
     }
 
     @Transactional
