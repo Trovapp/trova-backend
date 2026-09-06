@@ -57,7 +57,7 @@ public class TripController {
     public record CreateTripRequest(String title, LocalDate startDate, LocalDate endDate) {
     }
 
-    public record AddPlaceRequest(String query) {
+    public record AddPlaceRequest(String googlePlaceId) {
     }
 
     public record ReorderRequest(String direction) {
@@ -146,11 +146,11 @@ public class TripController {
             OAuth2AuthenticationToken authentication, @PathVariable Long tripId, @PathVariable int day,
             @RequestBody AddPlaceRequest request
     ) {
-        if (request == null || request.query() == null || request.query().isBlank()) {
+        if (request == null || request.googlePlaceId() == null || request.googlePlaceId().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
         User user = currentUserService.resolve(authentication);
-        return tripService.addPlaceToDay(user, tripId, day, request.query())
+        return tripService.addPlaceToDay(user, tripId, day, request.googlePlaceId())
                 .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

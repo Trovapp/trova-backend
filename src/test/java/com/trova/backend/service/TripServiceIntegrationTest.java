@@ -1,21 +1,17 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.*;
-import com.trova.backend.geocoding.KakaoKeywordSearchResponse;
-import com.trova.backend.geocoding.KakaoLocalApiClient;
 import com.trova.backend.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class TripServiceIntegrationTest {
@@ -43,8 +39,8 @@ class TripServiceIntegrationTest {
     @Autowired
     private TripPlaceRepository tripPlaceRepository;
 
-    @MockitoBean
-    private KakaoLocalApiClient kakaoLocalApiClient;
+    @Autowired
+    private PlaceRepository placeRepository;
 
     @AfterEach
     void tearDown() {
@@ -159,29 +155,27 @@ class TripServiceIntegrationTest {
     }
 
     @Test
-    void addPlaceToDay는_카카오_검색_결과를_해당_일차_끝에_추가한다() {
+    void addPlaceToDay는_googlePlaceId로_찾은_장소를_해당_일차_끝에_추가한다() {
         User user = newUser();
         Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
-        when(kakaoLocalApiClient.searchKeyword("제주 흑돼지")).thenReturn(new KakaoKeywordSearchResponse(List.of(
-                new KakaoKeywordSearchResponse.Document(
-                        "돈사돈", "126.5", "33.4", "064-000-0000", "제주 노형동", null, "음식점 > 한식", null)
-        )));
+        placeRepository.save(new Place(
+                "trip-place-test-donsadon", "돈사돈", "음식점 > 한식", 4.3, 500, null, 33.4, 126.5, "제주 노형동"));
 
-        TripPlace created = tripService.addPlaceToDay(user, trip.getId(), 1, "제주 흑돼지").orElseThrow();
+        TripPlace created = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-donsadon").orElseThrow();
 
         assertThat(created.getPlaceName()).isEqualTo("돈사돈");
         assertThat(created.getSource()).isEqualTo(PlaceSource.NORMAL);
         assertThat(created.getVisitOrder()).isEqualTo(1);
         assertThat(created.getSavedPlaceId()).isNull();
+        assertThat(created.getGooglePlaceId()).isEqualTo("trip-place-test-donsadon");
     }
 
     @Test
-    void addPlaceToDay는_검색결과_없으면_아무것도_만들지_않는다() {
+    void addPlaceToDay는_존재하지_않는_googlePlaceId면_아무것도_만들지_않는다() {
         User user = newUser();
         Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
-        when(kakaoLocalApiClient.searchKeyword("없는곳")).thenReturn(new KakaoKeywordSearchResponse(List.of()));
 
-        Optional<TripPlace> result = tripService.addPlaceToDay(user, trip.getId(), 1, "없는곳");
+        Optional<TripPlace> result = tripService.addPlaceToDay(user, trip.getId(), 1, "존재하지-않는-id");
 
         assertThat(result).isEmpty();
     }
@@ -190,10 +184,8 @@ class TripServiceIntegrationTest {
     void removePlace는_소유자_확인_후_삭제한다() {
         User user = newUser();
         Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
-        when(kakaoLocalApiClient.searchKeyword("돈사돈")).thenReturn(new KakaoKeywordSearchResponse(List.of(
-                new KakaoKeywordSearchResponse.Document("돈사돈", "126.5", "33.4", null, "제주", null, null, null)
-        )));
-        TripPlace place = tripService.addPlaceToDay(user, trip.getId(), 1, "돈사돈").orElseThrow();
+        placeRepository.save(new Place("trip-place-test-remove", "돈사돈", null, null, null, null, 33.4, 126.5, null));
+        TripPlace place = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-remove").orElseThrow();
 
         boolean removed = tripService.removePlace(user, place.getId());
 
@@ -205,14 +197,10 @@ class TripServiceIntegrationTest {
     void reorderPlace는_이웃과_순서를_맞바꾼다() {
         User user = newUser();
         Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
-        when(kakaoLocalApiClient.searchKeyword("첫번째")).thenReturn(new KakaoKeywordSearchResponse(List.of(
-                new KakaoKeywordSearchResponse.Document("첫번째", "126.5", "33.4", null, null, null, null, null)
-        )));
-        when(kakaoLocalApiClient.searchKeyword("두번째")).thenReturn(new KakaoKeywordSearchResponse(List.of(
-                new KakaoKeywordSearchResponse.Document("두번째", "126.6", "33.5", null, null, null, null, null)
-        )));
-        TripPlace first = tripService.addPlaceToDay(user, trip.getId(), 1, "첫번째").orElseThrow();
-        TripPlace second = tripService.addPlaceToDay(user, trip.getId(), 1, "두번째").orElseThrow();
+        placeRepository.save(new Place("trip-place-test-first", "첫번째", null, null, null, null, 33.4, 126.5, null));
+        placeRepository.save(new Place("trip-place-test-second", "두번째", null, null, null, null, 33.5, 126.6, null));
+        TripPlace first = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-first").orElseThrow();
+        TripPlace second = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-second").orElseThrow();
 
         tripService.reorderPlace(user, first.getId(), "DOWN");
 
@@ -226,10 +214,8 @@ class TripServiceIntegrationTest {
     void deleteTrip은_딸린_Itinerary와_TripPlace까지_전부_지운다() {
         User user = newUser();
         Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
-        when(kakaoLocalApiClient.searchKeyword("돈사돈")).thenReturn(new KakaoKeywordSearchResponse(List.of(
-                new KakaoKeywordSearchResponse.Document("돈사돈", "126.5", "33.4", null, null, null, null, null)
-        )));
-        TripPlace place = tripService.addPlaceToDay(user, trip.getId(), 1, "돈사돈").orElseThrow();
+        placeRepository.save(new Place("trip-place-test-delete", "돈사돈", null, null, null, null, 33.4, 126.5, null));
+        TripPlace place = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-delete").orElseThrow();
 
         boolean deleted = tripService.deleteTrip(user, trip.getId());
 

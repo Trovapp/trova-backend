@@ -1,10 +1,9 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.*;
-import com.trova.backend.geocoding.KakaoKeywordSearchResponse;
-import com.trova.backend.geocoding.KakaoLocalApiClient;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.NotificationRepository;
+import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import org.springframework.stereotype.Service;
@@ -35,20 +34,20 @@ public class TripService {
     private final TripRepository tripRepository;
     private final ItineraryRepository itineraryRepository;
     private final TripPlaceRepository tripPlaceRepository;
-    private final KakaoLocalApiClient kakaoLocalApiClient;
+    private final PlaceRepository placeRepository;
     private final NotificationRepository notificationRepository;
 
     public TripService(
             TripRepository tripRepository,
             ItineraryRepository itineraryRepository,
             TripPlaceRepository tripPlaceRepository,
-            KakaoLocalApiClient kakaoLocalApiClient,
+            PlaceRepository placeRepository,
             NotificationRepository notificationRepository
     ) {
         this.tripRepository = tripRepository;
         this.itineraryRepository = itineraryRepository;
         this.tripPlaceRepository = tripPlaceRepository;
-        this.kakaoLocalApiClient = kakaoLocalApiClient;
+        this.placeRepository = placeRepository;
         this.notificationRepository = notificationRepository;
     }
 
@@ -80,30 +79,24 @@ public class TripService {
     }
 
     /**
-     * 카카오 키워드 검색으로 장소를 찾아 해당 일차 맨 끝에 추가한다. 검색 결과가
-     * 없으면 아무것도 만들지 않는다(존재 확인 없이 지어내지 않음 — 기존 지오코딩
-     * 원칙과 동일).
+     * Place 카탈로그(구글 플레이스 검색에서 이미 upsert된 장소)에서 googlePlaceId로 찾아
+     * 해당 일차 맨 끝에 추가한다. 카탈로그에 없으면(검색 단계를 안 거친 잘못된 요청)
+     * 아무것도 만들지 않는다.
      */
-    public Optional<TripPlace> addPlaceToDay(User user, Long tripId, int day, String query) {
+    public Optional<TripPlace> addPlaceToDay(User user, Long tripId, int day, String googlePlaceId) {
         return tripRepository.findById(tripId)
                 .filter(trip -> trip.getUser().getId().equals(user.getId()))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
-                .flatMap(itinerary -> searchFirst(query).map(doc -> {
+                .flatMap(itinerary -> placeRepository.findByGooglePlaceId(googlePlaceId).map(place -> {
                     List<TripPlace> siblings = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary);
                     int nextOrder = siblings.size() + 1;
-                    return tripPlaceRepository.save(new TripPlace(
-                            itinerary, doc.placeName(), null, doc.categoryName(),
-                            Double.parseDouble(doc.y()), Double.parseDouble(doc.x()),
-                            doc.phone(), doc.addressName(), nextOrder, PlaceSource.NORMAL, null));
+                    TripPlace tripPlace = new TripPlace(
+                            itinerary, place.getName(), null, place.getCategory(),
+                            place.getLatitude(), place.getLongitude(), null, place.getAddress(),
+                            nextOrder, PlaceSource.NORMAL, null);
+                    tripPlace.applyGooglePlaceId(place.getGooglePlaceId());
+                    return tripPlaceRepository.save(tripPlace);
                 }));
-    }
-
-    private Optional<KakaoKeywordSearchResponse.Document> searchFirst(String query) {
-        KakaoKeywordSearchResponse response = kakaoLocalApiClient.searchKeyword(query);
-        if (response == null || response.documents() == null || response.documents().isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(response.documents().get(0));
     }
 
     public boolean removePlace(User user, Long tripPlaceId) {
