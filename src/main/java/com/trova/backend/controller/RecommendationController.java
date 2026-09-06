@@ -2,13 +2,14 @@ package com.trova.backend.controller;
 
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.User;
+import com.trova.backend.recommendation.PlaceReviewService;
+import com.trova.backend.recommendation.PlaceSearchService;
 import com.trova.backend.recommendation.RecommendationService;
+import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.service.CurrentUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,12 +35,37 @@ public class RecommendationController {
         }
     }
 
+    public record PlaceDetailResponse(
+            Long id, String googlePlaceId, String name, String category,
+            Double rating, Integer userRatingCount, String priceLevel,
+            Double latitude, Double longitude, String address, String reviewSummary
+    ) {
+        static PlaceDetailResponse from(Place place, String reviewSummary) {
+            return new PlaceDetailResponse(
+                    place.getId(), place.getGooglePlaceId(), place.getName(), place.getCategory(),
+                    place.getRating(), place.getUserRatingCount(), place.getPriceLevel(),
+                    place.getLatitude(), place.getLongitude(), place.getAddress(), reviewSummary);
+        }
+    }
+
     private final RecommendationService recommendationService;
     private final CurrentUserService currentUserService;
+    private final PlaceSearchService placeSearchService;
+    private final PlaceReviewService placeReviewService;
+    private final PlaceRepository placeRepository;
 
-    public RecommendationController(RecommendationService recommendationService, CurrentUserService currentUserService) {
+    public RecommendationController(
+            RecommendationService recommendationService,
+            CurrentUserService currentUserService,
+            PlaceSearchService placeSearchService,
+            PlaceReviewService placeReviewService,
+            PlaceRepository placeRepository
+    ) {
         this.recommendationService = recommendationService;
         this.currentUserService = currentUserService;
+        this.placeSearchService = placeSearchService;
+        this.placeReviewService = placeReviewService;
+        this.placeRepository = placeRepository;
     }
 
     @PostMapping("/api/recommendations")
@@ -57,5 +83,23 @@ public class RecommendationController {
         User user = currentUserService.resolve(authentication);
         List<Place> places = recommendationService.recommend(user, request.latitude(), request.longitude(), radius);
         return ResponseEntity.ok(places.stream().map(PlaceRecommendationResponse::from).toList());
+    }
+
+    @GetMapping("/api/places/search")
+    public ResponseEntity<List<PlaceRecommendationResponse>> search(@RequestParam String query) {
+        if (query.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<Place> places = placeSearchService.search(query);
+        return ResponseEntity.ok(places.stream().map(PlaceRecommendationResponse::from).toList());
+    }
+
+    @GetMapping("/api/places/{id}/details")
+    public ResponseEntity<PlaceDetailResponse> details(@PathVariable Long id) {
+        return placeRepository.findById(id)
+                .flatMap(place -> placeReviewService.getOrGenerateSummary(id)
+                        .map(summary -> PlaceDetailResponse.from(place, summary)))
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
