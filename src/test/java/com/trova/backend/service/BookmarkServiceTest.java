@@ -1,9 +1,11 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.Bookmark;
+import com.trova.backend.entity.BookmarkFolder;
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.User;
 import com.trova.backend.entity.UserPreference;
+import com.trova.backend.repository.BookmarkFolderRepository;
 import com.trova.backend.repository.BookmarkRepository;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.UserPreferenceRepository;
@@ -26,6 +28,7 @@ class BookmarkServiceTest {
     @Mock private BookmarkRepository bookmarkRepository;
     @Mock private PlaceRepository placeRepository;
     @Mock private UserPreferenceRepository userPreferenceRepository;
+    @Mock private BookmarkFolderRepository bookmarkFolderRepository;
 
     private BookmarkService service;
 
@@ -46,7 +49,8 @@ class BookmarkServiceTest {
     }
 
     private void setUp() {
-        service = new BookmarkService(bookmarkRepository, placeRepository, userPreferenceRepository);
+        service = new BookmarkService(
+                bookmarkRepository, placeRepository, userPreferenceRepository, bookmarkFolderRepository);
     }
 
     @Test
@@ -119,5 +123,118 @@ class BookmarkServiceTest {
 
         assertThat(removed).isTrue();
         verify(bookmarkRepository).delete(bookmark);
+    }
+
+    @Test
+    void createFolder는_유저와_이름과_색상으로_폴더를_만든다() {
+        setUp();
+        when(bookmarkFolderRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        BookmarkFolder folder = service.createFolder(user, "카페 모음", "#4A90D9");
+
+        assertThat(folder.getUser()).isEqualTo(user);
+        assertThat(folder.getName()).isEqualTo("카페 모음");
+        assertThat(folder.getColor()).isEqualTo("#4A90D9");
+    }
+
+    @Test
+    void listFolders는_폴더별_찜_개수를_같이_돌려준다() {
+        setUp();
+        BookmarkFolder folder = new BookmarkFolder(user, "카페 모음", "#4A90D9");
+        when(bookmarkFolderRepository.findByUserOrderByCreatedAtDesc(user)).thenReturn(java.util.List.of(folder));
+        when(bookmarkRepository.countByFolder(folder)).thenReturn(3L);
+
+        var result = service.listFolders(user);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).folder()).isEqualTo(folder);
+        assertThat(result.get(0).placeCount()).isEqualTo(3L);
+    }
+
+    @Test
+    void deleteFolder는_소속_찜을_미분류로_되돌리고_폴더를_지운다() {
+        setUp();
+        BookmarkFolder folder = new BookmarkFolder(user, "카페 모음", "#4A90D9");
+        Place place = place("CALM");
+        Bookmark member = new Bookmark(user, place);
+        member.applyFolder(folder);
+        when(bookmarkFolderRepository.findByIdAndUser(10L, user)).thenReturn(Optional.of(folder));
+        when(bookmarkRepository.findByFolder(folder)).thenReturn(java.util.List.of(member));
+
+        boolean deleted = service.deleteFolder(user, 10L);
+
+        assertThat(deleted).isTrue();
+        assertThat(member.getFolder()).isNull();
+        verify(bookmarkRepository).save(member);
+        verify(bookmarkFolderRepository).delete(folder);
+    }
+
+    @Test
+    void deleteFolder는_소유자가_아니면_false를_돌려준다() {
+        setUp();
+        when(bookmarkFolderRepository.findByIdAndUser(10L, user)).thenReturn(Optional.empty());
+
+        boolean deleted = service.deleteFolder(user, 10L);
+
+        assertThat(deleted).isFalse();
+    }
+
+    @Test
+    void moveToFolder는_찜을_다른_폴더로_옮긴다() {
+        setUp();
+        Place place = place("CALM");
+        Bookmark bookmark = new Bookmark(user, place);
+        BookmarkFolder folder = new BookmarkFolder(user, "카페 모음", "#4A90D9");
+        when(bookmarkRepository.findById(5L)).thenReturn(Optional.of(bookmark));
+        when(bookmarkFolderRepository.findByIdAndUser(10L, user)).thenReturn(Optional.of(folder));
+        when(bookmarkRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        Bookmark result = service.moveToFolder(user, 5L, 10L).orElseThrow();
+
+        assertThat(result.getFolder()).isEqualTo(folder);
+    }
+
+    @Test
+    void moveToFolder에_null을_주면_미분류로_옮긴다() {
+        setUp();
+        Place place = place("CALM");
+        Bookmark bookmark = new Bookmark(user, place);
+        BookmarkFolder folder = new BookmarkFolder(user, "카페 모음", "#4A90D9");
+        bookmark.applyFolder(folder);
+        when(bookmarkRepository.findById(5L)).thenReturn(Optional.of(bookmark));
+        when(bookmarkRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        Bookmark result = service.moveToFolder(user, 5L, null).orElseThrow();
+
+        assertThat(result.getFolder()).isNull();
+    }
+
+    @Test
+    void moveToFolder는_존재하지_않는_폴더면_빈_Optional을_돌려준다() {
+        setUp();
+        Place place = place("CALM");
+        Bookmark bookmark = new Bookmark(user, place);
+        when(bookmarkRepository.findById(5L)).thenReturn(Optional.of(bookmark));
+        when(bookmarkFolderRepository.findByIdAndUser(999L, user)).thenReturn(Optional.empty());
+
+        Optional<Bookmark> result = service.moveToFolder(user, 5L, 999L);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void addBookmark에_folderId를_주면_그_폴더에_바로_배정된다() {
+        setUp();
+        Place place = place("TRENDY");
+        BookmarkFolder folder = new BookmarkFolder(user, "카페 모음", "#4A90D9");
+        when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(bookmarkRepository.findByUserAndPlace(user, place)).thenReturn(Optional.empty());
+        when(bookmarkRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(userPreferenceRepository.findByUserAndMood(user, "TRENDY")).thenReturn(Optional.empty());
+        when(bookmarkFolderRepository.findByIdAndUser(10L, user)).thenReturn(Optional.of(folder));
+
+        Bookmark result = service.addBookmark(user, 1L, 10L).orElseThrow();
+
+        assertThat(result.getFolder()).isEqualTo(folder);
     }
 }
