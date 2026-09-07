@@ -42,11 +42,31 @@
   `npx expo install`로 설치해 Expo SDK와 호환되는 버전을 자동
   선택한다. 이 라이브러리는 MIT 라이선스, 무료 — 비용 원칙에 저촉
   없음.
-- 색상/폰트는 기존 관례를 그대로 따른다: 강조색 `#FF6B4A`, 흐린
-  텍스트 `#8C8C86`, 테두리 `#DEDED8`, 배경 `#EFEFEA`/`#F5F5F0`/`#FAFAF7`,
-  폰트는 `AppText` 컴포넌트(`IBMPlexMono_400Regular`/`_500Medium`)만
-  사용한다. 카드 그림자는 기존 `CARD_SHADOW = Platform.select({ios:...,
-  android:...})` 패턴을 그대로 재사용한다.
+- **디자인 토큰**: 이 플랜의 태스크별 코드 블록은 색상/폰트 정리
+  작업(커밋 `9cde75c`, "style: 웹 디자인 토큰(색상/폰트) 그대로 이식")
+  이전에 작성됐다. 아래 코드 블록에 나오는 하드코딩된 값은 전부 실행
+  시점에 `src/lib/theme.ts`의 `colors` 토큰으로 바꿔서 적용한다(필요한
+  파일 상단에 `import { colors } from "@/lib/theme";` 추가):
+  - `"#FF6B4A"` → `colors.accent`
+  - `"#8C8C86"` → `colors.inkMuted`
+  - `"#DEDED8"` → `colors.border`
+  - `"#EFEFEA"` / `"#F5F5F0"` / `"#FAFAF7"` → `colors.bgMuted`
+  - `"#FFF1EC"` → `colors.accentBg`
+  - 배경으로 쓰인 `"#fff"` → `colors.bg`
+  - `"#FEE500"` → `colors.kakao`
+
+  본문 폰트는 IBM Plex Mono에서 Noto Sans KR로 바뀌었다. `AppText`
+  컴포넌트는 이미 기본값이 Noto Sans KR이므로 그대로 쓰면 되고, `AppText`를
+  거치지 않는 `TextInput` 등에 직접 적은 `fontFamily: "IBMPlexMono_400Regular"`/
+  `"IBMPlexMono_500Medium"`은 각각 `"NotoSansKR_400Regular"`/
+  `"NotoSansKR_500Medium"`로 바꾼다. `IBMPlexMono_400Regular`(또는
+  `AppText`의 `mono` prop)는 주소·시간·퍼센트 같은 작은 메타 텍스트에만
+  남겨둔다 — 예: `PlaceRow`의 주소 텍스트, `ProcessingScreen`의 퍼센트
+  숫자와 "AI ANALYSIS" 라벨은 `mono`를 유지한다(`ProcessingScreen.tsx`엔
+  이미 적용되어 있음 — 그대로 둔다).
+
+  카드 그림자는 기존 `CARD_SHADOW = Platform.select({ios:..., android:...})`
+  패턴을 그대로 재사용한다.
 - `PlaceDetailScreen.tsx`/`MapScreen.tsx`와 `PlaceDetail`/`Map` 라우트는
   이 계획에서 완전히 삭제된다 — 웹에는 개별 장소 하나만 보여주는
   페이지가 없고(`/places/[id]`의 `id`는 실제로는 `sourceUrl`), 지도는
