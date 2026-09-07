@@ -10,6 +10,7 @@ import com.trova.backend.repository.BookmarkRepository;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.UserPreferenceRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,10 +45,12 @@ public class BookmarkService {
     public record FolderWithCount(BookmarkFolder folder, long placeCount) {
     }
 
+    @Transactional
     public Optional<Bookmark> addBookmark(User user, Long placeId) {
         return addBookmark(user, placeId, null);
     }
 
+    @Transactional
     public Optional<Bookmark> addBookmark(User user, Long placeId, Long folderId) {
         return placeRepository.findById(placeId).map(place -> {
             Optional<Bookmark> existing = bookmarkRepository.findByUserAndPlace(user, place);
@@ -95,6 +98,7 @@ public class BookmarkService {
     }
 
     /** 소속 찜은 지우지 않고 미분류(folder=null)로 되돌린 뒤 폴더를 삭제한다. */
+    @Transactional
     public boolean deleteFolder(User user, Long folderId) {
         return bookmarkFolderRepository.findByIdAndUser(folderId, user)
                 .map(folder -> {
@@ -110,6 +114,7 @@ public class BookmarkService {
 
     /** folderId가 null이면 미분류로 옮긴다. folderId를 줬는데 그 폴더가 없거나
      *  내 폴더가 아니면 빈 Optional을 돌려준다(찜을 엉뚱한 상태로 두지 않기 위해). */
+    @Transactional
     public Optional<Bookmark> moveToFolder(User user, Long bookmarkId, Long folderId) {
         Optional<Bookmark> bookmarkOpt = bookmarkRepository.findById(bookmarkId)
                 .filter(b -> b.getUser().getId().equals(user.getId()));
