@@ -49,10 +49,21 @@ class WeatherRecoveryServiceTest {
                 tripPlaceRepository, placeTaggingRunner, openWeatherApiClient, notificationRepository);
     }
 
+    private void setId(Object entity, Long id) {
+        try {
+            var field = entity.getClass().getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(entity, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Test
     void 실외_장소가_있고_강수확률이_높으면_알림을_생성한다() {
         setUp();
         TripPlace place = outdoorPlace("OUTDOOR");
+        setId(place, 42L);
         when(notificationRepository.findByItinerary(itinerary)).thenReturn(Optional.empty());
         when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(place));
         when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
@@ -64,7 +75,7 @@ class WeatherRecoveryServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get().getPrecipitationProb()).isEqualTo(0.8);
-        assertThat(result.get().getTripPlaceId()).isEqualTo(place.getId());
+        assertThat(result.get().getTripPlaceId()).isEqualTo(42L);
         verify(placeTaggingRunner, never()).run(any(), anyLong());
     }
 
