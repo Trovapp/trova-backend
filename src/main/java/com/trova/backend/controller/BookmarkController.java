@@ -38,14 +38,15 @@ public class BookmarkController {
 
     public record BookmarkResponse(
             Long id, Long placeId, String placeName, String googlePlaceId, String mood, String space,
-            Double latitude, Double longitude, String createdAt, Long folderId
+            Double latitude, Double longitude, String createdAt, Long folderId, String category, String address
     ) {
         static BookmarkResponse from(Bookmark b) {
             return new BookmarkResponse(
                     b.getId(), b.getPlace().getId(), b.getPlace().getName(), b.getPlace().getGooglePlaceId(),
                     b.getPlace().getMood(), b.getPlace().getSpace(),
                     b.getPlace().getLatitude(), b.getPlace().getLongitude(), b.getCreatedAt().toString(),
-                    b.getFolder() != null ? b.getFolder().getId() : null);
+                    b.getFolder() != null ? b.getFolder().getId() : null,
+                    b.getPlace().getCategory(), b.getPlace().getAddress());
         }
     }
 
