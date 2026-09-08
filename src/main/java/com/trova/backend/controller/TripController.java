@@ -77,6 +77,9 @@ public class TripController {
     public record ReplaceRequest(String googlePlaceId) {
     }
 
+    public record InsertRequest(Long afterTripPlaceId, String googlePlaceId) {
+    }
+
     public record ReorderRequest(String direction) {
     }
 
@@ -234,6 +237,20 @@ public class TripController {
         }
         User user = currentUserService.resolve(authentication);
         return tripService.replacePlace(user, id, request.googlePlaceId())
+                .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/api/trip-places/insert")
+    public ResponseEntity<TripPlaceResponse> insertPlace(
+            Authentication authentication, @RequestBody InsertRequest request
+    ) {
+        if (request == null || request.afterTripPlaceId() == null
+                || request.googlePlaceId() == null || request.googlePlaceId().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        User user = currentUserService.resolve(authentication);
+        return tripService.insertPlaceAfter(user, request.afterTripPlaceId(), request.googlePlaceId())
                 .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

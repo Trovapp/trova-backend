@@ -153,6 +153,28 @@ public class TripService {
                 }));
     }
 
+    @Transactional
+    public Optional<TripPlace> insertPlaceAfter(User user, Long afterTripPlaceId, String googlePlaceId) {
+        return tripPlaceRepository.findById(afterTripPlaceId)
+                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .flatMap(after -> placeRepository.findByGooglePlaceId(googlePlaceId).map(newPlace -> {
+                    List<TripPlace> siblings =
+                            tripPlaceRepository.findByItineraryOrderByVisitOrder(after.getItinerary());
+                    for (TripPlace sibling : siblings) {
+                        if (sibling.getVisitOrder() > after.getVisitOrder()) {
+                            sibling.applyVisitOrder(sibling.getVisitOrder() + 1);
+                            tripPlaceRepository.save(sibling);
+                        }
+                    }
+                    TripPlace inserted = new TripPlace(
+                            after.getItinerary(), newPlace.getName(), null, newPlace.getCategory(),
+                            newPlace.getLatitude(), newPlace.getLongitude(), null, newPlace.getAddress(),
+                            after.getVisitOrder() + 1, PlaceSource.NORMAL, null);
+                    inserted.applyGooglePlaceId(newPlace.getGooglePlaceId());
+                    return tripPlaceRepository.save(inserted);
+                }));
+    }
+
     public boolean removePlace(User user, Long tripPlaceId) {
         return tripPlaceRepository.findById(tripPlaceId)
                 .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))

@@ -409,4 +409,40 @@ class TripControllerTest {
                         .content("{\"googlePlaceId\":\"nope\"}"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void 특정_장소_뒤에_삽입하면_뒤_장소들의_순서가_밀린다() throws Exception {
+        User me = userRepository.save(new User("google", "ins1", "삽입유저1", null));
+        Trip t = trip(me, 1);
+        Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
+        TripPlace a = tripPlace(day1, "A", 37.5, 127.0, 1);
+        TripPlace b = tripPlace(day1, "B", 37.6, 127.1, 2);
+        placeRepository.save(new Place("gp-mid", "중간장소", "cafe", null, null, null, 37.55, 127.05, null));
+
+        mockMvc.perform(post("/api/trip-places/insert")
+                        .with(loginAs("ins1", "삽입유저1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"afterTripPlaceId\":" + a.getId() + ",\"googlePlaceId\":\"gp-mid\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.placeName").value("중간장소"))
+                .andExpect(jsonPath("$.visitOrder").value(2));
+
+        assertThat(tripPlaceRepository.findById(b.getId()).orElseThrow().getVisitOrder()).isEqualTo(3);
+    }
+
+    @Test
+    void 타인_소유_장소_뒤에_삽입하면_404() throws Exception {
+        User me = userRepository.save(new User("google", "ins2", "삽입유저2", null));
+        User other = userRepository.save(new User("google", "ins3", "삽입유저3", null));
+        Trip otherTrip = trip(other, 1);
+        Itinerary day1 = itineraryRepository.findByTripAndDay(otherTrip, 1).orElseThrow();
+        TripPlace place = tripPlace(day1, "장소", 37.5, 127.0, 1);
+        placeRepository.save(new Place("gp-x", "X", "cafe", null, null, null, 37.5, 127.0, null));
+
+        mockMvc.perform(post("/api/trip-places/insert")
+                        .with(loginAs("ins2", "삽입유저2"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"afterTripPlaceId\":" + place.getId() + ",\"googlePlaceId\":\"gp-x\"}"))
+                .andExpect(status().isNotFound());
+    }
 }
