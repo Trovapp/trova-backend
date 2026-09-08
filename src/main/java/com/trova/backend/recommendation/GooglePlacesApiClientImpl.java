@@ -11,6 +11,8 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -50,7 +52,14 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
 
     @Override
     public GooglePlacesNearbySearchResponse searchNearby(double latitude, double longitude, double radiusMeters) {
-        return withRetry(() -> doSearchNearby(latitude, longitude, radiusMeters));
+        return searchNearby(latitude, longitude, radiusMeters, null);
+    }
+
+    @Override
+    public GooglePlacesNearbySearchResponse searchNearby(
+            double latitude, double longitude, double radiusMeters, String includedType
+    ) {
+        return withRetry(() -> doSearchNearby(latitude, longitude, radiusMeters, includedType));
     }
 
     @Override
@@ -86,8 +95,10 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
         throw lastFailure;
     }
 
-    private GooglePlacesNearbySearchResponse doSearchNearby(double latitude, double longitude, double radiusMeters) {
-        Map<String, Object> body = Map.of(
+    private GooglePlacesNearbySearchResponse doSearchNearby(
+            double latitude, double longitude, double radiusMeters, String includedType
+    ) {
+        Map<String, Object> body = new HashMap<>(Map.of(
                 "maxResultCount", MAX_RESULT_COUNT,
                 "languageCode", "ko",
                 "regionCode", "KR",
@@ -97,7 +108,10 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
                                 "radius", radiusMeters
                         )
                 )
-        );
+        ));
+        if (includedType != null) {
+            body.put("includedTypes", List.of(includedType));
+        }
 
         return restClient.post()
                 .uri("/v1/places:searchNearby")
