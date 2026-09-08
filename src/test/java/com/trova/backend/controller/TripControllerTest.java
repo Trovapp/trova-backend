@@ -367,9 +367,16 @@ class TripControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.placeName").value("새장소"))
                 .andExpect(jsonPath("$.category").value("restaurant"))
+                .andExpect(jsonPath("$.region").value(org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.latitude").value(37.6))
+                .andExpect(jsonPath("$.longitude").value(127.1))
+                .andExpect(jsonPath("$.address").value("새 주소"))
+                .andExpect(jsonPath("$.googlePlaceId").value("gp-new"))
                 .andExpect(jsonPath("$.visitStartTime").value("10:00:00"));
 
-        assertThat(tripPlaceRepository.findById(place.getId()).orElseThrow().getMemo()).isNull();
+        TripPlace updated = tripPlaceRepository.findById(place.getId()).orElseThrow();
+        assertThat(updated.getMemo()).isNull();
+        assertThat(updated.getVisitOrder()).isEqualTo(1);
     }
 
     @Test
