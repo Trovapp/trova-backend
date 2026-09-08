@@ -13,7 +13,6 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -50,9 +49,7 @@ public class GapRecommendationService {
 
     public Optional<List<Gap>> findGaps(User user, Long tripId, int day) {
         return tripRepository.findById(tripId)
-                // Objects.equals로 null-safe하게 비교 — User.id는 영속화 전(단위 테스트 등)에는
-                // null일 수 있다(AlternativeFinderService.isOwner와 동일한 id 비교 기준).
-                .filter(trip -> Objects.equals(trip.getUser().getId(), user.getId()))
+                .filter(trip -> trip.getUser().getId().equals(user.getId()))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .map(this::computeGaps);
     }

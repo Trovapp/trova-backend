@@ -27,9 +27,23 @@ class GapRecommendationServiceTest {
     @Mock private PlaceCatalogService placeCatalogService;
     @InjectMocks private GapRecommendationService gapRecommendationService;
 
+    // User.id는 영속화되지 않은 순수 Mockito 단위 테스트 엔티티에서는 null이라
+    // findGaps 내부의 `.getId().equals(...)` 소유자 확인이 NPE 없이 돌아가려면
+    // 가짜 id를 심어줘야 한다 — AlternativeFinderServiceTest와 동일한 기법.
+    private void setId(Object entity, Long id) {
+        try {
+            var field = entity.getClass().getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(entity, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Test
     void 시간이_없는_장소_쌍은_gap으로_잡지_않는다() {
         User user = new User("google", "gap1", "갭유저1", null);
+        setId(user, 1L);
         Trip trip = new Trip(user, "여행", null, null);
         Itinerary itinerary = new Itinerary(trip, 1, null);
         TripPlace a = new TripPlace(itinerary, "A", null, "cafe", 37.5, 127.0, null, null, 1, PlaceSource.NORMAL, null);
@@ -49,6 +63,7 @@ class GapRecommendationServiceTest {
     @Test
     void _30분_넘게_비면_gap으로_잡고_중간지점을_검색한다() {
         User user = new User("google", "gap2", "갭유저2", null);
+        setId(user, 1L);
         Trip trip = new Trip(user, "여행", null, null);
         Itinerary itinerary = new Itinerary(trip, 1, null);
         TripPlace a = new TripPlace(itinerary, "A", null, "cafe", 37.500, 127.000, null, null, 1, PlaceSource.NORMAL, null);
@@ -72,6 +87,7 @@ class GapRecommendationServiceTest {
     @Test
     void _30분_이하로_비면_gap으로_안_잡는다() {
         User user = new User("google", "gap3", "갭유저3", null);
+        setId(user, 1L);
         Trip trip = new Trip(user, "여행", null, null);
         Itinerary itinerary = new Itinerary(trip, 1, null);
         TripPlace a = new TripPlace(itinerary, "A", null, "cafe", 37.500, 127.000, null, null, 1, PlaceSource.NORMAL, null);
@@ -87,5 +103,20 @@ class GapRecommendationServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get()).isEmpty();
+    }
+
+    @Test
+    void 타인_여행이면_빈값을_반환한다() {
+        User owner = new User("google", "gap4-owner", "갭유저4주인", null);
+        setId(owner, 1L);
+        User other = new User("google", "gap4-other", "갭유저4남", null);
+        setId(other, 2L);
+        Trip trip = new Trip(owner, "여행", null, null);
+
+        when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
+
+        Optional<List<GapRecommendationService.Gap>> result = gapRecommendationService.findGaps(other, 1L, 1);
+
+        assertThat(result).isEmpty();
     }
 }
