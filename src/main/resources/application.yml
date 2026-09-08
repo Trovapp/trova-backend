@@ -1,7 +1,21 @@
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        same-site: lax
 
 spring:
+  datasource:
+    hikari:
+      data-source-properties:
+        # Supabase의 커넥션 풀러(PgBouncer, transaction 모드)는 server-side prepared
+        # statement를 지원하지 않는다. 풀에서 커넥션을 재사용할 때마다 실제 서버 세션이
+        # 바뀔 수 있어, JDBC 드라이버가 캐싱한 prepared statement 이름(S_1, S_2...)이
+        # 다른 세션에 이미 존재하는 것과 충돌해 "prepared statement already exists"
+        # 에러로 요청이 간헐적으로 실패한다. prepareThreshold=0으로 server-side prepare
+        # 자체를 끈다.
+        prepareThreshold: 0
   jpa:
     hibernate:
       ddl-auto: update
@@ -31,5 +45,35 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
+management:
+  endpoints:
+    web:
+      exposure:
+        # 지금은 로컬 전용이라 바로 노출함. 실제로 외부에 배포하면(k3s 단계)
+        # 이 엔드포인트를 인증 뒤로 숨기거나 네트워크 레벨에서 막아야 함 — 아직 안 함.
+        include: health, prometheus
+  metrics:
+    tags:
+      application: trova-backend
+
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
+  pipeline:
+    script-path: ${PIPELINE_SCRIPT_PATH:pipeline-test/run_pipeline.py}
+    itinerary-script-path: ${ITINERARY_SCRIPT_PATH:pipeline-test/generate_itinerary.py}
+    verify-script-path: ${VERIFY_SCRIPT_PATH:pipeline-test/verify_places.py}
+    select-script-path: ${SELECT_SCRIPT_PATH:pipeline-test/select_place_match.py}
+    tag-places-script-path: ${TAG_PLACES_SCRIPT_PATH:pipeline-test/tag_places.py}
+    summarize-reviews-script-path: ${SUMMARIZE_REVIEWS_SCRIPT_PATH:pipeline-test/summarize_reviews.py}
+    work-dir: ${PIPELINE_WORK_DIR:pipeline-test/work}
+    gemini-api-key: ${GEMINI_API_KEY:}
+  kakao:
+    rest-api-key: ${KAKAO_REST_API_KEY:}
+  google:
+    places-api-key: ${GOOGLE_PLACES_API_KEY:}
+  weather:
+    openweather-api-key: ${OPENWEATHER_API_KEY:}
+  congestion:
+    seoul-opendata-api-key: ${SEOUL_OPENDATA_API_KEY:}
+  jwt-secret: ${JWT_SECRET}
+  mobile-redirect-scheme: ${MOBILE_REDIRECT_SCHEME:trova}
