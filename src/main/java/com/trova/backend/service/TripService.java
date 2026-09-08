@@ -1,6 +1,7 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.*;
+import com.trova.backend.recommendation.PlaceSearchService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.PlaceRepository;
@@ -37,19 +38,22 @@ public class TripService {
     private final TripPlaceRepository tripPlaceRepository;
     private final PlaceRepository placeRepository;
     private final NotificationRepository notificationRepository;
+    private final PlaceSearchService placeSearchService;
 
     public TripService(
             TripRepository tripRepository,
             ItineraryRepository itineraryRepository,
             TripPlaceRepository tripPlaceRepository,
             PlaceRepository placeRepository,
-            NotificationRepository notificationRepository
+            NotificationRepository notificationRepository,
+            PlaceSearchService placeSearchService
     ) {
         this.tripRepository = tripRepository;
         this.itineraryRepository = itineraryRepository;
         this.tripPlaceRepository = tripPlaceRepository;
         this.placeRepository = placeRepository;
         this.notificationRepository = notificationRepository;
+        this.placeSearchService = placeSearchService;
     }
 
     /** Trip과 그에 딸린 Itinerary/TripPlace/Notification을 전부 지운다(소유자 확인 후). */
@@ -110,6 +114,32 @@ public class TripService {
                 .map(place -> {
                     place.applyDetails(visitStartTime, visitEndTime, arrivalTransportMode, memo);
                     return tripPlaceRepository.save(place);
+                });
+    }
+
+    /**
+     * TripPlace가 가리키는 Place 카탈로그 항목을 찾는다(리뷰 요약 조회용).
+     * 검색으로 추가한 장소는 이미 googlePlaceId가 있어 바로 찾고, 영상에서 자동
+     * 추출된 장소(VIDEO 출처)는 googlePlaceId가 없어서 이름으로 한 번 검색해
+     * 첫 매칭 결과를 카탈로그 장소로 채택하고 TripPlace에 백필한다(다음부터는
+     * 재검색 없이 바로 찾음). 매칭이 하나도 없으면 빈 값을 돌려준다.
+     */
+    @Transactional
+    public Optional<Place> resolveDetailsPlace(User user, Long tripPlaceId) {
+        return tripPlaceRepository.findById(tripPlaceId)
+                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .flatMap(tripPlace -> {
+                    if (tripPlace.getGooglePlaceId() != null) {
+                        return placeRepository.findByGooglePlaceId(tripPlace.getGooglePlaceId());
+                    }
+                    List<Place> candidates = placeSearchService.search(tripPlace.getPlaceName());
+                    if (candidates.isEmpty()) {
+                        return Optional.empty();
+                    }
+                    Place match = candidates.get(0);
+                    tripPlace.applyGooglePlaceId(match.getGooglePlaceId());
+                    tripPlaceRepository.save(tripPlace);
+                    return Optional.of(match);
                 });
     }
 

@@ -1,6 +1,8 @@
 package com.trova.backend.controller;
 
 import com.trova.backend.entity.*;
+import com.trova.backend.pipeline.ReviewSummary;
+import com.trova.backend.recommendation.PlaceReviewService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
@@ -31,6 +33,7 @@ public class TripController {
     private final TripRepository tripRepository;
     private final TripPlaceRepository tripPlaceRepository;
     private final WeatherRecoveryService weatherRecoveryService;
+    private final PlaceReviewService placeReviewService;
 
     public TripController(
             CurrentUserService currentUserService,
@@ -40,7 +43,8 @@ public class TripController {
             ItineraryRepository itineraryRepository,
             TripRepository tripRepository,
             TripPlaceRepository tripPlaceRepository,
-            WeatherRecoveryService weatherRecoveryService
+            WeatherRecoveryService weatherRecoveryService,
+            PlaceReviewService placeReviewService
     ) {
         this.currentUserService = currentUserService;
         this.processingJobRepository = processingJobRepository;
@@ -50,6 +54,7 @@ public class TripController {
         this.tripRepository = tripRepository;
         this.tripPlaceRepository = tripPlaceRepository;
         this.weatherRecoveryService = weatherRecoveryService;
+        this.placeReviewService = placeReviewService;
     }
 
     public record ConfirmTripRequest(String title, LocalDate startDate) {
@@ -101,6 +106,26 @@ public class TripController {
     }
 
     public record WeatherCheckResponse(boolean notified, String message) {
+    }
+
+    public record TripPlaceDetailResponse(
+            Long id, String googlePlaceId, String name, String category,
+            Double rating, Integer userRatingCount, String priceLevel,
+            Double latitude, Double longitude, String address,
+            String highlights, List<String> pros, List<String> cons,
+            String hours, String fee, List<String> tips, List<String> checklist,
+            List<String> reviewSnippets
+    ) {
+        static TripPlaceDetailResponse from(Place place, PlaceReviewService.PlaceReviewInfo reviewInfo) {
+            ReviewSummary summary = reviewInfo.summary();
+            return new TripPlaceDetailResponse(
+                    place.getId(), place.getGooglePlaceId(), place.getName(), place.getCategory(),
+                    place.getRating(), place.getUserRatingCount(), place.getPriceLevel(),
+                    place.getLatitude(), place.getLongitude(), place.getAddress(),
+                    summary.highlights(), summary.pros(), summary.cons(),
+                    summary.hours(), summary.fee(), summary.tips(), summary.checklist(),
+                    reviewInfo.snippets());
+        }
     }
 
     @PostMapping("/api/trips")
@@ -204,6 +229,16 @@ public class TripController {
         return tripService.updateDetails(
                         user, id, request.visitStartTime(), request.visitEndTime(), transportMode, request.memo())
                 .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/api/trip-places/{id}/details")
+    public ResponseEntity<TripPlaceDetailResponse> tripPlaceDetails(Authentication authentication, @PathVariable Long id) {
+        User user = currentUserService.resolve(authentication);
+        return tripService.resolveDetailsPlace(user, id)
+                .flatMap(place -> placeReviewService.getOrGenerateSummary(place.getId())
+                        .map(reviewInfo -> TripPlaceDetailResponse.from(place, reviewInfo)))
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
