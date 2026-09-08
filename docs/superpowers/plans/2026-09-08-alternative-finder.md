@@ -464,6 +464,22 @@ class AlternativeFinderServiceTest {
         assertThat(result).isPresent();
         assertThat(result.get()).extracting(AlternativeCandidate::name).containsExactly("가까운곳");
     }
+
+    @Test
+    void 구글_검색이_실패하면_500_대신_빈_목록을_반환한다() {
+        User owner = user();
+        TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
+        when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenThrow(new RuntimeException("Google Places API 장애"));
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result).isPresent();
+        assertThat(result.get()).isEmpty();
+    }
 }
 ```
 
@@ -541,8 +557,15 @@ public class AlternativeFinderService {
                 ? GoogleTypeMapper.toGoogleType(filter.category()).orElse(null)
                 : null;
 
-        GooglePlacesNearbySearchResponse response = googlePlacesApiClient.searchNearby(
-                target.getLatitude(), target.getLongitude(), SEARCH_RADIUS_METERS, includedType);
+        // 검색 실패(재시도 3회 소진 후 예외)를 500으로 흘려보내지 않는다 — 대안
+        // 찾기는 부가 기능이라 빈 결과로 조용히 낮춘다(스펙 "에러 처리" 절 참고).
+        GooglePlacesNearbySearchResponse response;
+        try {
+            response = googlePlacesApiClient.searchNearby(
+                    target.getLatitude(), target.getLongitude(), SEARCH_RADIUS_METERS, includedType);
+        } catch (Exception e) {
+            return Optional.of(List.of());
+        }
         List<GooglePlacesNearbySearchResponse.Place> raw =
                 response.places() != null ? response.places() : List.of();
         if (raw.isEmpty()) {
@@ -654,7 +677,7 @@ public class AlternativeFinderService {
 - [ ] **Step 4: 테스트 통과 확인**
 
 Run: `./gradlew test --tests "com.trova.backend.recommendation.AlternativeFinderServiceTest"`
-Expected: PASS (5 tests)
+Expected: PASS (6 tests)
 
 - [ ] **Step 5: Commit**
 
@@ -1391,8 +1414,13 @@ public class GapRecommendationService {
 
             double midLat = (before.getLatitude() + after.getLatitude()) / 2;
             double midLng = (before.getLongitude() + after.getLongitude()) / 2;
-            GooglePlacesNearbySearchResponse response =
-                    googlePlacesApiClient.searchNearby(midLat, midLng, SEARCH_RADIUS_METERS, null);
+            // 검색 실패를 500으로 흘려보내지 않는다 — AlternativeFinderService와 같은 원칙.
+            GooglePlacesNearbySearchResponse response;
+            try {
+                response = googlePlacesApiClient.searchNearby(midLat, midLng, SEARCH_RADIUS_METERS, null);
+            } catch (Exception e) {
+                response = new GooglePlacesNearbySearchResponse(List.of());
+            }
             List<GooglePlacesNearbySearchResponse.Place> raw =
                     response.places() != null ? response.places() : List.of();
             List<Place> candidates = raw.isEmpty() ? List.of() : placeCatalogService.upsertAll(raw);
