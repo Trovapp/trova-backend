@@ -380,6 +380,23 @@ class TripControllerTest {
     }
 
     @Test
+    void 빈_시간이_있으면_추천_목록을_반환한다() throws Exception {
+        User me = userRepository.save(new User("google", "gapc1", "빈시간유저1", null));
+        Trip t = trip(me, 1);
+        Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
+        TripPlace a = tripPlace(day1, "A", 37.500, 127.000, 1);
+        TripPlace b = tripPlace(day1, "B", 37.510, 127.000, 2);
+        tripService.updateDetails(me, a.getId(), null, java.time.LocalTime.of(10, 0), null, null);
+        tripService.updateDetails(me, b.getId(), java.time.LocalTime.of(11, 0), null, null, null);
+
+        mockMvc.perform(get("/api/trips/" + t.getId() + "/days/1/gap-recommendations")
+                        .with(loginAs("gapc1", "빈시간유저1")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].gapMinutes").value(60));
+    }
+
+    @Test
     void 존재하지_않는_googlePlaceId로_교체하면_404() throws Exception {
         User me = userRepository.save(new User("google", "rep2", "교체유저2", null));
         Trip t = trip(me, 1);

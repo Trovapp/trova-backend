@@ -3,6 +3,7 @@ package com.trova.backend.controller;
 import com.trova.backend.entity.*;
 import com.trova.backend.pipeline.ReviewSummary;
 import com.trova.backend.recommendation.AlternativeFinderService;
+import com.trova.backend.recommendation.GapRecommendationService;
 import com.trova.backend.recommendation.PlaceReviewService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
@@ -36,6 +37,7 @@ public class TripController {
     private final WeatherRecoveryService weatherRecoveryService;
     private final PlaceReviewService placeReviewService;
     private final AlternativeFinderService alternativeFinderService;
+    private final GapRecommendationService gapRecommendationService;
 
     public TripController(
             CurrentUserService currentUserService,
@@ -47,7 +49,8 @@ public class TripController {
             TripPlaceRepository tripPlaceRepository,
             WeatherRecoveryService weatherRecoveryService,
             PlaceReviewService placeReviewService,
-            AlternativeFinderService alternativeFinderService
+            AlternativeFinderService alternativeFinderService,
+            GapRecommendationService gapRecommendationService
     ) {
         this.currentUserService = currentUserService;
         this.processingJobRepository = processingJobRepository;
@@ -59,6 +62,7 @@ public class TripController {
         this.weatherRecoveryService = weatherRecoveryService;
         this.placeReviewService = placeReviewService;
         this.alternativeFinderService = alternativeFinderService;
+        this.gapRecommendationService = gapRecommendationService;
     }
 
     public record ConfirmTripRequest(String title, LocalDate startDate) {
@@ -115,6 +119,16 @@ public class TripController {
                     c.placeId(), c.googlePlaceId(), c.name(), c.category(), c.rating(), c.userRatingCount(),
                     c.latitude(), c.longitude(), c.address(), c.distanceToNextKm(), c.estimatedTravelMinutes(),
                     c.isCongestionAvailable(), c.congestionLevel());
+        }
+    }
+
+    public record GapResponse(
+            Long beforePlaceId, Long afterPlaceId, int gapMinutes, List<AlternativeCandidateResponse> recommendations
+    ) {
+        static GapResponse from(GapRecommendationService.Gap gap) {
+            return new GapResponse(
+                    gap.beforePlaceId(), gap.afterPlaceId(), gap.gapMinutes(),
+                    gap.recommendations().stream().map(AlternativeCandidateResponse::from).toList());
         }
     }
 
@@ -342,6 +356,16 @@ public class TripController {
                 category, indoor, maxDistanceKm, maxTravelMinutes, mode);
         return alternativeFinderService.findAlternatives(user, id, filter)
                 .map(candidates -> ResponseEntity.ok(candidates.stream().map(AlternativeCandidateResponse::from).toList()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/api/trips/{tripId}/days/{day}/gap-recommendations")
+    public ResponseEntity<List<GapResponse>> gapRecommendations(
+            Authentication authentication, @PathVariable Long tripId, @PathVariable int day
+    ) {
+        User user = currentUserService.resolve(authentication);
+        return gapRecommendationService.findGaps(user, tripId, day)
+                .map(gaps -> ResponseEntity.ok(gaps.stream().map(GapResponse::from).toList()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
