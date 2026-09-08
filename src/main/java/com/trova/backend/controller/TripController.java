@@ -260,6 +260,16 @@ public class TripController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/api/trips/{tripId}/days/{day}/optimize-route")
+    public ResponseEntity<List<TripPlaceResponse>> optimizeRoute(
+            Authentication authentication, @PathVariable Long tripId, @PathVariable int day
+    ) {
+        User user = currentUserService.resolve(authentication);
+        return tripService.optimizeRoute(user, tripId, day)
+                .map(places -> ResponseEntity.ok(places.stream().map(TripPlaceResponse::from).toList()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/api/trips/{tripId}/days/{day}/weather-check")
     public ResponseEntity<WeatherCheckResponse> weatherCheck(
             Authentication authentication, @PathVariable Long tripId, @PathVariable int day

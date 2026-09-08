@@ -3,7 +3,9 @@ package com.trova.backend.service;
 import com.trova.backend.entity.SavedPlace;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * 하루 일정 안에서 총 이동거리가 최소가 되도록 장소 순서를 재배열한다. 구글/카카오
@@ -24,55 +26,69 @@ public final class RouteOptimizer {
     }
 
     public static List<SavedPlace> optimize(List<SavedPlace> places) {
-        List<SavedPlace> withCoords = places.stream().filter(RouteOptimizer::hasCoordinates).toList();
-        List<SavedPlace> withoutCoords = places.stream().filter(p -> !hasCoordinates(p)).toList();
+        return optimize(places, SavedPlace::getLatitude, SavedPlace::getLongitude);
+    }
 
-        List<SavedPlace> orderedWithCoords;
+    public static double totalDistanceKm(List<SavedPlace> places) {
+        return totalDistanceKm(places, SavedPlace::getLatitude, SavedPlace::getLongitude);
+    }
+
+    /**
+     * SavedPlace뿐 아니라 위/경도를 가진 어떤 엔티티(예: TripPlace)에도 쓸 수 있도록
+     * 좌표 접근자를 받는 범용 버전 — 알고리즘은 위 SavedPlace 전용 메서드와 동일하며,
+     * 그 메서드들이 내부적으로 이 버전에 위임한다(로직 중복 없음).
+     */
+    public static <T> List<T> optimize(List<T> places, Function<T, Double> latOf, Function<T, Double> lngOf) {
+        List<T> withCoords = places.stream().filter(p -> hasCoordinates(p, latOf, lngOf)).toList();
+        List<T> withoutCoords = places.stream().filter(p -> !hasCoordinates(p, latOf, lngOf)).toList();
+
+        List<T> orderedWithCoords;
         if (withCoords.size() <= 1) {
             orderedWithCoords = withCoords;
         } else if (withCoords.size() <= EXACT_SEARCH_MAX_SIZE) {
-            orderedWithCoords = shortestPathExact(withCoords);
+            orderedWithCoords = shortestPathExact(withCoords, latOf, lngOf);
         } else {
-            orderedWithCoords = shortestPathNearestNeighbor(withCoords);
+            orderedWithCoords = shortestPathNearestNeighbor(withCoords, latOf, lngOf);
         }
 
-        List<SavedPlace> result = new ArrayList<>(orderedWithCoords);
+        List<T> result = new ArrayList<>(orderedWithCoords);
         result.addAll(withoutCoords);
         return result;
     }
 
-    public static double totalDistanceKm(List<SavedPlace> places) {
+    public static <T> double totalDistanceKm(List<T> places, Function<T, Double> latOf, Function<T, Double> lngOf) {
         double total = 0.0;
         for (int i = 0; i < places.size() - 1; i++) {
-            SavedPlace from = places.get(i);
-            SavedPlace to = places.get(i + 1);
-            if (hasCoordinates(from) && hasCoordinates(to)) {
-                total += haversineKm(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
+            T from = places.get(i);
+            T to = places.get(i + 1);
+            if (hasCoordinates(from, latOf, lngOf) && hasCoordinates(to, latOf, lngOf)) {
+                total += haversineKm(latOf.apply(from), lngOf.apply(from), latOf.apply(to), lngOf.apply(to));
             }
         }
         return total;
     }
 
-    private static boolean hasCoordinates(SavedPlace place) {
-        return place.getLatitude() != null && place.getLongitude() != null;
+    private static <T> boolean hasCoordinates(T place, Function<T, Double> latOf, Function<T, Double> lngOf) {
+        return latOf.apply(place) != null && lngOf.apply(place) != null;
     }
 
     /** 모든 순열 × 모든 시작점을 탐색해 총 이동거리가 최소인 경로(왕복 아님, 편도)를 찾는다. */
-    private static List<SavedPlace> shortestPathExact(List<SavedPlace> places) {
-        List<SavedPlace> working = new ArrayList<>(places);
-        double[] bestDistanceHolder = {totalDistanceKm(places)};
-        List<List<SavedPlace>> bestPermutationHolder = new ArrayList<>();
+    private static <T> List<T> shortestPathExact(List<T> places, Function<T, Double> latOf, Function<T, Double> lngOf) {
+        List<T> working = new ArrayList<>(places);
+        double[] bestDistanceHolder = {totalDistanceKm(places, latOf, lngOf)};
+        List<List<T>> bestPermutationHolder = new ArrayList<>();
         bestPermutationHolder.add(places);
 
-        permute(working, 0, bestDistanceHolder, bestPermutationHolder);
+        permute(working, 0, bestDistanceHolder, bestPermutationHolder, latOf, lngOf);
         return bestPermutationHolder.get(0);
     }
 
-    private static void permute(
-            List<SavedPlace> arr, int k, double[] bestDistanceHolder, List<List<SavedPlace>> bestPermutationHolder
+    private static <T> void permute(
+            List<T> arr, int k, double[] bestDistanceHolder, List<List<T>> bestPermutationHolder,
+            Function<T, Double> latOf, Function<T, Double> lngOf
     ) {
         if (k == arr.size()) {
-            double distance = totalDistanceKm(arr);
+            double distance = totalDistanceKm(arr, latOf, lngOf);
             if (distance < bestDistanceHolder[0]) {
                 bestDistanceHolder[0] = distance;
                 bestPermutationHolder.set(0, new ArrayList<>(arr));
@@ -80,27 +96,29 @@ public final class RouteOptimizer {
             return;
         }
         for (int i = k; i < arr.size(); i++) {
-            java.util.Collections.swap(arr, k, i);
-            permute(arr, k + 1, bestDistanceHolder, bestPermutationHolder);
-            java.util.Collections.swap(arr, k, i);
+            Collections.swap(arr, k, i);
+            permute(arr, k + 1, bestDistanceHolder, bestPermutationHolder, latOf, lngOf);
+            Collections.swap(arr, k, i);
         }
     }
 
     /** 가장 가까운 미방문 지점을 계속 골라 잇는 근사 알고리즘. 첫 지점은 입력 순서의 첫 장소로 고정. */
-    private static List<SavedPlace> shortestPathNearestNeighbor(List<SavedPlace> places) {
-        List<SavedPlace> remaining = new ArrayList<>(places);
-        List<SavedPlace> ordered = new ArrayList<>();
+    private static <T> List<T> shortestPathNearestNeighbor(
+            List<T> places, Function<T, Double> latOf, Function<T, Double> lngOf
+    ) {
+        List<T> remaining = new ArrayList<>(places);
+        List<T> ordered = new ArrayList<>();
 
-        SavedPlace current = remaining.remove(0);
+        T current = remaining.remove(0);
         ordered.add(current);
 
         while (!remaining.isEmpty()) {
-            SavedPlace nearest = null;
+            T nearest = null;
             double nearestDistance = Double.MAX_VALUE;
-            for (SavedPlace candidate : remaining) {
+            for (T candidate : remaining) {
                 double d = haversineKm(
-                        current.getLatitude(), current.getLongitude(),
-                        candidate.getLatitude(), candidate.getLongitude());
+                        latOf.apply(current), lngOf.apply(current),
+                        latOf.apply(candidate), lngOf.apply(candidate));
                 if (d < nearestDistance) {
                     nearestDistance = d;
                     nearest = candidate;

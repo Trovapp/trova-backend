@@ -192,6 +192,28 @@ public class TripService {
     }
 
     /**
+     * 하루 일정(Itinerary)의 TripPlace 순서를 총 이동거리가 최소가 되도록 재배열한다.
+     * 영상에서 자동 추출된 일정(ItineraryEditService.optimizeRoute)과 같은 RouteOptimizer를
+     * 쓰되, TripPlace는 SavedPlace와 다른 엔티티라 좌표 접근자를 넘기는 범용 버전을 쓴다.
+     */
+    @Transactional
+    public Optional<List<TripPlace>> optimizeRoute(User user, Long tripId, int day) {
+        return tripRepository.findById(tripId)
+                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
+                .map(itinerary -> {
+                    List<TripPlace> places = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary);
+                    List<TripPlace> optimized =
+                            RouteOptimizer.optimize(places, TripPlace::getLatitude, TripPlace::getLongitude);
+                    for (int i = 0; i < optimized.size(); i++) {
+                        optimized.get(i).applyVisitOrder(i + 1);
+                        tripPlaceRepository.save(optimized.get(i));
+                    }
+                    return optimized;
+                });
+    }
+
+    /**
      * startDate가 있으면 각 Itinerary에 실제 날짜(startDate + (day-1))를 계산해서
      * 넣는다 — 날씨 자동복구가 이 날짜를 기준으로 예보를 조회한다. startDate가 없으면
      * (날짜 모르는 여행) 지금까지처럼 date는 null로 남는다.
