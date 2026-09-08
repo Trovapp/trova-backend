@@ -6,11 +6,14 @@ import com.trova.backend.entity.PlaceSource;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
+import com.trova.backend.recommendation.GooglePlacesApiClient;
+import com.trova.backend.recommendation.GooglePlacesNearbySearchResponse;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,13 +21,18 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -55,6 +63,15 @@ class TripControllerTest {
 
     @Autowired
     private PlaceRepository placeRepository;
+
+    @MockitoBean
+    private GooglePlacesApiClient googlePlacesApiClient;
+
+    @BeforeEach
+    void stubGooglePlaces() {
+        when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any()))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of()));
+    }
 
     private ClientRegistration googleRegistration() {
         return ClientRegistration.withRegistrationId("google")
@@ -302,6 +319,31 @@ class TripControllerTest {
 
         mockMvc.perform(post("/api/trips/" + t.getId() + "/days/99/optimize-route")
                         .with(loginAs("trip19", "여행유저19")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void 대안_찾기는_후보_목록을_반환한다() throws Exception {
+        User me = userRepository.save(new User("google", "alt1", "대안유저1", null));
+        Trip t = trip(me, 1);
+        Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
+        TripPlace place = tripPlace(day1, "장소", 37.5, 127.0, 1);
+
+        mockMvc.perform(get("/api/trip-places/" + place.getId() + "/alternatives")
+                        .with(loginAs("alt1", "대안유저1")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void 타인_소유_장소의_대안_찾기는_404() throws Exception {
+        User me = userRepository.save(new User("google", "alt2", "대안유저2", null));
+        User other = userRepository.save(new User("google", "alt3", "대안유저3", null));
+        Trip otherTrip = trip(other, 1);
+        Itinerary day1 = itineraryRepository.findByTripAndDay(otherTrip, 1).orElseThrow();
+        TripPlace place = tripPlace(day1, "남의 장소", 37.5, 127.0, 1);
+
+        mockMvc.perform(get("/api/trip-places/" + place.getId() + "/alternatives")
+                        .with(loginAs("alt2", "대안유저2")))
                 .andExpect(status().isNotFound());
     }
 }

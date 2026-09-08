@@ -2,6 +2,7 @@ package com.trova.backend.controller;
 
 import com.trova.backend.entity.*;
 import com.trova.backend.pipeline.ReviewSummary;
+import com.trova.backend.recommendation.AlternativeFinderService;
 import com.trova.backend.recommendation.PlaceReviewService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
@@ -34,6 +35,7 @@ public class TripController {
     private final TripPlaceRepository tripPlaceRepository;
     private final WeatherRecoveryService weatherRecoveryService;
     private final PlaceReviewService placeReviewService;
+    private final AlternativeFinderService alternativeFinderService;
 
     public TripController(
             CurrentUserService currentUserService,
@@ -44,7 +46,8 @@ public class TripController {
             TripRepository tripRepository,
             TripPlaceRepository tripPlaceRepository,
             WeatherRecoveryService weatherRecoveryService,
-            PlaceReviewService placeReviewService
+            PlaceReviewService placeReviewService,
+            AlternativeFinderService alternativeFinderService
     ) {
         this.currentUserService = currentUserService;
         this.processingJobRepository = processingJobRepository;
@@ -55,6 +58,7 @@ public class TripController {
         this.tripPlaceRepository = tripPlaceRepository;
         this.weatherRecoveryService = weatherRecoveryService;
         this.placeReviewService = placeReviewService;
+        this.alternativeFinderService = alternativeFinderService;
     }
 
     public record ConfirmTripRequest(String title, LocalDate startDate) {
@@ -94,6 +98,20 @@ public class TripController {
                     p.getVisitStartTime(), p.getVisitEndTime(),
                     p.getArrivalTransportMode() != null ? p.getArrivalTransportMode().name() : null,
                     p.getMemo());
+        }
+    }
+
+    public record AlternativeCandidateResponse(
+            Long placeId, String googlePlaceId, String name, String category,
+            Double rating, Integer userRatingCount, Double latitude, Double longitude, String address,
+            Double distanceToNextKm, Integer estimatedTravelMinutes,
+            Boolean isCongestionAvailable, String congestionLevel
+    ) {
+        static AlternativeCandidateResponse from(com.trova.backend.recommendation.AlternativeCandidate c) {
+            return new AlternativeCandidateResponse(
+                    c.placeId(), c.googlePlaceId(), c.name(), c.category(), c.rating(), c.userRatingCount(),
+                    c.latitude(), c.longitude(), c.address(), c.distanceToNextKm(), c.estimatedTravelMinutes(),
+                    c.isCongestionAvailable(), c.congestionLevel());
         }
     }
 
@@ -283,6 +301,31 @@ public class TripController {
                     String message = notified ? "비 소식이 있어 알림을 만들었어요" : "알림을 만들 조건이 아니에요(비 소식 없음/실외 장소 없음/이미 알림 있음)";
                     return ResponseEntity.ok(new WeatherCheckResponse(notified, message));
                 })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/api/trip-places/{id}/alternatives")
+    public ResponseEntity<List<AlternativeCandidateResponse>> findAlternatives(
+            Authentication authentication, @PathVariable Long id,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Boolean indoor,
+            @RequestParam(required = false) Double maxDistanceKm,
+            @RequestParam(required = false) Integer maxTravelMinutes,
+            @RequestParam(required = false) String transportMode
+    ) {
+        User user = currentUserService.resolve(authentication);
+        TransportMode mode = null;
+        if (transportMode != null) {
+            try {
+                mode = TransportMode.valueOf(transportMode);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        var filter = new com.trova.backend.recommendation.AlternativeFilter(
+                category, indoor, maxDistanceKm, maxTravelMinutes, mode);
+        return alternativeFinderService.findAlternatives(user, id, filter)
+                .map(candidates -> ResponseEntity.ok(candidates.stream().map(AlternativeCandidateResponse::from).toList()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
