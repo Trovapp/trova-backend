@@ -10,6 +10,9 @@ import com.trova.backend.entity.User;
 import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
 import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.service.ApiCallLogService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,6 +30,8 @@ import java.util.stream.Collectors;
 @Service
 public class AlternativeFinderService {
 
+    private static final Logger log = LoggerFactory.getLogger(AlternativeFinderService.class);
+
     private static final double SEARCH_RADIUS_METERS = 2000;
 
     // 실측 아닌 통상적 평균 속도 추정치 — 실제 도로망을 반영하는 경로 API가 아니다.
@@ -41,19 +46,22 @@ public class AlternativeFinderService {
     private final TripPlaceRepository tripPlaceRepository;
     private final PlaceTaggingRunner placeTaggingRunner;
     private final SeoulCongestionApiClient seoulCongestionApiClient;
+    private final ApiCallLogService apiCallLogService;
 
     public AlternativeFinderService(
             GooglePlacesApiClient googlePlacesApiClient,
             PlaceCatalogService placeCatalogService,
             TripPlaceRepository tripPlaceRepository,
             PlaceTaggingRunner placeTaggingRunner,
-            SeoulCongestionApiClient seoulCongestionApiClient
+            SeoulCongestionApiClient seoulCongestionApiClient,
+            ApiCallLogService apiCallLogService
     ) {
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeCatalogService = placeCatalogService;
         this.tripPlaceRepository = tripPlaceRepository;
         this.placeTaggingRunner = placeTaggingRunner;
         this.seoulCongestionApiClient = seoulCongestionApiClient;
+        this.apiCallLogService = apiCallLogService;
     }
 
     public Optional<List<AlternativeCandidate>> findAlternatives(User user, Long tripPlaceId, AlternativeFilter filter) {
@@ -77,11 +85,18 @@ public class AlternativeFinderService {
 
         // 검색 실패(재시도 3회 소진 후 예외)를 500으로 흘려보내지 않는다 — 대안
         // 찾기는 부가 기능이라 빈 결과로 조용히 낮춘다(스펙 "에러 처리" 절 참고).
+        long searchStart = System.currentTimeMillis();
         GooglePlacesNearbySearchResponse response;
         try {
             response = googlePlacesApiClient.searchNearby(
                     target.getLatitude(), target.getLongitude(), SEARCH_RADIUS_METERS, includedType);
+            apiCallLogService.record(
+                    "google-places", "nearby-search-alternative", null,
+                    System.currentTimeMillis() - searchStart, true, null, null, null, null);
         } catch (Exception e) {
+            apiCallLogService.record(
+                    "google-places", "nearby-search-alternative", null,
+                    System.currentTimeMillis() - searchStart, false, e.getMessage(), null, null, null);
             return Optional.of(List.of());
         }
         List<GooglePlacesNearbySearchResponse.Place> raw =
@@ -91,6 +106,14 @@ public class AlternativeFinderService {
         }
 
         List<Place> candidates = placeCatalogService.upsertAll(raw);
+
+        // 교체 대상 자기 자신이 후보로 딸려오면 안 된다 — 선택 시 applyReplacement가
+        // 아무 변화 없이 memo만 지우는 무의미한 "교체"가 되어버린다.
+        if (target.getGooglePlaceId() != null) {
+            candidates = candidates.stream()
+                    .filter(p -> !target.getGooglePlaceId().equals(p.getGooglePlaceId()))
+                    .toList();
+        }
 
         if (Boolean.TRUE.equals(filter.indoorOnly())) {
             candidates = filterIndoor(candidates);
@@ -106,6 +129,15 @@ public class AlternativeFinderService {
 
         List<AlternativeCandidate> result = new ArrayList<>();
         for (Place candidate : candidates) {
+            // Place.latitude/longitude는 nullable(Google 응답에 location이 없을 수
+            // 있음)이라, upsertAll로 캐시된 행이 좌표 없이 저장돼 있을 수 있다. target/next는
+            // 이미 위에서 null 가드가 있으니, candidate 쪽도 haversineKm에 넘기기 전에
+            // 걸러야 한다 — 안 그러면 캐시에 한 번 박힌 좌표 없는 행이 이후 모든 요청을
+            // 영구히 500으로 만든다.
+            if (candidate.getLatitude() == null || candidate.getLongitude() == null) {
+                continue;
+            }
+
             Double distanceToNextKm = null;
             Integer estimatedTravelMinutes = null;
             if (next != null && next.getLatitude() != null && next.getLongitude() != null) {
@@ -168,13 +200,22 @@ public class AlternativeFinderService {
                 tagCandidates.add(new PlaceTaggingRunner.TagCandidate(
                         i, p.getName(), p.getCategory(), p.getRating(), p.getUserRatingCount(), p.getPriceLevel()));
             }
-            List<PlaceTag> tags = placeTaggingRunner.run(tagCandidates, System.nanoTime());
-            Map<Integer, PlaceTag> tagByIndex = tags.stream().collect(Collectors.toMap(PlaceTag::index, t -> t));
-            for (int i = 0; i < needsTagging.size(); i++) {
-                PlaceTag tag = tagByIndex.get(i);
-                if (tag != null) {
-                    needsTagging.get(i).applySpaceTag(tag.space());
+            // 태깅 서브프로세스 실패(무료 티어 429, 스크립트 부재, 2분 타임아웃 등,
+            // PlaceTaggingRunner.run이 던지는 PipelineException)를 500으로 흘려보내지
+            // 않는다 — searchNearby 가드와 같은 원칙("대안 찾기는 실패해도 화면이
+            // 죽으면 안 된다"). 실패하면 그냥 태깅 전 상태(space=null)로 두고 계속
+            // 진행한다 — 이 온디맨드 태깅은 필터 보강일 뿐 검색 자체의 필수 조건이 아니다.
+            try {
+                List<PlaceTag> tags = placeTaggingRunner.run(tagCandidates, System.nanoTime());
+                Map<Integer, PlaceTag> tagByIndex = tags.stream().collect(Collectors.toMap(PlaceTag::index, t -> t));
+                for (int i = 0; i < needsTagging.size(); i++) {
+                    PlaceTag tag = tagByIndex.get(i);
+                    if (tag != null) {
+                        needsTagging.get(i).applySpaceTag(tag.space());
+                    }
                 }
+            } catch (Exception e) {
+                log.warn("대안 찾기 실내외 온디맨드 태깅 실패 — 태깅 없이 진행합니다", e);
             }
         }
         return candidates.stream().filter(p -> "INDOOR".equals(p.getSpace())).toList();

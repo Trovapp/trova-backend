@@ -1,5 +1,6 @@
 package com.trova.backend.congestion;
 
+import com.trova.backend.service.ApiCallLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +26,14 @@ public class SeoulCongestionApiClientImpl implements SeoulCongestionApiClient {
 
     private final RestClient restClient;
     private final String apiKey;
+    private final ApiCallLogService apiCallLogService;
 
-    public SeoulCongestionApiClientImpl(@Value("${app.congestion.seoul-opendata-api-key}") String apiKey) {
+    public SeoulCongestionApiClientImpl(
+            @Value("${app.congestion.seoul-opendata-api-key}") String apiKey,
+            ApiCallLogService apiCallLogService
+    ) {
         this.apiKey = apiKey;
+        this.apiCallLogService = apiCallLogService;
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(CONNECT_TIMEOUT);
         requestFactory.setReadTimeout(READ_TIMEOUT);
@@ -42,13 +48,20 @@ public class SeoulCongestionApiClientImpl implements SeoulCongestionApiClient {
         if (apiKey == null || apiKey.isBlank()) {
             return Optional.empty();
         }
+        long start = System.currentTimeMillis();
         try {
             SeoulCongestionResponse response = restClient.get()
                     .uri("/{key}/json/citydata/1/5/{areaName}", apiKey, areaName)
                     .retrieve()
                     .body(SeoulCongestionResponse.class);
+            apiCallLogService.record(
+                    "seoul-opendata", "citydata-congestion", null,
+                    System.currentTimeMillis() - start, true, null, null, null, null);
             return Optional.ofNullable(response);
         } catch (Exception e) {
+            apiCallLogService.record(
+                    "seoul-opendata", "citydata-congestion", null,
+                    System.currentTimeMillis() - start, false, e.getMessage(), null, null, null);
             log.warn("서울 혼잡도 API 조회 실패({}) — 배지 없이 진행", areaName, e);
             return Optional.empty();
         }

@@ -6,6 +6,7 @@ import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +28,7 @@ class AlternativeFinderServiceTest {
     @Mock private TripPlaceRepository tripPlaceRepository;
     @Mock private PlaceTaggingRunner placeTaggingRunner;
     @Mock private SeoulCongestionApiClient seoulCongestionApiClient;
+    @Mock private ApiCallLogService apiCallLogService;
     @InjectMocks private AlternativeFinderService alternativeFinderService;
 
     private void setId(Object entity, Long id) {
@@ -185,5 +187,97 @@ class AlternativeFinderServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get()).isEmpty();
+    }
+
+    @Test
+    void 태깅_서브프로세스가_실패해도_500_대신_필터된_결과를_반환한다() {
+        User owner = user();
+        TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
+        when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+
+        var raw = new GooglePlacesNearbySearchResponse.Place(
+                "gp-tag-fail", new GooglePlacesNearbySearchResponse.Place.DisplayName("태깅안된카페"),
+                List.of("cafe"), 4.0, 10, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.501, 127.001), "주소1");
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(raw)));
+
+        Place untaggedPlace = new Place("gp-tag-fail", "태깅안된카페", "cafe", 4.0, 10, null, 37.501, 127.001, "주소1");
+        when(placeCatalogService.upsertAll(List.of(raw))).thenReturn(List.of(untaggedPlace));
+
+        // PlaceTaggingRunner.run이 429/타임아웃/스크립트 부재 등으로 PipelineException을 던지는
+        // 상황을 흉내낸다 — 대안 찾기 전체가 500으로 죽으면 안 되고, space=null(미태깅) 상태로
+        // 그냥 걸러져야 한다(indoorOnly=true라 INDOOR 아니면 제외).
+        when(placeTaggingRunner.run(anyList(), anyLong()))
+                .thenThrow(new RuntimeException("Gemini 태깅 실패(429)"));
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, true, null, null, null));
+
+        assertThat(result).isPresent();
+        assertThat(result.get()).isEmpty();
+    }
+
+    @Test
+    void 좌표가_없는_후보는_결과에서_제외된다() {
+        User owner = user();
+        TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
+        when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+
+        var rawNoCoord = new GooglePlacesNearbySearchResponse.Place(
+                "gp-no-coord", new GooglePlacesNearbySearchResponse.Place.DisplayName("좌표없는곳"),
+                List.of("cafe"), null, null, null, null, null);
+        var rawWithCoord = new GooglePlacesNearbySearchResponse.Place(
+                "gp-with-coord", new GooglePlacesNearbySearchResponse.Place.DisplayName("좌표있는곳"),
+                List.of("cafe"), null, null, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.502, 127.002), "주소2");
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(rawNoCoord, rawWithCoord)));
+
+        // Google 응답에 location이 없어 Place.latitude/longitude가 null로 캐시된 경우
+        // (PlaceCatalogService.upsertAll이 실제로 만들 수 있는 상태) — 이게 upsertAll의 캐시
+        // 히트로도 재현되므로, 여기서는 이미 좌표 없이 저장된 Place를 직접 흉내낸다.
+        Place noCoordPlace = new Place("gp-no-coord", "좌표없는곳", "cafe", null, null, null, null, null, null);
+        Place withCoordPlace = new Place("gp-with-coord", "좌표있는곳", "cafe", null, null, null, 37.502, 127.002, "주소2");
+        when(placeCatalogService.upsertAll(List.of(rawNoCoord, rawWithCoord)))
+                .thenReturn(List.of(noCoordPlace, withCoordPlace));
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result).isPresent();
+        assertThat(result.get()).extracting(AlternativeCandidate::googlePlaceId).containsExactly("gp-with-coord");
+    }
+
+    @Test
+    void 교체_대상_자기_자신은_후보에서_제외된다() {
+        User owner = user();
+        TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
+        place.applyGooglePlaceId("gp-self");
+        when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+
+        var rawSelf = new GooglePlacesNearbySearchResponse.Place(
+                "gp-self", new GooglePlacesNearbySearchResponse.Place.DisplayName("원래 장소"),
+                List.of("cafe"), 4.0, 10, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.5, 127.0), "주소");
+        var rawOther = new GooglePlacesNearbySearchResponse.Place(
+                "gp-other", new GooglePlacesNearbySearchResponse.Place.DisplayName("다른 카페"),
+                List.of("cafe"), 4.2, 5, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.501, 127.001), "주소2");
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(rawSelf, rawOther)));
+
+        Place selfPlace = new Place("gp-self", "원래 장소", "cafe", 4.0, 10, null, 37.5, 127.0, "주소");
+        Place otherPlace = new Place("gp-other", "다른 카페", "cafe", 4.2, 5, null, 37.501, 127.001, "주소2");
+        when(placeCatalogService.upsertAll(List.of(rawSelf, rawOther))).thenReturn(List.of(selfPlace, otherPlace));
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result).isPresent();
+        assertThat(result.get()).extracting(AlternativeCandidate::googlePlaceId).containsExactly("gp-other");
     }
 }

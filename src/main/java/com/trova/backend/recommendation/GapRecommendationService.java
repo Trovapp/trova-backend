@@ -7,6 +7,7 @@ import com.trova.backend.entity.User;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
+import com.trova.backend.service.ApiCallLogService;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -34,17 +35,19 @@ public class GapRecommendationService {
     private final TripPlaceRepository tripPlaceRepository;
     private final GooglePlacesApiClient googlePlacesApiClient;
     private final PlaceCatalogService placeCatalogService;
+    private final ApiCallLogService apiCallLogService;
 
     public GapRecommendationService(
             TripRepository tripRepository, ItineraryRepository itineraryRepository,
             TripPlaceRepository tripPlaceRepository, GooglePlacesApiClient googlePlacesApiClient,
-            PlaceCatalogService placeCatalogService
+            PlaceCatalogService placeCatalogService, ApiCallLogService apiCallLogService
     ) {
         this.tripRepository = tripRepository;
         this.itineraryRepository = itineraryRepository;
         this.tripPlaceRepository = tripPlaceRepository;
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeCatalogService = placeCatalogService;
+        this.apiCallLogService = apiCallLogService;
     }
 
     public Optional<List<Gap>> findGaps(User user, Long tripId, int day) {
@@ -78,17 +81,27 @@ public class GapRecommendationService {
             double midLat = (before.getLatitude() + after.getLatitude()) / 2;
             double midLng = (before.getLongitude() + after.getLongitude()) / 2;
             // 검색 실패를 500으로 흘려보내지 않는다 — AlternativeFinderService와 같은 원칙.
+            long searchStart = System.currentTimeMillis();
             GooglePlacesNearbySearchResponse response;
             try {
                 response = googlePlacesApiClient.searchNearby(midLat, midLng, SEARCH_RADIUS_METERS, null);
+                apiCallLogService.record(
+                        "google-places", "nearby-search-alternative", null,
+                        System.currentTimeMillis() - searchStart, true, null, null, null, null);
             } catch (Exception e) {
+                apiCallLogService.record(
+                        "google-places", "nearby-search-alternative", null,
+                        System.currentTimeMillis() - searchStart, false, e.getMessage(), null, null, null);
                 response = new GooglePlacesNearbySearchResponse(List.of());
             }
             List<GooglePlacesNearbySearchResponse.Place> raw =
                     response.places() != null ? response.places() : List.of();
             List<Place> candidates = raw.isEmpty() ? List.of() : placeCatalogService.upsertAll(raw);
 
+            // before/after 자기 자신이 "빈 시간 추천"으로 다시 튀어나오면 안 된다 —
+            // 중간 삽입해봐야 원래 있던 그 장소를 다시 넣는 무의미한 결과가 된다.
             List<AlternativeCandidate> recommendations = candidates.stream()
+                    .filter(c -> !isSameGooglePlace(c, before) && !isSameGooglePlace(c, after))
                     .map(c -> new AlternativeCandidate(
                             c.getId(), c.getGooglePlaceId(), c.getName(), c.getCategory(), c.getRating(),
                             c.getUserRatingCount(), c.getLatitude(), c.getLongitude(), c.getAddress(),
@@ -98,5 +111,10 @@ public class GapRecommendationService {
             gaps.add(new Gap(before.getId(), after.getId(), (int) gap.toMinutes(), recommendations));
         }
         return gaps;
+    }
+
+    private boolean isSameGooglePlace(Place candidate, TripPlace tripPlace) {
+        return tripPlace.getGooglePlaceId() != null
+                && tripPlace.getGooglePlaceId().equals(candidate.getGooglePlaceId());
     }
 }

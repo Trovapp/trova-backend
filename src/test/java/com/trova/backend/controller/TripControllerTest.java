@@ -339,6 +339,30 @@ class TripControllerTest {
     }
 
     @Test
+    void 대안_찾기는_필터_쿼리파라미터를_반영해_실제_후보를_바인딩한다() throws Exception {
+        User me = userRepository.save(new User("google", "alt4", "대안유저4", null));
+        Trip t = trip(me, 1);
+        Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
+        TripPlace place = tripPlace(day1, "장소", 37.5, 127.0, 1);
+
+        var raw = new GooglePlacesNearbySearchResponse.Place(
+                "gp-alt-4", new GooglePlacesNearbySearchResponse.Place.DisplayName("대안카페"),
+                List.of("cafe"), 4.5, 30, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.501, 127.001), "서울 어딘가");
+        when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any()))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(raw)));
+
+        mockMvc.perform(get("/api/trip-places/" + place.getId() + "/alternatives")
+                        .with(loginAs("alt4", "대안유저4"))
+                        .param("category", "카페")
+                        .param("maxDistanceKm", "5.0")
+                        .param("transportMode", "WALK"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].googlePlaceId").value("gp-alt-4"))
+                .andExpect(jsonPath("$[0].name").value("대안카페"));
+    }
+
+    @Test
     void 타인_소유_장소의_대안_찾기는_404() throws Exception {
         User me = userRepository.save(new User("google", "alt2", "대안유저2", null));
         User other = userRepository.save(new User("google", "alt3", "대안유저3", null));
