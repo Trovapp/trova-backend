@@ -126,13 +126,8 @@ public class AlternativeFinderService {
         return Optional.of(result);
     }
 
-    // User.id는 영속화되지 않은 엔티티(예: 지연 로딩 프록시 초기화 전, 혹은 단위 테스트에서
-    // 직접 생성한 객체)에서 null일 수 있어 id 비교 대신 (provider, providerUserId) 자연키로
-    // 비교한다 — User 테이블의 유니크 제약과 동일한 기준이라 의미상으로도 더 정확하다.
     private boolean isOwner(TripPlace place, User user) {
-        User owner = place.getItinerary().getTrip().getUser();
-        return owner.getProvider().equals(user.getProvider())
-                && owner.getProviderUserId().equals(user.getProviderUserId());
+        return place.getItinerary().getTrip().getUser().getId().equals(user.getId());
     }
 
     private TripPlace findNext(TripPlace target) {

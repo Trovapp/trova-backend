@@ -27,8 +27,20 @@ class AlternativeFinderServiceTest {
     @Mock private PlaceTaggingRunner placeTaggingRunner;
     @InjectMocks private AlternativeFinderService alternativeFinderService;
 
+    private void setId(Object entity, Long id) {
+        try {
+            var field = entity.getClass().getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(entity, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private User user() {
-        return new User("google", "alt-user", "테스트", null);
+        User u = new User("google", "alt-user", "테스트", null);
+        setId(u, 1L);
+        return u;
     }
 
     private TripPlace tripPlace(Long id, User owner, Double lat, Double lng) {
@@ -36,13 +48,7 @@ class AlternativeFinderServiceTest {
         Itinerary itinerary = new Itinerary(trip, 1, null);
         TripPlace place = new TripPlace(
                 itinerary, "원래 장소", null, "cafe", lat, lng, null, null, 1, PlaceSource.NORMAL, null);
-        try {
-            var field = TripPlace.class.getDeclaredField("id");
-            field.setAccessible(true);
-            field.set(place, id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        setId(place, id);
         return place;
     }
 
@@ -60,6 +66,7 @@ class AlternativeFinderServiceTest {
     void 타인_소유_장소면_빈값을_반환한다() {
         User owner = user();
         User other = new User("google", "other", "남", null);
+        setId(other, 2L);
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
 
@@ -135,13 +142,7 @@ class AlternativeFinderServiceTest {
         Itinerary itinerary = new Itinerary(trip, 1, null);
         TripPlace place = new TripPlace(itinerary, "원래", null, "cafe", 37.500, 127.000, null, null, 1, PlaceSource.NORMAL, null);
         TripPlace next = new TripPlace(itinerary, "다음", null, "cafe", 37.510, 127.000, null, null, 2, PlaceSource.NORMAL, null);
-        try {
-            var f = TripPlace.class.getDeclaredField("id");
-            f.setAccessible(true);
-            f.set(place, 1L);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        setId(place, 1L);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
         when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(place, next));
 
