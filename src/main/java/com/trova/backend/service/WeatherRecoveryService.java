@@ -2,18 +2,13 @@ package com.trova.backend.service;
 
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Notification;
-import com.trova.backend.entity.NotificationAlternative;
 import com.trova.backend.entity.TripPlace;
-import com.trova.backend.geocoding.KakaoKeywordSearchResponse;
-import com.trova.backend.geocoding.KakaoLocalApiClient;
 import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.weather.OpenWeatherApiClient;
 import com.trova.backend.weather.OpenWeatherForecastResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,30 +26,25 @@ import java.util.stream.Collectors;
 @Service
 public class WeatherRecoveryService {
 
-    private static final Logger log = LoggerFactory.getLogger(WeatherRecoveryService.class);
     private static final DateTimeFormatter DT_TEXT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     // Plan B에서 그대로 가져온 값 — Trova 실사용 데이터로 재검증한 적 없음(0-5 원칙).
     private static final double RAIN_PROBABILITY_THRESHOLD = 0.5;
-    private static final int MAX_ALTERNATIVES = 3;
 
     private final TripPlaceRepository tripPlaceRepository;
     private final PlaceTaggingRunner placeTaggingRunner;
     private final OpenWeatherApiClient openWeatherApiClient;
-    private final KakaoLocalApiClient kakaoLocalApiClient;
     private final NotificationRepository notificationRepository;
 
     public WeatherRecoveryService(
             TripPlaceRepository tripPlaceRepository,
             PlaceTaggingRunner placeTaggingRunner,
             OpenWeatherApiClient openWeatherApiClient,
-            KakaoLocalApiClient kakaoLocalApiClient,
             NotificationRepository notificationRepository
     ) {
         this.tripPlaceRepository = tripPlaceRepository;
         this.placeTaggingRunner = placeTaggingRunner;
         this.openWeatherApiClient = openWeatherApiClient;
-        this.kakaoLocalApiClient = kakaoLocalApiClient;
         this.notificationRepository = notificationRepository;
     }
 
@@ -89,14 +79,12 @@ public class WeatherRecoveryService {
             return Optional.empty();
         }
 
-        List<NotificationAlternative> alternatives = findIndoorAlternatives(reference);
-
         Notification notification = new Notification(
                 itinerary.getTrip().getUser(), itinerary, "비 소식이 있어요",
                 String.format(
                         "%d일차(%s)에 강수확률 %.0f%%예요. %s 근처 실내 대안을 확인해보세요.",
                         itinerary.getDay(), itinerary.getDate(), maxPop * 100, reference.getPlaceName()),
-                maxPop, alternatives);
+                maxPop, reference.getId());
         return Optional.of(notificationRepository.save(notification));
     }
 
@@ -139,31 +127,5 @@ public class WeatherRecoveryService {
                 .mapToDouble(entry -> entry.pop() != null ? entry.pop() : 0.0)
                 .max()
                 .orElse(0.0);
-    }
-
-    /**
-     * 카카오 키워드 검색으로 실내 대안을 찾는다 — 구글 Places 카탈로그와 섞지 않고
-     * (0-1: provider 혼용 방지), 영상 파이프라인과 같은 카카오 기반으로 일관되게 유지.
-     * 정확한 반경 검색이 아니라 지역명 기반 키워드 검색이라 근사치다(기존 지오코딩
-     * 폴백과 동일한 수준의 정밀도 — MVP 범위).
-     */
-    private List<NotificationAlternative> findIndoorAlternatives(TripPlace reference) {
-        try {
-            String region = reference.getRegion() != null ? reference.getRegion() : "";
-            KakaoKeywordSearchResponse response = kakaoLocalApiClient.searchKeyword((region + " 실내 명소").trim());
-            if (response == null || response.documents() == null) {
-                return List.of();
-            }
-            return response.documents().stream()
-                    .limit(MAX_ALTERNATIVES)
-                    .map(doc -> new NotificationAlternative(
-                            doc.placeName(), doc.addressName(),
-                            doc.y() != null ? Double.parseDouble(doc.y()) : null,
-                            doc.x() != null ? Double.parseDouble(doc.x()) : null))
-                    .toList();
-        } catch (Exception e) {
-            log.warn("실내 대안 검색 실패 — 대안 없이 알림만 생성", e);
-            return List.of();
-        }
     }
 }

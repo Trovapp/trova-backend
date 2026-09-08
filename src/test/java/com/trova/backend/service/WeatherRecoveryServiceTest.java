@@ -1,8 +1,6 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.*;
-import com.trova.backend.geocoding.KakaoKeywordSearchResponse;
-import com.trova.backend.geocoding.KakaoLocalApiClient;
 import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
 import com.trova.backend.repository.NotificationRepository;
@@ -30,7 +28,6 @@ class WeatherRecoveryServiceTest {
     @Mock private TripPlaceRepository tripPlaceRepository;
     @Mock private PlaceTaggingRunner placeTaggingRunner;
     @Mock private OpenWeatherApiClient openWeatherApiClient;
-    @Mock private KakaoLocalApiClient kakaoLocalApiClient;
     @Mock private NotificationRepository notificationRepository;
 
     private WeatherRecoveryService service;
@@ -49,7 +46,7 @@ class WeatherRecoveryServiceTest {
 
     private void setUp() {
         service = new WeatherRecoveryService(
-                tripPlaceRepository, placeTaggingRunner, openWeatherApiClient, kakaoLocalApiClient, notificationRepository);
+                tripPlaceRepository, placeTaggingRunner, openWeatherApiClient, notificationRepository);
     }
 
     @Test
@@ -61,17 +58,13 @@ class WeatherRecoveryServiceTest {
         when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
                 new OpenWeatherForecastResponse.Entry(0L, "2026-10-01 12:00:00", 0.8)
         )));
-        when(kakaoLocalApiClient.searchKeyword("부산 실내 명소")).thenReturn(new KakaoKeywordSearchResponse(List.of(
-                new KakaoKeywordSearchResponse.Document("부산 아쿠아리움", "129.15", "35.15", null, "부산 해운대", null, null, null)
-        )));
         when(notificationRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         Optional<Notification> result = service.checkAndNotify(itinerary);
 
         assertThat(result).isPresent();
         assertThat(result.get().getPrecipitationProb()).isEqualTo(0.8);
-        assertThat(result.get().getAlternatives()).hasSize(1);
-        assertThat(result.get().getAlternatives().get(0).getName()).isEqualTo("부산 아쿠아리움");
+        assertThat(result.get().getTripPlaceId()).isEqualTo(place.getId());
         verify(placeTaggingRunner, never()).run(any(), anyLong());
     }
 
@@ -85,7 +78,6 @@ class WeatherRecoveryServiceTest {
         when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
                 new OpenWeatherForecastResponse.Entry(0L, "2026-10-01 12:00:00", 0.9)
         )));
-        when(kakaoLocalApiClient.searchKeyword(any())).thenReturn(new KakaoKeywordSearchResponse(List.of()));
         when(notificationRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         Optional<Notification> result = service.checkAndNotify(itinerary);
@@ -127,7 +119,7 @@ class WeatherRecoveryServiceTest {
     @Test
     void 이미_알림이_있으면_다시_만들지_않는다() {
         setUp();
-        Notification existing = new Notification(user, itinerary, "t", "b", 0.9, List.of());
+        Notification existing = new Notification(user, itinerary, "t", "b", 0.9, 1L);
         when(notificationRepository.findByItinerary(itinerary)).thenReturn(Optional.of(existing));
 
         Optional<Notification> result = service.checkAndNotify(itinerary);

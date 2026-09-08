@@ -3,11 +3,13 @@ package com.trova.backend.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * 날씨 체크 결과로 생긴 인앱 알림. 폴링으로만 확인한다(푸시/이메일 없음 — Trova는
  * 웹이라 모바일 푸시 인프라가 없어서 0-1 원칙대로 Plan B와 다르게 감).
+ *
+ * 대안 장소는 더 이상 알림에 미리 계산해서 담아두지 않는다 — tripPlaceId로 그
+ * 장소의 대안 찾기 화면(GET /api/trip-places/{id}/alternatives)을 직접 연다.
  */
 @Entity
 @Table(name = "notifications")
@@ -34,9 +36,8 @@ public class Notification {
     @Column(name = "precipitation_prob", nullable = false)
     private Double precipitationProb;
 
-    @ElementCollection
-    @CollectionTable(name = "notification_alternatives", joinColumns = @JoinColumn(name = "notification_id"))
-    private List<NotificationAlternative> alternatives;
+    @Column(name = "trip_place_id", nullable = false)
+    private Long tripPlaceId;
 
     @Column(name = "is_read", nullable = false)
     private boolean isRead;
@@ -49,14 +50,14 @@ public class Notification {
 
     public Notification(
             User user, Itinerary itinerary, String title, String body,
-            Double precipitationProb, List<NotificationAlternative> alternatives
+            Double precipitationProb, Long tripPlaceId
     ) {
         this.user = user;
         this.itinerary = itinerary;
         this.title = title;
         this.body = body;
         this.precipitationProb = precipitationProb;
-        this.alternatives = alternatives;
+        this.tripPlaceId = tripPlaceId;
         this.isRead = false;
         this.createdAt = LocalDateTime.now();
     }
@@ -71,7 +72,7 @@ public class Notification {
     public String getTitle() { return title; }
     public String getBody() { return body; }
     public Double getPrecipitationProb() { return precipitationProb; }
-    public List<NotificationAlternative> getAlternatives() { return alternatives; }
+    public Long getTripPlaceId() { return tripPlaceId; }
     public boolean isRead() { return isRead; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

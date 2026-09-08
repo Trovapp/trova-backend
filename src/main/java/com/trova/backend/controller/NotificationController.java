@@ -1,7 +1,6 @@
 package com.trova.backend.controller;
 
 import com.trova.backend.entity.Notification;
-import com.trova.backend.entity.NotificationAlternative;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.service.CurrentUserService;
@@ -23,21 +22,14 @@ public class NotificationController {
         this.notificationRepository = notificationRepository;
     }
 
-    public record AlternativeResponse(String name, String address, Double latitude, Double longitude) {
-        static AlternativeResponse from(NotificationAlternative alt) {
-            return new AlternativeResponse(alt.getName(), alt.getAddress(), alt.getLatitude(), alt.getLongitude());
-        }
-    }
-
     public record NotificationResponse(
             Long id, Long tripId, Integer day, String title, String body,
-            Double precipitationProb, List<AlternativeResponse> alternatives, String createdAt
+            Double precipitationProb, Long tripPlaceId, String createdAt
     ) {
         static NotificationResponse from(Notification n) {
             return new NotificationResponse(
                     n.getId(), n.getItinerary().getTrip().getId(), n.getItinerary().getDay(),
-                    n.getTitle(), n.getBody(), n.getPrecipitationProb(),
-                    n.getAlternatives().stream().map(AlternativeResponse::from).toList(),
+                    n.getTitle(), n.getBody(), n.getPrecipitationProb(), n.getTripPlaceId(),
                     n.getCreatedAt().toString());
         }
     }
