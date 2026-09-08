@@ -143,6 +143,16 @@ public class TripService {
                 });
     }
 
+    @Transactional
+    public Optional<TripPlace> replacePlace(User user, Long tripPlaceId, String googlePlaceId) {
+        return tripPlaceRepository.findById(tripPlaceId)
+                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .flatMap(place -> placeRepository.findByGooglePlaceId(googlePlaceId).map(newPlace -> {
+                    place.applyReplacement(newPlace);
+                    return tripPlaceRepository.save(place);
+                }));
+    }
+
     public boolean removePlace(User user, Long tripPlaceId) {
         return tripPlaceRepository.findById(tripPlaceId)
                 .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))

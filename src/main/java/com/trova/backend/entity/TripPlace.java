@@ -119,6 +119,24 @@ public class TripPlace {
         this.googlePlaceId = googlePlaceId;
     }
 
+    /**
+     * 대안으로 교체한다 — 방문순서/시간/이동수단은 그대로 두고(같은 시간대에
+     * 다른 곳을 가는 것뿐이라 여전히 유효), 메모는 원래 장소 기준으로 쓰였을
+     * 가능성이 커서 비운다. region은 Place 카탈로그에 없는 필드라 null로 —
+     * addPlaceToDay가 NORMAL 출처 장소를 만들 때와 동일한 규칙.
+     */
+    public void applyReplacement(Place newPlace) {
+        this.placeName = newPlace.getName();
+        this.region = null;
+        this.category = newPlace.getCategory();
+        this.latitude = newPlace.getLatitude();
+        this.longitude = newPlace.getLongitude();
+        this.address = newPlace.getAddress();
+        this.googlePlaceId = newPlace.getGooglePlaceId();
+        this.savedPlaceId = null;
+        this.memo = null;
+    }
+
     public void applyDetails(
             LocalTime visitStartTime, LocalTime visitEndTime, TransportMode arrivalTransportMode, String memo
     ) {

@@ -70,6 +70,9 @@ public class TripController {
     public record AddPlaceRequest(String googlePlaceId) {
     }
 
+    public record ReplaceRequest(String googlePlaceId) {
+    }
+
     public record ReorderRequest(String direction) {
     }
 
@@ -204,6 +207,19 @@ public class TripController {
         }
         User user = currentUserService.resolve(authentication);
         return tripService.addPlaceToDay(user, tripId, day, request.googlePlaceId())
+                .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/api/trip-places/{id}/replace")
+    public ResponseEntity<TripPlaceResponse> replacePlace(
+            Authentication authentication, @PathVariable Long id, @RequestBody ReplaceRequest request
+    ) {
+        if (request == null || request.googlePlaceId() == null || request.googlePlaceId().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        User user = currentUserService.resolve(authentication);
+        return tripService.replacePlace(user, id, request.googlePlaceId())
                 .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

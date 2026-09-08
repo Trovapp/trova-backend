@@ -13,6 +13,7 @@ import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
+import com.trova.backend.service.TripService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,9 @@ class TripControllerTest {
 
     @Autowired
     private PlaceRepository placeRepository;
+
+    @Autowired
+    private TripService tripService;
 
     @MockitoBean
     private GooglePlacesApiClient googlePlacesApiClient;
@@ -344,6 +348,41 @@ class TripControllerTest {
 
         mockMvc.perform(get("/api/trip-places/" + place.getId() + "/alternatives")
                         .with(loginAs("alt2", "대안유저2")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void 대안으로_교체하면_이름_좌표_카테고리가_바뀌고_시간은_유지된다() throws Exception {
+        User me = userRepository.save(new User("google", "rep1", "교체유저1", null));
+        Trip t = trip(me, 1);
+        Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
+        TripPlace place = tripPlace(day1, "원래장소", 37.5, 127.0, 1);
+        tripService.updateDetails(me, place.getId(), java.time.LocalTime.of(10, 0), null, null, "원래 메모");
+        placeRepository.save(new Place("gp-new", "새장소", "restaurant", 4.1, 20, null, 37.6, 127.1, "새 주소"));
+
+        mockMvc.perform(post("/api/trip-places/" + place.getId() + "/replace")
+                        .with(loginAs("rep1", "교체유저1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"googlePlaceId\":\"gp-new\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.placeName").value("새장소"))
+                .andExpect(jsonPath("$.category").value("restaurant"))
+                .andExpect(jsonPath("$.visitStartTime").value("10:00:00"));
+
+        assertThat(tripPlaceRepository.findById(place.getId()).orElseThrow().getMemo()).isNull();
+    }
+
+    @Test
+    void 존재하지_않는_googlePlaceId로_교체하면_404() throws Exception {
+        User me = userRepository.save(new User("google", "rep2", "교체유저2", null));
+        Trip t = trip(me, 1);
+        Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
+        TripPlace place = tripPlace(day1, "장소", 37.5, 127.0, 1);
+
+        mockMvc.perform(post("/api/trip-places/" + place.getId() + "/replace")
+                        .with(loginAs("rep2", "교체유저2"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"googlePlaceId\":\"nope\"}"))
                 .andExpect(status().isNotFound());
     }
 }
