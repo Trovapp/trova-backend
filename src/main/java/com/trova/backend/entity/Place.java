@@ -88,6 +88,10 @@ public class Place {
         this.space = space;
     }
 
+    public void applySpaceTag(String space) {
+        this.space = space;
+    }
+
     public void applyReviewSummary(String reviewSummary) {
         this.reviewSummary = reviewSummary;
         this.reviewSummaryGeneratedAt = LocalDateTime.now();
