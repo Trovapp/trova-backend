@@ -50,5 +50,7 @@ app:
     places-api-key: test-google-places-api-key
   weather:
     openweather-api-key: test-openweather-api-key
+  congestion:
+    seoul-opendata-api-key: test-seoul-opendata-api-key
   jwt-secret: test-jwt-secret-please-do-not-use-in-production-environment
   mobile-redirect-scheme: trova

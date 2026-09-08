@@ -73,5 +73,7 @@ app:
     places-api-key: ${GOOGLE_PLACES_API_KEY:}
   weather:
     openweather-api-key: ${OPENWEATHER_API_KEY:}
+  congestion:
+    seoul-opendata-api-key: ${SEOUL_OPENDATA_API_KEY:}
   jwt-secret: ${JWT_SECRET}
   mobile-redirect-scheme: ${MOBILE_REDIRECT_SCHEME:trova}

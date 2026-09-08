@@ -1,5 +1,6 @@
 package com.trova.backend.recommendation;
 
+import com.trova.backend.congestion.SeoulCongestionApiClient;
 import com.trova.backend.entity.*;
 import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
@@ -25,6 +26,7 @@ class AlternativeFinderServiceTest {
     @Mock private PlaceCatalogService placeCatalogService;
     @Mock private TripPlaceRepository tripPlaceRepository;
     @Mock private PlaceTaggingRunner placeTaggingRunner;
+    @Mock private SeoulCongestionApiClient seoulCongestionApiClient;
     @InjectMocks private AlternativeFinderService alternativeFinderService;
 
     private void setId(Object entity, Long id) {

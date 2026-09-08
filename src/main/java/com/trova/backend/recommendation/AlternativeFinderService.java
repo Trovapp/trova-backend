@@ -1,5 +1,8 @@
 package com.trova.backend.recommendation;
 
+import com.trova.backend.congestion.SeoulCongestionApiClient;
+import com.trova.backend.congestion.SeoulCongestionAreaCache;
+import com.trova.backend.congestion.SeoulCongestionResponse;
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.TransportMode;
 import com.trova.backend.entity.TripPlace;
@@ -17,8 +20,9 @@ import java.util.stream.Collectors;
 
 /**
  * 일정 장소 하나를 기준으로 필터(카테고리/실내외/거리/이동시간)에 맞는 대안 후보를
- * 구글 Places 근처 검색으로 찾는다. 혼잡도는 별도 클라이언트(SeoulCongestionApiClient)가
- * 채워넣는다 — 이 서비스는 혼잡도 필드를 항상 false/null로 둔다.
+ * 구글 Places 근처 검색으로 찾는다. 후보명이 서울 혼잡도 API가 커버하는 장소
+ * 목록(SeoulCongestionAreaCache)에 있을 때만 SeoulCongestionApiClient를 호출해
+ * 혼잡도 배지를 채운다 — 그 외에는 항상 false/null로 둔다.
  */
 @Service
 public class AlternativeFinderService {
@@ -36,17 +40,20 @@ public class AlternativeFinderService {
     private final PlaceCatalogService placeCatalogService;
     private final TripPlaceRepository tripPlaceRepository;
     private final PlaceTaggingRunner placeTaggingRunner;
+    private final SeoulCongestionApiClient seoulCongestionApiClient;
 
     public AlternativeFinderService(
             GooglePlacesApiClient googlePlacesApiClient,
             PlaceCatalogService placeCatalogService,
             TripPlaceRepository tripPlaceRepository,
-            PlaceTaggingRunner placeTaggingRunner
+            PlaceTaggingRunner placeTaggingRunner,
+            SeoulCongestionApiClient seoulCongestionApiClient
     ) {
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeCatalogService = placeCatalogService;
         this.tripPlaceRepository = tripPlaceRepository;
         this.placeTaggingRunner = placeTaggingRunner;
+        this.seoulCongestionApiClient = seoulCongestionApiClient;
     }
 
     public Optional<List<AlternativeCandidate>> findAlternatives(User user, Long tripPlaceId, AlternativeFilter filter) {
@@ -118,10 +125,22 @@ public class AlternativeFinderService {
                 continue;
             }
 
+            boolean congestionAvailable = false;
+            String congestionLevel = null;
+            if (SeoulCongestionAreaCache.isKnownArea(candidate.getName())) {
+                Optional<SeoulCongestionResponse> congestion = seoulCongestionApiClient.fetchCongestion(candidate.getName());
+                if (congestion.isPresent() && congestion.get().cityData() != null
+                        && congestion.get().cityData().livePopulation() != null
+                        && !congestion.get().cityData().livePopulation().isEmpty()) {
+                    congestionAvailable = true;
+                    congestionLevel = congestion.get().cityData().livePopulation().get(0).areaCongestLevel();
+                }
+            }
+
             result.add(new AlternativeCandidate(
                     candidate.getId(), candidate.getGooglePlaceId(), candidate.getName(), candidate.getCategory(),
                     candidate.getRating(), candidate.getUserRatingCount(), candidate.getLatitude(), candidate.getLongitude(),
-                    candidate.getAddress(), distanceToNextKm, estimatedTravelMinutes, false, null));
+                    candidate.getAddress(), distanceToNextKm, estimatedTravelMinutes, congestionAvailable, congestionLevel));
         }
         return Optional.of(result);
     }
