@@ -29,6 +29,7 @@ class AlternativeFinderServiceTest {
     @Mock private PlaceTaggingRunner placeTaggingRunner;
     @Mock private SeoulCongestionApiClient seoulCongestionApiClient;
     @Mock private ApiCallLogService apiCallLogService;
+    @Mock private PlaceEmbeddingService placeEmbeddingService;
     @InjectMocks private AlternativeFinderService alternativeFinderService;
 
     private void setId(Object entity, Long id) {

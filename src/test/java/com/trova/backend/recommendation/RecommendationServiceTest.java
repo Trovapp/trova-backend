@@ -40,6 +40,9 @@ class RecommendationServiceTest {
     @Mock
     private UserPreferenceRepository userPreferenceRepository;
 
+    @Mock
+    private PlaceEmbeddingService placeEmbeddingService;
+
     @InjectMocks
     private RecommendationService recommendationService;
 

@@ -47,6 +47,7 @@ public class AlternativeFinderService {
     private final PlaceTaggingRunner placeTaggingRunner;
     private final SeoulCongestionApiClient seoulCongestionApiClient;
     private final ApiCallLogService apiCallLogService;
+    private final PlaceEmbeddingService placeEmbeddingService;
 
     public AlternativeFinderService(
             GooglePlacesApiClient googlePlacesApiClient,
@@ -54,7 +55,8 @@ public class AlternativeFinderService {
             TripPlaceRepository tripPlaceRepository,
             PlaceTaggingRunner placeTaggingRunner,
             SeoulCongestionApiClient seoulCongestionApiClient,
-            ApiCallLogService apiCallLogService
+            ApiCallLogService apiCallLogService,
+            PlaceEmbeddingService placeEmbeddingService
     ) {
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeCatalogService = placeCatalogService;
@@ -62,6 +64,7 @@ public class AlternativeFinderService {
         this.placeTaggingRunner = placeTaggingRunner;
         this.seoulCongestionApiClient = seoulCongestionApiClient;
         this.apiCallLogService = apiCallLogService;
+        this.placeEmbeddingService = placeEmbeddingService;
     }
 
     public Optional<List<AlternativeCandidate>> findAlternatives(User user, Long tripPlaceId, AlternativeFilter filter) {
@@ -126,6 +129,8 @@ public class AlternativeFinderService {
                     .filter(p -> containsIgnoreCase(p.getName(), needle) || containsIgnoreCase(p.getCategory(), needle))
                     .toList();
         }
+
+        placeEmbeddingService.ensureEmbeddings(candidates);
 
         List<AlternativeCandidate> result = new ArrayList<>();
         for (Place candidate : candidates) {

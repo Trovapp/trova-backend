@@ -8,6 +8,7 @@ import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.GooglePlacesApiClient;
 import com.trova.backend.recommendation.GooglePlacesNearbySearchResponse;
+import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
@@ -70,6 +71,14 @@ class TripControllerTest {
 
     @MockitoBean
     private GooglePlacesApiClient googlePlacesApiClient;
+
+    // embedding 컬럼은 pgvector 타입이라 H2 테스트 DB 스키마에 없다(PlaceRepository 주석
+    // 참고). 대안/빈시간 추천 경로에 PlaceEmbeddingService.ensureEmbeddings가 실제로
+    // 연결된 뒤(개인화 랭킹 Task 6) 실제 빈을 타면 findIdsWithEmbedding 네이티브 쿼리가
+    // "Column EMBEDDING not found"로 깨진다 — 다른 외부 연동(GooglePlacesApiClient)과
+    // 같은 이유로 목 처리한다.
+    @MockitoBean
+    private PlaceEmbeddingService placeEmbeddingService;
 
     @BeforeEach
     void stubGooglePlaces() {

@@ -32,19 +32,22 @@ public class RecommendationService {
     private final PlaceRepository placeRepository;
     private final PlaceTaggingRunner placeTaggingRunner;
     private final UserPreferenceRepository userPreferenceRepository;
+    private final PlaceEmbeddingService placeEmbeddingService;
 
     public RecommendationService(
             GooglePlacesApiClient googlePlacesApiClient,
             PlaceCatalogService placeCatalogService,
             PlaceRepository placeRepository,
             PlaceTaggingRunner placeTaggingRunner,
-            UserPreferenceRepository userPreferenceRepository
+            UserPreferenceRepository userPreferenceRepository,
+            PlaceEmbeddingService placeEmbeddingService
     ) {
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeCatalogService = placeCatalogService;
         this.placeRepository = placeRepository;
         this.placeTaggingRunner = placeTaggingRunner;
         this.userPreferenceRepository = userPreferenceRepository;
+        this.placeEmbeddingService = placeEmbeddingService;
     }
 
     public List<Place> recommend(User user, double latitude, double longitude, double radiusMeters) {
@@ -63,6 +66,7 @@ public class RecommendationService {
                 .toList();
 
         tagMissing(funnel);
+        placeEmbeddingService.ensureEmbeddings(funnel);
 
         Map<String, Double> preferenceByMood = userPreferenceRepository.findByUser(user).stream()
                 .collect(Collectors.toMap(UserPreference::getMood, UserPreference::getScore));

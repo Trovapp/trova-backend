@@ -36,11 +36,13 @@ public class GapRecommendationService {
     private final GooglePlacesApiClient googlePlacesApiClient;
     private final PlaceCatalogService placeCatalogService;
     private final ApiCallLogService apiCallLogService;
+    private final PlaceEmbeddingService placeEmbeddingService;
 
     public GapRecommendationService(
             TripRepository tripRepository, ItineraryRepository itineraryRepository,
             TripPlaceRepository tripPlaceRepository, GooglePlacesApiClient googlePlacesApiClient,
-            PlaceCatalogService placeCatalogService, ApiCallLogService apiCallLogService
+            PlaceCatalogService placeCatalogService, ApiCallLogService apiCallLogService,
+            PlaceEmbeddingService placeEmbeddingService
     ) {
         this.tripRepository = tripRepository;
         this.itineraryRepository = itineraryRepository;
@@ -48,6 +50,7 @@ public class GapRecommendationService {
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeCatalogService = placeCatalogService;
         this.apiCallLogService = apiCallLogService;
+        this.placeEmbeddingService = placeEmbeddingService;
     }
 
     public Optional<List<Gap>> findGaps(User user, Long tripId, int day) {
@@ -97,6 +100,7 @@ public class GapRecommendationService {
             List<GooglePlacesNearbySearchResponse.Place> raw =
                     response.places() != null ? response.places() : List.of();
             List<Place> candidates = raw.isEmpty() ? List.of() : placeCatalogService.upsertAll(raw);
+            placeEmbeddingService.ensureEmbeddings(candidates);
 
             // before/after 자기 자신이 "빈 시간 추천"으로 다시 튀어나오면 안 된다 —
             // 중간 삽입해봐야 원래 있던 그 장소를 다시 넣는 무의미한 결과가 된다.
