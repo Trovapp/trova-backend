@@ -58,7 +58,7 @@ public class RecommendationService {
 
         List<Place> funnel = upserted.stream()
                 .filter(p -> p.getUserRatingCount() != null && p.getUserRatingCount() >= MIN_REVIEW_COUNT)
-                .sorted(Comparator.comparingDouble(this::score).reversed())
+                .sorted(Comparator.comparingDouble(PlaceScoring::baseScore).reversed())
                 .limit(FUNNEL_TOP_N)
                 .toList();
 
@@ -74,7 +74,7 @@ public class RecommendationService {
     }
 
     private double scoreWithPreference(Place place, Map<String, Double> preferenceByMood) {
-        double base = score(place);
+        double base = PlaceScoring.baseScore(place);
         double preference = place.getMood() != null ? preferenceByMood.getOrDefault(place.getMood(), 0.0) : 0.0;
         return base + preference * PREFERENCE_BOOST_WEIGHT;
     }
@@ -108,9 +108,4 @@ public class RecommendationService {
         }
     }
 
-    private double score(Place place) {
-        double rating = place.getRating() != null ? place.getRating() : 0.0;
-        int reviewCount = place.getUserRatingCount() != null ? place.getUserRatingCount() : 0;
-        return rating * Math.log(reviewCount + 1);
-    }
 }
