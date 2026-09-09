@@ -1,5 +1,10 @@
 # 개인화 추천(RAG 기반) Phase 1 — 설계 스펙
 
+> **v2 수정**: 처음 버전은 검색(Retrieval)만 있고 생성(Generation)이 없어서
+> 엄밀히는 RAG가 아니라 "임베딩 기반 랭킹"이었다. 대화형 비서(Phase 2) 전체를
+> 끌어오지 않고도 완전한 RAG로 만들 수 있는 최소 단위(추천 이유 한 줄 생성)를
+> 이번 수정에서 Phase 1에 포함시켰다 — "생성 단계(Generation)" 절 참고.
+
 ## 배경
 
 트로바는 인스타/유튜브 여행 영상에서 장소를 추출해 지도에 정리해주는 서비스다.
@@ -15,12 +20,16 @@
 이번 요청은 이걸 넘어서 "RAG 기반의 완전한 개인 AI 에이전트"를 원한다는 것이었고,
 브레인스토밍을 거쳐 범위가 두 단계로 나뉘었다:
 
-- **Phase 1(이 스펙)**: 개인화 데이터 모델 + RAG 검색 로직을 만들어 대안
-  찾기/빈 시간 추천의 랭킹에 바로 반영한다. 대화형 인터페이스는 없다.
-- **Phase 2(별도 스펙, 이후 진행)**: Phase 1의 검색 로직을 재사용하는 반구조화
-  대화형 비서(제안 버튼 중심 + 짧은 자유 입력, 턴/토큰 제한). 완전 자유
-  채팅보다 구조화된 상호작용을 선호하는 게 실제 여행 AI 앱들(Mindtrip,
-  Stardrift 등)의 공통된 패턴이라 이 방향으로 잡았다.
+- **Phase 1(이 스펙)**: 개인화 데이터 모델 + RAG 검색(Retrieval) 로직을 만들어
+  대안 찾기/빈 시간 추천의 랭킹에 반영하고, 검색된 근거를 그대로 프롬프트에
+  넣어 "추천 이유" 한 줄을 생성(Generation)한다 — Retrieval과 Generation이
+  둘 다 있어 이 자체로 완전한 RAG다. 다만 여러 턴을 주고받는 대화형
+  인터페이스는 없다(단발성 생성 한 번뿐).
+- **Phase 2(별도 스펙, 이후 진행)**: Phase 1의 검색 로직과 "추천 이유" 생성
+  패턴을 그대로 재사용해서 여러 턴을 주고받는 반구조화 대화형 비서로
+  확장한다(제안 버튼 중심 + 짧은 자유 입력, 턴/토큰 제한). 완전 자유 채팅보다
+  구조화된 상호작용을 선호하는 게 실제 여행 AI 앱들(Mindtrip, Stardrift 등)의
+  공통된 패턴이라 이 방향으로 잡았다.
 
 **타겟층**: 트로바의 핵심 동작(영상 링크 → 장소 추출)이 숏폼 여행 콘텐츠를
 소비하는 사람을 전제로 하므로, 20~30대 소셜미디어 사용층을 기준으로 설계한다.
@@ -31,14 +40,19 @@
 - 사용자가 과거에 좋아했던 장소(북마크/여행에 담음/대안 교체 선택 등)와
   의미적으로(semantic) 비슷한 후보를, 대안 찾기·빈 시간 추천 결과에서 더
   위로 올린다.
-- 무료 티어 원칙을 지킨다 — 검색 요청마다 새 Gemini 호출이 추가되지 않게
-  설계한다(임베딩은 장소 태깅 시점에 1회만 계산).
+- 무료 티어 원칙을 지킨다 — 검색 요청마다 무한정 Gemini 호출이 늘지 않게
+  설계한다(임베딩은 장소 태깅 시점에 1회만 계산, 생성 호출은 요청당 최대
+  1~2회로 제한).
 - 신규 사용자(신호 없음)는 기존과 동일하게 동작한다(콜드스타트에서 깨지거나
   이상하게 보이면 안 됨).
+- 검색(Retrieval)한 근거를 버리지 않고 생성(Generation)에 재사용해서, 이
+  Phase만으로도 정직하게 "RAG를 썼다"고 말할 수 있는 최소 단위를 만족한다.
 
 ## 범위 밖(Out of scope, Phase 1)
 
-- 대화형 인터페이스(Phase 2)
+- 여러 턴을 주고받는 대화형 인터페이스(Phase 2) — Phase 1의 생성은 "추천
+  이유" 한 줄을 만드는 단발성 호출뿐, 사용자가 되묻거나 대화를 이어가는
+  기능은 없다.
 - 부정 신호(대안 후보로 보여줬지만 안 고른 것) — v1은 긍정 신호만
 - 기존 `UserPreference`/mood 점수 시스템 변경 — `RecommendationService`는
   그대로 mood 기반 부스트를 계속 쓴다. 이 스펙은 `AlternativeFinderService`와
@@ -187,6 +201,40 @@ finalScore = baseScore(place) + personalizationScore(user, place) * PERSONALIZAT
 그대로 가져다 쓰는 게 새로 지어내는 것보다 낫다). 이후 실사용 데이터가
 쌓이면 조정 가능하다.
 
+## 생성 단계(Generation) — Phase 1을 완전한 RAG로
+
+`personalizationScore` 계산 과정에서 이미 이 사용자의 top-K 유사 과거 신호를
+찾아낸다(장소 이름/카테고리/mood). 이 검색 결과를 점수 계산에만 쓰고 버리는
+대신, Gemini 생성 호출의 프롬프트로 재사용해서 "추천 이유"를 한 문장 생성한다
+— 이게 Retrieval과 Generation을 잇는 지점이고, 이 스펙이 완전한 RAG가 되는
+이유다.
+
+```java
+Optional<String> explainRecommendation(User user, Place candidate)
+```
+
+- 입력: `candidate`와, `personalizationScore` 계산 때 이미 찾아둔 top-K 유사
+  신호 목록(장소 이름 + 카테고리 + mood)을 재사용한다 — 검색을 두 번 하지
+  않는다.
+- 프롬프트: "사용자가 예전에 좋아한 장소들: {유사 신호 목록}. 이번 후보:
+  {candidate 이름/카테고리/mood}. 왜 이 후보를 추천하는지 20자 내외 한
+  문장으로." 형태(정확한 프롬프트 문구는 구현 계획 단계에서 다듬는다).
+- **호출 횟수 제약(중요)**: 후보 전부가 아니라 **최종 정렬 후 상위 1~2개에만**
+  호출한다. `PlaceReviewService`의 리뷰 요약 호출과 같은 빈도 수준이라 기존
+  무료 티어 한도 안에서 감당 가능하다 — 대안 찾기를 한 번 탭할 때 임베딩
+  호출은 0회(이미 캐싱됨), 생성 호출은 최대 1~2회만 추가된다.
+- 유사 신호가 하나도 없는 사용자(콜드스타트)에게는 호출 자체를 생략하고
+  `Optional.empty()`를 반환한다 — 근거 없이 생성하면 그럴듯한 거짓 설명이
+  나올 위험이 있다(신호가 있을 때만 생성하는 게 RAG의 핵심 원칙이기도 하다).
+- 실패 처리: 생성 실패(429, 타임아웃 등)는 조용히 `Optional.empty()`로
+  폴백 — 설명 문구가 없을 뿐 후보 자체는 정상 표시된다. 이번 세션에서
+  확립한 "부가 기능 실패가 본 기능을 죽이면 안 된다" 원칙과 동일하다.
+
+**UI**: `AlternativeFinderSheet`(trova-app)의 후보 카드에 설명이 있을 때만
+"✨ {추천 이유}" 한 줄을 추가한다. 이 스펙은 백엔드 중심이라 앱 쪽 변경은
+구현 계획 단계에서 별도 태스크로 다룬다(오늘 대안 찾기 UX 수정과 같은
+파일들을 건드리게 된다).
+
 ## 콜드스타트 및 에러 처리
 
 - **신호 없는 신규 사용자**: `personalizationScore`가 항상 0 → 기존
@@ -201,10 +249,14 @@ finalScore = baseScore(place) + personalizationScore(user, place) * PERSONALIZAT
 
 ## 관측성 / 비용
 
-`PlaceTaggingRunner`에 얹는 임베딩 생성 호출도 `ApiCallLogService.record(...)`로
-로깅한다 — `provider="gemini", operation="place-embedding"`. 이번 세션
+`PlaceTaggingRunner`에 얹는 임베딩 생성 호출과 `explainRecommendation`의 생성
+호출 둘 다 `ApiCallLogService.record(...)`로 로깅한다 —
+`provider="gemini", operation="place-embedding"` /
+`provider="gemini", operation="recommendation-explanation"`. 이번 세션
 최종 리뷰에서 "새 외부 호출 지점은 전부 로깅"이 필수 규칙으로 확립됐으므로
-동일하게 적용한다.
+동일하게 적용한다. 특히 `explainRecommendation`은 요청마다 호출되는(캐싱
+안 되는) 유일한 지점이라 실제 호출 빈도를 관측하는 게 무료 티어 한도 관리에
+중요하다.
 
 ## 테스트 전략
 
@@ -222,10 +274,14 @@ finalScore = baseScore(place) + personalizationScore(user, place) * PERSONALIZAT
   테스트 스위트가 이미 반환 개수/필터링을 검증하므로, 정렬 순서를 검증하는
   케이스를 추가한다(예: personalizationScore가 다른 두 후보를 만들어 순서
   확인).
+- `explainRecommendation`: 유사 신호 없음(콜드스타트) → `Optional.empty()`
+  즉시 반환하고 Gemini 호출 자체가 안 나가는 것을 검증(Mockito
+  `verifyNoInteractions`류). 생성 실패 시 예외가 전파되지 않고
+  `Optional.empty()`로 폴백하는 것도 검증.
 
 ## 다음 단계 (Phase 2 미리보기, 이 스펙 범위 아님)
 
-Phase 2(대화형 비서)는 이 스펙의 `user_preference_signals` + pgvector 검색을
-그대로 재사용한다 — "전에 좋아하셨던 OO랑 비슷해서 추천했어요" 같은 근거
-제시가 이 이력 데이터로 바로 가능하다. Phase 2는 별도 브레인스토밍/스펙에서
+Phase 2(대화형 비서)는 이 스펙의 `user_preference_signals` + pgvector 검색과
+`explainRecommendation`의 프롬프트 패턴을 그대로 재사용해서, 단발성 한 줄
+생성을 여러 턴을 주고받는 대화로 확장한다. Phase 2는 별도 브레인스토밍/스펙에서
 다룬다.
