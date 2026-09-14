@@ -10,6 +10,7 @@ import com.trova.backend.entity.User;
 import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
 import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.repository.UserPreferenceSignalRepository;
 import com.trova.backend.service.ApiCallLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,6 +141,7 @@ public class AlternativeFinderService {
 
         List<AlternativeCandidate> result = new ArrayList<>();
         Map<Long, Double> scoreByPlaceId = new java.util.HashMap<>();
+        Map<Long, List<UserPreferenceSignalRepository.SimilarSignal>> similarSignalsByPlaceId = new java.util.HashMap<>();
         for (Place candidate : candidates) {
             // Place.latitude/longitude는 nullable(Google 응답에 location이 없을 수
             // 있음)이라, upsertAll로 캐시된 행이 좌표 없이 저장돼 있을 수 있다. target/next는
@@ -181,9 +183,11 @@ public class AlternativeFinderService {
                 }
             }
 
+            PersonalizationService.PersonalizationResult personalization = personalizationService.retrieveAndScore(user, candidate);
             double score = PlaceScoring.baseScore(candidate)
-                    + personalizationService.personalizationScore(user, candidate) * PERSONALIZATION_BOOST_WEIGHT;
+                    + personalization.score() * PERSONALIZATION_BOOST_WEIGHT;
             scoreByPlaceId.put(candidate.getId(), score);
+            similarSignalsByPlaceId.put(candidate.getId(), personalization.similarSignals());
 
             result.add(new AlternativeCandidate(
                     candidate.getId(), candidate.getGooglePlaceId(), candidate.getName(), candidate.getCategory(),
@@ -207,7 +211,8 @@ public class AlternativeFinderService {
                         .findFirst()
                         .orElse(null);
                 Optional<String> reason = candidatePlace != null
-                        ? personalizationService.explainRecommendation(user, candidatePlace)
+                        ? personalizationService.explainFromSignals(
+                                candidatePlace, similarSignalsByPlaceId.getOrDefault(candidatePlace.getId(), List.of()))
                         : Optional.empty();
                 withReasons.add(new AlternativeCandidate(
                         c.placeId(), c.googlePlaceId(), c.name(), c.category(), c.rating(), c.userRatingCount(),

@@ -42,19 +42,33 @@ public class PersonalizationService {
         this.apiCallLogService = apiCallLogService;
     }
 
-    public double personalizationScore(User user, Place candidate) {
+    /**
+     * Retrieval(findSimilarSignals) 결과와 그로부터 계산한 점수를 함께 반환한다 —
+     * 호출자가 같은 후보에 대해 explainFromSignals를 또 부를 때 검색을 한 번 더
+     * 하지 않고 이 결과의 similarSignals를 재사용할 수 있게 하기 위함이다.
+     */
+    public record PersonalizationResult(double score, List<UserPreferenceSignalRepository.SimilarSignal> similarSignals) {
+    }
+
+    public PersonalizationResult retrieveAndScore(User user, Place candidate) {
         List<UserPreferenceSignalRepository.SimilarSignal> similar = findSimilarSignals(user, candidate);
-        if (similar.isEmpty()) {
-            return 0.0;
-        }
-        return similar.stream()
+        double score = similar.isEmpty() ? 0.0 : similar.stream()
                 .mapToDouble(UserPreferenceSignalRepository.SimilarSignal::getSimilarity)
                 .average()
                 .orElse(0.0);
+        return new PersonalizationResult(score, similar);
     }
 
-    public Optional<String> explainRecommendation(User user, Place candidate) {
-        List<UserPreferenceSignalRepository.SimilarSignal> similar = findSimilarSignals(user, candidate);
+    public double personalizationScore(User user, Place candidate) {
+        return retrieveAndScore(user, candidate).score();
+    }
+
+    /**
+     * findSimilarSignals를 이미 호출해 similarSignals를 갖고 있는 호출자(예:
+     * AlternativeFinderService가 retrieveAndScore로 이미 조회해둔 상위 후보)가
+     * 검색을 다시 하지 않고 설명만 생성할 때 쓴다 — "검색을 두 번 하지 않는다" 원칙.
+     */
+    public Optional<String> explainFromSignals(Place candidate, List<UserPreferenceSignalRepository.SimilarSignal> similar) {
         if (similar.isEmpty()) {
             // 근거 없이 생성하면 그럴듯한 거짓 설명이 나올 위험이 있다 — 신호가 있을
             // 때만 생성한다(RAG의 핵심 원칙).
@@ -77,6 +91,11 @@ public class PersonalizationService {
                 null, null, null);
 
         return explanation;
+    }
+
+    public Optional<String> explainRecommendation(User user, Place candidate) {
+        List<UserPreferenceSignalRepository.SimilarSignal> similar = findSimilarSignals(user, candidate);
+        return explainFromSignals(candidate, similar);
     }
 
     private List<UserPreferenceSignalRepository.SimilarSignal> findSimilarSignals(User user, Place candidate) {

@@ -68,4 +68,15 @@ class PlaceEmbeddingServiceTest {
 
         verify(placeRepository, never()).updateEmbedding(anyLong(), anyString());
     }
+
+    @Test
+    void 임베딩_존재여부_조회가_실패하면_임베딩_생성_자체를_건너뛴다() {
+        Place place = new Place("gp4", "미술관", "museum", 4.2, 8, null, 37.5, 127.0, "서울");
+        setId(place, 4L);
+        when(placeRepository.findIdsWithEmbedding(List.of(4L))).thenThrow(new RuntimeException("pgvector 마이그레이션 미적용"));
+
+        placeEmbeddingService.ensureEmbeddings(List.of(place));
+
+        verifyNoInteractions(geminiEmbeddingClient);
+    }
 }

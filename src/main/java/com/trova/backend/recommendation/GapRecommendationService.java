@@ -14,7 +14,9 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -61,10 +63,10 @@ public class GapRecommendationService {
         return tripRepository.findById(tripId)
                 .filter(trip -> trip.getUser().getId().equals(user.getId()))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
-                .map(this::computeGaps);
+                .map(itinerary -> computeGaps(itinerary, user));
     }
 
-    private List<Gap> computeGaps(Itinerary itinerary) {
+    private List<Gap> computeGaps(Itinerary itinerary, User user) {
         List<TripPlace> places = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary);
         List<Gap> gaps = new ArrayList<>();
 
@@ -108,11 +110,20 @@ public class GapRecommendationService {
 
             // before/after 자기 자신이 "빈 시간 추천"으로 다시 튀어나오면 안 된다 —
             // 중간 삽입해봐야 원래 있던 그 장소를 다시 넣는 무의미한 결과가 된다.
-            List<AlternativeCandidate> recommendations = candidates.stream()
+            List<Place> filteredCandidates = candidates.stream()
                     .filter(c -> !isSameGooglePlace(c, before) && !isSameGooglePlace(c, after))
-                    .sorted(Comparator.comparingDouble((Place c) ->
-                            PlaceScoring.baseScore(c) + personalizationService.personalizationScore(before.getItinerary().getTrip().getUser(), c) * PERSONALIZATION_BOOST_WEIGHT
-                    ).reversed())
+                    .toList();
+            // Comparator 안에서 점수를 계산하면 정렬 비교마다(O(n log n)회) 매번 다시
+            // 계산돼 personalizationScore의 pgvector 조회가 그만큼 반복된다 — 후보당
+            // 한 번만 계산해 맵에 담아두고 정렬은 조회 없이 맵 조회만 하도록 한다.
+            Map<Long, Double> scoreByPlaceId = new HashMap<>();
+            for (Place c : filteredCandidates) {
+                double score = PlaceScoring.baseScore(c)
+                        + personalizationService.personalizationScore(user, c) * PERSONALIZATION_BOOST_WEIGHT;
+                scoreByPlaceId.put(c.getId(), score);
+            }
+            List<AlternativeCandidate> recommendations = filteredCandidates.stream()
+                    .sorted(Comparator.comparingDouble((Place c) -> scoreByPlaceId.get(c.getId())).reversed())
                     .map(c -> new AlternativeCandidate(
                             c.getId(), c.getGooglePlaceId(), c.getName(), c.getCategory(), c.getRating(),
                             c.getUserRatingCount(), c.getLatitude(), c.getLongitude(), c.getAddress(),

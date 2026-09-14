@@ -141,4 +141,44 @@ class PersonalizationServiceTest {
 
         assertThat(reason).isEmpty();
     }
+
+    @Test
+    void retrieveAndScore는_점수와_유사신호를_함께_반환한다() {
+        User user = user(1L);
+        Place candidate = place(10L);
+        when(placeRepository.findEmbeddingText(10L)).thenReturn(Optional.of("[0.1,0.2]"));
+        var signal = similarSignal("카페A", "cafe", "차분한", 0.9);
+        when(userPreferenceSignalRepository.findTopSimilarSignals(1L, "[0.1,0.2]")).thenReturn(List.of(signal));
+
+        PersonalizationService.PersonalizationResult result = personalizationService.retrieveAndScore(user, candidate);
+
+        assertThat(result.score()).isCloseTo(0.9, within(0.001));
+        assertThat(result.similarSignals()).containsExactly(signal);
+    }
+
+    @Test
+    void explainFromSignals는_빈_리스트면_생성을_호출하지_않고_빈값을_반환한다() {
+        Place candidate = place(10L);
+
+        Optional<String> reason = personalizationService.explainFromSignals(candidate, List.of());
+
+        assertThat(reason).isEmpty();
+        verifyNoInteractions(geminiTextClient);
+    }
+
+    @Test
+    void explainFromSignals는_신호가_있으면_전달받은_신호로_생성을_호출한다() {
+        Place candidate = place(10L);
+        var signal = similarSignal("카페A", "cafe", "차분한", 0.9);
+        when(geminiTextClient.generate(anyString())).thenReturn(Optional.of("전에 좋아하신 카페A와 비슷해요"));
+
+        Optional<String> reason = personalizationService.explainFromSignals(candidate, List.of(signal));
+
+        assertThat(reason).contains("전에 좋아하신 카페A와 비슷해요");
+        // 이 메서드는 similarSignals를 인자로 받으므로 findSimilarSignals가 의존하는
+        // placeRepository/userPreferenceSignalRepository를 다시 조회하면 안 된다 —
+        // "검색을 두 번 하지 않는다" 원칙 검증.
+        verifyNoInteractions(placeRepository);
+        verifyNoInteractions(userPreferenceSignalRepository);
+    }
 }

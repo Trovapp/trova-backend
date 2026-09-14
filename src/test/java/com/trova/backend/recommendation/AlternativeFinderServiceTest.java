@@ -98,6 +98,8 @@ class AlternativeFinderServiceTest {
 
         Place upserted = new Place("gp-1", "대안카페", "cafe", 4.3, 50, "PRICE_LEVEL_MODERATE", 37.501, 127.001, "서울 어딘가");
         when(placeCatalogService.upsertAll(List.of(raw))).thenReturn(List.of(upserted));
+        when(personalizationService.retrieveAndScore(eq(owner), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -133,6 +135,8 @@ class AlternativeFinderServiceTest {
 
         when(placeTaggingRunner.run(anyList(), anyLong())).thenReturn(List.of(
                 new PlaceTag(0, "조용한", "INDOOR"), new PlaceTag(1, "활기찬", "OUTDOOR")));
+        when(personalizationService.retrieveAndScore(eq(owner), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, true, null, null, null));
@@ -167,6 +171,8 @@ class AlternativeFinderServiceTest {
         Place nearPlace = new Place("gp-near", "가까운곳", "cafe", null, null, null, 37.511, 127.000, null);
         Place farPlace = new Place("gp-far", "먼곳", "cafe", null, null, null, 37.560, 127.000, null);
         when(placeCatalogService.upsertAll(List.of(near, far))).thenReturn(List.of(nearPlace, farPlace));
+        when(personalizationService.retrieveAndScore(eq(owner), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, 2.0, null, null));
@@ -245,6 +251,8 @@ class AlternativeFinderServiceTest {
         Place withCoordPlace = new Place("gp-with-coord", "좌표있는곳", "cafe", null, null, null, 37.502, 127.002, "주소2");
         when(placeCatalogService.upsertAll(List.of(rawNoCoord, rawWithCoord)))
                 .thenReturn(List.of(noCoordPlace, withCoordPlace));
+        when(personalizationService.retrieveAndScore(eq(owner), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -275,6 +283,8 @@ class AlternativeFinderServiceTest {
         Place selfPlace = new Place("gp-self", "원래 장소", "cafe", 4.0, 10, null, 37.5, 127.0, "주소");
         Place otherPlace = new Place("gp-other", "다른 카페", "cafe", 4.2, 5, null, 37.501, 127.001, "주소2");
         when(placeCatalogService.upsertAll(List.of(rawSelf, rawOther))).thenReturn(List.of(selfPlace, otherPlace));
+        when(personalizationService.retrieveAndScore(eq(owner), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -308,9 +318,11 @@ class AlternativeFinderServiceTest {
         setId(low, 10L);
         setId(high, 11L);
         when(placeCatalogService.upsertAll(List.of(rawLow, rawHigh))).thenReturn(List.of(low, high));
-        when(personalizationService.personalizationScore(owner, low)).thenReturn(0.0);
-        when(personalizationService.personalizationScore(owner, high)).thenReturn(1.0);
-        when(personalizationService.explainRecommendation(eq(owner), any())).thenReturn(Optional.empty());
+        when(personalizationService.retrieveAndScore(owner, low))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
+        when(personalizationService.retrieveAndScore(owner, high))
+                .thenReturn(new PersonalizationService.PersonalizationResult(1.0, List.of()));
+        when(personalizationService.explainFromSignals(any(), any())).thenReturn(Optional.empty());
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));

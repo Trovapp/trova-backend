@@ -44,7 +44,18 @@ public class PlaceEmbeddingService {
             return;
         }
         List<Long> ids = candidates.stream().map(Place::getId).toList();
-        Set<Long> alreadyEmbedded = new HashSet<>(placeRepository.findIdsWithEmbedding(ids));
+        Set<Long> alreadyEmbedded;
+        // findIdsWithEmbedding도 네이티브 쿼리(embedding은 pgvector 타입이라 JPA 필드로
+        // 매핑되지 않음)라 pgvector 마이그레이션이 아직 안 된 환경에서는 SQL 오류가 날 수
+        // 있다. 이 조회가 실패하면 이후 updateEmbedding도 똑같이 실패할 게 뻔하므로,
+        // PersonalizationService.findSimilarSignals와 같은 원칙으로 여기서 즉시 포기하고
+        // Gemini 호출도 하지 않는다 — findAlternatives/findGaps/recommend가 500이 되면 안 된다.
+        try {
+            alreadyEmbedded = new HashSet<>(placeRepository.findIdsWithEmbedding(ids));
+        } catch (Exception e) {
+            log.warn("임베딩 존재 여부 조회 실패, 이번 요청은 임베딩 생성을 건너뜁니다", e);
+            return;
+        }
 
         for (Place place : candidates) {
             if (alreadyEmbedded.contains(place.getId())) {
@@ -67,7 +78,13 @@ public class PlaceEmbeddingService {
             log.warn("장소 임베딩 생성 실패, 건너뜁니다: placeId={}", place.getId());
             return;
         }
-        placeRepository.updateEmbedding(place.getId(), toVectorLiteral(embedding.get()));
+        // updateEmbedding도 네이티브 쿼리라 DB 오류 가능성이 있다 — 한 장소의 저장
+        // 실패로 배치 전체(나머지 후보들)가 중단되면 안 되므로 여기서 잡고 다음으로 넘어간다.
+        try {
+            placeRepository.updateEmbedding(place.getId(), toVectorLiteral(embedding.get()));
+        } catch (Exception e) {
+            log.warn("장소 임베딩 저장 실패, 건너뜁니다: placeId={}", place.getId(), e);
+        }
     }
 
     /** mood/reviewSummary는 있을 때만 붙인다 — 태깅 전이거나 리뷰 요약이 없는 장소도 임베딩 대상이다. */
