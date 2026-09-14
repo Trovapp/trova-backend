@@ -330,4 +330,43 @@ class AlternativeFinderServiceTest {
         assertThat(result).isPresent();
         assertThat(result.get().get(0).name()).isEqualTo("높은 후보");
     }
+
+    @Test
+    void 평점_리뷰수_없어_baseScore가_0이어도_개인화_점수로_순위가_갈린다() {
+        // 곱셈 부스트(baseScore * (1 + score*weight))라 baseScore가 0이면 개인화가
+        // 아무리 높아도 최종 점수가 0으로 묻힐 위험이 있다 — MIN_BASE_SCORE_FOR_BOOST
+        // 바닥값으로 이 경우에도 개인화가 실제로 순위에 반영되는지 검증한다.
+        User owner = user();
+        TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
+        when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+
+        var rawLow = new GooglePlacesNearbySearchResponse.Place(
+                "low-gp", new GooglePlacesNearbySearchResponse.Place.DisplayName("낮은 후보"),
+                List.of("cafe"), null, null, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.501, 127.001), "주소1");
+        var rawHigh = new GooglePlacesNearbySearchResponse.Place(
+                "high-gp", new GooglePlacesNearbySearchResponse.Place.DisplayName("높은 후보"),
+                List.of("cafe"), null, null, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.502, 127.002), "주소2");
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(rawLow, rawHigh)));
+
+        Place low = new Place("low-gp", "낮은 후보", "cafe", null, null, null, 37.501, 127.001, "주소1");
+        Place high = new Place("high-gp", "높은 후보", "cafe", null, null, null, 37.502, 127.002, "주소2");
+        setId(low, 10L);
+        setId(high, 11L);
+        when(placeCatalogService.upsertAll(List.of(rawLow, rawHigh))).thenReturn(List.of(low, high));
+        when(personalizationService.retrieveAndScore(owner, low))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
+        when(personalizationService.retrieveAndScore(owner, high))
+                .thenReturn(new PersonalizationService.PersonalizationResult(1.0, List.of()));
+        when(personalizationService.explainFromSignals(any(), any())).thenReturn(Optional.empty());
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result).isPresent();
+        assertThat(result.get().get(0).name()).isEqualTo("높은 후보");
+    }
 }

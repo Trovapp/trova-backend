@@ -29,7 +29,10 @@ public class GapRecommendationService {
 
     private static final Duration GAP_THRESHOLD = Duration.ofMinutes(30);
     private static final double SEARCH_RADIUS_METERS = 1500;
-    private static final double PERSONALIZATION_BOOST_WEIGHT = 0.5;
+    // AlternativeFinderService와 동일한 이유로 곱셈 부스트 + 바닥값을 쓴다
+    // (2026-09-14 실측 — 덧셈 부스트는 인기 랜드마크 baseScore 앞에서 무의미했음).
+    private static final double PERSONALIZATION_BOOST_WEIGHT = 0.6;
+    private static final double MIN_BASE_SCORE_FOR_BOOST = 1.0;
 
     public record Gap(Long beforePlaceId, Long afterPlaceId, int gapMinutes, List<AlternativeCandidate> recommendations) {
     }
@@ -118,8 +121,8 @@ public class GapRecommendationService {
             // 한 번만 계산해 맵에 담아두고 정렬은 조회 없이 맵 조회만 하도록 한다.
             Map<Long, Double> scoreByPlaceId = new HashMap<>();
             for (Place c : filteredCandidates) {
-                double score = PlaceScoring.baseScore(c)
-                        + personalizationService.personalizationScore(user, c) * PERSONALIZATION_BOOST_WEIGHT;
+                double score = Math.max(PlaceScoring.baseScore(c), MIN_BASE_SCORE_FOR_BOOST)
+                        * (1 + personalizationService.personalizationScore(user, c) * PERSONALIZATION_BOOST_WEIGHT);
                 scoreByPlaceId.put(c.getId(), score);
             }
             List<AlternativeCandidate> recommendations = filteredCandidates.stream()

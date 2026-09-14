@@ -35,7 +35,16 @@ public class AlternativeFinderService {
     private static final Logger log = LoggerFactory.getLogger(AlternativeFinderService.class);
 
     private static final double SEARCH_RADIUS_METERS = 2000;
-    private static final double PERSONALIZATION_BOOST_WEIGHT = 0.5;
+    // 2026-09-14 실측: 덧셈 부스트(+최대 0.5)는 baseScore가 인기 랜드마크에서
+    // 40~50대까지 나오는 걸 보니 사실상 무시할 수준이었다(경복궁 baseScore
+    // ≈4.6*ln(46809)≈49.5 vs 개인화 최대 +0.5). baseScore에 비례한 곱셈 부스트로
+    // 바꿔서, 인기도 차이가 큰 후보 간에는 여전히 인기도가 우세하되 비슷한
+    // 인기도 안에서는 유사도가 순위를 실제로 바꿀 수 있게 한다.
+    private static final double PERSONALIZATION_BOOST_WEIGHT = 0.6;
+    // 곱셈 부스트라 baseScore가 0이면(평점/리뷰수 없는 신생 장소) 개인화 유사도가
+    // 아무리 높아도 최종 점수가 0으로 죽는다 — 개인화가 제일 도움될 만한 "리뷰
+    // 적은 숨은 장소" 케이스를 정확히 못 살리게 되므로 최소 바닥값을 둔다.
+    private static final double MIN_BASE_SCORE_FOR_BOOST = 1.0;
     private static final int EXPLANATION_TOP_N = 2;
 
     // 실측 아닌 통상적 평균 속도 추정치 — 실제 도로망을 반영하는 경로 API가 아니다.
@@ -184,8 +193,8 @@ public class AlternativeFinderService {
             }
 
             PersonalizationService.PersonalizationResult personalization = personalizationService.retrieveAndScore(user, candidate);
-            double score = PlaceScoring.baseScore(candidate)
-                    + personalization.score() * PERSONALIZATION_BOOST_WEIGHT;
+            double score = Math.max(PlaceScoring.baseScore(candidate), MIN_BASE_SCORE_FOR_BOOST)
+                    * (1 + personalization.score() * PERSONALIZATION_BOOST_WEIGHT);
             scoreByPlaceId.put(candidate.getId(), score);
             similarSignalsByPlaceId.put(candidate.getId(), personalization.similarSignals());
 
