@@ -6,5 +6,7 @@ public enum SignalType {
     TRIP_PLACE_ADDED,
     ALTERNATIVE_REPLACED,
     GAP_INSERTED,
-    VIDEO_PLACE_MATCHED
+    VIDEO_PLACE_MATCHED,
+    // 대화형 비서(Phase 2)에서 특정 후보를 마음에 들어한다고 말했을 때 기록.
+    CHAT_LIKED
 }
