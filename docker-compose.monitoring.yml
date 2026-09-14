@@ -1,0 +1,35 @@
+# 로컬 개발용 관측성 스택. Spring Boot(8080)는 도커 밖(호스트)에서 직접 돌리고,
+# 이 스택은 그걸 스크랩만 한다 — 앱 자체는 컨테이너화하지 않음(아직 k3s 단계 아님).
+#
+# 실행: docker compose -f docker-compose.monitoring.yml up -d
+# 접속: Prometheus http://localhost:9090, Grafana http://localhost:3300
+#
+# Grafana 기본 포트(3000)는 이 머신에서 Plan B용 Grafana(Homebrew, PID로 실행 중)와
+# Next.js 프론트가 이미 쓰고 있어서 3300으로 옮김 — 서로 다른 프로젝트 인스턴스라 하나로
+# 합치지 않고 각자 띄운다.
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    container_name: trova-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: trova-grafana
+    environment:
+      # 로컬 전용 편의 설정 — 실배포 시 반드시 인증 켜야 함
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3300:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
