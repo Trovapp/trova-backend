@@ -20,7 +20,7 @@ class GeminiEmbeddingClientImplTest {
         server.expect(requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent"))
                 .andExpect(header("x-goog-api-key", "test-key"))
                 .andRespond(withSuccess("""
-                        {"embeddings": [{"values": [3.0, 4.0]}]}
+                        {"embedding": {"values": [3.0, 4.0]}}
                         """, MediaType.APPLICATION_JSON));
 
         GeminiEmbeddingClientImpl client = new GeminiEmbeddingClientImpl("test-key", builder);
@@ -30,6 +30,19 @@ class GeminiEmbeddingClientImplTest {
         // 3,4 벡터의 L2 노름은 5 — 정규화하면 [0.6, 0.8]
         assertThat(result.get()[0]).isCloseTo(0.6f, org.assertj.core.data.Offset.offset(0.001f));
         assertThat(result.get()[1]).isCloseTo(0.8f, org.assertj.core.data.Offset.offset(0.001f));
+    }
+
+    @Test
+    void 응답에_embedding_필드가_없으면_빈값을_반환한다() {
+        RestClient.Builder builder = RestClient.builder();
+        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+        server.expect(requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent"))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        GeminiEmbeddingClientImpl client = new GeminiEmbeddingClientImpl("test-key", builder);
+        Optional<float[]> result = client.embed("텍스트");
+
+        assertThat(result).isEmpty();
     }
 
     @Test

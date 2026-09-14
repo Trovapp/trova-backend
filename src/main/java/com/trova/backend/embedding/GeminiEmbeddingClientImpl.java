@@ -35,7 +35,10 @@ public class GeminiEmbeddingClientImpl implements GeminiEmbeddingClient {
         }
     }
 
-    private record EmbedResponse(List<Embedding> embeddings) {
+    // 실제 API 응답은 "embeddings"(복수, 배열)가 아니라 "embedding"(단수, 객체) —
+    // 2026-09-14에 실제 호출로 확인함. 공식 문서 기반으로 작성했던 이전 형태(복수형)는
+    // 응답을 매번 null로 역직렬화시켜서 임베딩 생성이 전부 조용히 실패하고 있었다.
+    private record EmbedResponse(Embedding embedding) {
         record Embedding(List<Double> values) {
         }
     }
@@ -55,11 +58,12 @@ public class GeminiEmbeddingClientImpl implements GeminiEmbeddingClient {
                     .retrieve()
                     .body(EmbedResponse.class);
 
-            if (response == null || response.embeddings() == null || response.embeddings().isEmpty()) {
+            if (response == null || response.embedding() == null || response.embedding().values() == null
+                    || response.embedding().values().isEmpty()) {
                 log.warn("Gemini 임베딩 응답이 비어있습니다");
                 return Optional.empty();
             }
-            List<Double> values = response.embeddings().get(0).values();
+            List<Double> values = response.embedding().values();
             return Optional.of(normalize(values));
         } catch (Exception e) {
             log.warn("Gemini 임베딩 생성 실패", e);
