@@ -13,6 +13,7 @@ public record AlternativeCandidate(
         Double distanceToNextKm,
         Integer estimatedTravelMinutes,
         Boolean isCongestionAvailable,
-        String congestionLevel
+        String congestionLevel,
+        String recommendationReason
 ) {
 }

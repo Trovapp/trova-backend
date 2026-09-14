@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,7 @@ public class GapRecommendationService {
 
     private static final Duration GAP_THRESHOLD = Duration.ofMinutes(30);
     private static final double SEARCH_RADIUS_METERS = 1500;
+    private static final double PERSONALIZATION_BOOST_WEIGHT = 0.5;
 
     public record Gap(Long beforePlaceId, Long afterPlaceId, int gapMinutes, List<AlternativeCandidate> recommendations) {
     }
@@ -37,12 +39,13 @@ public class GapRecommendationService {
     private final PlaceCatalogService placeCatalogService;
     private final ApiCallLogService apiCallLogService;
     private final PlaceEmbeddingService placeEmbeddingService;
+    private final PersonalizationService personalizationService;
 
     public GapRecommendationService(
             TripRepository tripRepository, ItineraryRepository itineraryRepository,
             TripPlaceRepository tripPlaceRepository, GooglePlacesApiClient googlePlacesApiClient,
             PlaceCatalogService placeCatalogService, ApiCallLogService apiCallLogService,
-            PlaceEmbeddingService placeEmbeddingService
+            PlaceEmbeddingService placeEmbeddingService, PersonalizationService personalizationService
     ) {
         this.tripRepository = tripRepository;
         this.itineraryRepository = itineraryRepository;
@@ -51,6 +54,7 @@ public class GapRecommendationService {
         this.placeCatalogService = placeCatalogService;
         this.apiCallLogService = apiCallLogService;
         this.placeEmbeddingService = placeEmbeddingService;
+        this.personalizationService = personalizationService;
     }
 
     public Optional<List<Gap>> findGaps(User user, Long tripId, int day) {
@@ -106,10 +110,13 @@ public class GapRecommendationService {
             // 중간 삽입해봐야 원래 있던 그 장소를 다시 넣는 무의미한 결과가 된다.
             List<AlternativeCandidate> recommendations = candidates.stream()
                     .filter(c -> !isSameGooglePlace(c, before) && !isSameGooglePlace(c, after))
+                    .sorted(Comparator.comparingDouble((Place c) ->
+                            PlaceScoring.baseScore(c) + personalizationService.personalizationScore(before.getItinerary().getTrip().getUser(), c) * PERSONALIZATION_BOOST_WEIGHT
+                    ).reversed())
                     .map(c -> new AlternativeCandidate(
                             c.getId(), c.getGooglePlaceId(), c.getName(), c.getCategory(), c.getRating(),
                             c.getUserRatingCount(), c.getLatitude(), c.getLongitude(), c.getAddress(),
-                            null, null, false, null))
+                            null, null, false, null, null))
                     .toList();
 
             gaps.add(new Gap(before.getId(), after.getId(), (int) gap.toMinutes(), recommendations));

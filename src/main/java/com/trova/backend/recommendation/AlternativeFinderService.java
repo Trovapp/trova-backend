@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +34,8 @@ public class AlternativeFinderService {
     private static final Logger log = LoggerFactory.getLogger(AlternativeFinderService.class);
 
     private static final double SEARCH_RADIUS_METERS = 2000;
+    private static final double PERSONALIZATION_BOOST_WEIGHT = 0.5;
+    private static final int EXPLANATION_TOP_N = 2;
 
     // 실측 아닌 통상적 평균 속도 추정치 — 실제 도로망을 반영하는 경로 API가 아니다.
     private static final Map<TransportMode, Double> AVERAGE_SPEED_KMH = Map.of(
@@ -48,6 +51,7 @@ public class AlternativeFinderService {
     private final SeoulCongestionApiClient seoulCongestionApiClient;
     private final ApiCallLogService apiCallLogService;
     private final PlaceEmbeddingService placeEmbeddingService;
+    private final PersonalizationService personalizationService;
 
     public AlternativeFinderService(
             GooglePlacesApiClient googlePlacesApiClient,
@@ -56,7 +60,8 @@ public class AlternativeFinderService {
             PlaceTaggingRunner placeTaggingRunner,
             SeoulCongestionApiClient seoulCongestionApiClient,
             ApiCallLogService apiCallLogService,
-            PlaceEmbeddingService placeEmbeddingService
+            PlaceEmbeddingService placeEmbeddingService,
+            PersonalizationService personalizationService
     ) {
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeCatalogService = placeCatalogService;
@@ -65,6 +70,7 @@ public class AlternativeFinderService {
         this.seoulCongestionApiClient = seoulCongestionApiClient;
         this.apiCallLogService = apiCallLogService;
         this.placeEmbeddingService = placeEmbeddingService;
+        this.personalizationService = personalizationService;
     }
 
     public Optional<List<AlternativeCandidate>> findAlternatives(User user, Long tripPlaceId, AlternativeFilter filter) {
@@ -133,6 +139,7 @@ public class AlternativeFinderService {
         placeEmbeddingService.ensureEmbeddings(candidates);
 
         List<AlternativeCandidate> result = new ArrayList<>();
+        Map<Long, Double> scoreByPlaceId = new java.util.HashMap<>();
         for (Place candidate : candidates) {
             // Place.latitude/longitude는 nullable(Google 응답에 location이 없을 수
             // 있음)이라, upsertAll로 캐시된 행이 좌표 없이 저장돼 있을 수 있다. target/next는
@@ -174,12 +181,43 @@ public class AlternativeFinderService {
                 }
             }
 
+            double score = PlaceScoring.baseScore(candidate)
+                    + personalizationService.personalizationScore(user, candidate) * PERSONALIZATION_BOOST_WEIGHT;
+            scoreByPlaceId.put(candidate.getId(), score);
+
             result.add(new AlternativeCandidate(
                     candidate.getId(), candidate.getGooglePlaceId(), candidate.getName(), candidate.getCategory(),
                     candidate.getRating(), candidate.getUserRatingCount(), candidate.getLatitude(), candidate.getLongitude(),
-                    candidate.getAddress(), distanceToNextKm, estimatedTravelMinutes, congestionAvailable, congestionLevel));
+                    candidate.getAddress(), distanceToNextKm, estimatedTravelMinutes, congestionAvailable, congestionLevel,
+                    null));
         }
-        return Optional.of(result);
+
+        result = result.stream()
+                .sorted(Comparator.comparingDouble((AlternativeCandidate c) -> scoreByPlaceId.get(c.placeId())).reversed())
+                .toList();
+
+        // 상위 EXPLANATION_TOP_N개에만 추천 이유를 생성한다 — 무료 티어 한도 안에서
+        // 감당하기 위해 요청당 생성 호출을 이 개수로 제한한다(스펙 "생성 단계" 절).
+        List<AlternativeCandidate> withReasons = new ArrayList<>();
+        for (int i = 0; i < result.size(); i++) {
+            AlternativeCandidate c = result.get(i);
+            if (i < EXPLANATION_TOP_N) {
+                Place candidatePlace = candidates.stream()
+                        .filter(p -> java.util.Objects.equals(p.getId(), c.placeId()))
+                        .findFirst()
+                        .orElse(null);
+                Optional<String> reason = candidatePlace != null
+                        ? personalizationService.explainRecommendation(user, candidatePlace)
+                        : Optional.empty();
+                withReasons.add(new AlternativeCandidate(
+                        c.placeId(), c.googlePlaceId(), c.name(), c.category(), c.rating(), c.userRatingCount(),
+                        c.latitude(), c.longitude(), c.address(), c.distanceToNextKm(), c.estimatedTravelMinutes(),
+                        c.isCongestionAvailable(), c.congestionLevel(), reason.orElse(null)));
+            } else {
+                withReasons.add(c);
+            }
+        }
+        return Optional.of(withReasons);
     }
 
     private boolean isOwner(TripPlace place, User user) {

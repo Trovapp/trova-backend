@@ -30,6 +30,7 @@ class AlternativeFinderServiceTest {
     @Mock private SeoulCongestionApiClient seoulCongestionApiClient;
     @Mock private ApiCallLogService apiCallLogService;
     @Mock private PlaceEmbeddingService placeEmbeddingService;
+    @Mock private PersonalizationService personalizationService;
     @InjectMocks private AlternativeFinderService alternativeFinderService;
 
     private void setId(Object entity, Long id) {
@@ -280,5 +281,41 @@ class AlternativeFinderServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get()).extracting(AlternativeCandidate::googlePlaceId).containsExactly("gp-other");
+    }
+
+    @Test
+    void 개인화_점수가_높은_후보가_먼저_온다() {
+        User owner = user();
+        TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
+        when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+
+        var rawLow = new GooglePlacesNearbySearchResponse.Place(
+                "low-gp", new GooglePlacesNearbySearchResponse.Place.DisplayName("낮은 후보"),
+                List.of("cafe"), 3.0, 1, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.501, 127.001), "주소1");
+        var rawHigh = new GooglePlacesNearbySearchResponse.Place(
+                "high-gp", new GooglePlacesNearbySearchResponse.Place.DisplayName("높은 후보"),
+                List.of("cafe"), 3.0, 1, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.502, 127.002), "주소2");
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(rawLow, rawHigh)));
+
+        // rating/reviewCount를 동일하게 맞춰서 PlaceScoring.baseScore가 같도록 하고,
+        // personalizationService만으로 순위가 갈리는지 검증한다.
+        Place low = new Place("low-gp", "낮은 후보", "cafe", 3.0, 1, null, 37.501, 127.001, "주소1");
+        Place high = new Place("high-gp", "높은 후보", "cafe", 3.0, 1, null, 37.502, 127.002, "주소2");
+        setId(low, 10L);
+        setId(high, 11L);
+        when(placeCatalogService.upsertAll(List.of(rawLow, rawHigh))).thenReturn(List.of(low, high));
+        when(personalizationService.personalizationScore(owner, low)).thenReturn(0.0);
+        when(personalizationService.personalizationScore(owner, high)).thenReturn(1.0);
+        when(personalizationService.explainRecommendation(eq(owner), any())).thenReturn(Optional.empty());
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result).isPresent();
+        assertThat(result.get().get(0).name()).isEqualTo("높은 후보");
     }
 }

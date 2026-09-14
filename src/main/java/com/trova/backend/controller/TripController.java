@@ -115,13 +115,13 @@ public class TripController {
             Long placeId, String googlePlaceId, String name, String category,
             Double rating, Integer userRatingCount, Double latitude, Double longitude, String address,
             Double distanceToNextKm, Integer estimatedTravelMinutes,
-            Boolean isCongestionAvailable, String congestionLevel
+            Boolean isCongestionAvailable, String congestionLevel, String recommendationReason
     ) {
         static AlternativeCandidateResponse from(com.trova.backend.recommendation.AlternativeCandidate c) {
             return new AlternativeCandidateResponse(
                     c.placeId(), c.googlePlaceId(), c.name(), c.category(), c.rating(), c.userRatingCount(),
                     c.latitude(), c.longitude(), c.address(), c.distanceToNextKm(), c.estimatedTravelMinutes(),
-                    c.isCongestionAvailable(), c.congestionLevel());
+                    c.isCongestionAvailable(), c.congestionLevel(), c.recommendationReason());
         }
     }
 

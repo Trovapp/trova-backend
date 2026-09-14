@@ -30,6 +30,7 @@ class GapRecommendationServiceTest {
     @Mock private PlaceCatalogService placeCatalogService;
     @Mock private ApiCallLogService apiCallLogService;
     @Mock private PlaceEmbeddingService placeEmbeddingService;
+    @Mock private PersonalizationService personalizationService;
     @InjectMocks private GapRecommendationService gapRecommendationService;
 
     // User.id는 영속화되지 않은 순수 Mockito 단위 테스트 엔티티에서는 null이라

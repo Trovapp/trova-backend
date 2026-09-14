@@ -80,11 +80,16 @@ public class PersonalizationService {
     }
 
     private List<UserPreferenceSignalRepository.SimilarSignal> findSimilarSignals(User user, Place candidate) {
-        Optional<String> embeddingText = placeRepository.findEmbeddingText(candidate.getId());
-        if (embeddingText.isEmpty()) {
-            return List.of();
-        }
+        // findEmbeddingText/findTopSimilarSignals 둘 다 네이티브 쿼리라(embedding은 pgvector
+        // 타입이라 JPA 필드로 매핑되지 않음 — PlaceRepository 참고), 운영 Postgres가 아닌
+        // 환경(H2 테스트 DB 등 vector 타입/embedding 컬럼이 없는 곳)에서 호출되면 SQL 문법
+        // 오류가 날 수 있다. 개인화는 부가 기능이므로 이 경우도 0점/빈 결과로 조용히
+        // 폴백한다 — try 블록을 findEmbeddingText 호출까지 감싼다.
         try {
+            Optional<String> embeddingText = placeRepository.findEmbeddingText(candidate.getId());
+            if (embeddingText.isEmpty()) {
+                return List.of();
+            }
             return userPreferenceSignalRepository.findTopSimilarSignals(user.getId(), embeddingText.get());
         } catch (Exception e) {
             log.warn("개인화 유사 신호 조회 실패, 0점으로 폴백합니다", e);
