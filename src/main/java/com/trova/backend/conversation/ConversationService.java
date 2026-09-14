@@ -44,19 +44,29 @@ public class ConversationService {
         }
 
         List<GeminiChatClient.ToolDeclaration> tools = toolsFor(state);
-        long start = System.currentTimeMillis();
+        long firstStart = System.currentTimeMillis();
         GeminiChatClient.ChatResult first = geminiChatClient.sendMessage(state.getHistory(), message, tools);
+        long firstLatency = System.currentTimeMillis() - firstStart;
 
         String reply;
         List<AlternativeCandidate> candidates = null;
 
         if (first.functionCall() != null) {
+            // sendMessage와 sendFunctionResult는 각각 별도의 Gemini generateContent
+            // 호출이라 각각 따로 기록한다 — 그 사이의 도구 실행 시간은 어느 쪽
+            // 지연시간에도 포함시키지 않는다.
+            apiCallLogService.record(
+                    "gemini", "conversation-turn", null, firstLatency, true, null, null, null, null);
+
             ConversationToolExecutor.ToolExecutionResult toolResult = toolExecutor.execute(user, state, first.functionCall());
+
+            long secondStart = System.currentTimeMillis();
             GeminiChatClient.ChatResult second = geminiChatClient.sendFunctionResult(
                     state.getHistory(), message, first.functionCall(), toolResult.responseForGemini(), tools);
+            long secondLatency = System.currentTimeMillis() - secondStart;
             boolean success = second.text() != null;
             apiCallLogService.record(
-                    "gemini", "conversation-turn", null, System.currentTimeMillis() - start,
+                    "gemini", "conversation-turn", null, secondLatency,
                     success, success ? null : "generation failed", null, null, null);
             if (success) {
                 reply = second.text();
@@ -66,18 +76,28 @@ public class ConversationService {
             }
         } else if (first.text() != null) {
             apiCallLogService.record(
-                    "gemini", "conversation-turn", null, System.currentTimeMillis() - start,
+                    "gemini", "conversation-turn", null, firstLatency,
                     true, null, null, null, null);
             reply = first.text();
         } else {
             apiCallLogService.record(
-                    "gemini", "conversation-turn", null, System.currentTimeMillis() - start,
+                    "gemini", "conversation-turn", null, firstLatency,
                     false, "generation failed", null, null, null);
             reply = FALLBACK_REPLY;
         }
 
         state.appendTurn(ConversationState.ROLE_USER, message);
         state.appendTurn(ConversationState.ROLE_MODEL, reply);
+        if (candidates != null && !candidates.isEmpty()) {
+            // functionCall/functionResponse 왕복 자체는 히스토리에 남기지 않으므로,
+            // 다음 턴에서 Gemini가 note_preference를 부를 수 있게 placeId를 텍스트
+            // 턴으로 요약해 남긴다 — 없으면 "그거 좋다" 같은 후속 발화에서 Gemini가
+            // 어떤 placeId를 가리키는지 알 방법이 없다.
+            String summary = "표시한 후보: " + candidates.stream()
+                    .map(c -> c.placeId() + "=" + c.name())
+                    .collect(java.util.stream.Collectors.joining(", "));
+            state.appendTurn(ConversationState.ROLE_MODEL, summary);
+        }
         state.incrementTurnCount();
         if (candidates != null) {
             state.addShownCandidateIds(candidates.stream().map(AlternativeCandidate::placeId).toList());

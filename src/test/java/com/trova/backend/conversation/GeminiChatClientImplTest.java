@@ -61,6 +61,31 @@ class GeminiChatClientImplTest {
     }
 
     @Test
+    void functionCall_앞에_텍스트_part가_와도_functionCall을_반환한다() {
+        RestClient.Builder builder = RestClient.builder();
+        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+        server.expect(requestTo(URL))
+                .andRespond(withSuccess("""
+                        {"candidates":[{"content":{"parts":[
+                            {"text":"찾아볼게요"},
+                            {"functionCall":{"name":"find_alternatives","args":{"category":"카페","indoor":true}},"thoughtSignature":"SIG123"}
+                        ],"role":"model"}}]}
+                        """, MediaType.APPLICATION_JSON));
+
+        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder);
+        var tools = List.of(new GeminiChatClient.ToolDeclaration(
+                "find_alternatives", "설명",
+                Map.of("category", new GeminiChatClient.ParamSchema("string", "카테고리"))));
+        GeminiChatClient.ChatResult result = client.sendMessage(List.of(), "조용한 카페 찾아줘", tools);
+
+        assertThat(result.text()).isNull();
+        assertThat(result.functionCall()).isNotNull();
+        assertThat(result.functionCall().name()).isEqualTo("find_alternatives");
+        assertThat(result.functionCall().args()).containsEntry("category", "카페");
+        assertThat(result.functionCall().thoughtSignature()).isEqualTo("SIG123");
+    }
+
+    @Test
     void sendFunctionResult은_검증된_요청_형태로_보낸다() {
         RestClient.Builder builder = RestClient.builder();
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();

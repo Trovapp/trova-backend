@@ -130,13 +130,23 @@ public class GeminiChatClientImpl implements GeminiChatClient {
             if (parts == null || parts.isEmpty()) {
                 return new ChatResult(null, null);
             }
-            RespPart part = parts.get(0);
-            if (part.functionCall() != null) {
-                return new ChatResult(
-                        new FunctionCall(part.functionCall().name(), part.functionCall().args(), part.thoughtSignature()),
-                        null);
+            // 응답의 parts 리스트에는 functionCall 앞에 짧은 텍스트("thinking" 텍스트
+            // 등)가 먼저 올 수 있다 — 첫 번째 part만 보면 그 뒤에 오는 functionCall을
+            // 놓치고 텍스트만 반환하게 된다(도구가 조용히 호출되지 않는 버그). 전체
+            // parts를 훑어서 functionCall을 우선하고, 없으면 텍스트 part들을 순서대로
+            // 이어붙인다.
+            StringBuilder textBuilder = new StringBuilder();
+            for (RespPart part : parts) {
+                if (part.functionCall() != null) {
+                    return new ChatResult(
+                            new FunctionCall(part.functionCall().name(), part.functionCall().args(), part.thoughtSignature()),
+                            null);
+                }
+                if (part.text() != null) {
+                    textBuilder.append(part.text());
+                }
             }
-            return new ChatResult(null, part.text());
+            return new ChatResult(null, textBuilder.isEmpty() ? null : textBuilder.toString());
         } catch (Exception e) {
             log.warn("Gemini 대화 호출 실패", e);
             return new ChatResult(null, null);

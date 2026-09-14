@@ -10,6 +10,7 @@ import com.trova.backend.recommendation.GapRecommendationService;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
+import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,7 @@ class ConversationToolExecutorTest {
     @Mock private PlaceRepository placeRepository;
     @Mock private UserPreferenceSignalRepository userPreferenceSignalRepository;
     @Mock private PlaceEmbeddingService placeEmbeddingService;
+    @Mock private ApiCallLogService apiCallLogService;
 
     private ConversationToolExecutor executor;
     private User user;
@@ -44,7 +46,7 @@ class ConversationToolExecutorTest {
     void setUp() throws Exception {
         executor = new ConversationToolExecutor(
                 alternativeFinderService, gapRecommendationService, placeRepository,
-                userPreferenceSignalRepository, placeEmbeddingService);
+                userPreferenceSignalRepository, placeEmbeddingService, apiCallLogService);
         user = new User("google", "u1", "테스트유저", null);
         setId(user, 1L);
     }
@@ -77,6 +79,9 @@ class ConversationToolExecutorTest {
         assertThat(filterCaptor.getValue().indoorOnly()).isTrue();
         assertThat(result.candidates()).hasSize(1);
         assertThat(result.responseForGemini()).containsKey("candidates");
+        verify(apiCallLogService).record(
+                eq("internal"), eq("conversation-tool-find_alternatives"), eq(null),
+                anyLong(), eq(true), eq(null), eq(null), eq(null), eq(null));
     }
 
     @Test
@@ -133,6 +138,9 @@ class ConversationToolExecutorTest {
 
         assertThat(result.responseForGemini()).containsKey("error");
         assertThat(result.candidates()).isNull();
+        verify(apiCallLogService).record(
+                eq("internal"), eq("conversation-tool-delete_everything"), eq(null),
+                anyLong(), eq(false), any(), eq(null), eq(null), eq(null));
     }
 
     @Test
@@ -145,5 +153,8 @@ class ConversationToolExecutorTest {
         ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call);
 
         assertThat(result.responseForGemini()).containsKey("error");
+        verify(apiCallLogService).record(
+                eq("internal"), eq("conversation-tool-find_alternatives"), eq(null),
+                anyLong(), eq(false), any(), eq(null), eq(null), eq(null));
     }
 }

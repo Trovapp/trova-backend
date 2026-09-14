@@ -80,12 +80,17 @@ public class ConversationController {
         }
 
         ConversationState state = sessionStore.get(sessionId);
+        if (state != null && !state.getUserId().equals(user.getId())) {
+            // sessionId를 알아낸/재사용한 비소유자에게 세션 존재 여부를 확인해주지
+            // 않기 위해 403이 아닌 404로 응답한다.
+            return ResponseEntity.notFound().build();
+        }
         if (state == null) {
             boolean hasPlaceContext = request.tripPlaceId() != null;
             boolean hasGapContext = request.day() != null && request.gapBeforePlaceId() != null;
-            if (hasPlaceContext == hasGapContext) {
+            if (hasPlaceContext == hasGapContext || request.tripId() == null) {
                 // 세션은 정확히 하나의 컨텍스트(장소 또는 빈 시간 구간)에만 묶인다 —
-                // 스펙 "이미 확정된 것" 절.
+                // 스펙 "이미 확정된 것" 절. tripId는 두 컨텍스트 모두에 필요하다.
                 return ResponseEntity.badRequest().build();
             }
             state = hasPlaceContext
@@ -106,7 +111,13 @@ public class ConversationController {
 
     @DeleteMapping("/api/conversations/{sessionId}")
     public ResponseEntity<Void> endSession(Authentication authentication, @PathVariable String sessionId) {
-        currentUserService.resolve(authentication);
+        User user = currentUserService.resolve(authentication);
+        ConversationState state = sessionStore.get(sessionId);
+        if (state != null && !state.getUserId().equals(user.getId())) {
+            // 비소유자에게 세션 존재 여부를 확인해주지 않기 위해 404로 응답하고,
+            // 소유자가 아닌 세션은 삭제하지 않는다.
+            return ResponseEntity.notFound().build();
+        }
         sessionStore.remove(sessionId);
         return ResponseEntity.noContent().build();
     }

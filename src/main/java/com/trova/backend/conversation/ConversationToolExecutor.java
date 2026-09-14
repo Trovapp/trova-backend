@@ -10,6 +10,7 @@ import com.trova.backend.recommendation.GapRecommendationService;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
+import com.trova.backend.service.ApiCallLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,19 +34,22 @@ public class ConversationToolExecutor {
     private final PlaceRepository placeRepository;
     private final UserPreferenceSignalRepository userPreferenceSignalRepository;
     private final PlaceEmbeddingService placeEmbeddingService;
+    private final ApiCallLogService apiCallLogService;
 
     public ConversationToolExecutor(
             AlternativeFinderService alternativeFinderService,
             GapRecommendationService gapRecommendationService,
             PlaceRepository placeRepository,
             UserPreferenceSignalRepository userPreferenceSignalRepository,
-            PlaceEmbeddingService placeEmbeddingService
+            PlaceEmbeddingService placeEmbeddingService,
+            ApiCallLogService apiCallLogService
     ) {
         this.alternativeFinderService = alternativeFinderService;
         this.gapRecommendationService = gapRecommendationService;
         this.placeRepository = placeRepository;
         this.userPreferenceSignalRepository = userPreferenceSignalRepository;
         this.placeEmbeddingService = placeEmbeddingService;
+        this.apiCallLogService = apiCallLogService;
     }
 
     /** candidates는 find_alternatives/get_gap_recommendations일 때만 채워진다(앱에 카드로 보여줄 용도). */
@@ -53,8 +57,10 @@ public class ConversationToolExecutor {
     }
 
     public ToolExecutionResult execute(User user, ConversationState state, GeminiChatClient.FunctionCall call) {
+        long start = System.currentTimeMillis();
+        ToolExecutionResult result;
         try {
-            return switch (call.name()) {
+            result = switch (call.name()) {
                 case "find_alternatives" -> executeFindAlternatives(user, state, call.args());
                 case "get_gap_recommendations" -> executeGetGapRecommendations(user, state);
                 case "note_preference" -> executeNotePreference(user, state, call.args());
@@ -62,8 +68,14 @@ public class ConversationToolExecutor {
             };
         } catch (Exception e) {
             log.warn("대화형 비서 도구 실행 실패: {}", call.name(), e);
-            return new ToolExecutionResult(null, Map.of("error", "지금 조회할 수 없어요"));
+            result = new ToolExecutionResult(null, Map.of("error", "지금 조회할 수 없어요"));
         }
+        long latencyMs = System.currentTimeMillis() - start;
+        boolean success = !result.responseForGemini().containsKey("error");
+        apiCallLogService.record(
+                "internal", "conversation-tool-" + call.name(), null, latencyMs, success,
+                success ? null : String.valueOf(result.responseForGemini().get("error")), null, null, null);
+        return result;
     }
 
     private ToolExecutionResult executeFindAlternatives(User user, ConversationState state, Map<String, Object> args) {

@@ -75,6 +75,21 @@ class ConversationServiceTest {
         assertThat(result.reply()).isEqualTo("커피한약방을 추천해요");
         assertThat(result.candidates()).isEqualTo(candidates);
         assertThat(state.getShownCandidateIds()).contains(5L);
+
+        // 히스토리에 user 메시지, model 답변, 그리고 후보 요약(placeId 포함) 순으로
+        // 남아야 다음 턴에서 note_preference가 placeId를 알 수 있다(Fix 2).
+        assertThat(state.getHistory()).hasSize(3);
+        assertThat(state.getHistory().get(0).role()).isEqualTo(ConversationState.ROLE_USER);
+        assertThat(state.getHistory().get(0).text()).isEqualTo("조용한 카페 찾아줘");
+        assertThat(state.getHistory().get(1).role()).isEqualTo(ConversationState.ROLE_MODEL);
+        assertThat(state.getHistory().get(1).text()).isEqualTo("커피한약방을 추천해요");
+        assertThat(state.getHistory().get(2).role()).isEqualTo(ConversationState.ROLE_MODEL);
+        assertThat(state.getHistory().get(2).text()).contains("5=카페");
+
+        // sendMessage와 sendFunctionResult는 서로 다른 Gemini 호출이므로 각각
+        // conversation-turn으로 따로 기록되어야 한다(Fix 3).
+        verify(apiCallLogService, times(2)).record(
+                eq("gemini"), eq("conversation-turn"), eq(null), anyLong(), anyBoolean(), any(), any(), any(), any());
     }
 
     @Test
