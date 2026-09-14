@@ -40,4 +40,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     @Query(value = "SELECT id FROM places WHERE id IN :ids AND embedding IS NOT NULL", nativeQuery = true)
     List<Long> findIdsWithEmbedding(@Param("ids") List<Long> ids);
+
+    // 기존 카탈로그 백필용 — 검색 API가 아니라 관리자 엔드포인트에서만 쓴다.
+    @Query(value = "SELECT id FROM places WHERE embedding IS NULL", nativeQuery = true)
+    List<Long> findAllIdsWithoutEmbedding();
 }
