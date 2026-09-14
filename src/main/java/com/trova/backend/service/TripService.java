@@ -1,6 +1,7 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.*;
+import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.recommendation.PlaceSearchService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.NotificationRepository;
@@ -41,6 +42,7 @@ public class TripService {
     private final NotificationRepository notificationRepository;
     private final PlaceSearchService placeSearchService;
     private final UserPreferenceSignalRepository userPreferenceSignalRepository;
+    private final PlaceEmbeddingService placeEmbeddingService;
 
     public TripService(
             TripRepository tripRepository,
@@ -49,7 +51,8 @@ public class TripService {
             PlaceRepository placeRepository,
             NotificationRepository notificationRepository,
             PlaceSearchService placeSearchService,
-            UserPreferenceSignalRepository userPreferenceSignalRepository
+            UserPreferenceSignalRepository userPreferenceSignalRepository,
+            PlaceEmbeddingService placeEmbeddingService
     ) {
         this.tripRepository = tripRepository;
         this.itineraryRepository = itineraryRepository;
@@ -58,6 +61,7 @@ public class TripService {
         this.notificationRepository = notificationRepository;
         this.placeSearchService = placeSearchService;
         this.userPreferenceSignalRepository = userPreferenceSignalRepository;
+        this.placeEmbeddingService = placeEmbeddingService;
     }
 
     /** Trip과 그에 딸린 Itinerary/TripPlace/Notification을 전부 지운다(소유자 확인 후). */
@@ -105,6 +109,7 @@ public class TripService {
                             nextOrder, PlaceSource.NORMAL, null);
                     tripPlace.applyGooglePlaceId(place.getGooglePlaceId());
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, place, SignalType.TRIP_PLACE_ADDED));
+                    placeEmbeddingService.ensureEmbeddings(List.of(place));
                     return tripPlaceRepository.save(tripPlace);
                 }));
     }
@@ -145,6 +150,7 @@ public class TripService {
                     tripPlace.applyGooglePlaceId(match.getGooglePlaceId());
                     tripPlaceRepository.save(tripPlace);
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, match, SignalType.VIDEO_PLACE_MATCHED));
+                    placeEmbeddingService.ensureEmbeddings(List.of(match));
                     return Optional.of(match);
                 });
     }
@@ -156,6 +162,7 @@ public class TripService {
                 .flatMap(place -> placeRepository.findByGooglePlaceId(googlePlaceId).map(newPlace -> {
                     place.applyReplacement(newPlace);
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, newPlace, SignalType.ALTERNATIVE_REPLACED));
+                    placeEmbeddingService.ensureEmbeddings(List.of(newPlace));
                     return tripPlaceRepository.save(place);
                 }));
     }
@@ -179,6 +186,7 @@ public class TripService {
                             after.getVisitOrder() + 1, PlaceSource.NORMAL, null);
                     inserted.applyGooglePlaceId(newPlace.getGooglePlaceId());
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, newPlace, SignalType.GAP_INSERTED));
+                    placeEmbeddingService.ensureEmbeddings(List.of(newPlace));
                     return tripPlaceRepository.save(inserted);
                 }));
     }

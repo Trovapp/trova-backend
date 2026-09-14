@@ -53,6 +53,9 @@ class TripServiceIntegrationTest {
     @MockitoBean
     private GooglePlacesApiClient googlePlacesApiClient;
 
+    @MockitoBean
+    private com.trova.backend.recommendation.PlaceEmbeddingService placeEmbeddingService;
+
     @AfterEach
     void tearDown() {
         userRepository.findByProviderAndProviderUserId("google", PROVIDER_USER_ID)

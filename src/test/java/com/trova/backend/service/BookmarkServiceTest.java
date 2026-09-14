@@ -33,6 +33,7 @@ class BookmarkServiceTest {
     @Mock private UserPreferenceRepository userPreferenceRepository;
     @Mock private BookmarkFolderRepository bookmarkFolderRepository;
     @Mock private UserPreferenceSignalRepository userPreferenceSignalRepository;
+    @Mock private com.trova.backend.recommendation.PlaceEmbeddingService placeEmbeddingService;
 
     private BookmarkService service;
 
@@ -55,7 +56,7 @@ class BookmarkServiceTest {
     private void setUp() {
         service = new BookmarkService(
                 bookmarkRepository, placeRepository, userPreferenceRepository, bookmarkFolderRepository,
-                userPreferenceSignalRepository);
+                userPreferenceSignalRepository, placeEmbeddingService);
     }
 
     @Test

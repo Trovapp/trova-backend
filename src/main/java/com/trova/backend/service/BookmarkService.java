@@ -7,6 +7,7 @@ import com.trova.backend.entity.SignalType;
 import com.trova.backend.entity.User;
 import com.trova.backend.entity.UserPreference;
 import com.trova.backend.entity.UserPreferenceSignal;
+import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.repository.BookmarkFolderRepository;
 import com.trova.backend.repository.BookmarkRepository;
 import com.trova.backend.repository.PlaceRepository;
@@ -33,19 +34,22 @@ public class BookmarkService {
     private final UserPreferenceRepository userPreferenceRepository;
     private final BookmarkFolderRepository bookmarkFolderRepository;
     private final UserPreferenceSignalRepository userPreferenceSignalRepository;
+    private final PlaceEmbeddingService placeEmbeddingService;
 
     public BookmarkService(
             BookmarkRepository bookmarkRepository,
             PlaceRepository placeRepository,
             UserPreferenceRepository userPreferenceRepository,
             BookmarkFolderRepository bookmarkFolderRepository,
-            UserPreferenceSignalRepository userPreferenceSignalRepository
+            UserPreferenceSignalRepository userPreferenceSignalRepository,
+            PlaceEmbeddingService placeEmbeddingService
     ) {
         this.bookmarkRepository = bookmarkRepository;
         this.placeRepository = placeRepository;
         this.userPreferenceRepository = userPreferenceRepository;
         this.bookmarkFolderRepository = bookmarkFolderRepository;
         this.userPreferenceSignalRepository = userPreferenceSignalRepository;
+        this.placeEmbeddingService = placeEmbeddingService;
     }
 
     public record FolderWithCount(BookmarkFolder folder, long placeCount) {
@@ -69,6 +73,7 @@ public class BookmarkService {
             }
             Bookmark bookmark = bookmarkRepository.save(new Bookmark(user, place));
             userPreferenceSignalRepository.save(new UserPreferenceSignal(user, place, SignalType.BOOKMARK));
+            placeEmbeddingService.ensureEmbeddings(List.of(place));
             if (folderId != null) {
                 bookmarkFolderRepository.findByIdAndUser(folderId, user).ifPresent(bookmark::applyFolder);
                 bookmark = bookmarkRepository.save(bookmark);
