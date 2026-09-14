@@ -7,6 +7,7 @@ import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
+import com.trova.backend.repository.UserPreferenceSignalRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,7 @@ public class TripService {
     private final PlaceRepository placeRepository;
     private final NotificationRepository notificationRepository;
     private final PlaceSearchService placeSearchService;
+    private final UserPreferenceSignalRepository userPreferenceSignalRepository;
 
     public TripService(
             TripRepository tripRepository,
@@ -46,7 +48,8 @@ public class TripService {
             TripPlaceRepository tripPlaceRepository,
             PlaceRepository placeRepository,
             NotificationRepository notificationRepository,
-            PlaceSearchService placeSearchService
+            PlaceSearchService placeSearchService,
+            UserPreferenceSignalRepository userPreferenceSignalRepository
     ) {
         this.tripRepository = tripRepository;
         this.itineraryRepository = itineraryRepository;
@@ -54,6 +57,7 @@ public class TripService {
         this.placeRepository = placeRepository;
         this.notificationRepository = notificationRepository;
         this.placeSearchService = placeSearchService;
+        this.userPreferenceSignalRepository = userPreferenceSignalRepository;
     }
 
     /** Trip과 그에 딸린 Itinerary/TripPlace/Notification을 전부 지운다(소유자 확인 후). */
@@ -100,6 +104,7 @@ public class TripService {
                             place.getLatitude(), place.getLongitude(), null, place.getAddress(),
                             nextOrder, PlaceSource.NORMAL, null);
                     tripPlace.applyGooglePlaceId(place.getGooglePlaceId());
+                    userPreferenceSignalRepository.save(new UserPreferenceSignal(user, place, SignalType.TRIP_PLACE_ADDED));
                     return tripPlaceRepository.save(tripPlace);
                 }));
     }
@@ -139,6 +144,7 @@ public class TripService {
                     Place match = candidates.get(0);
                     tripPlace.applyGooglePlaceId(match.getGooglePlaceId());
                     tripPlaceRepository.save(tripPlace);
+                    userPreferenceSignalRepository.save(new UserPreferenceSignal(user, match, SignalType.VIDEO_PLACE_MATCHED));
                     return Optional.of(match);
                 });
     }
@@ -149,6 +155,7 @@ public class TripService {
                 .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
                 .flatMap(place -> placeRepository.findByGooglePlaceId(googlePlaceId).map(newPlace -> {
                     place.applyReplacement(newPlace);
+                    userPreferenceSignalRepository.save(new UserPreferenceSignal(user, newPlace, SignalType.ALTERNATIVE_REPLACED));
                     return tripPlaceRepository.save(place);
                 }));
     }
@@ -171,6 +178,7 @@ public class TripService {
                             newPlace.getLatitude(), newPlace.getLongitude(), null, newPlace.getAddress(),
                             after.getVisitOrder() + 1, PlaceSource.NORMAL, null);
                     inserted.applyGooglePlaceId(newPlace.getGooglePlaceId());
+                    userPreferenceSignalRepository.save(new UserPreferenceSignal(user, newPlace, SignalType.GAP_INSERTED));
                     return tripPlaceRepository.save(inserted);
                 }));
     }

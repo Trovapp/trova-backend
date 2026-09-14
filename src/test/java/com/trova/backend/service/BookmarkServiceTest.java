@@ -3,12 +3,15 @@ package com.trova.backend.service;
 import com.trova.backend.entity.Bookmark;
 import com.trova.backend.entity.BookmarkFolder;
 import com.trova.backend.entity.Place;
+import com.trova.backend.entity.SignalType;
 import com.trova.backend.entity.User;
 import com.trova.backend.entity.UserPreference;
+import com.trova.backend.entity.UserPreferenceSignal;
 import com.trova.backend.repository.BookmarkFolderRepository;
 import com.trova.backend.repository.BookmarkRepository;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.UserPreferenceRepository;
+import com.trova.backend.repository.UserPreferenceSignalRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -29,6 +32,7 @@ class BookmarkServiceTest {
     @Mock private PlaceRepository placeRepository;
     @Mock private UserPreferenceRepository userPreferenceRepository;
     @Mock private BookmarkFolderRepository bookmarkFolderRepository;
+    @Mock private UserPreferenceSignalRepository userPreferenceSignalRepository;
 
     private BookmarkService service;
 
@@ -50,7 +54,8 @@ class BookmarkServiceTest {
 
     private void setUp() {
         service = new BookmarkService(
-                bookmarkRepository, placeRepository, userPreferenceRepository, bookmarkFolderRepository);
+                bookmarkRepository, placeRepository, userPreferenceRepository, bookmarkFolderRepository,
+                userPreferenceSignalRepository);
     }
 
     @Test
@@ -69,6 +74,35 @@ class BookmarkServiceTest {
         verify(userPreferenceRepository).save(captor.capture());
         assertThat(captor.getValue().getMood()).isEqualTo("TRENDY");
         assertThat(captor.getValue().getScore()).isEqualTo(1.0);
+    }
+
+    @Test
+    void 북마크하면_BOOKMARK_신호가_기록된다() {
+        setUp();
+        Place place = place("TRENDY");
+        when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(bookmarkRepository.findByUserAndPlace(user, place)).thenReturn(Optional.empty());
+        when(bookmarkRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(userPreferenceRepository.findByUserAndMood(user, "TRENDY")).thenReturn(Optional.empty());
+
+        service.addBookmark(user, 1L);
+
+        verify(userPreferenceSignalRepository).save(argThat(
+                s -> s.getUser().equals(user) && s.getPlace().equals(place)
+                        && s.getSignalType() == SignalType.BOOKMARK));
+    }
+
+    @Test
+    void 이미_북마크한_장소면_신호를_다시_기록하지_않는다() {
+        setUp();
+        Place place = place("CALM");
+        Bookmark existingBookmark = new Bookmark(user, place);
+        when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(bookmarkRepository.findByUserAndPlace(user, place)).thenReturn(Optional.of(existingBookmark));
+
+        service.addBookmark(user, 1L);
+
+        verify(userPreferenceSignalRepository, never()).save(any());
     }
 
     @Test

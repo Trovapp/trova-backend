@@ -1,11 +1,14 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.*;
+import com.trova.backend.recommendation.GooglePlacesApiClient;
+import com.trova.backend.recommendation.GooglePlacesNearbySearchResponse;
 import com.trova.backend.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class TripServiceIntegrationTest {
@@ -43,10 +47,20 @@ class TripServiceIntegrationTest {
     @Autowired
     private PlaceRepository placeRepository;
 
+    @Autowired
+    private UserPreferenceSignalRepository userPreferenceSignalRepository;
+
+    @MockitoBean
+    private GooglePlacesApiClient googlePlacesApiClient;
+
     @AfterEach
     void tearDown() {
         userRepository.findByProviderAndProviderUserId("google", PROVIDER_USER_ID)
                 .ifPresent(user -> {
+                    userPreferenceSignalRepository.deleteAll(
+                            userPreferenceSignalRepository.findAll().stream()
+                                    .filter(s -> s.getUser().getId().equals(user.getId()))
+                                    .toList());
                     tripRepository.findByUserOrderByCreatedAtDesc(user).forEach(trip -> {
                         itineraryRepository.findByTripOrderByDay(trip).forEach(itinerary -> {
                             tripPlaceRepository.deleteAll(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary));
@@ -194,6 +208,97 @@ class TripServiceIntegrationTest {
         } finally {
             userRepository.delete(stranger);
         }
+    }
+
+    @Test
+    void addPlaceToDay는_TRIP_PLACE_ADDED_신호를_기록한다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        Place place = placeRepository.save(new Place(
+                "trip-place-test-signal-add", "돈사돈", "음식점 > 한식", 4.3, 500, null, 33.4, 126.5, "제주 노형동"));
+
+        tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-signal-add").orElseThrow();
+
+        List<UserPreferenceSignal> signals = userPreferenceSignalRepository.findAll().stream()
+                .filter(s -> s.getUser().getId().equals(user.getId()))
+                .toList();
+        assertThat(signals).hasSize(1);
+        assertThat(signals.get(0).getSignalType()).isEqualTo(SignalType.TRIP_PLACE_ADDED);
+        assertThat(signals.get(0).getPlace().getId()).isEqualTo(place.getId());
+    }
+
+    @Test
+    void replacePlace는_ALTERNATIVE_REPLACED_신호를_기록한다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place(
+                "trip-place-test-signal-replace-old", "돈사돈", null, null, null, null, 33.4, 126.5, null));
+        Place newPlace = placeRepository.save(new Place(
+                "trip-place-test-signal-replace-new", "흑돼지거리", null, null, null, null, 33.5, 126.6, null));
+        TripPlace original =
+                tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-signal-replace-old").orElseThrow();
+
+        tripService.replacePlace(user, original.getId(), "trip-place-test-signal-replace-new").orElseThrow();
+
+        List<UserPreferenceSignal> signals = userPreferenceSignalRepository.findAll().stream()
+                .filter(s -> s.getUser().getId().equals(user.getId()))
+                .toList();
+        assertThat(signals).extracting(UserPreferenceSignal::getSignalType)
+                .contains(SignalType.ALTERNATIVE_REPLACED);
+        UserPreferenceSignal replaceSignal = signals.stream()
+                .filter(s -> s.getSignalType() == SignalType.ALTERNATIVE_REPLACED)
+                .findFirst().orElseThrow();
+        assertThat(replaceSignal.getPlace().getId()).isEqualTo(newPlace.getId());
+    }
+
+    @Test
+    void insertPlaceAfter는_GAP_INSERTED_신호를_기록한다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place(
+                "trip-place-test-signal-insert-after", "돈사돈", null, null, null, null, 33.4, 126.5, null));
+        Place inserted = placeRepository.save(new Place(
+                "trip-place-test-signal-insert-new", "흑돼지거리", null, null, null, null, 33.5, 126.6, null));
+        TripPlace after =
+                tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-signal-insert-after").orElseThrow();
+
+        tripService.insertPlaceAfter(user, after.getId(), "trip-place-test-signal-insert-new").orElseThrow();
+
+        List<UserPreferenceSignal> signals = userPreferenceSignalRepository.findAll().stream()
+                .filter(s -> s.getUser().getId().equals(user.getId()))
+                .toList();
+        UserPreferenceSignal insertSignal = signals.stream()
+                .filter(s -> s.getSignalType() == SignalType.GAP_INSERTED)
+                .findFirst().orElseThrow();
+        assertThat(insertSignal.getPlace().getId()).isEqualTo(inserted.getId());
+    }
+
+    @Test
+    void resolveDetailsPlace는_이름검색으로_처음_매칭될때_VIDEO_PLACE_MATCHED_신호를_기록한다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        Itinerary itinerary = itineraryRepository.findByTripAndDay(trip, 1).orElseThrow();
+        TripPlace videoPlace = tripPlaceRepository.save(new TripPlace(
+                itinerary, "우도땅콩아이스크림", "제주", "cafe",
+                33.5, 126.9, null, "제주 우도", 1, PlaceSource.VIDEO, 42L));
+
+        var raw = new GooglePlacesNearbySearchResponse.Place(
+                "trip-place-test-signal-video-match",
+                new GooglePlacesNearbySearchResponse.Place.DisplayName("우도땅콩아이스크림"),
+                List.of("cafe"), 4.4, 300, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(33.5, 126.9), "제주 우도");
+        when(googlePlacesApiClient.searchText("우도땅콩아이스크림"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(raw)));
+
+        Place resolved = tripService.resolveDetailsPlace(user, videoPlace.getId()).orElseThrow();
+
+        assertThat(resolved.getGooglePlaceId()).isEqualTo("trip-place-test-signal-video-match");
+        List<UserPreferenceSignal> signals = userPreferenceSignalRepository.findAll().stream()
+                .filter(s -> s.getUser().getId().equals(user.getId()))
+                .toList();
+        assertThat(signals).hasSize(1);
+        assertThat(signals.get(0).getSignalType()).isEqualTo(SignalType.VIDEO_PLACE_MATCHED);
+        assertThat(signals.get(0).getPlace().getGooglePlaceId()).isEqualTo("trip-place-test-signal-video-match");
     }
 
     @Test

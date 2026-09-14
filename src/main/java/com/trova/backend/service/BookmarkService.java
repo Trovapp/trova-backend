@@ -3,12 +3,15 @@ package com.trova.backend.service;
 import com.trova.backend.entity.Bookmark;
 import com.trova.backend.entity.BookmarkFolder;
 import com.trova.backend.entity.Place;
+import com.trova.backend.entity.SignalType;
 import com.trova.backend.entity.User;
 import com.trova.backend.entity.UserPreference;
+import com.trova.backend.entity.UserPreferenceSignal;
 import com.trova.backend.repository.BookmarkFolderRepository;
 import com.trova.backend.repository.BookmarkRepository;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.UserPreferenceRepository;
+import com.trova.backend.repository.UserPreferenceSignalRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,17 +32,20 @@ public class BookmarkService {
     private final PlaceRepository placeRepository;
     private final UserPreferenceRepository userPreferenceRepository;
     private final BookmarkFolderRepository bookmarkFolderRepository;
+    private final UserPreferenceSignalRepository userPreferenceSignalRepository;
 
     public BookmarkService(
             BookmarkRepository bookmarkRepository,
             PlaceRepository placeRepository,
             UserPreferenceRepository userPreferenceRepository,
-            BookmarkFolderRepository bookmarkFolderRepository
+            BookmarkFolderRepository bookmarkFolderRepository,
+            UserPreferenceSignalRepository userPreferenceSignalRepository
     ) {
         this.bookmarkRepository = bookmarkRepository;
         this.placeRepository = placeRepository;
         this.userPreferenceRepository = userPreferenceRepository;
         this.bookmarkFolderRepository = bookmarkFolderRepository;
+        this.userPreferenceSignalRepository = userPreferenceSignalRepository;
     }
 
     public record FolderWithCount(BookmarkFolder folder, long placeCount) {
@@ -62,6 +68,7 @@ public class BookmarkService {
                 bumpPreference(user, place.getMood());
             }
             Bookmark bookmark = bookmarkRepository.save(new Bookmark(user, place));
+            userPreferenceSignalRepository.save(new UserPreferenceSignal(user, place, SignalType.BOOKMARK));
             if (folderId != null) {
                 bookmarkFolderRepository.findByIdAndUser(folderId, user).ifPresent(bookmark::applyFolder);
                 bookmark = bookmarkRepository.save(bookmark);
