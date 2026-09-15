@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -37,7 +38,15 @@ public class NotificationController {
     @GetMapping
     public List<NotificationResponse> list(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
+        LocalDate today = LocalDate.now();
+        // 알림이 가리키는 일정 날짜가 지나면(여행 마지막 날짜가 지난 경우 포함) 사용자가
+        // 직접 닫지 않아도 더 이상 보여줄 필요가 없다 — 이미 지난 날씨 경보는 실행 가능한
+        // 정보가 아니다.
         return notificationRepository.findByUserAndIsReadFalseOrderByCreatedAtDesc(user).stream()
+                .filter(n -> {
+                    LocalDate itineraryDate = n.getItinerary().getDate();
+                    return itineraryDate == null || !itineraryDate.isBefore(today);
+                })
                 .map(NotificationResponse::from)
                 .toList();
     }
