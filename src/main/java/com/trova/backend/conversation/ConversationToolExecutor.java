@@ -28,6 +28,11 @@ import java.util.Map;
 public class ConversationToolExecutor {
 
     private static final Logger log = LoggerFactory.getLogger(ConversationToolExecutor.class);
+    // 대화 카드 UI가 너무 길어지지 않게 자른다. AlternativeFinderService/
+    // GapRecommendationService가 이미 개인화 점수 * baseScore로 내림차순 정렬해서
+    // 반환하므로(요청 필터도 이미 반영된 상태), 자르기만 하면 "개인화+요청사항 기준
+    // 상위 7개"가 그대로 된다 — 여기서 재정렬하지 않는다.
+    private static final int MAX_CANDIDATES_IN_CHAT = 7;
 
     private final AlternativeFinderService alternativeFinderService;
     private final GapRecommendationService gapRecommendationService;
@@ -87,7 +92,10 @@ public class ConversationToolExecutor {
         AlternativeFilter filter = new AlternativeFilter(category, indoor, null, null, null);
         List<AlternativeCandidate> candidates = alternativeFinderService
                 .findAlternatives(user, state.getTripPlaceId(), filter)
-                .orElse(List.of());
+                .orElse(List.of())
+                .stream()
+                .limit(MAX_CANDIDATES_IN_CHAT)
+                .toList();
         return new ToolExecutionResult(candidates, toGeminiResponse(candidates));
     }
 
@@ -102,7 +110,10 @@ public class ConversationToolExecutor {
                 .filter(gap -> gap.beforePlaceId().equals(state.getGapBeforePlaceId()))
                 .findFirst()
                 .map(GapRecommendationService.Gap::recommendations)
-                .orElse(List.of());
+                .orElse(List.of())
+                .stream()
+                .limit(MAX_CANDIDATES_IN_CHAT)
+                .toList();
         return new ToolExecutionResult(candidates, toGeminiResponse(candidates));
     }
 

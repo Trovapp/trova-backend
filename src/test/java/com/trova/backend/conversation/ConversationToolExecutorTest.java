@@ -85,6 +85,25 @@ class ConversationToolExecutorTest {
     }
 
     @Test
+    void find_alternatives는_후보가_7개_넘으면_상위_7개만_반환한다() {
+        ConversationState state = new ConversationState(1L, 10L, 100L, null, null);
+        // AlternativeFinderService가 이미 개인화 점수 기준 내림차순으로 정렬해서
+        // 반환하므로, 여기서는 순서를 그대로 자르기만 하는지 검증한다(재정렬 없음).
+        List<AlternativeCandidate> tenSorted = java.util.stream.IntStream.rangeClosed(1, 10)
+                .mapToObj(i -> candidate((long) i, "장소" + i))
+                .toList();
+        when(alternativeFinderService.findAlternatives(eq(user), eq(100L), any(AlternativeFilter.class)))
+                .thenReturn(Optional.of(tenSorted));
+
+        var call = new GeminiChatClient.FunctionCall("find_alternatives", Map.of(), "sig");
+        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call);
+
+        assertThat(result.candidates()).hasSize(7);
+        assertThat(result.candidates().stream().map(AlternativeCandidate::placeId).toList())
+                .containsExactly(1L, 2L, 3L, 4L, 5L, 6L, 7L);
+    }
+
+    @Test
     void get_gap_recommendations는_세션의_gapBeforePlaceId와_일치하는_gap만_반환한다() {
         ConversationState state = new ConversationState(1L, 10L, null, 2, 50L);
         var matchingGap = new GapRecommendationService.Gap(50L, 60L, 40, List.of(candidate(7L, "카페A")));
