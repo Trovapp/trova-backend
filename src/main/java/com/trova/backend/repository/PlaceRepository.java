@@ -44,4 +44,18 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     // 기존 카탈로그 백필용 — 검색 API가 아니라 관리자 엔드포인트에서만 쓴다.
     @Query(value = "SELECT id FROM places WHERE embedding IS NULL", nativeQuery = true)
     List<Long> findAllIdsWithoutEmbedding();
+
+    /** 대화형 비서가 "이번 턴 요청 문장"과 후보 목록의 의미적 유사도를 배치로 조회할 때 쓴다. */
+    interface PlaceSimilarity {
+        Long getId();
+        double getSimilarity();
+    }
+
+    @Query(value = """
+            SELECT id, 1 - (embedding <=> CAST(:queryEmbeddingText AS vector)) AS similarity
+            FROM places
+            WHERE id IN :placeIds AND embedding IS NOT NULL
+            """, nativeQuery = true)
+    List<PlaceSimilarity> findSimilarityToQuery(
+            @Param("placeIds") List<Long> placeIds, @Param("queryEmbeddingText") String queryEmbeddingText);
 }
