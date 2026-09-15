@@ -58,7 +58,7 @@ public class ConversationService {
             apiCallLogService.record(
                     "gemini", "conversation-turn", null, firstLatency, true, null, null, null, null);
 
-            ConversationToolExecutor.ToolExecutionResult toolResult = toolExecutor.execute(user, state, first.functionCall());
+            ConversationToolExecutor.ToolExecutionResult toolResult = toolExecutor.execute(user, state, first.functionCall(), message);
 
             long secondStart = System.currentTimeMillis();
             GeminiChatClient.ChatResult second = geminiChatClient.sendFunctionResult(

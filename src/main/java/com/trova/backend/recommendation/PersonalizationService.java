@@ -1,5 +1,6 @@
 package com.trova.backend.recommendation;
 
+import com.trova.backend.embedding.GeminiEmbeddingClient;
 import com.trova.backend.embedding.GeminiTextClient;
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.User;
@@ -11,8 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * RAG 기반 개인화 — Retrieval(pgvector로 이 사용자의 과거 긍정 신호 중 후보와 비슷한
@@ -28,17 +31,20 @@ public class PersonalizationService {
     private final PlaceRepository placeRepository;
     private final UserPreferenceSignalRepository userPreferenceSignalRepository;
     private final GeminiTextClient geminiTextClient;
+    private final GeminiEmbeddingClient geminiEmbeddingClient;
     private final ApiCallLogService apiCallLogService;
 
     public PersonalizationService(
             PlaceRepository placeRepository,
             UserPreferenceSignalRepository userPreferenceSignalRepository,
             GeminiTextClient geminiTextClient,
+            GeminiEmbeddingClient geminiEmbeddingClient,
             ApiCallLogService apiCallLogService
     ) {
         this.placeRepository = placeRepository;
         this.userPreferenceSignalRepository = userPreferenceSignalRepository;
         this.geminiTextClient = geminiTextClient;
+        this.geminiEmbeddingClient = geminiEmbeddingClient;
         this.apiCallLogService = apiCallLogService;
     }
 
@@ -96,6 +102,48 @@ public class PersonalizationService {
     public Optional<String> explainRecommendation(User user, Place candidate) {
         List<UserPreferenceSignalRepository.SimilarSignal> similar = findSimilarSignals(user, candidate);
         return explainFromSignals(candidate, similar);
+    }
+
+    /**
+     * 대화형 비서가 "이번 턴 사용자 요청 문장"(예: "조용한 카페 알려줘")과 후보들의
+     * 의미적 유사도를 계산한다. 과거 신호 기반 개인화(retrieveAndScore)와는 다른
+     * 축 — 이건 이번 요청 자체의 의도를 임베딩으로 반영한다. 요청 문장은 매 턴
+     * 새로 임베딩하므로(저장 안 함) 호출마다 Gemini 임베딩 API를 1회 쓴다.
+     * 실패하면 빈 맵을 반환한다 — 호출부가 재정렬 없이 원래 순서로 폴백할 수 있게.
+     */
+    public Map<Long, Double> queryScores(String queryText, List<Long> placeIds) {
+        if (placeIds.isEmpty()) {
+            return Map.of();
+        }
+        long start = System.currentTimeMillis();
+        Optional<float[]> embedding;
+        try {
+            embedding = geminiEmbeddingClient.embed(queryText);
+        } catch (Exception e) {
+            log.warn("요청 문장 임베딩 실패, 유사도 재정렬 없이 진행합니다", e);
+            return Map.of();
+        }
+        apiCallLogService.record(
+                "gemini", "conversation-query-embedding", null, System.currentTimeMillis() - start,
+                embedding.isPresent(), embedding.isPresent() ? null : "embedding generation failed",
+                null, null, null);
+        if (embedding.isEmpty()) {
+            return Map.of();
+        }
+        try {
+            String vectorLiteral = toVectorLiteral(embedding.get());
+            return placeRepository.findSimilarityToQuery(placeIds, vectorLiteral).stream()
+                    .collect(Collectors.toMap(PlaceRepository.PlaceSimilarity::getId, PlaceRepository.PlaceSimilarity::getSimilarity));
+        } catch (Exception e) {
+            log.warn("요청 문장 유사도 조회 실패, 재정렬 없이 진행합니다", e);
+            return Map.of();
+        }
+    }
+
+    private String toVectorLiteral(float[] embedding) {
+        return "[" + IntStream.range(0, embedding.length)
+                .mapToObj(i -> String.valueOf(embedding[i]))
+                .collect(Collectors.joining(",")) + "]";
     }
 
     private List<UserPreferenceSignalRepository.SimilarSignal> findSimilarSignals(User user, Place candidate) {

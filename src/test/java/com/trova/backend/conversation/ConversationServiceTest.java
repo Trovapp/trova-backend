@@ -53,7 +53,7 @@ class ConversationServiceTest {
         assertThat(result.turnCount()).isEqualTo(1);
         assertThat(result.turnLimitReached()).isFalse();
         assertThat(state.getHistory()).hasSize(2);
-        verify(toolExecutor, never()).execute(any(), any(), any());
+        verify(toolExecutor, never()).execute(any(), any(), any(), any());
     }
 
     @Test
@@ -65,7 +65,7 @@ class ConversationServiceTest {
 
         List<AlternativeCandidate> candidates = List.of(candidate(5L));
         var toolResult = new ConversationToolExecutor.ToolExecutionResult(candidates, Map.of("candidates", List.of()));
-        when(toolExecutor.execute(user, state, functionCall)).thenReturn(toolResult);
+        when(toolExecutor.execute(user, state, functionCall, "조용한 카페 찾아줘")).thenReturn(toolResult);
 
         when(geminiChatClient.sendFunctionResult(any(), eq("조용한 카페 찾아줘"), eq(functionCall), any(), any()))
                 .thenReturn(new GeminiChatClient.ChatResult(null, "커피한약방을 추천해요"));

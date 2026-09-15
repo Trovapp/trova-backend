@@ -7,6 +7,7 @@ import com.trova.backend.recommendation.AlternativeCandidate;
 import com.trova.backend.recommendation.AlternativeFilter;
 import com.trova.backend.recommendation.AlternativeFinderService;
 import com.trova.backend.recommendation.GapRecommendationService;
+import com.trova.backend.recommendation.PersonalizationService;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
@@ -34,6 +35,7 @@ class ConversationToolExecutorTest {
 
     @Mock private AlternativeFinderService alternativeFinderService;
     @Mock private GapRecommendationService gapRecommendationService;
+    @Mock private PersonalizationService personalizationService;
     @Mock private PlaceRepository placeRepository;
     @Mock private UserPreferenceSignalRepository userPreferenceSignalRepository;
     @Mock private PlaceEmbeddingService placeEmbeddingService;
@@ -45,7 +47,7 @@ class ConversationToolExecutorTest {
     @BeforeEach
     void setUp() throws Exception {
         executor = new ConversationToolExecutor(
-                alternativeFinderService, gapRecommendationService, placeRepository,
+                alternativeFinderService, gapRecommendationService, personalizationService, placeRepository,
                 userPreferenceSignalRepository, placeEmbeddingService, apiCallLogService);
         user = new User("google", "u1", "테스트유저", null);
         setId(user, 1L);
@@ -71,7 +73,7 @@ class ConversationToolExecutorTest {
 
         var call = new GeminiChatClient.FunctionCall(
                 "find_alternatives", Map.of("category", "카페", "indoor", true), "sig");
-        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call);
+        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         ArgumentCaptor<AlternativeFilter> filterCaptor = ArgumentCaptor.forClass(AlternativeFilter.class);
         verify(alternativeFinderService).findAlternatives(eq(user), eq(100L), filterCaptor.capture());
@@ -96,11 +98,28 @@ class ConversationToolExecutorTest {
                 .thenReturn(Optional.of(tenSorted));
 
         var call = new GeminiChatClient.FunctionCall("find_alternatives", Map.of(), "sig");
-        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call);
+        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         assertThat(result.candidates()).hasSize(7);
         assertThat(result.candidates().stream().map(AlternativeCandidate::placeId).toList())
                 .containsExactly(1L, 2L, 3L, 4L, 5L, 6L, 7L);
+    }
+
+    @Test
+    void find_alternatives는_요청_문장과_유사도가_높은_후보를_앞으로_당긴다() {
+        ConversationState state = new ConversationState(1L, 10L, 100L, null, null);
+        // 3위였던 후보(placeId=3)가 요청 문장과 유사도가 가장 높으면 1위로 올라와야 한다.
+        List<AlternativeCandidate> ranked = List.of(
+                candidate(1L, "장소1"), candidate(2L, "장소2"), candidate(3L, "장소3"));
+        when(alternativeFinderService.findAlternatives(eq(user), eq(100L), any(AlternativeFilter.class)))
+                .thenReturn(Optional.of(ranked));
+        when(personalizationService.queryScores(eq("조용한 곳 알려줘"), eq(List.of(1L, 2L, 3L))))
+                .thenReturn(Map.of(1L, 0.1, 2L, 0.1, 3L, 0.95));
+
+        var call = new GeminiChatClient.FunctionCall("find_alternatives", Map.of(), "sig");
+        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "조용한 곳 알려줘");
+
+        assertThat(result.candidates().get(0).placeId()).isEqualTo(3L);
     }
 
     @Test
@@ -112,7 +131,7 @@ class ConversationToolExecutorTest {
                 .thenReturn(Optional.of(List.of(otherGap, matchingGap)));
 
         var call = new GeminiChatClient.FunctionCall("get_gap_recommendations", Map.of(), "sig");
-        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call);
+        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         assertThat(result.candidates()).hasSize(1);
         assertThat(result.candidates().get(0).placeId()).isEqualTo(7L);
@@ -129,7 +148,7 @@ class ConversationToolExecutorTest {
         when(placeRepository.findById(5L)).thenReturn(Optional.of(place));
 
         var call = new GeminiChatClient.FunctionCall("note_preference", Map.of("placeId", 5), "sig");
-        executor.execute(user, state, call);
+        executor.execute(user, state, call, "메시지");
 
         verify(userPreferenceSignalRepository).save(argThat(signal ->
                 signal.getSignalType() == SignalType.CHAT_LIKED && signal.getPlace() == place));
@@ -142,7 +161,7 @@ class ConversationToolExecutorTest {
         // shownCandidateIds가 비어있음 — placeId 9는 이 세션에서 보여준 적 없음.
 
         var call = new GeminiChatClient.FunctionCall("note_preference", Map.of("placeId", 9), "sig");
-        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call);
+        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         verify(userPreferenceSignalRepository, never()).save(any());
         assertThat(result.responseForGemini()).containsKey("error");
@@ -153,7 +172,7 @@ class ConversationToolExecutorTest {
         ConversationState state = new ConversationState(1L, 10L, 100L, null, null);
         var call = new GeminiChatClient.FunctionCall("delete_everything", Map.of(), "sig");
 
-        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call);
+        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         assertThat(result.responseForGemini()).containsKey("error");
         assertThat(result.candidates()).isNull();
@@ -169,7 +188,7 @@ class ConversationToolExecutorTest {
                 .thenThrow(new RuntimeException("DB 오류"));
 
         var call = new GeminiChatClient.FunctionCall("find_alternatives", Map.of(), "sig");
-        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call);
+        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         assertThat(result.responseForGemini()).containsKey("error");
         verify(apiCallLogService).record(
