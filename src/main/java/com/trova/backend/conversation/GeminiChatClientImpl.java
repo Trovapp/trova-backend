@@ -19,6 +19,22 @@ public class GeminiChatClientImpl implements GeminiChatClient {
     // GeminiTextClientImpl과 동일 모델 — 이 프로젝트가 실제로 쓰는 생성 모델과 통일한다.
     private static final String MODEL = "gemini-3.5-flash-lite";
 
+    // 2026-09-15 실사용 확인: 시스템 지시문 없이는 답변에 마크다운(별표 강조, 번호
+    // 목록)이 섞여 나오고, 도구로 찾은 후보를 텍스트로도 다시 나열해서 앱이 같은
+    // 정보를 카드로 한 번 더 보여주는 것과 중복됐다(가독성 저하). systemInstruction
+    // 필드가 이 모델에서 실제로 동작하는지 라이브 호출로 검증한 뒤 반영함.
+    // 테스트(같은 패키지)에서 요청 본문 검증에 재사용할 수 있도록 package-private로 둔다 —
+    // 문구를 테스트에 하드코딩해서 중복·불일치가 생기는 걸 막는다.
+    static final String SYSTEM_INSTRUCTION =
+            "당신은 여행 일정을 도와주는 대화형 비서입니다. 사용자가 원하는 조건의 장소를 찾아달라고 " +
+            "하면 제공된 도구를 사용하세요.\n\n" +
+            "답변 규칙:\n" +
+            "1. 마크다운 문법(별표, 물결표, 헤더, 번호나 기호로 된 목록 등)을 절대 쓰지 말고 자연스러운 " +
+            "문장으로만 답하세요.\n" +
+            "2. 도구로 찾은 후보 장소는 앱 화면에 카드로 따로 표시되니, 답변 텍스트에서 후보들의 이름과 " +
+            "평점을 다시 나열하지 마세요. 대신 짧은 소개나 대화하듯 1~2문장으로 답하세요.\n" +
+            "3. 친근하고 간결한 한국어로 답하세요.";
+
     private final String apiKey;
     private final RestClient restClient;
 
@@ -61,7 +77,9 @@ public class GeminiChatClientImpl implements GeminiChatClient {
     }
     private record ReqPropertySchema(String type, String description) {
     }
-    private record ChatRequest(List<ReqContent> contents, List<ReqTool> tools) {
+    private record ReqSystemInstruction(List<ReqPart> parts) {
+    }
+    private record ChatRequest(ReqSystemInstruction systemInstruction, List<ReqContent> contents, List<ReqTool> tools) {
     }
 
     private record RespFunctionCall(String name, Map<String, Object> args) {
@@ -114,7 +132,9 @@ public class GeminiChatClientImpl implements GeminiChatClient {
                                             Map.Entry::getKey,
                                             e -> new ReqPropertySchema(e.getValue().type(), e.getValue().description()))))))
                     .toList();
-            ChatRequest request = new ChatRequest(contents, List.of(new ReqTool(declarations)));
+            ChatRequest request = new ChatRequest(
+                    new ReqSystemInstruction(List.of(ReqPart.ofText(SYSTEM_INSTRUCTION))),
+                    contents, List.of(new ReqTool(declarations)));
 
             ChatResponse response = restClient.post()
                     .uri("/v1beta/models/{model}:generateContent", MODEL)

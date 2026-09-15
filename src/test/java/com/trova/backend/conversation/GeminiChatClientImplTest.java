@@ -1,5 +1,6 @@
 package com.trova.backend.conversation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -86,12 +87,16 @@ class GeminiChatClientImplTest {
     }
 
     @Test
-    void sendFunctionResult은_검증된_요청_형태로_보낸다() {
+    void sendFunctionResult은_검증된_요청_형태로_보낸다() throws Exception {
         RestClient.Builder builder = RestClient.builder();
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+        // SYSTEM_INSTRUCTION 문구를 테스트에 그대로 하드코딩하면 실제 값과 중복·불일치가
+        // 생기므로, 실제 상수를 ObjectMapper로 이스케이프해서 끼워 넣는다.
+        String systemInstructionPart = new ObjectMapper().writeValueAsString(Map.of("text", GeminiChatClientImpl.SYSTEM_INSTRUCTION));
         server.expect(requestTo(URL))
                 .andExpect(content().json("""
                         {
+                          "systemInstruction": {"parts": [%s]},
                           "contents": [
                             {"role":"user","parts":[{"text":"조용한 카페로 바꿔줘"}]},
                             {"role":"model","parts":[{"functionCall":{"name":"find_alternatives","args":{"category":"카페","indoor":true}},"thoughtSignature":"SIG123"}]},
@@ -99,7 +104,7 @@ class GeminiChatClientImplTest {
                           ],
                           "tools": [{"functionDeclarations":[{"name":"find_alternatives","description":"설명","parameters":{"type":"object","properties":{"category":{"type":"string","description":"카테고리"}}}}]}]
                         }
-                        """))
+                        """.formatted(systemInstructionPart)))
                 .andRespond(withSuccess("""
                         {"candidates":[{"content":{"parts":[{"text":"커피한약방을 추천해요"}],"role":"model"}}]}
                         """, MediaType.APPLICATION_JSON));
