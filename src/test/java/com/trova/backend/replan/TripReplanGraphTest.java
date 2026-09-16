@@ -1,6 +1,7 @@
 package com.trova.backend.replan;
 
 import com.trova.backend.entity.Itinerary;
+import com.trova.backend.entity.TransportMode;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.PlaceSource;
@@ -10,9 +11,11 @@ import com.trova.backend.recommendation.AlternativeFilter;
 import com.trova.backend.recommendation.AlternativeFinderService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -32,6 +35,7 @@ class TripReplanGraphTest {
     @Mock private AlternativeFinderService alternativeFinderService;
     @Mock private ItineraryRepository itineraryRepository;
     @Mock private TripPlaceRepository tripPlaceRepository;
+    @Mock private ApiCallLogService apiCallLogService;
 
     private TripReplanGraph graph;
     private User user;
@@ -39,7 +43,7 @@ class TripReplanGraphTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        graph = new TripReplanGraph(alternativeFinderService, itineraryRepository, tripPlaceRepository);
+        graph = new TripReplanGraph(alternativeFinderService, itineraryRepository, tripPlaceRepository, apiCallLogService);
         user = new User("google", "u1", "테스트유저", null);
         setId(user, 1L);
         trip = new Trip(user, "테스트 여행", LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 1));
@@ -295,5 +299,70 @@ class TripReplanGraphTest {
 
         assertThat(outcome.matches()).hasSize(1);
         assertThat(outcome.matches().get(0).candidate()).isEqualTo(fullCandidate);
+    }
+
+    @Test
+    void 재구성_요청_완료시_ApiCallLog에_operation_trip_replan으로_기록한다() throws Exception {
+        // 최종 리뷰 Fix 1 — Important: run()이 자기 자신의 요청/지연시간을 전혀 기록하지
+        // 않아 api_call_logs에서 replan 자체의 호출량/지연시간을 알 수 없었다.
+        // ConversationToolExecutor와 같은 패턴(provider="internal")으로 기록하는지 검증한다.
+        Itinerary day1 = itinerary(1);
+        TripPlace indoorPlace = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
+        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(indoorPlace));
+
+        graph.run(user, trip, true);
+
+        verify(apiCallLogService).record(
+                eq("internal"), eq("trip-replan"), any(), anyLong(), eq(true),
+                any(), any(), any(), any());
+    }
+
+    @Test
+    void fetchCandidates가_indoorOnly_상태값과_WALK_이동수단을_필터에_담아_전달한다() throws Exception {
+        // 최종 리뷰 Fix 2/3 — Minor(번들): fetchCandidates가 AlternativeFilter를
+        // indoorOnly=true 하드코딩, transportMode=null로 만들고 있었다. state.indoorOnly()를
+        // 그대로 쓰고 WALK를 전달하도록 고쳤는지 실제로 전달된 필터 값을 캡처해 검증한다.
+        Itinerary day1 = itinerary(1);
+        TripPlace target = tripPlace(day1, 1L, 37.50, 127.00, "OUTDOOR", 1);
+        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(target));
+
+        AlternativeCandidate onlyCandidate = candidate(21L, 37.501, 127.001);
+        when(alternativeFinderService.findAlternatives(eq(user), eq(1L), any(AlternativeFilter.class)))
+                .thenReturn(Optional.of(List.of(onlyCandidate)));
+
+        graph.run(user, trip, true);
+
+        ArgumentCaptor<AlternativeFilter> filterCaptor = ArgumentCaptor.forClass(AlternativeFilter.class);
+        verify(alternativeFinderService).findAlternatives(eq(user), eq(1L), filterCaptor.capture());
+        AlternativeFilter filter = filterCaptor.getValue();
+        assertThat(filter.indoorOnly()).isEqualTo(Boolean.TRUE);
+        assertThat(filter.transportMode()).isEqualTo(TransportMode.WALK);
+    }
+
+    @Test
+    void 후보_좌표가_null이어도_충돌판정에서_NPE_없이_확정된다() throws Exception {
+        // 최종 리뷰 Fix 4 — Minor: checkConflict의 exceedsThreshold가 neighbor 좌표는
+        // null 체크하면서 candidate 좌표는 언박싱 전 체크가 없었다. 오늘은
+        // AlternativeFinderService가 좌표 없는 후보를 걸러내서 안전하지만, 그 불변식이
+        // 깨지면 바로 NPE가 나는 구조였다. neighbor-null과 같은 패턴으로 candidate
+        // 좌표도 방어해서, null이어도 충돌 없음으로 처리되고 그대로 확정됨을 검증한다.
+        Itinerary day1 = itinerary(1);
+        TripPlace neighbor = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
+        TripPlace target = tripPlace(day1, 2L, 37.50, 127.00, "OUTDOOR", 2);
+        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(neighbor, target));
+
+        AlternativeCandidate nullCoordCandidate = new AlternativeCandidate(
+                21L, "g-21", "대안21", "cafe", 4.5, 100, null, null, "서울", null, null, false, null, null);
+        when(alternativeFinderService.findAlternatives(eq(user), eq(2L), any(AlternativeFilter.class)))
+                .thenReturn(Optional.of(List.of(nullCoordCandidate)));
+
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+
+        assertThat(outcome.failedTripPlaceIds()).isEmpty();
+        assertThat(outcome.matches()).hasSize(1);
+        assertThat(outcome.matches().get(0).candidate().placeId()).isEqualTo(21L);
     }
 }

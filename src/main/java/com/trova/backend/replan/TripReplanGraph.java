@@ -1,6 +1,7 @@
 package com.trova.backend.replan;
 
 import com.trova.backend.entity.Itinerary;
+import com.trova.backend.entity.TransportMode;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
@@ -9,6 +10,7 @@ import com.trova.backend.recommendation.AlternativeFilter;
 import com.trova.backend.recommendation.AlternativeFinderService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.service.ApiCallLogService;
 import org.bsc.langgraph4j.CompileConfig;
 import org.bsc.langgraph4j.CompiledGraph;
 import org.bsc.langgraph4j.GraphStateException;
@@ -72,6 +74,7 @@ public class TripReplanGraph {
     private final AlternativeFinderService alternativeFinderService;
     private final ItineraryRepository itineraryRepository;
     private final TripPlaceRepository tripPlaceRepository;
+    private final ApiCallLogService apiCallLogService;
     private final CompiledGraph<TripReplanState> compiledGraph;
 
     // LangGraph4j는 매 노드 실행마다 상태를 자바 직렬화(ObjectOutputStream)로
@@ -85,11 +88,13 @@ public class TripReplanGraph {
     public TripReplanGraph(
             AlternativeFinderService alternativeFinderService,
             ItineraryRepository itineraryRepository,
-            TripPlaceRepository tripPlaceRepository
+            TripPlaceRepository tripPlaceRepository,
+            ApiCallLogService apiCallLogService
     ) {
         this.alternativeFinderService = alternativeFinderService;
         this.itineraryRepository = itineraryRepository;
         this.tripPlaceRepository = tripPlaceRepository;
+        this.apiCallLogService = apiCallLogService;
         try {
             CompileConfig compileConfig = CompileConfig.builder()
                     .recursionLimit(RECURSION_LIMIT)
@@ -107,6 +112,7 @@ public class TripReplanGraph {
     }
 
     public ReplanOutcome run(User user, Trip trip, boolean indoorOnly) {
+        long start = System.currentTimeMillis();
         List<Itinerary> itineraries = itineraryRepository.findByTripOrderByDay(trip);
         List<TripPlace> orderedPlaces = new ArrayList<>();
         for (Itinerary itinerary : itineraries) {
@@ -146,7 +152,16 @@ public class TripReplanGraph {
                     .map(m -> new ReplanMatch(m.tripPlaceId(), nameByTripPlaceId.get(m.tripPlaceId()), m.candidate()))
                     .toList();
 
+            apiCallLogService.record(
+                    "internal", "trip-replan", null, System.currentTimeMillis() - start, true,
+                    null, null, null, null);
+
             return new ReplanOutcome(matches, finalState.failed());
+        } catch (RuntimeException e) {
+            apiCallLogService.record(
+                    "internal", "trip-replan", null, System.currentTimeMillis() - start, false,
+                    e.getMessage(), null, null, null);
+            throw e;
         } finally {
             currentUser.remove();
         }
@@ -199,7 +214,12 @@ public class TripReplanGraph {
         TripReplanState.PlaceSnapshot target = state.places().get(placeIndex);
         User user = currentUser.get();
 
-        AlternativeFilter filter = new AlternativeFilter(null, true, null, null, null);
+        // indoorOnly는 실제 요청 상태(state.indoorOnly())를 그대로 전달한다 — 하드코딩된
+        // true는 identifyTargets가 indoorOnly=true일 때만 타겟을 만드는 v1 한정으로만
+        // 우연히 맞았을 뿐이다. transportMode는 WALK로 고정한다 — GeoUtils의 충돌
+        // 판정과 동일한 4km/h 도보 기준(WALK_SPEED_KMH)을 쓰므로, 후보 응답의
+        // estimatedTravelMinutes도 그 기준과 일관되게 채워진다.
+        AlternativeFilter filter = new AlternativeFilter(null, state.indoorOnly(), null, null, TransportMode.WALK);
         List<AlternativeCandidate> candidates = alternativeFinderService
                 .findAlternatives(user, target.tripPlaceId(), filter)
                 .orElse(List.of());
@@ -268,6 +288,9 @@ public class TripReplanGraph {
             TripReplanState.PlaceSnapshot target, TripReplanState.PlaceSnapshot neighbor, AlternativeCandidate candidate
     ) {
         if (neighbor == null || neighbor.latitude() == null || neighbor.longitude() == null) {
+            return false;
+        }
+        if (candidate.latitude() == null || candidate.longitude() == null) {
             return false;
         }
         // 날짜 경계를 넘는 이웃(예: 1일차 마지막 장소 <-> 2일차 첫 장소)은 애초에
