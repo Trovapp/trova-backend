@@ -9,6 +9,7 @@ import com.trova.backend.recommendation.AlternativeFilter;
 import com.trova.backend.recommendation.AlternativeFinderService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.TripPlaceRepository;
+import org.bsc.langgraph4j.CompileConfig;
 import org.bsc.langgraph4j.CompiledGraph;
 import org.bsc.langgraph4j.GraphStateException;
 import org.bsc.langgraph4j.StateGraph;
@@ -50,6 +51,24 @@ public class TripReplanGraph {
     private static final int MAX_CANDIDATE_TRIES = 3;
     private static final int CONFLICT_THRESHOLD_MINUTES = 30;
 
+    // LangGraph4j 1.8.13은 "노드 실행 1회 = iteration 1"로 세고(실제 소스
+    // CompiledGraph.AsyncNodeGenerator.next — ++iteration이 매 next() 호출마다
+    // 실행되고, 노드 하나당 next()가 정확히 한 번 호출됨), CompileConfig에 아무
+    // 것도 안 넘긴 기본 compile()은 recursionLimit=25다. 이 그래프의 실제
+    // 노드/엣지 구조로 총 iteration 수를 직접 세면:
+    //   총 iteration = 3                              (START 1 + END 1 + 완료감지 1)
+    //                + 1                              (identify_targets, 1회)
+    //                + (타겟수 + 1)                     (route_next — 타겟마다 1회 + 마지막 종료판정 1회)
+    //                + 타겟수                           (fetch_candidates — 타겟마다 1회)
+    //                + Σ(타겟별 check_conflict 호출수)   (후보 없으면 0, 백트래킹 최악의 경우 타겟당 MAX_CANDIDATE_TRIES)
+    //   = 2*MAX_TARGETS + 5 + Σ(check_conflict 호출수)
+    // 검증: 후보가 전부 빈 리스트인 10타겟 케이스(체크컨플릭트 0회)는
+    //   2*10+5+0 = 25 — 리뷰어가 실측한 "정확히 기본값 25에 걸려 통과"와 정확히
+    // 일치한다. 최악(모든 타겟이 MAX_CANDIDATE_TRIES회 백트래킹) 기준
+    //   2*10+5+10*3 = 55. 라이브러리 내부 오버헤드에 대한 여유를 더해 넉넉히 잡는다.
+    private static final int RECURSION_LIMIT =
+            2 * MAX_TARGETS + 5 + MAX_TARGETS * MAX_CANDIDATE_TRIES + 15; // = 70 (MAX_TARGETS=10, MAX_CANDIDATE_TRIES=3 기준)
+
     private final AlternativeFinderService alternativeFinderService;
     private final ItineraryRepository itineraryRepository;
     private final TripPlaceRepository tripPlaceRepository;
@@ -72,7 +91,10 @@ public class TripReplanGraph {
         this.itineraryRepository = itineraryRepository;
         this.tripPlaceRepository = tripPlaceRepository;
         try {
-            this.compiledGraph = buildGraph().compile();
+            CompileConfig compileConfig = CompileConfig.builder()
+                    .recursionLimit(RECURSION_LIMIT)
+                    .build();
+            this.compiledGraph = buildGraph().compile(compileConfig);
         } catch (GraphStateException e) {
             throw new IllegalStateException("TripReplanGraph 그래프 구성 실패", e);
         }
@@ -91,8 +113,12 @@ public class TripReplanGraph {
             orderedPlaces.addAll(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary));
         }
 
+        // dayId(원본 Itinerary id)를 스냅샷에 함께 담아, 여러 날짜를 한 리스트로
+        // 펼친 뒤에도 이웃 충돌 판정이 날짜 경계를 넘지 않도록 한다(예: 1일차
+        // 마지막 장소와 2일차 첫 장소는 서로 이웃이 아니다).
         List<TripReplanState.PlaceSnapshot> snapshots = orderedPlaces.stream()
-                .map(p -> new TripReplanState.PlaceSnapshot(p.getId(), p.getLatitude(), p.getLongitude(), p.getSpace()))
+                .map(p -> new TripReplanState.PlaceSnapshot(
+                        p.getId(), p.getLatitude(), p.getLongitude(), p.getSpace(), p.getItinerary().getId()))
                 .toList();
 
         Map<String, Object> initial = new HashMap<>();
@@ -207,7 +233,8 @@ public class TripReplanGraph {
         TripReplanState.PlaceSnapshot prev = placeIndex > 0 ? places.get(placeIndex - 1) : null;
         TripReplanState.PlaceSnapshot next = placeIndex < places.size() - 1 ? places.get(placeIndex + 1) : null;
 
-        boolean conflict = exceedsThreshold(prev, candidate) || exceedsThreshold(next, candidate);
+        boolean conflict = exceedsThreshold(originalTarget, prev, candidate)
+                || exceedsThreshold(originalTarget, next, candidate);
 
         if (conflict && tryIndex + 1 < candidates.size() && tryIndex + 1 < MAX_CANDIDATE_TRIES) {
             return Map.of(
@@ -226,7 +253,8 @@ public class TripReplanGraph {
 
         List<TripReplanState.PlaceSnapshot> updatedPlaces = new ArrayList<>(places);
         updatedPlaces.set(placeIndex, new TripReplanState.PlaceSnapshot(
-                originalTarget.tripPlaceId(), candidate.latitude(), candidate.longitude(), originalTarget.space()));
+                originalTarget.tripPlaceId(), candidate.latitude(), candidate.longitude(),
+                originalTarget.space(), originalTarget.dayId()));
 
         return Map.of(
                 TripReplanState.PLACES_KEY, updatedPlaces,
@@ -236,8 +264,17 @@ public class TripReplanGraph {
         );
     }
 
-    private boolean exceedsThreshold(TripReplanState.PlaceSnapshot neighbor, AlternativeCandidate candidate) {
+    private boolean exceedsThreshold(
+            TripReplanState.PlaceSnapshot target, TripReplanState.PlaceSnapshot neighbor, AlternativeCandidate candidate
+    ) {
         if (neighbor == null || neighbor.latitude() == null || neighbor.longitude() == null) {
+            return false;
+        }
+        // 날짜 경계를 넘는 이웃(예: 1일차 마지막 장소 <-> 2일차 첫 장소)은 애초에
+        // 같은 날 동선이 아니므로 이동시간 충돌 판정 대상이 아니다. run()이 리스트를
+        // 여러 날짜에 걸쳐 이어붙이기 때문에 이 가드가 없으면 배열 인덱스상으로만
+        // "이웃"인 다른 날짜 장소와 비교해 스퓨리어스 충돌이 난다.
+        if (!java.util.Objects.equals(target.dayId(), neighbor.dayId())) {
             return false;
         }
         int minutes = GeoUtils.estimatedWalkMinutes(
@@ -328,6 +365,7 @@ public class TripReplanGraph {
             writeNullableObject(snapshot.latitude(), out);
             writeNullableObject(snapshot.longitude(), out);
             writeNullableUTF(snapshot.space(), out);
+            writeNullableObject(snapshot.dayId(), out);
         }
 
         @Override
@@ -336,7 +374,8 @@ public class TripReplanGraph {
             Double latitude = (Double) readNullableObject(in).orElse(null);
             Double longitude = (Double) readNullableObject(in).orElse(null);
             String space = readNullableUTF(in).orElse(null);
-            return new TripReplanState.PlaceSnapshot(tripPlaceId, latitude, longitude, space);
+            Long dayId = (Long) readNullableObject(in).orElse(null);
+            return new TripReplanState.PlaceSnapshot(tripPlaceId, latitude, longitude, space, dayId);
         }
     }
 }

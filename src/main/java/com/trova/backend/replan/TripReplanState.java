@@ -34,8 +34,13 @@ public class TripReplanState extends AgentState {
             FAILED_KEY, Channels.appender(ArrayList::new)
     );
 
-    /** day+visitOrder 순으로 정렬된 여행 내 장소 하나의 좌표/실내외 스냅샷. */
-    public record PlaceSnapshot(Long tripPlaceId, Double latitude, Double longitude, String space) {
+    /**
+     * day+visitOrder 순으로 정렬된 여행 내 장소 하나의 좌표/실내외 스냅샷.
+     * dayId는 원본 Itinerary의 id — 여러 날짜를 하나의 리스트로 펼쳐서 순회하는
+     * TripReplanGraph가 이웃 장소 충돌 판정 시 날짜 경계를 넘는 비교(예: 1일차
+     * 마지막 장소와 2일차 첫 장소)를 걸러내는 데 쓴다.
+     */
+    public record PlaceSnapshot(Long tripPlaceId, Double latitude, Double longitude, String space, Long dayId) {
     }
 
     /** 그래프가 확정한 대안 — tripPlaceId와 후보만 담는다(이름은 그래프 경계 밖에서 채움). */
