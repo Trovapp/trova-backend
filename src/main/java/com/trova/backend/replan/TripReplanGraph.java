@@ -124,6 +124,9 @@ public class TripReplanGraph {
             orderedPlaces.addAll(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary));
         }
 
+        // dayId(원본 Itinerary id)를 스냅샷에 함께 담아, 여러 날짜를 한 리스트로
+        // 펼친 뒤에도 이웃 충돌 판정이 날짜 경계를 넘지 않도록 한다(예: 1일차
+        // 마지막 장소와 2일차 첫 장소는 서로 이웃이 아니다).
         List<TripReplanState.PlaceSnapshot> snapshots = orderedPlaces.stream()
                 .map(p -> new TripReplanState.PlaceSnapshot(
                         p.getId(), p.getLatitude(), p.getLongitude(), p.getSpace(), p.getItinerary().getId()))
@@ -133,6 +136,10 @@ public class TripReplanGraph {
         initial.put(TripReplanState.INDOOR_ONLY_KEY, indoorOnly);
         initial.put(TripReplanState.PLACES_KEY, snapshots);
         initial.put(TripReplanState.CURSOR_KEY, 0);
+        // MATCHES_KEY/FAILED_KEY는 appender 채널의 기본값(빈 리스트)에 기대지 않고
+        // 여기서 명시적으로 빈 리스트로 시작한다 — 타겟이 하나도 없어 두 키가 한 번도
+        // 갱신되지 않는 경우에도 finalState.matches()/failed()가 항상 안전하게
+        // 빈 리스트를 반환하게 한다.
         initial.put(TripReplanState.MATCHES_KEY, new ArrayList<TripReplanState.Match>());
         initial.put(TripReplanState.FAILED_KEY, new ArrayList<Long>());
 
