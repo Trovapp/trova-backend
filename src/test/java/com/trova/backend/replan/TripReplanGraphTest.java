@@ -92,7 +92,7 @@ class TripReplanGraphTest {
         when(alternativeFinderService.findAlternatives(eq(user), eq(2L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(List.of(farCandidate, nearCandidate)));
 
-        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
         assertThat(outcome.matches()).hasSize(1);
         assertThat(outcome.matches().get(0).tripPlaceId()).isEqualTo(2L);
@@ -119,7 +119,7 @@ class TripReplanGraphTest {
         when(alternativeFinderService.findAlternatives(eq(user), eq(2L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(allFar));
 
-        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
         assertThat(outcome.matches()).isEmpty();
         assertThat(outcome.failedTripPlaceIds()).containsExactly(2L);
@@ -141,7 +141,7 @@ class TripReplanGraphTest {
         when(alternativeFinderService.findAlternatives(eq(user), eq(3L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(List.of(candidate(30L, 37.501, 127.001))));
 
-        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
         assertThat(outcome.failedTripPlaceIds()).containsExactly(2L);
         assertThat(outcome.matches()).hasSize(1);
@@ -155,7 +155,7 @@ class TripReplanGraphTest {
         when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
         when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(indoorPlace));
 
-        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
         assertThat(outcome.matches()).isEmpty();
         assertThat(outcome.failedTripPlaceIds()).isEmpty();
@@ -169,7 +169,7 @@ class TripReplanGraphTest {
         when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
         when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(untagged));
 
-        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
         assertThat(outcome.matches()).isEmpty();
         assertThat(outcome.failedTripPlaceIds()).isEmpty();
@@ -188,7 +188,7 @@ class TripReplanGraphTest {
         when(alternativeFinderService.findAlternatives(any(), any(), any()))
                 .thenReturn(Optional.of(List.of()));
 
-        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
         assertThat(outcome.matches().size() + outcome.failedTripPlaceIds().size()).isEqualTo(10);
         verify(alternativeFinderService, times(10)).findAlternatives(any(), any(), any());
@@ -231,7 +231,7 @@ class TripReplanGraphTest {
                     .thenReturn(Optional.of(List.of(onlyCandidate)));
         }
 
-        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
         assertThat(outcome.failedTripPlaceIds()).isEmpty();
         assertThat(outcome.matches()).hasSize(10);
@@ -267,7 +267,7 @@ class TripReplanGraphTest {
         when(alternativeFinderService.findAlternatives(eq(user), eq(2L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(List.of(onlyCandidate)));
 
-        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
         assertThat(outcome.failedTripPlaceIds()).isEmpty();
         assertThat(outcome.matches()).hasSize(1);
@@ -295,7 +295,7 @@ class TripReplanGraphTest {
         when(alternativeFinderService.findAlternatives(eq(user), eq(1L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(List.of(fullCandidate)));
 
-        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
         assertThat(outcome.matches()).hasSize(1);
         assertThat(outcome.matches().get(0).candidate()).isEqualTo(fullCandidate);
@@ -311,7 +311,7 @@ class TripReplanGraphTest {
         when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
         when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(indoorPlace));
 
-        graph.run(user, trip, true);
+        graph.run(user, trip, true, null);
 
         verify(apiCallLogService).record(
                 eq("internal"), eq("trip-replan"), any(), anyLong(), eq(true),
@@ -332,7 +332,7 @@ class TripReplanGraphTest {
         when(alternativeFinderService.findAlternatives(eq(user), eq(1L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(List.of(onlyCandidate)));
 
-        graph.run(user, trip, true);
+        graph.run(user, trip, true, null);
 
         ArgumentCaptor<AlternativeFilter> filterCaptor = ArgumentCaptor.forClass(AlternativeFilter.class);
         verify(alternativeFinderService).findAlternatives(eq(user), eq(1L), filterCaptor.capture());
@@ -359,10 +359,46 @@ class TripReplanGraphTest {
         when(alternativeFinderService.findAlternatives(eq(user), eq(2L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(List.of(nullCoordCandidate)));
 
-        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true);
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
         assertThat(outcome.failedTripPlaceIds()).isEmpty();
         assertThat(outcome.matches()).hasSize(1);
         assertThat(outcome.matches().get(0).candidate().placeId()).isEqualTo(21L);
+    }
+
+    @Test
+    void 진행률_콜백이_타겟_수만큼_정확한_completed_total로_호출된다() throws Exception {
+        Itinerary day1 = itinerary(1);
+        TripPlace target1 = tripPlace(day1, 1L, 37.50, 127.00, "OUTDOOR", 1);
+        TripPlace target2 = tripPlace(day1, 2L, 37.60, 127.10, "OUTDOOR", 2);
+        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(target1, target2));
+        when(alternativeFinderService.findAlternatives(any(), any(), any()))
+                .thenReturn(Optional.of(List.of()));
+
+        List<int[]> calls = new java.util.ArrayList<>();
+        TripReplanProgressListener listener = (completed, total) -> calls.add(new int[]{completed, total});
+
+        graph.run(user, trip, true, listener);
+
+        // route_next는 타겟마다 1회(진입 시 cursor) + 마지막 종료판정 1회 진입한다 —
+        // 타겟 2개면 (0,2)->(1,2)->(2,2) 순서로 정확히 3번 호출돼야 한다.
+        assertThat(calls).hasSize(3);
+        assertThat(calls.get(0)).containsExactly(0, 2);
+        assertThat(calls.get(1)).containsExactly(1, 2);
+        assertThat(calls.get(2)).containsExactly(2, 2);
+    }
+
+    @Test
+    void onProgress가_null이어도_예외없이_동작한다() throws Exception {
+        Itinerary day1 = itinerary(1);
+        TripPlace indoorPlace = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
+        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(indoorPlace));
+
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
+
+        assertThat(outcome.matches()).isEmpty();
+        assertThat(outcome.failedTripPlaceIds()).isEmpty();
     }
 }

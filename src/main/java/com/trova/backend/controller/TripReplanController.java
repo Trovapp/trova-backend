@@ -64,7 +64,7 @@ public class TripReplanController {
         return tripRepository.findById(tripId)
                 .filter(t -> t.getUser().getId().equals(user.getId()))
                 .map(trip -> {
-                    TripReplanGraph.ReplanOutcome outcome = tripReplanGraph.run(user, trip, true);
+                    TripReplanGraph.ReplanOutcome outcome = tripReplanGraph.run(user, trip, true, null);
                     return ResponseEntity.ok(TripReplanResponse.from(outcome));
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());

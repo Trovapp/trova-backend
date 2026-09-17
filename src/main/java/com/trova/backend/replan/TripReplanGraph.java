@@ -85,6 +85,11 @@ public class TripReplanGraph {
     // 동기 호출이라 동일 스레드에서 fetchCandidates가 안전하게 읽는다.
     private final ThreadLocal<User> currentUser = new ThreadLocal<>();
 
+    // TripReplanProgressListener(람다)도 User와 같은 이유로 상태 맵에 넣지 않고
+    // ThreadLocal로 들고 다닌다 — 그래프가 매 노드 실행마다 상태를 자바 직렬화로
+    // 클론하는데(cloneState), 람다 인스턴스는 Serializable을 보장하지 않는다.
+    private final ThreadLocal<TripReplanProgressListener> currentProgress = new ThreadLocal<>();
+
     public TripReplanGraph(
             AlternativeFinderService alternativeFinderService,
             ItineraryRepository itineraryRepository,
@@ -111,7 +116,7 @@ public class TripReplanGraph {
     public record ReplanOutcome(List<ReplanMatch> matches, List<Long> failedTripPlaceIds) {
     }
 
-    public ReplanOutcome run(User user, Trip trip, boolean indoorOnly) {
+    public ReplanOutcome run(User user, Trip trip, boolean indoorOnly, TripReplanProgressListener onProgress) {
         long start = System.currentTimeMillis();
         List<Itinerary> itineraries = itineraryRepository.findByTripOrderByDay(trip);
         List<TripPlace> orderedPlaces = new ArrayList<>();
@@ -119,9 +124,6 @@ public class TripReplanGraph {
             orderedPlaces.addAll(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary));
         }
 
-        // dayId(원본 Itinerary id)를 스냅샷에 함께 담아, 여러 날짜를 한 리스트로
-        // 펼친 뒤에도 이웃 충돌 판정이 날짜 경계를 넘지 않도록 한다(예: 1일차
-        // 마지막 장소와 2일차 첫 장소는 서로 이웃이 아니다).
         List<TripReplanState.PlaceSnapshot> snapshots = orderedPlaces.stream()
                 .map(p -> new TripReplanState.PlaceSnapshot(
                         p.getId(), p.getLatitude(), p.getLongitude(), p.getSpace(), p.getItinerary().getId()))
@@ -131,14 +133,11 @@ public class TripReplanGraph {
         initial.put(TripReplanState.INDOOR_ONLY_KEY, indoorOnly);
         initial.put(TripReplanState.PLACES_KEY, snapshots);
         initial.put(TripReplanState.CURSOR_KEY, 0);
-        // MATCHES_KEY/FAILED_KEY는 appender 채널의 기본값(빈 리스트)에 기대지 않고
-        // 여기서 명시적으로 빈 리스트로 시작한다 — 타겟이 하나도 없어 두 키가 한 번도
-        // 갱신되지 않는 경우에도 finalState.matches()/failed()가 항상 안전하게
-        // 빈 리스트를 반환하게 한다.
         initial.put(TripReplanState.MATCHES_KEY, new ArrayList<TripReplanState.Match>());
         initial.put(TripReplanState.FAILED_KEY, new ArrayList<Long>());
 
         currentUser.set(user);
+        currentProgress.set(onProgress);
         try {
             TripReplanState finalState = compiledGraph.invoke(initial)
                     .orElseThrow(() -> new IllegalStateException("일정 재구성 그래프가 결과를 반환하지 않았습니다"));
@@ -164,6 +163,7 @@ public class TripReplanGraph {
             throw e;
         } finally {
             currentUser.remove();
+            currentProgress.remove();
         }
     }
 
@@ -173,7 +173,7 @@ public class TripReplanGraph {
         registerCustomSerializers(stateGraph);
         return stateGraph
                 .addNode("identify_targets", node_async(this::identifyTargets))
-                .addNode("route_next", node_async(state -> Map.of()))
+                .addNode("route_next", node_async(this::onRouteNextEnter))
                 .addNode("fetch_candidates", node_async(this::fetchCandidates))
                 .addNode("check_conflict", node_async(this::checkConflict))
                 .addEdge(START, "identify_targets")
@@ -187,6 +187,14 @@ public class TripReplanGraph {
     }
 
     // --- 노드 구현 ---
+
+    private Map<String, Object> onRouteNextEnter(TripReplanState state) {
+        TripReplanProgressListener listener = currentProgress.get();
+        if (listener != null) {
+            listener.onProgress(state.cursor(), state.targetIndexes().size());
+        }
+        return Map.of();
+    }
 
     private Map<String, Object> identifyTargets(TripReplanState state) {
         boolean indoorOnly = state.indoorOnly();
