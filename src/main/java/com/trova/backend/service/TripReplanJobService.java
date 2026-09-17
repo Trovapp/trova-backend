@@ -32,7 +32,14 @@ public class TripReplanJobService {
 
             TripReplanGraph.ReplanOutcome outcome = tripReplanGraph.run(
                     context.user(), context.trip(), context.indoorOnly(),
-                    (completed, total) -> lifecycleService.updateProgress(jobId, completed, total));
+                    (completed, total) -> {
+                        try {
+                            lifecycleService.updateProgress(jobId, completed, total);
+                        } catch (Exception progressException) {
+                            log.warn("TripReplanJob {} 진행률 갱신 실패 ({}/{}) — 처리는 계속한다",
+                                    jobId, completed, total, progressException);
+                        }
+                    });
 
             String resultJson = MAPPER.writeValueAsString(outcome);
             lifecycleService.markDone(jobId, resultJson);

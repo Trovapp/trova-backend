@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -102,11 +103,18 @@ public class TripReplanController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    private static final long STALE_JOB_MINUTES = 5;
+
     // 같은 (user, trip, indoorOnly)로 PENDING/PROCESSING인 작업이 있으면 그 jobId를
     // 재사용한다 — 영상 파이프라인(SharesController)의 중복 제출 방지와 동일한 패턴.
+    // updatedAt이 STALE_JOB_MINUTES 이내인 작업만 "살아있다"고 본다 — 배포/재시작으로
+    // 스레드가 중간에 죽으면 PROCESSING 상태로 영원히 멈춘 row가 생기는데, 그걸
+    // 무기한 재사용하면 해당 여행은 다시는 재구성을 못 돌리게 된다. 실측 응답시간이
+    // 최악 75~80초였으므로 5분이면 정상 작업과 충분히 구분된다.
     private Long resolveJobId(User user, Trip trip) {
-        List<TripReplanJob> inFlight = tripReplanJobRepository.findByUserAndTripAndIndoorOnlyAndStatusIn(
-                user, trip, true, List.of(JobStatus.PENDING, JobStatus.PROCESSING));
+        List<TripReplanJob> inFlight = tripReplanJobRepository.findByUserAndTripAndIndoorOnlyAndStatusInAndUpdatedAtAfter(
+                user, trip, true, List.of(JobStatus.PENDING, JobStatus.PROCESSING),
+                LocalDateTime.now().minusMinutes(STALE_JOB_MINUTES));
         if (!inFlight.isEmpty()) {
             return inFlight.get(0).getId();
         }
