@@ -319,7 +319,9 @@ public class TripController {
                 .filter(job -> job.getUser().getId().equals(user.getId()))
                 .map(job -> {
                     List<SavedPlace> places = savedPlaceRepository.findByProcessingJob(job);
-                    Trip trip = tripService.confirmVideoPlacesIntoTrip(user, request.title(), places, request.startDate());
+                    Trip trip = tripService.findExistingTripForSavedPlaces(places)
+                            .orElseGet(() -> tripService.confirmVideoPlacesIntoTrip(
+                                    user, request.title(), places, request.startDate()));
                     return ResponseEntity.ok(TripResponse.from(trip));
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());

@@ -262,6 +262,20 @@ public class TripService {
     }
 
     /**
+     * 같은 영상(ProcessingJob)의 SavedPlace가 이미 다른 Trip으로 확정된 적이 있으면
+     * 그 Trip을 반환한다 — confirm-trip을 두 번 누르거나(네트워크 지연 중 재시도 등)
+     * 날짜를 바꿔 다시 제출했을 때 같은 영상에서 여행이 중복 생성되는 것을 막는다.
+     */
+    public Optional<Trip> findExistingTripForSavedPlaces(List<SavedPlace> places) {
+        List<Long> savedPlaceIds = places.stream().map(SavedPlace::getId).toList();
+        if (savedPlaceIds.isEmpty()) {
+            return Optional.empty();
+        }
+        return tripPlaceRepository.findFirstBySavedPlaceIdIn(savedPlaceIds)
+                .map(tripPlace -> tripPlace.getItinerary().getTrip());
+    }
+
+    /**
      * startDate가 있으면 각 Itinerary에 실제 날짜(startDate + (day-1))를 계산해서
      * 넣는다 — 날씨 자동복구가 이 날짜를 기준으로 예보를 조회한다. startDate가 없으면
      * (날짜 모르는 여행) 지금까지처럼 date는 null로 남는다.
