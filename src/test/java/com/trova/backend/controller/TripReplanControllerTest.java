@@ -96,6 +96,21 @@ class TripReplanControllerTest {
     }
 
     @Test
+    void allPlaces만_있어도_202와_jobId를_반환한다() throws Exception {
+        mockMvc.perform(post("/api/trips/" + trip.getId() + "/replan")
+                        .with(loginAs("replan1", "재구성유저"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"allPlaces\":true}"))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.jobId").exists());
+
+        List<TripReplanJob> jobs = tripReplanJobRepository.findAll();
+        org.assertj.core.api.Assertions.assertThat(jobs).hasSize(1);
+        org.assertj.core.api.Assertions.assertThat(jobs.get(0).isAllPlaces()).isTrue();
+        org.assertj.core.api.Assertions.assertThat(jobs.get(0).isIndoorOnly()).isFalse();
+    }
+
+    @Test
     void 남의_여행이면_POST에서_404() throws Exception {
         User other = userRepository.save(new User("google", "other", "다른유저", null));
         Trip otherTrip = tripRepository.save(new Trip(other, "다른 여행", LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 1)));

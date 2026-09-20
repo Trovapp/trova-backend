@@ -17,6 +17,10 @@ import java.util.Map;
 public class TripReplanState extends AgentState {
 
     public static final String INDOOR_ONLY_KEY = "indoorOnly";
+    // true면 실내/실외 구분 없이 여행의 모든 장소가 타겟이 된다(카테고리 매칭
+    // 기반 전체 재추천). false(기본)면 기존 v1 동작 그대로 indoorOnly 조건에 맞는
+    // 장소만 타겟이 된다.
+    public static final String ALL_PLACES_KEY = "allPlaces";
     public static final String PLACES_KEY = "places";
     public static final String TARGET_INDEXES_KEY = "targetIndexes";
     public static final String CURSOR_KEY = "cursor";
@@ -38,9 +42,10 @@ public class TripReplanState extends AgentState {
      * day+visitOrder 순으로 정렬된 여행 내 장소 하나의 좌표/실내외 스냅샷.
      * dayId는 원본 Itinerary의 id — 여러 날짜를 하나의 리스트로 펼쳐서 순회하는
      * TripReplanGraph가 이웃 장소 충돌 판정 시 날짜 경계를 넘는 비교(예: 1일차
-     * 마지막 장소와 2일차 첫 장소)를 걸러내는 데 쓴다.
+     * 마지막 장소와 2일차 첫 장소)를 걸러내는 데 쓴다. category는 전체 재추천
+     * 모드(allPlaces=true)에서 후보 검색을 원래 장소와 같은 카테고리로 좁히는 데 쓴다.
      */
-    public record PlaceSnapshot(Long tripPlaceId, Double latitude, Double longitude, String space, Long dayId) {
+    public record PlaceSnapshot(Long tripPlaceId, Double latitude, Double longitude, String space, Long dayId, String category) {
     }
 
     /** 그래프가 확정한 대안 — tripPlaceId와 후보만 담는다(이름은 그래프 경계 밖에서 채움). */
@@ -53,6 +58,10 @@ public class TripReplanState extends AgentState {
 
     public boolean indoorOnly() {
         return this.<Boolean>value(INDOOR_ONLY_KEY).orElse(false);
+    }
+
+    public boolean allPlaces() {
+        return this.<Boolean>value(ALL_PLACES_KEY).orElse(false);
     }
 
     public List<PlaceSnapshot> places() {

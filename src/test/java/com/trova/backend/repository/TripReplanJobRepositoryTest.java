@@ -57,6 +57,24 @@ class TripReplanJobRepositoryTest {
     }
 
     @Test
+    void allPlaces값이_다르면_조회되지_않는다() {
+        // indoorOnly=true인 채로 allPlaces만 다른(v1 실외→실내 작업 vs 카테고리 매칭
+        // 전체 재추천 작업) 두 작업이 서로의 중복 제출 방지 대상으로 잘못 재사용되지
+        // 않아야 한다 — indoorOnly 하나만 보는 기존 쿼리는 이 차이를 구분 못 한다.
+        User user = userRepository.save(new User("google", "4", "테스트유저4", null));
+        Trip trip = tripRepository.save(new Trip(user, "테스트 여행4", LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 1)));
+        TripReplanJob allPlacesJob = tripReplanJobRepository.save(new TripReplanJob(user, trip, true, true));
+
+        List<TripReplanJob> active = tripReplanJobRepository.findByUserAndTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
+                user, trip, true, false, List.of(JobStatus.PENDING, JobStatus.PROCESSING), LocalDateTime.now().minusMinutes(5));
+
+        assertThat(active).isEmpty();
+        List<TripReplanJob> sameConfig = tripReplanJobRepository.findByUserAndTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
+                user, trip, true, true, List.of(JobStatus.PENDING, JobStatus.PROCESSING), LocalDateTime.now().minusMinutes(5));
+        assertThat(sameConfig).extracting(TripReplanJob::getId).containsExactly(allPlacesJob.getId());
+    }
+
+    @Test
     void updatedAt이_기준시각보다_오래된_작업은_조회되지_않는다() {
         User user = userRepository.save(new User("google", "3", "테스트유저3", null));
         Trip trip = tripRepository.save(new Trip(user, "테스트 여행3", LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 1)));

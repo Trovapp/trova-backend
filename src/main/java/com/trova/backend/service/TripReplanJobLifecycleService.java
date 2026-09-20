@@ -18,14 +18,14 @@ public class TripReplanJobLifecycleService {
         this.tripReplanJobRepository = tripReplanJobRepository;
     }
 
-    public record JobContext(User user, Trip trip, boolean indoorOnly) {
+    public record JobContext(User user, Trip trip, boolean indoorOnly, boolean allPlaces) {
     }
 
     @Transactional
     public JobContext markProcessing(Long jobId) {
         TripReplanJob job = getJob(jobId);
         job.markProcessing();
-        return new JobContext(job.getUser(), job.getTrip(), job.isIndoorOnly());
+        return new JobContext(job.getUser(), job.getTrip(), job.isIndoorOnly(), job.isAllPlaces());
     }
 
     @Transactional

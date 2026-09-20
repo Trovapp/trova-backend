@@ -31,7 +31,7 @@ class TripReplanStateTest {
 
     @Test
     void initData로_넘긴_값을_그대로_읽는다() {
-        var snapshot = new TripReplanState.PlaceSnapshot(1L, 37.5, 127.0, "INDOOR", 100L);
+        var snapshot = new TripReplanState.PlaceSnapshot(1L, 37.5, 127.0, "INDOOR", 100L, "cafe");
         TripReplanState state = new TripReplanState(Map.of(
                 TripReplanState.INDOOR_ONLY_KEY, true,
                 TripReplanState.PLACES_KEY, List.of(snapshot),

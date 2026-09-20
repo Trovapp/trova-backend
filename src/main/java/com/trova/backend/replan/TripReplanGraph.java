@@ -117,6 +117,14 @@ public class TripReplanGraph {
     }
 
     public ReplanOutcome run(User user, Trip trip, boolean indoorOnly, TripReplanProgressListener onProgress) {
+        return run(user, trip, indoorOnly, false, onProgress);
+    }
+
+    // allPlaces=true면 실내/실외 구분 없이 여행의 모든 장소가 타겟이 되고, 후보
+    // 검색도 카테고리 매칭 기반 전체 재추천으로 동작한다(identifyTargets/fetchCandidates
+    // 참고). indoorOnly는 이 모드에서도 후보를 실내로만 좁히고 싶을 때 여전히 쓸 수
+    // 있는 독립적인 필터다.
+    public ReplanOutcome run(User user, Trip trip, boolean indoorOnly, boolean allPlaces, TripReplanProgressListener onProgress) {
         long start = System.currentTimeMillis();
         List<Itinerary> itineraries = itineraryRepository.findByTripOrderByDay(trip);
         List<TripPlace> orderedPlaces = new ArrayList<>();
@@ -129,11 +137,12 @@ public class TripReplanGraph {
         // 마지막 장소와 2일차 첫 장소는 서로 이웃이 아니다).
         List<TripReplanState.PlaceSnapshot> snapshots = orderedPlaces.stream()
                 .map(p -> new TripReplanState.PlaceSnapshot(
-                        p.getId(), p.getLatitude(), p.getLongitude(), p.getSpace(), p.getItinerary().getId()))
+                        p.getId(), p.getLatitude(), p.getLongitude(), p.getSpace(), p.getItinerary().getId(), p.getCategory()))
                 .toList();
 
         Map<String, Object> initial = new HashMap<>();
         initial.put(TripReplanState.INDOOR_ONLY_KEY, indoorOnly);
+        initial.put(TripReplanState.ALL_PLACES_KEY, allPlaces);
         initial.put(TripReplanState.PLACES_KEY, snapshots);
         initial.put(TripReplanState.CURSOR_KEY, 0);
         // MATCHES_KEY/FAILED_KEY는 appender 채널의 기본값(빈 리스트)에 기대지 않고
@@ -205,11 +214,22 @@ public class TripReplanGraph {
 
     private Map<String, Object> identifyTargets(TripReplanState state) {
         boolean indoorOnly = state.indoorOnly();
+        boolean allPlaces = state.allPlaces();
         List<TripReplanState.PlaceSnapshot> places = state.places();
         List<Integer> targetIndexes = new ArrayList<>();
         for (int i = 0; i < places.size() && targetIndexes.size() < MAX_TARGETS; i++) {
             TripReplanState.PlaceSnapshot p = places.get(i);
-            if (p.space() == null || p.latitude() == null || p.longitude() == null) {
+            if (p.latitude() == null || p.longitude() == null) {
+                continue;
+            }
+            // allPlaces=true(카테고리 매칭 기반 전체 재추천)면 실내/실외 구분 없이
+            // 좌표만 있으면 타겟이 된다 — 기존 v1(indoorOnly로만 실외 장소를 고르는
+            // 동작)은 allPlaces=false일 때 그대로 유지된다.
+            if (allPlaces) {
+                targetIndexes.add(i);
+                continue;
+            }
+            if (p.space() == null) {
                 continue;
             }
             boolean isIndoor = "INDOOR".equals(p.space());
@@ -233,8 +253,10 @@ public class TripReplanGraph {
         // true는 identifyTargets가 indoorOnly=true일 때만 타겟을 만드는 v1 한정으로만
         // 우연히 맞았을 뿐이다. transportMode는 WALK로 고정한다 — GeoUtils의 충돌
         // 판정과 동일한 4km/h 도보 기준(WALK_SPEED_KMH)을 쓰므로, 후보 응답의
-        // estimatedTravelMinutes도 그 기준과 일관되게 채워진다.
-        AlternativeFilter filter = new AlternativeFilter(null, state.indoorOnly(), null, null, TransportMode.WALK);
+        // estimatedTravelMinutes도 그 기준과 일관되게 채워진다. category는 원래
+        // 장소와 같은 카테고리로 후보를 좁힌다 — null이면(카테고리 미분류 장소)
+        // AlternativeFinderService가 필터 없이 폭넓게 검색하는 기존 폴백을 그대로 탄다.
+        AlternativeFilter filter = new AlternativeFilter(target.category(), state.indoorOnly(), null, null, TransportMode.WALK);
         List<AlternativeCandidate> candidates = alternativeFinderService
                 .findAlternatives(user, target.tripPlaceId(), filter)
                 .orElse(List.of());
@@ -289,7 +311,7 @@ public class TripReplanGraph {
         List<TripReplanState.PlaceSnapshot> updatedPlaces = new ArrayList<>(places);
         updatedPlaces.set(placeIndex, new TripReplanState.PlaceSnapshot(
                 originalTarget.tripPlaceId(), candidate.latitude(), candidate.longitude(),
-                originalTarget.space(), originalTarget.dayId()));
+                originalTarget.space(), originalTarget.dayId(), candidate.category()));
 
         return Map.of(
                 TripReplanState.PLACES_KEY, updatedPlaces,
@@ -404,6 +426,7 @@ public class TripReplanGraph {
             writeNullableObject(snapshot.longitude(), out);
             writeNullableUTF(snapshot.space(), out);
             writeNullableObject(snapshot.dayId(), out);
+            writeNullableUTF(snapshot.category(), out);
         }
 
         @Override
@@ -413,7 +436,8 @@ public class TripReplanGraph {
             Double longitude = (Double) readNullableObject(in).orElse(null);
             String space = readNullableUTF(in).orElse(null);
             Long dayId = (Long) readNullableObject(in).orElse(null);
-            return new TripReplanState.PlaceSnapshot(tripPlaceId, latitude, longitude, space, dayId);
+            String category = readNullableUTF(in).orElse(null);
+            return new TripReplanState.PlaceSnapshot(tripPlaceId, latitude, longitude, space, dayId, category);
         }
     }
 }

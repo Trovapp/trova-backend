@@ -38,11 +38,16 @@ class TripReplanJobServiceTest {
     }
 
     private TripReplanJobLifecycleService.JobContext newContext(Long userId, Long tripId, boolean indoorOnly) throws Exception {
+        return newContext(userId, tripId, indoorOnly, false);
+    }
+
+    private TripReplanJobLifecycleService.JobContext newContext(
+            Long userId, Long tripId, boolean indoorOnly, boolean allPlaces) throws Exception {
         User user = new User("google", "u" + userId, "테스트유저", null);
         setId(user, userId);
         Trip trip = new Trip(user, "테스트 여행", LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 1));
         setId(trip, tripId);
-        return new TripReplanJobLifecycleService.JobContext(user, trip, indoorOnly);
+        return new TripReplanJobLifecycleService.JobContext(user, trip, indoorOnly, allPlaces);
     }
 
     @Test
@@ -55,7 +60,7 @@ class TripReplanJobServiceTest {
                 null, null, false, null, null);
         TripReplanGraph.ReplanMatch match = new TripReplanGraph.ReplanMatch(1L, "야외공원", candidate);
         TripReplanGraph.ReplanOutcome outcome = new TripReplanGraph.ReplanOutcome(List.of(match), List.of());
-        when(tripReplanGraph.run(eq(context.user()), eq(context.trip()), eq(true), any()))
+        when(tripReplanGraph.run(eq(context.user()), eq(context.trip()), eq(true), eq(false), any()))
                 .thenReturn(outcome);
 
         tripReplanJobService.process(5L);
@@ -82,7 +87,7 @@ class TripReplanJobServiceTest {
 
         ArgumentCaptor<TripReplanProgressListener> listenerCaptor =
                 ArgumentCaptor.forClass(TripReplanProgressListener.class);
-        when(tripReplanGraph.run(eq(context.user()), eq(context.trip()), eq(true), listenerCaptor.capture()))
+        when(tripReplanGraph.run(eq(context.user()), eq(context.trip()), eq(true), eq(false), listenerCaptor.capture()))
                 .thenReturn(new TripReplanGraph.ReplanOutcome(List.of(), List.of()));
 
         tripReplanJobService.process(7L);

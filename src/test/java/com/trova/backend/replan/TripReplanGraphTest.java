@@ -390,6 +390,55 @@ class TripReplanGraphTest {
     }
 
     @Test
+    void allPlaces_요청에서는_실내_장소도_타겟이_된다() throws Exception {
+        // indoorOnly=true 경로에서는 실내 장소가 타겟이 되지 않는다는 기존 계약
+        // (실내인_장소는_indoorOnly_요청에서_타겟이_되지_않는다)과 달리, allPlaces=true는
+        // 카테고리 매칭 기반 전체 재추천이라 실내/실외 구분 없이 좌표만 있으면 타겟이다.
+        Itinerary day1 = itinerary(1);
+        TripPlace indoorPlace = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
+        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(indoorPlace));
+        when(alternativeFinderService.findAlternatives(eq(user), eq(1L), any(AlternativeFilter.class)))
+                .thenReturn(Optional.of(List.of(candidate(21L, 37.501, 127.001))));
+
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, false, true, null);
+
+        assertThat(outcome.matches()).hasSize(1);
+        assertThat(outcome.matches().get(0).tripPlaceId()).isEqualTo(1L);
+    }
+
+    @Test
+    void allPlaces_요청에서는_space가_null인_장소도_좌표만_있으면_타겟이_된다() throws Exception {
+        Itinerary day1 = itinerary(1);
+        TripPlace untagged = tripPlace(day1, 1L, 37.50, 127.00, null, 1);
+        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(untagged));
+        when(alternativeFinderService.findAlternatives(eq(user), eq(1L), any(AlternativeFilter.class)))
+                .thenReturn(Optional.of(List.of(candidate(21L, 37.501, 127.001))));
+
+        TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, false, true, null);
+
+        assertThat(outcome.matches()).hasSize(1);
+    }
+
+    @Test
+    void fetchCandidates가_원래_장소의_카테고리를_필터에_담아_전달한다() throws Exception {
+        Itinerary day1 = itinerary(1);
+        // tripPlace 헬퍼는 category="cafe"로 장소를 만든다.
+        TripPlace target = tripPlace(day1, 1L, 37.50, 127.00, "OUTDOOR", 1);
+        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(target));
+        when(alternativeFinderService.findAlternatives(eq(user), eq(1L), any(AlternativeFilter.class)))
+                .thenReturn(Optional.of(List.of(candidate(21L, 37.501, 127.001))));
+
+        graph.run(user, trip, false, true, null);
+
+        ArgumentCaptor<AlternativeFilter> filterCaptor = ArgumentCaptor.forClass(AlternativeFilter.class);
+        verify(alternativeFinderService).findAlternatives(eq(user), eq(1L), filterCaptor.capture());
+        assertThat(filterCaptor.getValue().category()).isEqualTo("cafe");
+    }
+
+    @Test
     void onProgress가_null이어도_예외없이_동작한다() throws Exception {
         Itinerary day1 = itinerary(1);
         TripPlace indoorPlace = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);

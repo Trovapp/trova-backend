@@ -32,6 +32,11 @@ public class TripReplanJob {
     @Column(name = "indoor_only", nullable = false)
     private boolean indoorOnly;
 
+    // true면 카테고리 매칭 기반 전체 재추천(실내/실외 구분 없이 여행의 모든 장소가
+    // 대상), false(기본)면 기존 v1 동작(indoorOnly 조건에 맞는 장소만 대상).
+    @Column(name = "all_places", nullable = false)
+    private boolean allPlaces;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JobStatus status;
@@ -62,9 +67,14 @@ public class TripReplanJob {
     }
 
     public TripReplanJob(User user, Trip trip, boolean indoorOnly) {
+        this(user, trip, indoorOnly, false);
+    }
+
+    public TripReplanJob(User user, Trip trip, boolean indoorOnly, boolean allPlaces) {
         this.user = user;
         this.trip = trip;
         this.indoorOnly = indoorOnly;
+        this.allPlaces = allPlaces;
         this.status = JobStatus.PENDING;
         this.completedTargets = 0;
         this.createdAt = LocalDateTime.now();
@@ -98,6 +108,7 @@ public class TripReplanJob {
     public User getUser() { return user; }
     public Trip getTrip() { return trip; }
     public boolean isIndoorOnly() { return indoorOnly; }
+    public boolean isAllPlaces() { return allPlaces; }
     public JobStatus getStatus() { return status; }
     public int getCompletedTargets() { return completedTargets; }
     public Integer getTotalTargets() { return totalTargets; }

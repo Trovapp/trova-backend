@@ -31,7 +31,7 @@ public class TripReplanJobService {
             log.info("TripReplanJob {} 재구성 시작: tripId={}", jobId, context.trip().getId());
 
             TripReplanGraph.ReplanOutcome outcome = tripReplanGraph.run(
-                    context.user(), context.trip(), context.indoorOnly(),
+                    context.user(), context.trip(), context.indoorOnly(), context.allPlaces(),
                     (completed, total) -> {
                         try {
                             lifecycleService.updateProgress(jobId, completed, total);
