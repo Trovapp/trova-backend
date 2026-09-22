@@ -16,9 +16,7 @@ from pathlib import Path
 
 import download
 import frames as frames_mod
-from extract_places import extract_places
-
-MAX_FRAMES = 8
+from extract_places import extract_places_multi_pass
 
 
 def extract_audio(video_path: Path, out_path: Path) -> Path:
@@ -54,11 +52,12 @@ def run(url: str, work_dir: Path) -> dict:
     print("[pipeline] 오디오 추출", file=sys.stderr)
     audio_path = extract_audio(video_path, work_dir / "audio.mp3")
 
-    print(f"[pipeline] 프레임 추출 (최대 {MAX_FRAMES}장)", file=sys.stderr)
-    frame_paths = frames_mod.extract_frames(video_path, work_dir / "frames", max_frames=MAX_FRAMES)
+    frame_sets = frames_mod.extract_frame_sets(video_path, work_dir / "frames")
+    total_frames = sum(len(s) for s in frame_sets)
+    print(f"[pipeline] 프레임 추출 ({len(frame_sets)}회 분할, 총 {total_frames}장)", file=sys.stderr)
 
     print("[pipeline] Gemini 호출", file=sys.stderr)
-    places = extract_places(transcript=transcript, audio_path=audio_path, frame_paths=frame_paths)
+    places = extract_places_multi_pass(transcript=transcript, audio_path=audio_path, frame_sets=frame_sets)
     return {"title": title, "places": places}
 
 
