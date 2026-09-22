@@ -13,6 +13,7 @@ import com.trova.backend.pipeline.PlaceVerification;
 import com.trova.backend.pipeline.PlaceVerificationRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,19 +39,22 @@ public class PlaceExtractionService {
     private final KakaoGeocodingService kakaoGeocodingService;
     private final PlaceSelectionRunner placeSelectionRunner;
     private final PlaceVerificationRunner placeVerificationRunner;
+    private final Executor geocodingTaskExecutor;
 
     public PlaceExtractionService(
             ProcessingJobLifecycleService lifecycleService,
             PipelineRunner pipelineRunner,
             KakaoGeocodingService kakaoGeocodingService,
             PlaceSelectionRunner placeSelectionRunner,
-            PlaceVerificationRunner placeVerificationRunner
+            PlaceVerificationRunner placeVerificationRunner,
+            @Qualifier("geocodingTaskExecutor") Executor geocodingTaskExecutor
     ) {
         this.lifecycleService = lifecycleService;
         this.pipelineRunner = pipelineRunner;
         this.kakaoGeocodingService = kakaoGeocodingService;
         this.placeSelectionRunner = placeSelectionRunner;
         this.placeVerificationRunner = placeVerificationRunner;
+        this.geocodingTaskExecutor = geocodingTaskExecutor;
     }
 
     @Async("pipelineTaskExecutor")
@@ -66,13 +72,31 @@ public class PlaceExtractionService {
             List<ExtractedPlace> extractedList = output.places();
             List<GeocodingResult> geocodedList = new ArrayList<>();
 
-            // region-only 폴백이 같은 영상 안에서 이미 확정된 다른 장소와 좌표가 겹치는 걸
-            // 막으려면, 지금까지 확정된 좌표를 계속 누적해서 geocode() 호출마다 넘겨줘야 한다.
             lifecycleService.updateStage(jobId, ProcessingStage.GEOCODING);
+
+            // 이름 후보로 실제 매칭을 찾는 단계는 장소마다 완전히 독립적인 카카오 API
+            // 호출이라 병렬로 쏜다(실측: 장소 N개 순차 호출 -> 병렬로 단축). region-only
+            // 폴백만 같은 영상 안에서 이미 확정된 다른 장소와 좌표가 겹치는 걸 막으려고
+            // usedCoordinateKeys를 누적해서 참조하므로, 그 부분만 순차로 남긴다
+            // (KakaoGeocodingService.resolveRegionFallback 참고).
+            List<CompletableFuture<GeocodingResult>> candidateSearches = extractedList.stream()
+                    .map(extracted -> CompletableFuture.supplyAsync(
+                            () -> kakaoGeocodingService.searchCandidates(
+                                    extracted.nameCandidates(), extracted.region(), jobId),
+                            geocodingTaskExecutor))
+                    .toList();
+            List<GeocodingResult> candidateResults = candidateSearches.stream()
+                    .map(CompletableFuture::join)
+                    .toList();
+
             Set<String> usedCoordinateKeys = new HashSet<>();
-            for (ExtractedPlace extracted : extractedList) {
-                GeocodingResult geocoded = kakaoGeocodingService.geocode(
-                        extracted.nameCandidates(), extracted.region(), usedCoordinateKeys, jobId);
+            for (int i = 0; i < extractedList.size(); i++) {
+                ExtractedPlace extracted = extractedList.get(i);
+                GeocodingResult geocoded = candidateResults.get(i);
+                if (geocoded.latitude() == null) {
+                    geocoded = kakaoGeocodingService.resolveRegionFallback(
+                            extracted.nameCandidates(), extracted.region(), usedCoordinateKeys, jobId);
+                }
                 if (geocoded.latitude() != null) {
                     usedCoordinateKeys.add(geocoded.coordinateKey());
                 }

@@ -24,6 +24,19 @@ public class KakaoGeocodingService {
     public GeocodingResult geocode(
             List<String> nameCandidates, String region, Set<String> usedCoordinateKeys, Long jobId
     ) {
+        GeocodingResult matched = searchCandidates(nameCandidates, region, jobId);
+        if (matched.latitude() != null) {
+            return matched;
+        }
+        return resolveRegionFallback(nameCandidates, region, usedCoordinateKeys, jobId);
+    }
+
+    /**
+     * 이름 후보만으로 검색한다 — usedCoordinateKeys를 전혀 건드리지 않으므로 장소마다
+     * 완전히 독립적이고, 여러 장소를 동시에 병렬 호출해도 안전하다(PlaceExtractionService
+     * 참고).
+     */
+    public GeocodingResult searchCandidates(List<String> nameCandidates, String region, Long jobId) {
         boolean hasRegion = region != null && !region.isBlank();
 
         // STT/화면 텍스트 오인식으로 name이 정확히 매칭 안 될 수 있음 — Gemini가 함께
@@ -36,14 +49,25 @@ public class KakaoGeocodingService {
                 return result;
             }
         }
+        return GeocodingResult.empty();
+    }
 
+    /**
+     * 이름 후보가 전부 실패했을 때만 호출한다. usedCoordinateKeys를 읽고 쓰므로 같은
+     * 영상 안에서는 반드시 순차로 호출해야 한다 — 동시에 호출하면 서로 다른 장소가
+     * usedCoordinateKeys에 아직 반영 안 된 같은 좌표를 동시에 통과시켜 중복될 수 있다.
+     */
+    public GeocodingResult resolveRegionFallback(
+            List<String> nameCandidates, String region, Set<String> usedCoordinateKeys, Long jobId
+    ) {
+        boolean hasRegion = region != null && !region.isBlank();
         if (!hasRegion) {
             return GeocodingResult.empty();
         }
 
-        // 후보를 전부 못 찾았을 때만 region만으로 재검색해서 최소한 지역 중심 좌표라도
-        // 남긴다(완전 실패보다 나은 근사치). 이 결과의 matchedName은 "region" 자체에 대한
-        // 검색 결과(예: "부산광역시")라 실제 장소 이름이 아니므로 절대 채택하지 않는다.
+        // 최소한 지역 중심 좌표라도 남긴다(완전 실패보다 나은 근사치). 이 결과의
+        // matchedName은 "region" 자체에 대한 검색 결과(예: "부산광역시")라 실제 장소
+        // 이름이 아니므로 절대 채택하지 않는다.
         log.info("후보 이름 전부 매칭 실패, region만으로 재검색합니다(candidates={}, region={})",
                 nameCandidates, region);
         GeocodingResult fallback = search(region, jobId);

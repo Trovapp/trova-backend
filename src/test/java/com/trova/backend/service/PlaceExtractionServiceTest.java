@@ -8,15 +8,14 @@ import com.trova.backend.pipeline.PipelineOutput;
 import com.trova.backend.pipeline.PipelineRunner;
 import com.trova.backend.pipeline.PlaceSelectionRunner;
 import com.trova.backend.pipeline.PlaceVerificationRunner;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -37,8 +36,16 @@ class PlaceExtractionServiceTest {
     @Mock
     private PlaceVerificationRunner placeVerificationRunner;
 
-    @InjectMocks
     private PlaceExtractionService placeExtractionService;
+
+    @BeforeEach
+    void setUp() {
+        // 지오코딩 병렬 팬아웃용 executor — 테스트에서는 스레드풀 대신 호출 스레드에서
+        // 즉시 실행시켜(Runnable::run) 실제 쓰레딩 없이 순수 로직만 검증한다.
+        placeExtractionService = new PlaceExtractionService(
+                lifecycleService, pipelineRunner, kakaoGeocodingService,
+                placeSelectionRunner, placeVerificationRunner, Runnable::run);
+    }
 
     @Test
     void 정상_처리시_단계가_순서대로_기록된다() {
@@ -47,7 +54,7 @@ class PlaceExtractionServiceTest {
         when(lifecycleService.markProcessing(jobId)).thenReturn("https://youtu.be/x");
         when(pipelineRunner.run("https://youtu.be/x", jobId))
                 .thenReturn(new PipelineOutput("부산 여행", List.of(extracted)));
-        when(kakaoGeocodingService.geocode(any(), any(), any(Set.class), anyLong()))
+        when(kakaoGeocodingService.searchCandidates(any(), any(), anyLong()))
                 .thenReturn(GeocodingResult.coordinatesOnly(35.16, 129.16));
         // 후보가 여러 개도 아니고(선택 대상 없음), 확신도 0.95라 검증 대상도 아니므로
         // selectAmongAlternatives/verifyUncertainMatches는 둘 다 Gemini 호출 없이 스킵된다 —
