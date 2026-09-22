@@ -35,7 +35,10 @@ def download(url: str, out_dir: Path) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     out_tmpl = str(out_dir / "video.%(ext)s")
     base_args = [
-        "-f", "bv*+ba/b",
+        # 오디오는 16kHz 모노로 재인코딩하고 화면은 512px 폭 프레임 8장만
+        # 뽑아 쓰므로(frames.py, run_pipeline.py), 원본을 최고화질로 받을
+        # 이유가 없다 — 480p로 캡을 걸어 다운로드 시간만 줄인다.
+        "-f", "bv*[height<=480]+ba/b[height<=480]",
         "--write-auto-sub", "--write-sub", "--sub-lang", SUB_LANGS,
         "--sub-format", "vtt",
         "-o", out_tmpl,
@@ -80,6 +83,21 @@ def download(url: str, out_dir: Path) -> dict:
     caption_path = caption_candidates[0] if caption_candidates else None
 
     return {"video_path": video_candidates[0], "caption_path": caption_path}
+
+
+def get_title(url: str) -> str | None:
+    """영상 제목을 가져온다. 실패해도 파이프라인 전체를 막지 않는다(best-effort) —
+    다운로드/자막과 마찬가지로 별도 호출로 분리해서, 제목 조회 실패가 나머지 흐름을
+    막지 않게 한다.
+    """
+    result = _run_yt_dlp(["--get-title", "--", url])
+    if result.returncode != 0 and "403" in result.stderr:
+        result = _run_yt_dlp(["--cookies-from-browser", "chrome", "--get-title", "--", url])
+    if result.returncode != 0:
+        print(f"[download] 제목 가져오기 실패(무시하고 진행): {result.stderr[-500:]}", file=sys.stderr)
+        return None
+    title = result.stdout.strip()
+    return title or None
 
 
 def vtt_to_text(vtt_path: Path) -> str:

@@ -13,6 +13,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
@@ -97,6 +98,10 @@ def build_parts(
     prompt: str,
     candidates: list[str] | None = None,
 ) -> list[dict]:
+    # (2026-09-22: Gemini File API로 오디오/프레임을 한 번 업로드하고 file_uri로
+    # 재사용하는 방식을 시도했으나, 토큰 수는 그대로였고(모델이 실제 처리하는
+    # 미디어 내용을 토큰으로 셈 — 전송 방식과 무관) 업로드+서버 처리 대기
+    # 왕복만 추가돼 22초->68초로 오히려 느려져서 인라인 base64로 되돌림.)
     parts: list[dict] = []
     if transcript:
         parts.append({"text": f"자막/전사 텍스트:\n{transcript}"})
@@ -305,6 +310,63 @@ def extract_places(
         return places
 
     parts = build_parts(transcript, audio_path, frame_paths, prompt=FILTER_PROMPT, candidates=candidates)
+    places = call_gemini_with_repair(parts, model, api_key, "extract_places.filter", _parse)
+    return _normalize_name_candidates(_normalize_day_fields(places))
+
+
+def extract_places_multi_pass(
+    transcript: str | None,
+    audio_path: Path | None,
+    frame_sets: list[list[Path]],
+    model: str = DEFAULT_MODEL,
+) -> list[dict]:
+    """frame_sets(frames.extract_frame_sets()가 만든 서로 다른 시점의 프레임 묶음)
+    각각에 대해 collect_candidates()를 따로 호출해 후보를 합집합으로 모으고,
+    최종 filter는 전체 프레임을 다 모아서 딱 한 번만 호출한다.
+
+    실측 근거: 프레임을 한 번에 많이(35장) 밀어넣은 단일 호출은 recall은
+    올라가도 비슷한 후보끼리 헷갈려 바꿔치기하는 오류가 생겼음(부전시장→부전역).
+    수집을 나눠서 하고 판단만 한 번에 모으니 같은 recall에서 오류가 0건이 됨.
+    """
+    if not frame_sets:
+        raise ValueError("frame_sets가 비어 있습니다")
+    api_key = load_api_key()
+
+    # (2026-09-22 실측: Gemini File API로 업로드 후 file_uri 참조 방식을 시도했지만
+    # 토큰 수는 거의 그대로였고(모델이 실제 처리하는 미디어 내용 자체를 토큰으로
+    # 셈 — 전송 방식과 무관), 업로드+서버 처리 대기 왕복만 추가돼 오히려 22초->
+    # 68초로 3배 느려져서 되돌림. 인라인 base64 + 병렬 수집이 더 낫다.)
+
+    # 서로 다른 프레임 세트를 쓰는 독립적인 호출이라 순서대로 기다릴 이유가
+    # 없다 — 네트워크 대기 시간이 대부분이라(I/O bound) 스레드로 동시에 쏘면
+    # 정확도/토큰 비용 변화 없이 벽시계 시간만 줄어든다(실측: 3회 순차 ~37초
+    # -> 병렬 ~22초로 단축 확인).
+    with ThreadPoolExecutor(max_workers=len(frame_sets)) as executor:
+        results = list(executor.map(
+            lambda frame_paths: collect_candidates(transcript, audio_path, frame_paths, model, api_key),
+            frame_sets,
+        ))
+
+    seen: set[str] = set()
+    union_candidates: list[str] = []
+    for candidates in results:
+        for c in candidates:
+            if c not in seen:
+                seen.add(c)
+                union_candidates.append(c)
+
+    all_frames = [p for frame_paths in frame_sets for p in frame_paths]
+
+    def _parse(text: str) -> list[dict]:
+        try:
+            places = json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError(f"유효한 JSON이 아님: {text[:500]}")
+        if not isinstance(places, list):
+            raise ValueError(f"응답이 배열이 아님: {text[:500]}")
+        return places
+
+    parts = build_parts(transcript, audio_path, all_frames, prompt=FILTER_PROMPT, candidates=union_candidates)
     places = call_gemini_with_repair(parts, model, api_key, "extract_places.filter", _parse)
     return _normalize_name_candidates(_normalize_day_fields(places))
 
