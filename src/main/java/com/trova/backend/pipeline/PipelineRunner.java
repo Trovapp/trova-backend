@@ -19,7 +19,12 @@ public class PipelineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(PipelineRunner.class);
 
-    private static final long TIMEOUT_MINUTES = 5;
+    // (2026-09-22 실측: Gemini가 몇 분씩 이어지는 "high demand"(503) 상태일 때
+    // pipeline-test 쪽 재시도만으로 단일 호출이 300~470초까지 걸리는 걸 확인함 —
+    // 5분이면 정상적인 재시도 중에도 여기 걸려 죽을 수 있어 여유를 늘림. 그래도
+    // 무제한으로 두진 않음 — 이 이상 걸리는 건 재시도로 버틸 게 아니라 job을
+    // 실패시키고 ProcessingJob의 재시도(retryCount)로 넘기는 게 맞음.
+    private static final long TIMEOUT_MINUTES = 8;
     private static final long STDOUT_JOIN_TIMEOUT_MILLIS = 30_000;
 
     private final String scriptPath;

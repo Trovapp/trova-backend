@@ -45,6 +45,11 @@ FILTER_PROMPT = """당신은 여행 영상 자막/음성/화면 텍스트에서 
   단, "해운대"처럼 그 안의 동네/랜드마크가 함께 언급됐다면 그 동네/랜드마크만 name으로 쓰고,
   상위 지역명은 region 필드에 넣으세요.
 - 일반명사만 있고 고유명사가 없는 경우 (예: "카페", "시장" 단독)는 제외하세요.
+- 지하철역/기차역/버스정류장 등 교통 시설이 "~에서 내려서", "~까지 타고 가서", "~에서 환승"처럼
+  경유·이동 수단으로만 언급됐다면 제외하세요. 그 역/정류장 자체가 이번 영상이 소개하는
+  목적지(예: 역사 건물 투어, 역 안의 상점가 자체가 콘텐츠)라면 포함하세요 — 헷갈리면 전사
+  텍스트의 문맥(그 장소에서 뭘 했는지 설명이 있는지, 아니면 다음 장소로 넘어가는 문장인지)을
+  보고 판단하세요.
 
 일정 구조 판단:
 이 영상이 여행 일정을 일자별(1일차, 2일차...)로 소개하는 구조인지 판단하세요.
@@ -159,8 +164,15 @@ def _normalize_name_candidates(places: list[dict]) -> list[dict]:
     return places
 
 
-MAX_ATTEMPTS = 5
+MAX_ATTEMPTS = 6
 RETRY_BASE_DELAY = 5.0  # 무료 티어 RPM 제한 대응 — 429/일시 오류 시 지수 백오프
+MAX_RETRY_DELAY = 30.0  # 무제한 지수증가 방지 — 이 값에서 상한
+REQUEST_TIMEOUT_SEC = 30
+# (2026-09-22 실측: Gemini가 몇 분씩 이어지는 "high demand"(503) 상태일 때, 개별
+# 요청 타임아웃이 120초라 재시도 5번과 겹치면서 단일 호출이 300~470초까지
+# 걸려 Java 쪽 파이프라인 전체 타임아웃(PipelineRunner.TIMEOUT_MINUTES)에
+# 걸리는 걸 확인함. 죽은 요청에 오래 안 붙잡히도록 타임아웃을 줄이고, 백오프도
+# 상한을 둬서 같은 재시도 예산 안에서 더 많은 시도를 할 수 있게 조정함.)
 
 API_LOG_MARKER = "TROVA_API_LOG:"
 
@@ -205,7 +217,7 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
             url, data=body, headers={"Content-Type": "application/json"}, method="POST"
         )
         try:
-            with urllib.request.urlopen(request, timeout=120) as response:
+            with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SEC) as response:
                 payload = json.loads(response.read().decode("utf-8"))
                 _log_api_call(operation, started_at, True, payload=payload)
                 return payload
@@ -220,7 +232,7 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
 
             if attempt < MAX_ATTEMPTS - 1:
                 retry_after = exc.headers.get("Retry-After") if exc.headers else None
-                delay = float(retry_after) if retry_after else RETRY_BASE_DELAY * (2 ** attempt)
+                delay = float(retry_after) if retry_after else min(MAX_RETRY_DELAY, RETRY_BASE_DELAY * (2 ** attempt))
                 print(
                     f"[extract_places] Gemini {exc.code} — {delay:.0f}초 대기 후 재시도 "
                     f"({attempt + 2}/{MAX_ATTEMPTS})",
@@ -230,7 +242,7 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
         except (urllib.error.URLError, TimeoutError) as exc:
             last_detail = str(exc)
             if attempt < MAX_ATTEMPTS - 1:
-                delay = RETRY_BASE_DELAY * (attempt + 1)
+                delay = min(MAX_RETRY_DELAY, RETRY_BASE_DELAY * (attempt + 1))
                 print(
                     f"[extract_places] 네트워크 오류({exc}) — {delay:.0f}초 대기 후 재시도 "
                     f"({attempt + 2}/{MAX_ATTEMPTS})",
@@ -336,6 +348,13 @@ def extract_places_multi_pass(
     # 토큰 수는 거의 그대로였고(모델이 실제 처리하는 미디어 내용 자체를 토큰으로
     # 셈 — 전송 방식과 무관), 업로드+서버 처리 대기 왕복만 추가돼 오히려 22초->
     # 68초로 3배 느려져서 되돌림. 인라인 base64 + 병렬 수집이 더 낫다.)
+
+    # (2026-09-22 실측: 오디오를 먼저 순수 전사하고 수집 단계에 그 텍스트를 쓰는
+    # 방식도 시도했음 — 오디오 반복 처리는 줄었지만(토큰 절감은 기대보다 작았음,
+    # 이미지가 토큰의 대부분이라 오디오 비중이 생각보다 작았음) 전사가 끝나야
+    # 수집이 시작되는 순차 의존성 때문에 22~36초 -> 187초로 훨씬 느려져서
+    # 되돌림. "독립적인 호출은 병렬로"가 계속 이기는 패턴이고, 순차 의존성을
+    # 만드는 최적화는 이번에도 손해였다.)
 
     # 서로 다른 프레임 세트를 쓰는 독립적인 호출이라 순서대로 기다릴 이유가
     # 없다 — 네트워크 대기 시간이 대부분이라(I/O bound) 스레드로 동시에 쏘면
