@@ -104,6 +104,23 @@ public class PlacesController {
                 .toList();
     }
 
+    @DeleteMapping("/pending/{jobId}")
+    public ResponseEntity<Void> deletePendingJob(Authentication authentication, @PathVariable Long jobId) {
+        User user = currentUserService.resolve(authentication);
+        return processingJobRepository.findByIdAndUser(jobId, user)
+                .map(job -> {
+                    // 진행 중인(PENDING/PROCESSING) job은 아직 파이프라인이 돌고 있어서 지금
+                    // 지우면 완료 후 되살아나거나 orphan 데이터가 남을 수 있다 — 실패해서
+                    // 더 이상 진행되지 않는 job만 삭제를 허용한다.
+                    if (job.getStatus() != JobStatus.FAILED) {
+                        return ResponseEntity.status(409).<Void>build();
+                    }
+                    processingJobRepository.delete(job);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PlaceResponse> get(Authentication authentication, @PathVariable Long id) {
         User user = currentUserService.resolve(authentication);
