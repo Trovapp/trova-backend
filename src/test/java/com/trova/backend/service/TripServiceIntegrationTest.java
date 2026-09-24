@@ -122,6 +122,28 @@ class TripServiceIntegrationTest {
     }
 
     @Test
+    void findExistingTripForSavedPlaces는_이미_확정된_Trip을_찾아낸다() {
+        User user = newUser();
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(user, "https://youtu.be/trip-dup", SourcePlatform.YOUTUBE));
+        SavedPlace place = savedPlaceRepository.save(
+                new SavedPlace(job, user, "장소", "부산", "cafe", 35.1, 129.0, 1, 1));
+
+        assertThat(tripService.findExistingTripForSavedPlaces(List.of(place))).isEmpty();
+
+        Trip trip = tripService.confirmVideoPlacesIntoTrip(user, "부산 여행", List.of(place), null);
+
+        Optional<Trip> found = tripService.findExistingTripForSavedPlaces(List.of(place));
+        assertThat(found).isPresent();
+        assertThat(found.get().getId()).isEqualTo(trip.getId());
+    }
+
+    @Test
+    void findExistingTripForSavedPlaces는_빈_리스트면_아무것도_찾지_않는다() {
+        assertThat(tripService.findExistingTripForSavedPlaces(List.of())).isEmpty();
+    }
+
+    @Test
     void day가_없는_장소만_있으면_Trip은_생기지만_Itinerary는_없다() {
         User user = newUser();
         ProcessingJob job = processingJobRepository.save(

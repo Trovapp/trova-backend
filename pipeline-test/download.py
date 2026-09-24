@@ -82,6 +82,21 @@ def download(url: str, out_dir: Path) -> dict:
     return {"video_path": video_candidates[0], "caption_path": caption_path}
 
 
+def get_title(url: str) -> str | None:
+    """영상 제목을 가져온다. 실패해도 파이프라인 전체를 막지 않는다(best-effort) —
+    다운로드/자막과 마찬가지로 별도 호출로 분리해서, 제목 조회 실패가 나머지 흐름을
+    막지 않게 한다.
+    """
+    result = _run_yt_dlp(["--get-title", "--", url])
+    if result.returncode != 0 and "403" in result.stderr:
+        result = _run_yt_dlp(["--cookies-from-browser", "chrome", "--get-title", "--", url])
+    if result.returncode != 0:
+        print(f"[download] 제목 가져오기 실패(무시하고 진행): {result.stderr[-500:]}", file=sys.stderr)
+        return None
+    title = result.stdout.strip()
+    return title or None
+
+
 def vtt_to_text(vtt_path: Path) -> str:
     """WebVTT 자막에서 타임스탬프/태그를 제거하고 중복 없는 본문 텍스트만 뽑는다."""
     raw = vtt_path.read_text(encoding="utf-8", errors="replace")

@@ -25,6 +25,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'org.bsc.langgraph4j:langgraph4j-core:1.8.13'
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
