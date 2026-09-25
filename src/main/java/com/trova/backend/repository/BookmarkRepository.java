@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
+    void deleteByUser(User user);
+
     List<Bookmark> findByUserOrderByCreatedAtDesc(User user);
     Optional<Bookmark> findByUserAndPlace(User user, Place place);
     long countByFolder(BookmarkFolder folder);
