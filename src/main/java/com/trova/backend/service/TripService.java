@@ -7,6 +7,7 @@ import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.repository.TripReplanJobRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ public class TripService {
     private final PlaceSearchService placeSearchService;
     private final UserPreferenceSignalRepository userPreferenceSignalRepository;
     private final PlaceEmbeddingService placeEmbeddingService;
+    private final TripReplanJobRepository tripReplanJobRepository;
 
     public TripService(
             TripRepository tripRepository,
@@ -52,7 +54,8 @@ public class TripService {
             NotificationRepository notificationRepository,
             PlaceSearchService placeSearchService,
             UserPreferenceSignalRepository userPreferenceSignalRepository,
-            PlaceEmbeddingService placeEmbeddingService
+            PlaceEmbeddingService placeEmbeddingService,
+            TripReplanJobRepository tripReplanJobRepository
     ) {
         this.tripRepository = tripRepository;
         this.itineraryRepository = itineraryRepository;
@@ -62,6 +65,7 @@ public class TripService {
         this.placeSearchService = placeSearchService;
         this.userPreferenceSignalRepository = userPreferenceSignalRepository;
         this.placeEmbeddingService = placeEmbeddingService;
+        this.tripReplanJobRepository = tripReplanJobRepository;
     }
 
     /** Trip과 그에 딸린 Itinerary/TripPlace/Notification을 전부 지운다(소유자 확인 후). */
@@ -75,6 +79,9 @@ public class TripService {
                         tripPlaceRepository.deleteAll(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary));
                     }
                     itineraryRepository.deleteAll(itineraries);
+                    // 일정 재구성 작업 기록은 trip_id를 NOT NULL FK로 참조하므로 여행보다 먼저 지워야 한다
+                    // (안 지우면 재구성을 한 번이라도 돌린 여행은 삭제가 FK 제약 위반으로 실패함).
+                    tripReplanJobRepository.deleteAll(tripReplanJobRepository.findByTrip(trip));
                     tripRepository.delete(trip);
                     return true;
                 })
