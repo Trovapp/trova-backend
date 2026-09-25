@@ -50,6 +50,9 @@ class TripServiceIntegrationTest {
     @Autowired
     private UserPreferenceSignalRepository userPreferenceSignalRepository;
 
+    @Autowired
+    private TripReplanJobRepository tripReplanJobRepository;
+
     @MockitoBean
     private GooglePlacesApiClient googlePlacesApiClient;
 
@@ -369,6 +372,19 @@ class TripServiceIntegrationTest {
         assertThat(tripRepository.findById(trip.getId())).isEmpty();
         assertThat(tripPlaceRepository.findById(place.getId())).isEmpty();
         assertThat(itineraryRepository.findByTripOrderByDay(trip)).isEmpty();
+    }
+
+    @Test
+    void deleteTrip은_일정_재구성_작업_기록이_있어도_삭제된다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        TripReplanJob replanJob = tripReplanJobRepository.save(new TripReplanJob(user, trip, false));
+
+        boolean deleted = tripService.deleteTrip(user, trip.getId());
+
+        assertThat(deleted).isTrue();
+        assertThat(tripRepository.findById(trip.getId())).isEmpty();
+        assertThat(tripReplanJobRepository.findById(replanJob.getId())).isEmpty();
     }
 
     @Test
