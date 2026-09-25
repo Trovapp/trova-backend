@@ -12,7 +12,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 @Component
 public class PipelineRunner {
@@ -92,6 +94,27 @@ public class PipelineRunner {
             if (stderrFile != null && !stderrFile.delete()) {
                 log.warn("파이프라인 stderr 임시 파일 삭제 실패: {}", stderrFile.getAbsolutePath());
             }
+            // 결과는 stdout(JSON)으로만 받으므로 내려받은 영상·자막·오디오·프레임은 더 쓰지 않는다.
+            // 남겨두면 작업마다 수십 MB가 쌓이고(#17) 타인의 영상을 계속 보관하게 되므로 성공·실패·시간 초과 모두 지운다.
+            deleteWorkDir(workDir, jobId);
+        }
+    }
+
+    private void deleteWorkDir(Path workDir, Long jobId) {
+        if (!Files.exists(workDir)) {
+            return;
+        }
+        try (Stream<Path> paths = Files.walk(workDir)) {
+            // 안쪽 파일부터 지워야 폴더를 지울 수 있다.
+            paths.sorted(Comparator.reverseOrder()).forEach(path -> {
+                try {
+                    Files.deleteIfExists(path);
+                } catch (IOException e) {
+                    log.warn("ProcessingJob {} 작업 파일 삭제 실패: {}", jobId, path, e);
+                }
+            });
+        } catch (IOException e) {
+            log.warn("ProcessingJob {} 작업 폴더 정리 실패: {}", jobId, workDir, e);
         }
     }
 
