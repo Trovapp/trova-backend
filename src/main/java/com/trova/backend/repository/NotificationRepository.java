@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
+    void deleteByUser(User user);
+
     List<Notification> findByUserAndIsReadFalseOrderByCreatedAtDesc(User user);
 
     // 같은 Itinerary에 대해 중복 알림을 또 만들지 않기 위한 조회.

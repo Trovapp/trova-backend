@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserPreferenceRepository extends JpaRepository<UserPreference, Long> {
+    void deleteByUser(User user);
+
     Optional<UserPreference> findByUserAndMood(User user, String mood);
     List<UserPreference> findByUser(User user);
 }

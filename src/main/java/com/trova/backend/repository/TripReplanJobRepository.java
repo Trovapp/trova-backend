@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TripReplanJobRepository extends JpaRepository<TripReplanJob, Long> {
+    void deleteByUser(User user);
+
     List<TripReplanJob> findByTrip(Trip trip);
 
     List<TripReplanJob> findByUserAndTripAndIndoorOnlyAndStatusInAndUpdatedAtAfter(
