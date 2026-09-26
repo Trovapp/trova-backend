@@ -142,6 +142,40 @@ class TripServiceIntegrationTest {
     }
 
     @Test
+    void findExistingTripForVideo는_같은_영상을_다시_추출한_작업에서도_기존_여행을_찾는다() {
+        User user = newUser();
+        // 같은 영상을 주소 형태만 다르게 두 번 제출 — 처리 작업과 SavedPlace가 따로 생긴다.
+        ProcessingJob first = processingJobRepository.save(
+                new ProcessingJob(user, "https://www.youtube.com/shorts/VideoDup01", SourcePlatform.YOUTUBE));
+        SavedPlace firstPlace = savedPlaceRepository.save(
+                new SavedPlace(first, user, "장소", "부산", "cafe", 35.1, 129.0, 1, 1));
+        Trip trip = tripService.confirmVideoPlacesIntoTrip(user, "부산 여행", List.of(firstPlace), null);
+
+        ProcessingJob again = processingJobRepository.save(
+                new ProcessingJob(user, "https://youtu.be/VideoDup01?si=share", SourcePlatform.YOUTUBE));
+        savedPlaceRepository.save(new SavedPlace(again, user, "장소", "부산", "cafe", 35.1, 129.0, 1, 1));
+
+        Optional<Trip> found = tripService.findExistingTripForVideo(user, again);
+        assertThat(found).isPresent();
+        assertThat(found.get().getId()).isEqualTo(trip.getId());
+    }
+
+    @Test
+    void findExistingTripForVideo는_다른_영상이면_찾지_않는다() {
+        User user = newUser();
+        ProcessingJob first = processingJobRepository.save(
+                new ProcessingJob(user, "https://youtu.be/VideoAAA01", SourcePlatform.YOUTUBE));
+        SavedPlace firstPlace = savedPlaceRepository.save(
+                new SavedPlace(first, user, "장소", "부산", "cafe", 35.1, 129.0, 1, 1));
+        tripService.confirmVideoPlacesIntoTrip(user, "부산 여행", List.of(firstPlace), null);
+
+        ProcessingJob other = processingJobRepository.save(
+                new ProcessingJob(user, "https://youtu.be/VideoBBB02", SourcePlatform.YOUTUBE));
+
+        assertThat(tripService.findExistingTripForVideo(user, other)).isEmpty();
+    }
+
+    @Test
     void findExistingTripForSavedPlaces는_빈_리스트면_아무것도_찾지_않는다() {
         assertThat(tripService.findExistingTripForSavedPlaces(List.of())).isEmpty();
     }

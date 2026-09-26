@@ -3,6 +3,9 @@ package com.trova.backend.controller;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.PlaceSource;
+import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.SavedPlace;
+import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
@@ -11,6 +14,8 @@ import com.trova.backend.recommendation.GooglePlacesNearbySearchResponse;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.PlaceRepository;
+import com.trova.backend.repository.ProcessingJobRepository;
+import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
@@ -68,6 +73,19 @@ class TripControllerTest {
 
     @Autowired
     private TripService tripService;
+
+    @Autowired
+    private ProcessingJobRepository processingJobRepository;
+
+    @Autowired
+    private SavedPlaceRepository savedPlaceRepository;
+
+    /** 영상 처리 작업 하나와 1일차 장소 하나를 만든다. */
+    private ProcessingJob videoJob(User user, String url) {
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, url, SourcePlatform.YOUTUBE));
+        savedPlaceRepository.save(new SavedPlace(job, user, "장소", "부산", "cafe", 35.1, 129.0, 1, 1));
+        return job;
+    }
 
     @MockitoBean
     private GooglePlacesApiClient googlePlacesApiClient;
@@ -477,5 +495,56 @@ class TripControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"afterTripPlaceId\":" + place.getId() + ",\"googlePlaceId\":\"gp-x\"}"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void 영상으로_만든_여행_조회_같은_영상을_다시_추출한_작업에서도_찾는다() throws Exception {
+        User me = userRepository.save(new User("google", "video-trip-1", "영상유저", null));
+        ProcessingJob first = videoJob(me, "https://www.youtube.com/shorts/CtrlDup01");
+        Trip trip = tripService.confirmVideoPlacesIntoTrip(
+                me, "부산 여행", savedPlaceRepository.findByProcessingJob(first), null);
+        ProcessingJob again = videoJob(me, "https://youtu.be/CtrlDup01?si=share");
+
+        mockMvc.perform(get("/api/places/videos/" + again.getId() + "/trip").with(loginAs("video-trip-1", "영상유저")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(trip.getId()));
+    }
+
+    @Test
+    void 영상으로_만든_여행_조회_없으면_404() throws Exception {
+        User me = userRepository.save(new User("google", "video-trip-2", "영상유저2", null));
+        ProcessingJob job = videoJob(me, "https://youtu.be/CtrlNone02");
+
+        mockMvc.perform(get("/api/places/videos/" + job.getId() + "/trip").with(loginAs("video-trip-2", "영상유저2")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void 영상으로_만든_여행_조회_남의_작업이면_404() throws Exception {
+        User owner = userRepository.save(new User("google", "video-trip-3", "주인", null));
+        userRepository.save(new User("google", "video-trip-4", "남", null));
+        ProcessingJob job = videoJob(owner, "https://youtu.be/CtrlOwner03");
+        tripService.confirmVideoPlacesIntoTrip(owner, "주인 여행", savedPlaceRepository.findByProcessingJob(job), null);
+
+        mockMvc.perform(get("/api/places/videos/" + job.getId() + "/trip").with(loginAs("video-trip-4", "남")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void 같은_영상을_다시_추출한_작업으로_여행을_확정하면_새로_만들지_않고_기존_여행을_돌려준다() throws Exception {
+        User me = userRepository.save(new User("google", "video-trip-5", "영상유저5", null));
+        ProcessingJob first = videoJob(me, "https://www.youtube.com/watch?v=CtrlConf05");
+        Trip trip = tripService.confirmVideoPlacesIntoTrip(
+                me, "부산 여행", savedPlaceRepository.findByProcessingJob(first), null);
+        ProcessingJob again = videoJob(me, "https://youtu.be/CtrlConf05");
+        long before = tripRepository.findByUserOrderByCreatedAtDesc(me).size();
+
+        mockMvc.perform(post("/api/places/videos/" + again.getId() + "/confirm-trip")
+                        .with(loginAs("video-trip-5", "영상유저5"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"또 만든 여행\",\"startDate\":\"2026-10-01\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(trip.getId()));
+        assertThat(tripRepository.findByUserOrderByCreatedAtDesc(me)).hasSize((int) before);
     }
 }

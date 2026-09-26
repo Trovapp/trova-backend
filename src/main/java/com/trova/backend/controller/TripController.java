@@ -307,6 +307,17 @@ public class TripController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /** 이 영상으로 이미 만든 여행 — 앱이 "여행으로 만들기" 대신 "만든 여행 보기"를 보여줄 때 쓴다. 없으면 404. */
+    @GetMapping("/api/places/videos/{jobId}/trip")
+    public ResponseEntity<TripResponse> getVideoTrip(Authentication authentication, @PathVariable Long jobId) {
+        User user = currentUserService.resolve(authentication);
+        return processingJobRepository.findById(jobId)
+                .filter(job -> job.getUser().getId().equals(user.getId()))
+                .flatMap(job -> tripService.findExistingTripForVideo(user, job))
+                .map(trip -> ResponseEntity.ok(TripResponse.from(trip)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/api/places/videos/{jobId}/confirm-trip")
     public ResponseEntity<TripResponse> confirmTrip(
             Authentication authentication, @PathVariable Long jobId, @RequestBody ConfirmTripRequest request
@@ -319,7 +330,8 @@ public class TripController {
                 .filter(job -> job.getUser().getId().equals(user.getId()))
                 .map(job -> {
                     List<SavedPlace> places = savedPlaceRepository.findByProcessingJob(job);
-                    Trip trip = tripService.findExistingTripForSavedPlaces(places)
+                    // 같은 영상을 다시 추출한 작업이어도 이미 만든 여행이 있으면 새로 만들지 않는다(#19).
+                    Trip trip = tripService.findExistingTripForVideo(user, job)
                             .orElseGet(() -> tripService.confirmVideoPlacesIntoTrip(
                                     user, request.title(), places, request.startDate()));
                     return ResponseEntity.ok(TripResponse.from(trip));

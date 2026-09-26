@@ -6,6 +6,8 @@ import com.trova.backend.recommendation.PlaceSearchService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.PlaceRepository;
+import com.trova.backend.repository.ProcessingJobRepository;
+import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripReplanJobRepository;
 import com.trova.backend.repository.TripRepository;
@@ -45,6 +47,8 @@ public class TripService {
     private final UserPreferenceSignalRepository userPreferenceSignalRepository;
     private final PlaceEmbeddingService placeEmbeddingService;
     private final TripReplanJobRepository tripReplanJobRepository;
+    private final ProcessingJobRepository processingJobRepository;
+    private final SavedPlaceRepository savedPlaceRepository;
 
     public TripService(
             TripRepository tripRepository,
@@ -55,7 +59,9 @@ public class TripService {
             PlaceSearchService placeSearchService,
             UserPreferenceSignalRepository userPreferenceSignalRepository,
             PlaceEmbeddingService placeEmbeddingService,
-            TripReplanJobRepository tripReplanJobRepository
+            TripReplanJobRepository tripReplanJobRepository,
+            ProcessingJobRepository processingJobRepository,
+            SavedPlaceRepository savedPlaceRepository
     ) {
         this.tripRepository = tripRepository;
         this.itineraryRepository = itineraryRepository;
@@ -66,6 +72,8 @@ public class TripService {
         this.userPreferenceSignalRepository = userPreferenceSignalRepository;
         this.placeEmbeddingService = placeEmbeddingService;
         this.tripReplanJobRepository = tripReplanJobRepository;
+        this.processingJobRepository = processingJobRepository;
+        this.savedPlaceRepository = savedPlaceRepository;
     }
 
     /** Trip과 그에 딸린 Itinerary/TripPlace/Notification을 전부 지운다(소유자 확인 후). */
@@ -273,6 +281,21 @@ public class TripService {
      * 그 Trip을 반환한다 — confirm-trip을 두 번 누르거나(네트워크 지연 중 재시도 등)
      * 날짜를 바꿔 다시 제출했을 때 같은 영상에서 여행이 중복 생성되는 것을 막는다.
      */
+    /**
+     * 이 처리 작업의 영상으로 이미 만든 여행을 찾는다. 같은 영상을 다시 제출하면 처리 작업·SavedPlace가 새로
+     * 생겨 SavedPlace id 기준(findExistingTripForSavedPlaces)으로는 못 찾고 여행이 중복 생성됐다(#19) —
+     * 같은 사용자의 같은 영상(VideoKey) 작업들의 SavedPlace 전체로 찾는다.
+     */
+    public Optional<Trip> findExistingTripForVideo(User user, ProcessingJob job) {
+        String key = VideoKey.of(job.getSourceUrl());
+        List<SavedPlace> places = processingJobRepository.findByUserOrderByCreatedAtDescIdDesc(user).stream()
+                .filter(candidate -> VideoKey.of(candidate.getSourceUrl()).equals(key))
+                .flatMap(candidate -> savedPlaceRepository.findByProcessingJob(candidate).stream())
+                .toList();
+        return findExistingTripForSavedPlaces(places)
+                .filter(trip -> trip.getUser().getId().equals(user.getId()));
+    }
+
     public Optional<Trip> findExistingTripForSavedPlaces(List<SavedPlace> places) {
         List<Long> savedPlaceIds = places.stream().map(SavedPlace::getId).toList();
         if (savedPlaceIds.isEmpty()) {
