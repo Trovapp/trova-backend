@@ -57,6 +57,10 @@ management:
       application: trova-backend
 
 app:
+  # 관리자 API(/api/admin/*)를 쓸 수 있는 사용자 — "로그인제공자:제공자사용자ID"를 쉼표로 구분(예: google:1234).
+  # 비워두면 아무도 쓸 수 없다.
+  admin:
+    users: ${ADMIN_USERS:}
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
   pipeline:
     script-path: ${PIPELINE_SCRIPT_PATH:pipeline-test/run_pipeline.py}
