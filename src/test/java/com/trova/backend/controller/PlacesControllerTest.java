@@ -17,6 +17,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.Mockito.doThrow;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -293,6 +295,20 @@ class PlacesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 일정_생성_대기열이_가득_차면_503과_안내_문구를_준다() throws Exception {
+        User me = userRepository.save(new User("google", "gen-full", "생성꽉참", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(me, "https://youtu.be/gen-full", SourcePlatform.YOUTUBE));
+        job.markDone();
+        processingJobRepository.save(job);
+        doThrow(new TaskRejectedException("queue full")).when(itineraryGenerationService).generate(anyLong());
+
+        mockMvc.perform(post("/api/places/videos/" + job.getId() + "/itinerary")
+                        .with(loginAs("gen-full", "생성꽉참")))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.message").value("지금 처리 요청이 많아요. 잠시 후 다시 시도해주세요."));
     }
 
     @Test

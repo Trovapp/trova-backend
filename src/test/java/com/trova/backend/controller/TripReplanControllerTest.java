@@ -22,6 +22,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.Mockito.doThrow;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,6 +95,20 @@ class TripReplanControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 재구성_대기열이_가득_차면_503을_주고_작업을_남기지_않는다() throws Exception {
+        doThrow(new TaskRejectedException("queue full")).when(tripReplanJobService).process(anyLong());
+
+        mockMvc.perform(post("/api/trips/" + trip.getId() + "/replan")
+                        .with(loginAs("replan1", "재구성유저"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"allPlaces\":true}"))
+                .andExpect(status().isServiceUnavailable());
+
+        // 남으면 5분 동안 같은 요청이 이 유령 작업 id를 계속 돌려받는다.
+        org.assertj.core.api.Assertions.assertThat(tripReplanJobRepository.findAll()).isEmpty();
     }
 
     @Test

@@ -16,6 +16,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.Mockito.doThrow;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -76,6 +78,27 @@ class SharesControllerTest {
         org.assertj.core.api.Assertions.assertThat(processingJobRepository.findAll()).hasSize(1);
         verify(placeExtractionService).process(
                 processingJobRepository.findAll().get(0).getId());
+    }
+
+    @Test
+    void 처리_대기열이_가득_차면_503을_주고_작업을_남기지_않는다() throws Exception {
+        User user = userRepository.save(new User("google", "1234567890", "테스트유저", null));
+        doThrow(new TaskRejectedException("queue full")).when(placeExtractionService).process(anyLong());
+
+        mockMvc.perform(post("/api/shares")
+                        .with(oauth2Login()
+                                .clientRegistration(googleRegistration())
+                                .attributes(attrs -> {
+                                    attrs.put("sub", "1234567890");
+                                    attrs.put("name", "테스트유저");
+                                    attrs.put("picture", "https://example.com/p.jpg");
+                                }))
+                        .contentType("application/json")
+                        .content("{\"url\":\"https://www.youtube.com/shorts/full-queue\"}"))
+                .andExpect(status().isServiceUnavailable());
+
+        // 아무도 처리하지 않는 "처리 대기" 작업이 남으면 앱의 처리 중 카드·배지가 영원히 사라지지 않는다.
+        org.assertj.core.api.Assertions.assertThat(processingJobRepository.findByUserOrderByCreatedAtDescIdDesc(user)).isEmpty();
     }
 
     @Test

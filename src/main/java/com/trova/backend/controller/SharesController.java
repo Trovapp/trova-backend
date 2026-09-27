@@ -1,5 +1,6 @@
 package com.trova.backend.controller;
 
+import org.springframework.core.task.TaskRejectedException;
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SourcePlatform;
@@ -79,7 +80,14 @@ public class SharesController {
         }
 
         ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, url, platform));
-        placeExtractionService.process(job.getId());
+        try {
+            placeExtractionService.process(job.getId());
+        } catch (TaskRejectedException e) {
+            // 대기열이 가득 차 실행기가 거절하면, 방금 만든 작업을 지운다 — 남기면 아무도 처리하지 않는
+            // PENDING 작업이 돼 앱의 "처리 중" 표시가 영원히 사라지지 않는다(#31). 응답은 503(TaskRejectionHandler).
+            processingJobRepository.delete(job);
+            throw e;
+        }
 
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(new ShareResponse(job.getId(), job.getStatus().name()));
