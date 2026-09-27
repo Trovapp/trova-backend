@@ -3,7 +3,13 @@ package com.trova.backend.controller;
 import com.trova.backend.entity.Place;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.repository.PlaceRepository;
+import com.trova.backend.entity.User;
+import com.trova.backend.service.AdminAccessService;
 import com.trova.backend.service.ApiCallMetricsService;
+import com.trova.backend.service.CurrentUserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,9 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Gemini/카카오 호출 지표 요약. 지금은 별도 관리자 권한(Role) 체계가 없는 개인
- * 프로젝트라 로그인만 요구한다(SecurityConfig의 기본 인증 규칙) — 여러 사용자를
- * 받게 되면 그때 관리자 권한 체크를 추가해야 한다(0-1: 지금 안 만든 것 명시).
+ * Gemini/카카오 호출 지표 요약 등 관리자 전용 API. 설정(app.admin.users)에 등록된 사용자만
+ * 쓸 수 있고, 그 외에는 403이다(AdminAccessService).
  */
 @RestController
 public class AdminMetricsController {
@@ -23,19 +28,35 @@ public class AdminMetricsController {
     private final ApiCallMetricsService apiCallMetricsService;
     private final PlaceRepository placeRepository;
     private final PlaceEmbeddingService placeEmbeddingService;
+    private final CurrentUserService currentUserService;
+    private final AdminAccessService adminAccessService;
 
     public AdminMetricsController(
             ApiCallMetricsService apiCallMetricsService,
             PlaceRepository placeRepository,
-            PlaceEmbeddingService placeEmbeddingService
+            PlaceEmbeddingService placeEmbeddingService,
+            CurrentUserService currentUserService,
+            AdminAccessService adminAccessService
     ) {
         this.apiCallMetricsService = apiCallMetricsService;
         this.placeRepository = placeRepository;
         this.placeEmbeddingService = placeEmbeddingService;
+        this.currentUserService = currentUserService;
+        this.adminAccessService = adminAccessService;
+    }
+
+    private void requireAdmin(Authentication authentication) {
+        User user = currentUserService.resolve(authentication);
+        if (!adminAccessService.isAdmin(user)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 
     @GetMapping("/api/admin/ai-metrics")
-    public ApiCallMetricsService.MetricsSummary aiMetrics(@RequestParam(defaultValue = "7") int days) {
+    public ApiCallMetricsService.MetricsSummary aiMetrics(
+            Authentication authentication, @RequestParam(defaultValue = "7") int days
+    ) {
+        requireAdmin(authentication);
         return apiCallMetricsService.summarize(days);
     }
 
@@ -45,7 +66,8 @@ public class AdminMetricsController {
      * 시간이 걸린다 — 개인 프로젝트 규모에서만 쓰는 걸 전제로 한다.
      */
     @PostMapping("/api/admin/backfill-embeddings")
-    public Map<String, Object> backfillEmbeddings() {
+    public Map<String, Object> backfillEmbeddings(Authentication authentication) {
+        requireAdmin(authentication);
         List<Long> ids = placeRepository.findAllIdsWithoutEmbedding();
         List<Place> places = placeRepository.findAllById(ids);
         placeEmbeddingService.ensureEmbeddings(places);
