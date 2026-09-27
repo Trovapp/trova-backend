@@ -1,5 +1,6 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.service.DailyQuotaService;
 import com.trova.backend.entity.*;
 import com.trova.backend.pipeline.ReviewSummary;
 import com.trova.backend.recommendation.AlternativeFinderService;
@@ -29,6 +30,7 @@ public class TripController {
     private static final Set<String> VALID_DIRECTIONS = Set.of("UP", "DOWN");
 
     private final CurrentUserService currentUserService;
+    private final DailyQuotaService dailyQuotaService;
     private final ProcessingJobRepository processingJobRepository;
     private final SavedPlaceRepository savedPlaceRepository;
     private final TripService tripService;
@@ -51,9 +53,11 @@ public class TripController {
             WeatherRecoveryService weatherRecoveryService,
             PlaceReviewService placeReviewService,
             AlternativeFinderService alternativeFinderService,
-            GapRecommendationService gapRecommendationService
+            GapRecommendationService gapRecommendationService,
+            DailyQuotaService dailyQuotaService
     ) {
         this.currentUserService = currentUserService;
+        this.dailyQuotaService = dailyQuotaService;
         this.processingJobRepository = processingJobRepository;
         this.savedPlaceRepository = savedPlaceRepository;
         this.tripService = tripService;
@@ -312,6 +316,7 @@ public class TripController {
     @GetMapping("/api/trip-places/{id}/details")
     public ResponseEntity<TripPlaceDetailResponse> tripPlaceDetails(Authentication authentication, @PathVariable Long id) {
         User user = currentUserService.resolve(authentication);
+        dailyQuotaService.consumePlaceCall(user);
         return tripService.resolveDetailsPlace(user, id)
                 .flatMap(place -> placeReviewService.getOrGenerateSummary(place.getId())
                         .map(reviewInfo -> TripPlaceDetailResponse.from(place, reviewInfo)))
@@ -387,6 +392,7 @@ public class TripController {
             @RequestParam(required = false) String transportMode
     ) {
         User user = currentUserService.resolve(authentication);
+        dailyQuotaService.consumePlaceCall(user);
         TransportMode mode = null;
         if (transportMode != null) {
             try {
@@ -407,6 +413,7 @@ public class TripController {
             Authentication authentication, @PathVariable Long tripId, @PathVariable int day
     ) {
         User user = currentUserService.resolve(authentication);
+        dailyQuotaService.consumePlaceCall(user);
         return gapRecommendationService.findGaps(user, tripId, day)
                 .map(gaps -> ResponseEntity.ok(gaps.stream().map(GapResponse::from).toList()))
                 .orElseGet(() -> ResponseEntity.notFound().build());

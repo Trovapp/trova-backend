@@ -58,6 +58,11 @@ management:
       application: trova-backend
 
 app:
+  # 사용자별 하루 호출 한도(#33, 한국 시간 자정 기준) — 넘으면 429.
+  # Gemini 무료 한도는 전체 사용자 공유, Google Places는 무료 크레딧 초과 시 과금이라 한 사용자가 소진하지 못하게 막는다.
+  quota:
+    shares-per-day: ${QUOTA_SHARES_PER_DAY:20}
+    place-calls-per-day: ${QUOTA_PLACE_CALLS_PER_DAY:100}
   # 관리자 API(/api/admin/*)를 쓸 수 있는 사용자 — "로그인제공자:제공자사용자ID"를 쉼표로 구분(예: google:1234).
   # 비워두면 아무도 쓸 수 없다.
   admin:
