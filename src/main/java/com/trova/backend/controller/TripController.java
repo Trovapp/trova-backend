@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
@@ -68,6 +69,8 @@ public class TripController {
     // 앱(trova-app TRIP_TITLE_MAX_LENGTH)과 같은 제한. 서버가 막지 않으면 DB varchar(255)를 넘는 요청이
     // 500으로 터졌다(#23).
     static final int TRIP_TITLE_MAX_LENGTH = 50;
+    // 여행은 하루마다 일정(Itinerary) 행을 만든다 — 상한이 없으면 3년짜리 여행 한 번에 1,096행이 생겼다(#25).
+    static final int TRIP_MAX_DAYS = 30;
 
     private static boolean isValidTripTitle(String title) {
         return title != null && !title.isBlank() && title.trim().length() <= TRIP_TITLE_MAX_LENGTH;
@@ -180,7 +183,8 @@ public class TripController {
     ) {
         if (request == null || !isValidTripTitle(request.title())
                 || request.startDate() == null || request.endDate() == null
-                || request.endDate().isBefore(request.startDate())) {
+                || request.endDate().isBefore(request.startDate())
+                || ChronoUnit.DAYS.between(request.startDate(), request.endDate()) + 1 > TRIP_MAX_DAYS) {
             return ResponseEntity.badRequest().build();
         }
         User user = currentUserService.resolve(authentication);
