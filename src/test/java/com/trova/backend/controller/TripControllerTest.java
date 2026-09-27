@@ -154,6 +154,29 @@ class TripControllerTest {
     }
 
     @Test
+    void 여행_제목이_50자를_넘으면_400() throws Exception {
+        userRepository.save(new User("google", "trip-len", "여행유저L", null));
+
+        mockMvc.perform(post("/api/trips")
+                        .with(loginAs("trip-len", "여행유저L"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"%s\",\"startDate\":\"2026-03-01\",\"endDate\":\"2026-03-01\"}".formatted("가".repeat(300))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 영상으로_여행_확정시_제목이_50자를_넘으면_400() throws Exception {
+        User me = userRepository.save(new User("google", "trip-len2", "여행유저L2", null));
+        ProcessingJob job = videoJob(me, "https://youtu.be/LenCheck01");
+
+        mockMvc.perform(post("/api/places/videos/" + job.getId() + "/confirm-trip")
+                        .with(loginAs("trip-len2", "여행유저L2"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"%s\",\"startDate\":\"2026-03-01\"}".formatted("가".repeat(51))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void 제목이_비면_400() throws Exception {
         userRepository.save(new User("google", "trip2", "여행유저2", null));
 

@@ -65,6 +65,14 @@ public class TripController {
         this.gapRecommendationService = gapRecommendationService;
     }
 
+    // 앱(trova-app TRIP_TITLE_MAX_LENGTH)과 같은 제한. 서버가 막지 않으면 DB varchar(255)를 넘는 요청이
+    // 500으로 터졌다(#23).
+    static final int TRIP_TITLE_MAX_LENGTH = 50;
+
+    private static boolean isValidTripTitle(String title) {
+        return title != null && !title.isBlank() && title.trim().length() <= TRIP_TITLE_MAX_LENGTH;
+    }
+
     public record ConfirmTripRequest(String title, LocalDate startDate) {
     }
 
@@ -170,7 +178,7 @@ public class TripController {
     public ResponseEntity<TripResponse> createTrip(
             Authentication authentication, @RequestBody CreateTripRequest request
     ) {
-        if (request == null || request.title() == null || request.title().isBlank()
+        if (request == null || !isValidTripTitle(request.title())
                 || request.startDate() == null || request.endDate() == null
                 || request.endDate().isBefore(request.startDate())) {
             return ResponseEntity.badRequest().build();
@@ -322,7 +330,7 @@ public class TripController {
     public ResponseEntity<TripResponse> confirmTrip(
             Authentication authentication, @PathVariable Long jobId, @RequestBody ConfirmTripRequest request
     ) {
-        if (request == null || request.title() == null || request.title().isBlank()) {
+        if (request == null || !isValidTripTitle(request.title())) {
             return ResponseEntity.badRequest().build();
         }
         User user = currentUserService.resolve(authentication);

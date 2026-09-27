@@ -33,6 +33,10 @@ public class BookmarkController {
     public record MoveBookmarkRequest(Long folderId) {
     }
 
+    // 앱(FOLDER_NAME_MAX_LENGTH)과 같은 제한 + 색은 #RRGGBB만 허용(#23).
+    static final int FOLDER_NAME_MAX_LENGTH = 20;
+    private static final java.util.regex.Pattern COLOR_PATTERN = java.util.regex.Pattern.compile("^#[0-9A-Fa-f]{6}$");
+
     public record CreateFolderRequest(String name, String color) {
     }
 
@@ -106,7 +110,8 @@ public class BookmarkController {
             Authentication authentication, @RequestBody CreateFolderRequest request
     ) {
         if (request == null || request.name() == null || request.name().isBlank()
-                || request.color() == null || request.color().isBlank()) {
+                || request.name().trim().length() > FOLDER_NAME_MAX_LENGTH
+                || request.color() == null || !COLOR_PATTERN.matcher(request.color()).matches()) {
             return ResponseEntity.badRequest().build();
         }
         User user = currentUserService.resolve(authentication);
