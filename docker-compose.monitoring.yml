@@ -2,6 +2,8 @@
 # 이 스택은 그걸 스크랩만 한다 — 앱 자체는 컨테이너화하지 않음(아직 k3s 단계 아님).
 #
 # 실행: docker compose -f docker-compose.monitoring.yml up -d
+#   앱은 지표 엔드포인트를 켜서 실행해야 스크랩된다(기본은 health만 노출, #27):
+#   ACTUATOR_EXPOSE=health,prometheus ./gradlew bootRun
 # 접속: Prometheus http://localhost:9090, Grafana http://localhost:3300
 #
 # Grafana 기본 포트(3000)는 이 머신에서 Plan B용 Grafana(Homebrew, PID로 실행 중)와
