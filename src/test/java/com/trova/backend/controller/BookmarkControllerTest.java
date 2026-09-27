@@ -158,6 +158,39 @@ class BookmarkControllerTest {
     }
 
     @Test
+    void 폴더_생성시_이름이_20자를_넘으면_400() throws Exception {
+        userRepository.save(new User("google", "bm-folder-len", "찜유저L", null));
+
+        mockMvc.perform(post("/api/bookmarks/folders")
+                        .with(loginAs("bm-folder-len", "찜유저L"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\": \"%s\", \"color\": \"#4A90D9\"}".formatted("나".repeat(21))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 폴더_생성시_색상이_RRGGBB_형식이_아니면_400() throws Exception {
+        userRepository.save(new User("google", "bm-folder-color", "찜유저C", null));
+
+        mockMvc.perform(post("/api/bookmarks/folders")
+                        .with(loginAs("bm-folder-color", "찜유저C"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\": \"카페\", \"color\": \"빨강\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 폴더_생성시_20자_이름과_RRGGBB_색상은_허용된다() throws Exception {
+        userRepository.save(new User("google", "bm-folder-ok", "찜유저O", null));
+
+        mockMvc.perform(post("/api/bookmarks/folders")
+                        .with(loginAs("bm-folder-ok", "찜유저O"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\": \"%s\", \"color\": \"#4ac98f\"}".formatted("나".repeat(20))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void 폴더_생성시_색상이_공백이면_400() throws Exception {
         User me = userRepository.save(new User("google", "bm-folder-2", "찜유저6", null));
 
