@@ -177,6 +177,28 @@ class TripControllerTest {
     }
 
     @Test
+    void 여행_기간이_30일을_넘으면_400() throws Exception {
+        userRepository.save(new User("google", "trip-days31", "여행유저D31", null));
+
+        mockMvc.perform(post("/api/trips")
+                        .with(loginAs("trip-days31", "여행유저D31"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"긴 여행\",\"startDate\":\"2026-03-01\",\"endDate\":\"2026-03-31\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 여행_기간_30일은_허용된다() throws Exception {
+        userRepository.save(new User("google", "trip-days30", "여행유저D30", null));
+
+        mockMvc.perform(post("/api/trips")
+                        .with(loginAs("trip-days30", "여행유저D30"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"한 달 여행\",\"startDate\":\"2026-03-01\",\"endDate\":\"2026-03-30\"}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void 제목이_비면_400() throws Exception {
         userRepository.save(new User("google", "trip2", "여행유저2", null));
 
