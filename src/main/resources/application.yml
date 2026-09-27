@@ -49,9 +49,10 @@ management:
   endpoints:
     web:
       exposure:
-        # 지금은 로컬 전용이라 바로 노출함. 실제로 외부에 배포하면(k3s 단계)
-        # 이 엔드포인트를 인증 뒤로 숨기거나 네트워크 레벨에서 막아야 함 — 아직 안 함.
-        include: health, prometheus
+        # 기본은 health만 공개한다 — 예전엔 prometheus까지 기본 노출돼 배포 서버에서 서버 지표가
+        # 로그인 없이 공개됐다(#27). 로컬 모니터링 스택(docker-compose.monitoring.yml)으로 스크랩할 때만
+        # ACTUATOR_EXPOSE=health,prometheus 로 켠다.
+        include: ${ACTUATOR_EXPOSE:health}
   metrics:
     tags:
       application: trova-backend
