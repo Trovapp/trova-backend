@@ -1,5 +1,6 @@
 package com.trova.backend.controller;
 
+import org.springframework.core.task.TaskRejectedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trova.backend.entity.JobStatus;
@@ -125,7 +126,13 @@ public class TripReplanController {
             return inFlight.get(0).getId();
         }
         TripReplanJob job = tripReplanJobRepository.save(new TripReplanJob(user, trip, indoorOnly, allPlaces));
-        tripReplanJobService.process(job.getId());
+        try {
+            tripReplanJobService.process(job.getId());
+        } catch (TaskRejectedException e) {
+            // 거절된 작업을 남기면 위의 중복 방지가 5분 동안 이 유령 작업을 계속 돌려준다(#31).
+            tripReplanJobRepository.delete(job);
+            throw e;
+        }
         return job.getId();
     }
 
