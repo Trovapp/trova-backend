@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,10 +18,14 @@ public class NotificationController {
 
     private final CurrentUserService currentUserService;
     private final NotificationRepository notificationRepository;
+    private final Clock clock;
 
-    public NotificationController(CurrentUserService currentUserService, NotificationRepository notificationRepository) {
+    public NotificationController(
+            CurrentUserService currentUserService, NotificationRepository notificationRepository, Clock clock
+    ) {
         this.currentUserService = currentUserService;
         this.notificationRepository = notificationRepository;
+        this.clock = clock;
     }
 
     public record NotificationResponse(
@@ -38,7 +43,7 @@ public class NotificationController {
     @GetMapping
     public List<NotificationResponse> list(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock); // 한국 날짜 기준(ClockConfig)
         // 알림이 가리키는 일정 날짜가 지나면(여행 마지막 날짜가 지난 경우 포함) 사용자가
         // 직접 닫지 않아도 더 이상 보여줄 필요가 없다 — 이미 지난 날씨 경보는 실행 가능한
         // 정보가 아니다.

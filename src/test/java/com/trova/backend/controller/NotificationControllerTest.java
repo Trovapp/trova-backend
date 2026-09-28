@@ -1,5 +1,6 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.config.ClockConfig;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Notification;
 import com.trova.backend.entity.Trip;
@@ -44,7 +45,7 @@ class NotificationControllerTest {
     @BeforeEach
     void setUp() {
         me = userRepository.save(new User("google", "notif1", "알림유저", null));
-        trip = tripRepository.save(new Trip(me, "테스트 여행", LocalDate.now().minusDays(3), LocalDate.now().plusDays(3)));
+        trip = tripRepository.save(new Trip(me, "테스트 여행", LocalDate.now(ClockConfig.SERVICE_ZONE).minusDays(3), LocalDate.now(ClockConfig.SERVICE_ZONE).plusDays(3)));
     }
 
     private RequestPostProcessor loginAs(String sub, String name) {
@@ -74,7 +75,7 @@ class NotificationControllerTest {
 
     @Test
     void 오늘_이후_일정의_알림은_목록에_보인다() throws Exception {
-        notificationForDate(LocalDate.now());
+        notificationForDate(LocalDate.now(ClockConfig.SERVICE_ZONE));
 
         mockMvc.perform(get("/api/notifications").with(loginAs("notif1", "알림유저")))
                 .andExpect(status().isOk())
@@ -83,7 +84,7 @@ class NotificationControllerTest {
 
     @Test
     void 지난_날짜_일정의_알림은_목록에서_빠진다() throws Exception {
-        notificationForDate(LocalDate.now().minusDays(1));
+        notificationForDate(LocalDate.now(ClockConfig.SERVICE_ZONE).minusDays(1));
 
         mockMvc.perform(get("/api/notifications").with(loginAs("notif1", "알림유저")))
                 .andExpect(status().isOk())
@@ -92,7 +93,7 @@ class NotificationControllerTest {
 
     @Test
     void dismiss하면_목록에서_사라진다() throws Exception {
-        Notification notification = notificationForDate(LocalDate.now());
+        Notification notification = notificationForDate(LocalDate.now(ClockConfig.SERVICE_ZONE));
 
         mockMvc.perform(post("/api/notifications/" + notification.getId() + "/dismiss").with(loginAs("notif1", "알림유저")))
                 .andExpect(status().isNoContent());

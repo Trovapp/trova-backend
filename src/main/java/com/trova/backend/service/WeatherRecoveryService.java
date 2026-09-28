@@ -1,5 +1,6 @@
 package com.trova.backend.service;
 
+import com.trova.backend.config.ClockConfig;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Notification;
 import com.trova.backend.entity.TripPlace;
@@ -11,8 +12,8 @@ import com.trova.backend.weather.OpenWeatherApiClient;
 import com.trova.backend.weather.OpenWeatherForecastResponse;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class WeatherRecoveryService {
-
-    private static final DateTimeFormatter DT_TEXT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     // Plan B에서 그대로 가져온 값 — Trova 실사용 데이터로 재검증한 적 없음(0-5 원칙).
     private static final double RAIN_PROBABILITY_THRESHOLD = 0.5;
@@ -112,18 +111,16 @@ public class WeatherRecoveryService {
         tripPlaceRepository.saveAll(needsTagging);
     }
 
+    /**
+     * dt_txt는 UTC 문자열이라 한국 날짜와 바로 비교하면 D일 09시 ~ D+1일 06시 예보를 보게 된다(#39).
+     * dt(유닉스 시각)를 한국 시간으로 바꿔 그 날짜의 예보만 고른다.
+     */
     private double maxPopForDate(OpenWeatherForecastResponse forecast, LocalDate date) {
         if (forecast.list() == null) {
             return 0.0;
         }
         return forecast.list().stream()
-                .filter(entry -> {
-                    try {
-                        return java.time.LocalDateTime.parse(entry.dtText(), DT_TEXT_FORMAT).toLocalDate().equals(date);
-                    } catch (Exception e) {
-                        return false;
-                    }
-                })
+                .filter(entry -> Instant.ofEpochSecond(entry.dt()).atZone(ClockConfig.SERVICE_ZONE).toLocalDate().equals(date))
                 .mapToDouble(entry -> entry.pop() != null ? entry.pop() : 0.0)
                 .max()
                 .orElse(0.0);

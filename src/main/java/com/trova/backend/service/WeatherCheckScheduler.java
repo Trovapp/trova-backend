@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,15 +28,19 @@ public class WeatherCheckScheduler {
 
     private final ItineraryRepository itineraryRepository;
     private final WeatherRecoveryService weatherRecoveryService;
+    private final Clock clock;
 
-    public WeatherCheckScheduler(ItineraryRepository itineraryRepository, WeatherRecoveryService weatherRecoveryService) {
+    public WeatherCheckScheduler(
+            ItineraryRepository itineraryRepository, WeatherRecoveryService weatherRecoveryService, Clock clock
+    ) {
         this.itineraryRepository = itineraryRepository;
         this.weatherRecoveryService = weatherRecoveryService;
+        this.clock = clock;
     }
 
     @Scheduled(fixedRate = 4, timeUnit = java.util.concurrent.TimeUnit.HOURS, initialDelay = 1)
     public void checkUpcomingItineraries() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock); // 한국 날짜 기준(ClockConfig)
         LocalDate horizon = today.plusDays(FORECAST_HORIZON_DAYS);
         List<Itinerary> upcoming = itineraryRepository.findByDateBetween(today, horizon);
 

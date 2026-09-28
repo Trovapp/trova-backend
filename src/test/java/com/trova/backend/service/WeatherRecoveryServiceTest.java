@@ -12,7 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +54,16 @@ class WeatherRecoveryServiceTest {
                 tripPlaceRepository, placeTaggingRunner, openWeatherApiClient, notificationRepository);
     }
 
+    /**
+     * 실제 OpenWeather 응답처럼 dt(유닉스 시각)와 dt_txt(UTC 문자열)를 서로 맞춰 만든다.
+     * 인자는 한국 시간 — 예: "2026-10-01T03:00"은 dt_txt "2026-09-30 18:00:00"이 된다.
+     */
+    private static OpenWeatherForecastResponse.Entry forecastAtKst(String kstDateTime, double pop) {
+        Instant instant = LocalDateTime.parse(kstDateTime).atZone(ZoneId.of("Asia/Seoul")).toInstant();
+        String dtTextUtc = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC).format(instant);
+        return new OpenWeatherForecastResponse.Entry(instant.getEpochSecond(), dtTextUtc, pop);
+    }
+
     private void setId(Object entity, Long id) {
         try {
             var field = entity.getClass().getDeclaredField("id");
@@ -67,7 +82,7 @@ class WeatherRecoveryServiceTest {
         when(notificationRepository.findByItinerary(itinerary)).thenReturn(Optional.empty());
         when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(place));
         when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
-                new OpenWeatherForecastResponse.Entry(0L, "2026-10-01 12:00:00", 0.8)
+                forecastAtKst("2026-10-01T12:00", 0.8)
         )));
         when(notificationRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -80,6 +95,44 @@ class WeatherRecoveryServiceTest {
     }
 
     @Test
+    void 다음날_새벽에만_비가_오면_알림을_만들지_않는다() {
+        // 한국 시간 10/2 03시 예보는 dt_txt가 "2026-10-01 18:00:00"(UTC)라, UTC 문자열로 날짜를 비교하면
+        // 10/1 일정의 비로 잘못 잡혔다(#39).
+        setUp();
+        TripPlace place = outdoorPlace("OUTDOOR");
+        when(notificationRepository.findByItinerary(itinerary)).thenReturn(Optional.empty());
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(place));
+        when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
+                forecastAtKst("2026-10-01T12:00", 0.1),
+                forecastAtKst("2026-10-02T03:00", 0.9)
+        )));
+
+        Optional<Notification> result = service.checkAndNotify(itinerary);
+
+        assertThat(result).isEmpty();
+        verify(notificationRepository, never()).save(any());
+    }
+
+    @Test
+    void 당일_새벽_비도_그날_일정의_비로_판단한다() {
+        // 한국 시간 10/1 03시 예보는 dt_txt가 "2026-09-30 18:00:00"(UTC)라 예전에는 빠졌다(#39).
+        setUp();
+        TripPlace place = outdoorPlace("OUTDOOR");
+        when(notificationRepository.findByItinerary(itinerary)).thenReturn(Optional.empty());
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(place));
+        when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
+                forecastAtKst("2026-10-01T03:00", 0.9),
+                forecastAtKst("2026-10-01T12:00", 0.1)
+        )));
+        when(notificationRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        Optional<Notification> result = service.checkAndNotify(itinerary);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getPrecipitationProb()).isEqualTo(0.9);
+    }
+
+    @Test
     void 태그가_없으면_먼저_태깅하고_판단한다() {
         setUp();
         TripPlace untagged = outdoorPlace(null);
@@ -87,7 +140,7 @@ class WeatherRecoveryServiceTest {
         when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(untagged));
         when(placeTaggingRunner.run(any(), anyLong())).thenReturn(List.of(new PlaceTag(0, "CALM", "OUTDOOR")));
         when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
-                new OpenWeatherForecastResponse.Entry(0L, "2026-10-01 12:00:00", 0.9)
+                forecastAtKst("2026-10-01T12:00", 0.9)
         )));
         when(notificationRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -118,7 +171,7 @@ class WeatherRecoveryServiceTest {
         when(notificationRepository.findByItinerary(itinerary)).thenReturn(Optional.empty());
         when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(place));
         when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
-                new OpenWeatherForecastResponse.Entry(0L, "2026-10-01 12:00:00", 0.1)
+                forecastAtKst("2026-10-01T12:00", 0.1)
         )));
 
         Optional<Notification> result = service.checkAndNotify(itinerary);
