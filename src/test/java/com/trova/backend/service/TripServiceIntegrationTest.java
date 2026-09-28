@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,6 +19,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 @SpringBootTest
 class TripServiceIntegrationTest {
 
@@ -50,8 +54,11 @@ class TripServiceIntegrationTest {
     @Autowired
     private UserPreferenceSignalRepository userPreferenceSignalRepository;
 
-    @Autowired
+    @MockitoSpyBean
     private TripReplanJobRepository tripReplanJobRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @MockitoBean
     private GooglePlacesApiClient googlePlacesApiClient;
@@ -67,6 +74,9 @@ class TripServiceIntegrationTest {
                             userPreferenceSignalRepository.findAll().stream()
                                     .filter(s -> s.getUser().getId().equals(user.getId()))
                                     .toList());
+                    notificationRepository.deleteAll(notificationRepository.findAll().stream()
+                            .filter(n -> n.getUser().getId().equals(user.getId()))
+                            .toList());
                     tripRepository.findByUserOrderByCreatedAtDesc(user).forEach(trip -> {
                         itineraryRepository.findByTripOrderByDay(trip).forEach(itinerary -> {
                             tripPlaceRepository.deleteAll(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary));
@@ -391,6 +401,59 @@ class TripServiceIntegrationTest {
         TripPlace reloadedSecond = tripPlaceRepository.findById(second.getId()).orElseThrow();
         assertThat(reloadedFirst.getVisitOrder()).isEqualTo(2);
         assertThat(reloadedSecond.getVisitOrder()).isEqualTo(1);
+    }
+
+    private Notification rainNotificationFor(User user, TripPlace place) {
+        return notificationRepository.save(new Notification(
+                user, place.getItinerary(), "비 소식이 있어요", "근처 실내 대안을 확인해보세요.", 0.8, place.getId()));
+    }
+
+    @Test
+    void replacePlace는_그_장소를_가리키는_비_알림을_읽음_처리한다() {
+        // 배너로 대안을 골라 교체했는데도 "OO 근처 실내 대안을 확인해보세요"가 계속 뜨면 안 된다(#41).
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-notif-replace-old", "해수욕장", null, null, null, null, 33.4, 126.5, null));
+        placeRepository.save(new Place("trip-place-test-notif-replace-new", "박물관", null, null, null, null, 33.5, 126.6, null));
+        TripPlace original =
+                tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-notif-replace-old").orElseThrow();
+        Notification notification = rainNotificationFor(user, original);
+
+        tripService.replacePlace(user, original.getId(), "trip-place-test-notif-replace-new").orElseThrow();
+
+        assertThat(notificationRepository.findById(notification.getId()).orElseThrow().isRead()).isTrue();
+    }
+
+    @Test
+    void removePlace는_그_장소를_가리키는_비_알림을_지운다() {
+        // 지운 장소를 가리키는 배너를 누르면 대안 찾기가 404가 됐다(#41). 알림을 지워야 그 일차의
+        // 남은 실외 장소를 다음 날씨 검사에서 다시 판단할 수 있다(일차당 알림 1개).
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-notif-remove", "해수욕장", null, null, null, null, 33.4, 126.5, null));
+        TripPlace place = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-notif-remove").orElseThrow();
+        Notification notification = rainNotificationFor(user, place);
+
+        boolean removed = tripService.removePlace(user, place.getId());
+
+        assertThat(removed).isTrue();
+        assertThat(notificationRepository.findById(notification.getId())).isEmpty();
+    }
+
+    @Test
+    void deleteTrip이_중간에_실패하면_아무것도_지우지_않는다() {
+        // 트랜잭션이 없으면 일정 장소만 지워진 반쪽짜리 여행이 남았다(#41).
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-delete-rollback", "돈사돈", null, null, null, null, 33.4, 126.5, null));
+        TripPlace place = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-delete-rollback").orElseThrow();
+        doThrow(new IllegalStateException("DB 오류 흉내")).when(tripReplanJobRepository).findByTrip(any());
+
+        assertThatThrownBy(() -> tripService.deleteTrip(user, trip.getId())).isInstanceOf(IllegalStateException.class);
+
+        assertThat(tripRepository.findById(trip.getId())).isPresent();
+        assertThat(tripPlaceRepository.findById(place.getId())).isPresent();
+        assertThat(itineraryRepository.findByTripOrderByDay(trip)).hasSize(1);
     }
 
     @Test
