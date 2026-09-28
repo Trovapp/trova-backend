@@ -76,7 +76,11 @@ public class TripService {
         this.savedPlaceRepository = savedPlaceRepository;
     }
 
-    /** Trip과 그에 딸린 Itinerary/TripPlace/Notification을 전부 지운다(소유자 확인 후). */
+    /**
+     * Trip과 그에 딸린 Itinerary/TripPlace/Notification을 전부 지운다(소유자 확인 후).
+     * 여러 테이블을 순서대로 지우므로 중간에 실패하면 전부 되돌린다(#41).
+     */
+    @Transactional
     public boolean deleteTrip(User user, Long tripId) {
         return tripRepository.findById(tripId)
                 .filter(trip -> trip.getUser().getId().equals(user.getId()))
@@ -176,6 +180,8 @@ public class TripService {
                 .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
                 .flatMap(place -> placeRepository.findByGooglePlaceId(googlePlaceId).map(newPlace -> {
                     place.applyReplacement(newPlace);
+                    // 비 알림은 교체 전 장소(예: 실외)를 기준으로 만든 것이라, 대안으로 바꿨으면 이미 대응한 것이다(#41).
+                    notificationRepository.findByTripPlaceId(place.getId()).forEach(Notification::markRead);
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, newPlace, SignalType.ALTERNATIVE_REPLACED));
                     placeEmbeddingService.ensureEmbeddings(List.of(newPlace));
                     return tripPlaceRepository.save(place);
@@ -206,10 +212,15 @@ public class TripService {
                 }));
     }
 
+    @Transactional
     public boolean removePlace(User user, Long tripPlaceId) {
         return tripPlaceRepository.findById(tripPlaceId)
                 .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
                 .map(p -> {
+                    // 지운 장소를 가리키는 알림이 남으면 배너를 눌렀을 때 대안 찾기가 404가 된다(#41).
+                    // 읽음 처리가 아니라 지우는 이유: 일차당 알림은 1개라, 지워야 그 일차의 남은 실외 장소를
+                    // 다음 날씨 검사에서 다시 판단할 수 있다.
+                    notificationRepository.deleteAll(notificationRepository.findByTripPlaceId(p.getId()));
                     tripPlaceRepository.delete(p);
                     return true;
                 })

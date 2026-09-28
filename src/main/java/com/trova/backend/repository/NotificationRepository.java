@@ -15,4 +15,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     // 같은 Itinerary에 대해 중복 알림을 또 만들지 않기 위한 조회.
     Optional<Notification> findByItinerary(Itinerary itinerary);
+
+    // 알림이 가리키는 장소를 교체·삭제할 때 같이 정리하기 위한 조회(trip_place_id는 외래키가 없다, #41).
+    List<Notification> findByTripPlaceId(Long tripPlaceId);
 }
