@@ -1,5 +1,6 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.service.DailyQuotaService;
 import org.springframework.core.task.TaskRejectedException;
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
@@ -31,15 +32,18 @@ public class SharesController {
             Set.of("instagram.com", "www.instagram.com", "m.instagram.com");
 
     private final CurrentUserService currentUserService;
+    private final DailyQuotaService dailyQuotaService;
     private final ProcessingJobRepository processingJobRepository;
     private final PlaceExtractionService placeExtractionService;
 
     public SharesController(
             CurrentUserService currentUserService,
             ProcessingJobRepository processingJobRepository,
-            PlaceExtractionService placeExtractionService
+            PlaceExtractionService placeExtractionService,
+            DailyQuotaService dailyQuotaService
     ) {
         this.currentUserService = currentUserService;
+        this.dailyQuotaService = dailyQuotaService;
         this.processingJobRepository = processingJobRepository;
         this.placeExtractionService = placeExtractionService;
     }
@@ -79,6 +83,7 @@ public class SharesController {
                     .body(new ShareResponse(existing.getId(), existing.getStatus().name()));
         }
 
+        dailyQuotaService.checkShare(user);
         ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, url, platform));
         try {
             placeExtractionService.process(job.getId());

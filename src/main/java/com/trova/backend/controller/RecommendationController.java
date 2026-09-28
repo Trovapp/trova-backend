@@ -1,5 +1,6 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.service.DailyQuotaService;
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.User;
 import com.trova.backend.pipeline.ReviewSummary;
@@ -58,6 +59,7 @@ public class RecommendationController {
 
     private final RecommendationService recommendationService;
     private final CurrentUserService currentUserService;
+    private final DailyQuotaService dailyQuotaService;
     private final PlaceSearchService placeSearchService;
     private final PlaceReviewService placeReviewService;
     private final PlaceRepository placeRepository;
@@ -67,10 +69,12 @@ public class RecommendationController {
             CurrentUserService currentUserService,
             PlaceSearchService placeSearchService,
             PlaceReviewService placeReviewService,
-            PlaceRepository placeRepository
+            PlaceRepository placeRepository,
+            DailyQuotaService dailyQuotaService
     ) {
         this.recommendationService = recommendationService;
         this.currentUserService = currentUserService;
+        this.dailyQuotaService = dailyQuotaService;
         this.placeSearchService = placeSearchService;
         this.placeReviewService = placeReviewService;
         this.placeRepository = placeRepository;
@@ -89,21 +93,26 @@ public class RecommendationController {
         }
 
         User user = currentUserService.resolve(authentication);
+        dailyQuotaService.consumePlaceCall(user);
         List<Place> places = recommendationService.recommend(user, request.latitude(), request.longitude(), radius);
         return ResponseEntity.ok(places.stream().map(PlaceRecommendationResponse::from).toList());
     }
 
     @GetMapping("/api/places/search")
-    public ResponseEntity<List<PlaceRecommendationResponse>> search(@RequestParam String query) {
+    public ResponseEntity<List<PlaceRecommendationResponse>> search(
+            Authentication authentication, @RequestParam String query
+    ) {
         if (query.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
+        dailyQuotaService.consumePlaceCall(currentUserService.resolve(authentication));
         List<Place> places = placeSearchService.search(query);
         return ResponseEntity.ok(places.stream().map(PlaceRecommendationResponse::from).toList());
     }
 
     @GetMapping("/api/places/{id}/details")
-    public ResponseEntity<PlaceDetailResponse> details(@PathVariable Long id) {
+    public ResponseEntity<PlaceDetailResponse> details(Authentication authentication, @PathVariable Long id) {
+        dailyQuotaService.consumePlaceCall(currentUserService.resolve(authentication));
         return placeRepository.findById(id)
                 .flatMap(place -> placeReviewService.getOrGenerateSummary(id)
                         .map(reviewInfo -> PlaceDetailResponse.from(place, reviewInfo)))
