@@ -18,6 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.support.TransactionOperations;
 
 import java.util.Optional;
 
@@ -56,7 +57,8 @@ class BookmarkServiceTest {
     private void setUp() {
         service = new BookmarkService(
                 bookmarkRepository, placeRepository, userPreferenceRepository, bookmarkFolderRepository,
-                userPreferenceSignalRepository, placeEmbeddingService);
+                userPreferenceSignalRepository, placeEmbeddingService,
+                TransactionOperations.withoutTransaction());
     }
 
     @Test
