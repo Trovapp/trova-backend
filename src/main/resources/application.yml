@@ -1,11 +1,16 @@
 server:
   port: 8080
+  # 재시작·배포 때 처리 중인 요청을 끝내고 내려간다(#43). 비동기 작업 대기 시간은 AsyncConfig 참고.
+  shutdown: graceful
   servlet:
     session:
       cookie:
         same-site: lax
 
 spring:
+  lifecycle:
+    # 비동기 실행기가 진행 중인 영상 처리·재구성을 마칠 때까지 기다리는 상한(AsyncConfig와 같은 값).
+    timeout-per-shutdown-phase: 60s
   datasource:
     hikari:
       data-source-properties:
