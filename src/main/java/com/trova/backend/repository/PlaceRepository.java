@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,27 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     // N+1 방지 — Plan B의 실측 부하테스트에서 후보를 하나씩 조회하다 걸렸던 문제라
     // 처음부터 배치 조회로 만든다.
     List<Place> findByGooglePlaceIdIn(List<String> googlePlaceIds);
+
+    // 동시에 같은 장소를 저장하려는 요청이 있어도 유니크 제약 에러 없이 한쪽만 저장된다(#37).
+    // 예외를 잡는 방식은 호출 측 트랜잭션(TripService.resolveDetailsPlace)이 Postgres에서
+    // "current transaction is aborted"로 중단되므로 쓸 수 없다. 저장 여부(0/1)를 돌려준다.
+    // 충돌 대상을 적지 않은 건 H2(테스트 DB)가 "ON CONFLICT (컬럼)" 문법을 지원하지 않아서다 —
+    // places의 유니크 제약은 자동 생성 PK와 google_place_id뿐이라 결과는 같다.
+    @Modifying
+    @Transactional
+    @Query(value = """
+            INSERT INTO places (google_place_id, name, category, rating, user_rating_count,
+                                price_level, latitude, longitude, address, last_synced_at)
+            VALUES (:googlePlaceId, :name, :category, :rating, :userRatingCount,
+                    :priceLevel, :latitude, :longitude, :address, :lastSyncedAt)
+            ON CONFLICT DO NOTHING
+            """, nativeQuery = true)
+    int insertIfAbsent(
+            @Param("googlePlaceId") String googlePlaceId, @Param("name") String name,
+            @Param("category") String category, @Param("rating") Double rating,
+            @Param("userRatingCount") Integer userRatingCount, @Param("priceLevel") String priceLevel,
+            @Param("latitude") Double latitude, @Param("longitude") Double longitude,
+            @Param("address") String address, @Param("lastSyncedAt") LocalDateTime lastSyncedAt);
 
     // embedding은 pgvector 타입이라 Place 엔티티에 JPA 필드로 매핑하지 않는다 — H2
     // 테스트 DB가 vector 타입을 모르기 때문에(스키마 생성 시 전체 테스트 스위트가
