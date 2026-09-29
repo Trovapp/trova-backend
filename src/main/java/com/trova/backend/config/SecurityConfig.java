@@ -2,6 +2,7 @@ package com.trova.backend.config;
 
 import com.trova.backend.security.CustomOAuth2UserService;
 import com.trova.backend.security.JwtAuthenticationFilter;
+import com.trova.backend.security.JwtSkippingSecurityContextRepository;
 import com.trova.backend.security.MobileLoginFlagFilter;
 import com.trova.backend.security.OAuth2LoginFailureHandler;
 import com.trova.backend.security.OAuth2LoginSuccessHandler;
@@ -17,6 +18,7 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -67,6 +69,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                // 세션은 웹 프론트의 OAuth2 로그인에만 쓴다 — 앱(JWT) 요청과 비로그인 API 요청이 요청마다 세션을
+                // 만들어 메모리에 쌓이던 문제(#45). 로그인 성공 후엔 항상 프론트로 보내므로 "돌아갈 요청" 저장도 필요 없다.
+                .securityContext(context -> context.securityContextRepository(new JwtSkippingSecurityContextRepository()))
+                .requestCache(cache -> cache.requestCache(new NullRequestCache()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
                         // 인증 없이 열어두되, 실제로 노출되는 엔드포인트는 application.yml의
