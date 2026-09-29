@@ -184,7 +184,8 @@ def _log_api_call(
 
 
 def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> dict:
-    url = f"{API_BASE}/{model}:generateContent?key={api_key}"
+    # 키는 URL 쿼리가 아니라 헤더로 보낸다 — URL은 예외 메시지·로그에 찍히기 쉬워서(#47).
+    url = f"{API_BASE}/{model}:generateContent"
     body = json.dumps({
         "contents": [{"role": "user", "parts": parts}],
         "generationConfig": {
@@ -197,7 +198,7 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
     last_detail = ""
     for attempt in range(MAX_ATTEMPTS):
         request = urllib.request.Request(
-            url, data=body, headers={"Content-Type": "application/json"}, method="POST"
+            url, data=body, headers={"Content-Type": "application/json", "x-goog-api-key": api_key}, method="POST"
         )
         try:
             with urllib.request.urlopen(request, timeout=120) as response:
