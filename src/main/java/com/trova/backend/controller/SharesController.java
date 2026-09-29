@@ -16,20 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.Optional;
 
 @RestController
 public class SharesController {
-
-    private static final Set<String> YOUTUBE_HOSTS =
-            Set.of("youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be",
-                    "youtube-nocookie.com", "www.youtube-nocookie.com");
-    private static final Set<String> INSTAGRAM_HOSTS =
-            Set.of("instagram.com", "www.instagram.com", "m.instagram.com");
 
     private final CurrentUserService currentUserService;
     private final DailyQuotaService dailyQuotaService;
@@ -62,13 +53,15 @@ public class SharesController {
             Authentication authentication,
             @RequestBody CreateShareRequest request
     ) {
-        String url = request == null ? null : request.url();
-        SourcePlatform platform = resolvePlatform(url);
-        if (platform == null) {
+        // 사용자가 보낸 링크 대신 영상 ID로 다시 만든 정식 주소만 저장하고 yt-dlp에 넘긴다(#49).
+        Optional<ShareUrl> shareUrl = ShareUrl.parse(request == null ? null : request.url());
+        if (shareUrl.isEmpty()) {
             return ResponseEntity.badRequest()
-                    .body(new ErrorResponse("지원하지 않는 URL입니다. 유튜브 또는 인스타그램 링크만 등록할 수 있습니다."));
+                    .body(new ErrorResponse("유튜브 영상·쇼츠 또는 인스타그램 릴스·게시물 링크만 등록할 수 있어요."));
         }
 
+        String url = shareUrl.get().canonicalUrl();
+        SourcePlatform platform = shareUrl.get().platform();
         User user = currentUserService.resolve(authentication);
 
         // 같은 URL이 이미 처리 대기/진행 중이면 새 job을 또 만들지 않는다 — 중복 제출로
@@ -96,48 +89,5 @@ public class SharesController {
 
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(new ShareResponse(job.getId(), job.getStatus().name()));
-    }
-
-    /**
-     * 허용된 호스트의 http(s) URL이면 해당 플랫폼을, 아니면 null을 반환한다.
-     * (yt-dlp argv 주입 및 내부망 SSRF 방지를 위한 화이트리스트 검증)
-     */
-    private SourcePlatform resolvePlatform(String url) {
-        if (url == null || url.isBlank()) {
-            return null;
-        }
-
-        URI uri;
-        try {
-            uri = new URI(url.trim());
-        } catch (URISyntaxException e) {
-            return null;
-        }
-
-        String scheme = uri.getScheme();
-        if (scheme == null) {
-            return null;
-        }
-        String normalizedScheme = scheme.toLowerCase(Locale.ROOT);
-        if (!normalizedScheme.equals("http") && !normalizedScheme.equals("https")) {
-            return null;
-        }
-
-        String host = uri.getHost();
-        if (host == null) {
-            return null;
-        }
-        String normalizedHost = host.toLowerCase(Locale.ROOT);
-        if (normalizedHost.endsWith(".")) {
-            normalizedHost = normalizedHost.substring(0, normalizedHost.length() - 1);
-        }
-
-        if (YOUTUBE_HOSTS.contains(normalizedHost)) {
-            return SourcePlatform.YOUTUBE;
-        }
-        if (INSTAGRAM_HOSTS.contains(normalizedHost)) {
-            return SourcePlatform.INSTAGRAM;
-        }
-        return null;
     }
 }
