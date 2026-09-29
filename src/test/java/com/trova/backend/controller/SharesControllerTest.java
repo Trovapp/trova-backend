@@ -101,6 +101,53 @@ class SharesControllerTest {
         org.assertj.core.api.Assertions.assertThat(processingJobRepository.findByUserOrderByCreatedAtDescIdDesc(user)).isEmpty();
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "https://www.youtube.com/redirect?q=http%3A%2F%2F169.254.169.254%2F&event=video_description",
+            "https://www.youtube.com/attribution_link?u=http%3A%2F%2F127.0.0.1%2F"
+    })
+    void 허용_호스트라도_영상이_아닌_경로면_400을_반환하고_작업을_만들지_않는다(String url) throws Exception {
+        // yt-dlp가 유튜브 리다이렉트를 따라 서버 내부 주소로 요청하게 만들 수 있던 링크(#49).
+        userRepository.save(new User("google", "1234567890", "테스트유저", null));
+
+        mockMvc.perform(post("/api/shares")
+                        .with(oauth2Login()
+                                .clientRegistration(googleRegistration())
+                                .attributes(attrs -> {
+                                    attrs.put("sub", "1234567890");
+                                    attrs.put("name", "테스트유저");
+                                    attrs.put("picture", "https://example.com/p.jpg");
+                                }))
+                        .contentType("application/json")
+                        .content("{\"url\":\"" + url + "\"}"))
+                .andExpect(status().isBadRequest());
+
+        org.assertj.core.api.Assertions.assertThat(processingJobRepository.findAll()).isEmpty();
+        verify(placeExtractionService, org.mockito.Mockito.never()).process(anyLong());
+    }
+
+    @Test
+    void 작업에는_사용자가_보낸_링크_대신_정식_주소를_저장한다() throws Exception {
+        // 추적용 쿼리(si, t 등)가 붙은 링크도 yt-dlp에는 영상 ID로 다시 만든 주소만 넘긴다(#49).
+        userRepository.save(new User("google", "1234567890", "테스트유저", null));
+        doNothing().when(placeExtractionService).process(anyLong());
+
+        mockMvc.perform(post("/api/shares")
+                        .with(oauth2Login()
+                                .clientRegistration(googleRegistration())
+                                .attributes(attrs -> {
+                                    attrs.put("sub", "1234567890");
+                                    attrs.put("name", "테스트유저");
+                                    attrs.put("picture", "https://example.com/p.jpg");
+                                }))
+                        .contentType("application/json")
+                        .content("{\"url\":\"https://youtu.be/dQw4w9WgXcQ?si=tracking\"}"))
+                .andExpect(status().isAccepted());
+
+        org.assertj.core.api.Assertions.assertThat(processingJobRepository.findAll().get(0).getSourceUrl())
+                .isEqualTo("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    }
+
     @Test
     void 같은_URL이_이미_처리중이면_새_job을_만들지_않고_기존_job을_반환한다() throws Exception {
         User user = userRepository.save(new User("google", "1234567890", "테스트유저", null));
