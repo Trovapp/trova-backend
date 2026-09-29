@@ -36,19 +36,22 @@ public class PlaceExtractionService {
     private final KakaoGeocodingService kakaoGeocodingService;
     private final PlaceSelectionRunner placeSelectionRunner;
     private final PlaceVerificationRunner placeVerificationRunner;
+    private final FoundPlaceNameStore foundPlaceNameStore;
 
     public PlaceExtractionService(
             ProcessingJobLifecycleService lifecycleService,
             PipelineRunner pipelineRunner,
             KakaoGeocodingService kakaoGeocodingService,
             PlaceSelectionRunner placeSelectionRunner,
-            PlaceVerificationRunner placeVerificationRunner
+            PlaceVerificationRunner placeVerificationRunner,
+            FoundPlaceNameStore foundPlaceNameStore
     ) {
         this.lifecycleService = lifecycleService;
         this.pipelineRunner = pipelineRunner;
         this.kakaoGeocodingService = kakaoGeocodingService;
         this.placeSelectionRunner = placeSelectionRunner;
         this.placeVerificationRunner = placeVerificationRunner;
+        this.foundPlaceNameStore = foundPlaceNameStore;
     }
 
     @Async("pipelineTaskExecutor")
@@ -58,7 +61,15 @@ public class PlaceExtractionService {
             log.info("ProcessingJob {} 파이프라인 시작: {}", jobId, sourceUrl);
 
             lifecycleService.updateStage(jobId, ProcessingStage.EXTRACTING);
-            PipelineOutput output = pipelineRunner.run(sourceUrl, jobId);
+            // 분석이 끝나기 전에 제목·찾은 장소 이름을 앱에 보여줄 수 있게 바로 반영한다(#51).
+            PipelineOutput output = pipelineRunner.run(sourceUrl, jobId, progress -> {
+                if (progress.title() != null) {
+                    lifecycleService.setTitle(jobId, progress.title());
+                }
+                if (progress.placeNames() != null) {
+                    foundPlaceNameStore.put(jobId, progress.placeNames());
+                }
+            });
             log.info("ProcessingJob {} 파이프라인 완료: {}개 장소 추출", jobId, output.places().size());
 
             lifecycleService.setTitle(jobId, output.title());
@@ -95,6 +106,8 @@ public class PlaceExtractionService {
         } catch (Exception e) {
             log.error("ProcessingJob {} 처리 실패", jobId, e);
             lifecycleService.markFailed(jobId, e.getMessage());
+        } finally {
+            foundPlaceNameStore.clear(jobId);
         }
     }
 

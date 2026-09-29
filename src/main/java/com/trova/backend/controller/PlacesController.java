@@ -8,6 +8,7 @@ import com.trova.backend.entity.User;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.FoundPlaceNameStore;
 import com.trova.backend.service.ItineraryEditService;
 import com.trova.backend.service.ItineraryGenerationService;
 import org.springframework.http.ResponseEntity;
@@ -29,18 +30,22 @@ public class PlacesController {
     private final ItineraryGenerationService itineraryGenerationService;
     private final ItineraryEditService itineraryEditService;
 
+    private final FoundPlaceNameStore foundPlaceNameStore;
+
     public PlacesController(
             CurrentUserService currentUserService,
             SavedPlaceRepository savedPlaceRepository,
             ProcessingJobRepository processingJobRepository,
             ItineraryGenerationService itineraryGenerationService,
-            ItineraryEditService itineraryEditService
+            ItineraryEditService itineraryEditService,
+            FoundPlaceNameStore foundPlaceNameStore
     ) {
         this.currentUserService = currentUserService;
         this.savedPlaceRepository = savedPlaceRepository;
         this.processingJobRepository = processingJobRepository;
         this.itineraryGenerationService = itineraryGenerationService;
         this.itineraryEditService = itineraryEditService;
+        this.foundPlaceNameStore = foundPlaceNameStore;
     }
 
     public record PlaceResponse(
@@ -64,16 +69,19 @@ public class PlacesController {
 
     public record PendingJobResponse(
             Long jobId, String sourceUrl, String title, String sourcePlatform, String status, String createdAt,
-            String currentStage, Integer progressPercent, String stageMessage
+            String currentStage, Integer progressPercent, String stageMessage,
+            // 분석이 끝나기 전에 파이프라인이 먼저 찾은 장소 이름(#51). 아직 없으면 빈 배열.
+            List<String> foundPlaceNames
     ) {
-        static PendingJobResponse from(ProcessingJob job) {
+        static PendingJobResponse from(ProcessingJob job, List<String> foundPlaceNames) {
             ProcessingStage stage = job.getCurrentStage();
             return new PendingJobResponse(
                     job.getId(), job.getSourceUrl(), job.getTitle(), job.getSourcePlatform().name(),
                     job.getStatus().name(), job.getCreatedAt().toString(),
                     stage != null ? stage.name() : null,
                     stage != null ? stage.percent() : null,
-                    stage != null ? stage.message() : null
+                    stage != null ? stage.message() : null,
+                    foundPlaceNames
             );
         }
     }
@@ -100,7 +108,7 @@ public class PlacesController {
         return processingJobRepository.findByUserAndStatusIn(
                         user, List.of(JobStatus.PENDING, JobStatus.PROCESSING, JobStatus.FAILED))
                 .stream()
-                .map(PendingJobResponse::from)
+                .map(job -> PendingJobResponse.from(job, foundPlaceNameStore.get(job.getId())))
                 .toList();
     }
 
