@@ -3,10 +3,13 @@ package com.trova.backend.conversation;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +21,8 @@ public class GeminiChatClientImpl implements GeminiChatClient {
     private static final Logger log = LoggerFactory.getLogger(GeminiChatClientImpl.class);
     // GeminiTextClientImpl과 동일 모델 — 이 프로젝트가 실제로 쓰는 생성 모델과 통일한다.
     private static final String MODEL = "gemini-3.5-flash-lite";
+    static final String BASE_URL = "https://generativelanguage.googleapis.com";
+    static final Duration READ_TIMEOUT = Duration.ofSeconds(20);
 
     // 2026-09-15 실사용 확인: 시스템 지시문 없이는 답변에 마크다운(별표 강조, 번호
     // 목록)이 섞여 나오고, 도구로 찾은 후보를 텍스트로도 다시 나열해서 앱이 같은
@@ -40,13 +45,29 @@ public class GeminiChatClientImpl implements GeminiChatClient {
     private final String apiKey;
     private final RestClient restClient;
 
+    @Autowired
     public GeminiChatClientImpl(
             @Value("${app.pipeline.gemini-api-key}") String apiKey,
             RestClient.Builder restClientBuilder
     ) {
+        this(apiKey, restClientBuilder.requestFactory(chatRequestFactory()), BASE_URL);
+    }
+
+    // 공용 빌더의 읽기 대기 5초로는 Gemini가 잠시 느려질 때 대화가 끊긴다(#69, 2026-09-30 운영 서버
+    // 실측: 평소 약 1초, 느린 시간대엔 5번 중 2번이 정확히 5초에 끊김). 앱은 AI 응답을 60초까지 기다리므로
+    // Gemini 두 번 호출(각 20초)과 도구 실행(약 11초)을 합쳐도 그 안에 들어온다.
+    static SimpleClientHttpRequestFactory chatRequestFactory() {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(3));
+        requestFactory.setReadTimeout(READ_TIMEOUT);
+        return requestFactory;
+    }
+
+    // 테스트가 가짜 Gemini 서버 주소와 HTTP 설정을 넣을 수 있게 분리했다(운영은 위 생성자만 쓴다).
+    GeminiChatClientImpl(String apiKey, RestClient.Builder restClientBuilder, String baseUrl) {
         this.apiKey = apiKey;
         this.restClient = restClientBuilder
-                .baseUrl("https://generativelanguage.googleapis.com")
+                .baseUrl(baseUrl)
                 .build();
     }
 
