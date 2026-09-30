@@ -141,4 +141,16 @@ class PlaceExtractionServiceTest {
 
         verify(lifecycleService).markFailed(jobId, ProcessingJob.AI_QUOTA_MESSAGE);
     }
+
+    @Test
+    void 인스타그램_속도_제한으로_실패하면_정해진_문구로_기록한다() {
+        Long jobId = 6L;
+        when(lifecycleService.markProcessing(jobId)).thenReturn("https://www.instagram.com/reel/x/");
+        when(pipelineRunner.run(eq("https://www.instagram.com/reel/x/"), eq(jobId), any())).thenThrow(new PipelineException(
+                "파이프라인 실행 실패(exit=1): SOURCE_RATE_LIMITED 인스타그램이 요청을 막음(429): ..."));
+
+        placeExtractionService.process(jobId);
+
+        verify(lifecycleService).markFailed(jobId, ProcessingJob.SOURCE_RATE_LIMIT_MESSAGE);
+    }
 }

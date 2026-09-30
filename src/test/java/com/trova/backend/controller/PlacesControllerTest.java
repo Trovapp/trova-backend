@@ -223,6 +223,19 @@ class PlacesControllerTest {
     }
 
     @Test
+    void 인스타그램_속도_제한으로_실패한_작업은_failureReason이_SOURCE_RATE_LIMITED다() throws Exception {
+        User me = userRepository.save(new User("google", "ratelimit1", "제한유저", null));
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(me, "https://www.instagram.com/reel/rl1/", SourcePlatform.INSTAGRAM));
+        job.markFailed(ProcessingJob.SOURCE_RATE_LIMIT_MESSAGE);
+        processingJobRepository.save(job);
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("ratelimit1", "제한유저")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].failureReason").value("SOURCE_RATE_LIMITED"));
+    }
+
+    @Test
     void 일정형_장소는_dayNumber와_orderInDay를_반환한다() throws Exception {
         User me = userRepository.save(new User("google", "hhh", "일정유저", null));
         ProcessingJob job = processingJobRepository.save(

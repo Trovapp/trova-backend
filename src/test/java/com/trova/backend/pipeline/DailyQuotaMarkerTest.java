@@ -16,4 +16,11 @@ class DailyQuotaMarkerTest {
 
         assertThat(script).contains("DAILY_QUOTA_MARKER = \"" + PipelineRunner.DAILY_QUOTA_MARKER + "\"");
     }
+
+    @Test
+    void 파이프라인_스크립트와_서버의_인스타_속도_제한_표식이_같다() throws Exception {
+        String script = Files.readString(Path.of("pipeline-test/run_pipeline.py"));
+
+        assertThat(script).contains("SOURCE_RATE_LIMIT_MARKER = \"" + PipelineRunner.SOURCE_RATE_LIMIT_MARKER + "\"");
+    }
 }

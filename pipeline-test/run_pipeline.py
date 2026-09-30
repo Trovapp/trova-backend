@@ -74,26 +74,42 @@ def youtube_title(url: str) -> str | None:
 PLACEHOLDER_TITLE = re.compile(r"^(video|reel|post|photo) by\s", re.IGNORECASE)
 
 
-def instagram_post_info(url: str) -> tuple[str | None, str | None]:
-    """영상을 내려받지 않고 게시물 정보만 조회해 (제목, 게시물 설명)을 돌려준다(#59).
+# 인스타그램이 요청을 막았을 때(429) 남기는 표식 — 서버(PlaceExtractionService)가 이 문자열로 구분한다(#65).
+SOURCE_RATE_LIMIT_MARKER = "SOURCE_RATE_LIMITED"
 
-    제목이 자동 제목이면 설명의 첫 줄을 제목으로 쓴다. 실패해도 분석은 계속한다.
+
+def instagram_fetch(url: str, out_dir: Path) -> tuple[Path, str | None, str | None]:
+    """yt-dlp를 한 번만 불러 영상과 게시물 정보(제목·설명)를 함께 받는다(#65).
+
+    예전엔 정보 조회와 다운로드로 인스타 페이지를 두 번 요청했다 — 운영 서버(데이터센터 IP)는 요청이 쌓이면 429로 막힌다.
+    429면 크롬 쿠키 재시도(서버엔 크롬이 없어 소용없음) 없이 바로 표식을 남기고 멈춘다.
+    반환: (영상 경로, 제목, 게시물 설명). 제목이 자동 제목("Video by …")이면 설명의 첫 줄을 쓴다(#59).
     """
-    try:
-        result = subprocess.run(
-            ["yt-dlp", "--no-warnings", "--skip-download", "--dump-single-json", "--", url],
-            capture_output=True, text=True, timeout=60,
-        )
-        info = json.loads(result.stdout) if result.returncode == 0 else {}
-    except (subprocess.TimeoutExpired, json.JSONDecodeError) as exc:
-        print(f"[pipeline] 게시물 정보 조회 실패: {exc}", file=sys.stderr)
-        return None, None
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for stale in out_dir.iterdir():
+        stale.unlink()
+    result = subprocess.run(
+        ["yt-dlp", "--no-warnings", "--no-simulate", "--dump-single-json", "-f", "bv*+ba/b",
+         "-o", str(out_dir / "video.%(ext)s"), "--", url],
+        capture_output=True, text=True, timeout=240,
+    )
+    if result.returncode != 0:
+        if "429" in result.stderr or "Too Many Requests" in result.stderr:
+            raise SystemExit(f"{SOURCE_RATE_LIMIT_MARKER} 인스타그램이 요청을 막음(429): {result.stderr[-300:]}")
+        raise SystemExit(f"yt-dlp 다운로드 실패:\n{result.stderr[-2000:]}")
+    info = json.loads(result.stdout)
+    videos = sorted(
+        (p for p in out_dir.iterdir() if p.suffix.lower() in (".mp4", ".webm", ".mkv", ".mov")),
+        key=lambda p: p.stat().st_size, reverse=True,
+    )
+    if not videos:
+        raise SystemExit(f"yt-dlp가 영상 파일을 만들지 못했습니다 (out_dir={out_dir})")
     description = (info.get("description") or "").strip() or None
     title = info.get("title")
     if (not title or PLACEHOLDER_TITLE.match(title)) and description:
         title = next((line.strip() for line in description.splitlines() if is_title_like(line)), None)
         title = title[:100] if title else None
-    return title, description
+    return videos[0], title, description
 
 
 def is_title_like(line: str) -> bool:
@@ -125,24 +141,25 @@ def run_download(url: str, work_dir: Path, title: str | None = None) -> dict:
     """영상을 내려받아 자막·오디오·프레임으로 추출한다 — 인스타그램, 그리고 유튜브 직접 입력이 안 될 때."""
     post_description = None
     if INSTAGRAM_URL.match(url):
-        # 다운로드 전에 게시물 정보부터 — 제목을 바로 보여주고, 설명(장소 태그·주소)을 추출에 함께 쓴다(#59).
-        info_title, post_description = instagram_post_info(url)
+        print(f"[pipeline] 인스타그램 받는 중(영상 + 게시물 정보): {url}", file=sys.stderr)
+        video_path, info_title, post_description = instagram_fetch(url, work_dir / "download")
+        caption_path = None
         if title is None and info_title:
             title = info_title
             print(f"[pipeline] 제목: {title!r}", file=sys.stderr)
             emit_progress(title=title)
         print(f"[pipeline] 게시물 설명 {'있음 (' + str(len(post_description)) + '자)' if post_description else '없음'}", file=sys.stderr)
+    else:
+        print(f"[pipeline] 다운로드 중: {url}", file=sys.stderr)
+        info = download.download(url, work_dir / "download")
+        video_path = info["video_path"]
+        caption_path = info["caption_path"]
 
-    print(f"[pipeline] 다운로드 중: {url}", file=sys.stderr)
-    info = download.download(url, work_dir / "download")
-    video_path = info["video_path"]
-    caption_path = info["caption_path"]
-
-    if title is None:
-        title = download.get_title(url)
-        print(f"[pipeline] 제목: {title!r}", file=sys.stderr)
-        if title:
-            emit_progress(title=title)
+        if title is None:
+            title = download.get_title(url)
+            print(f"[pipeline] 제목: {title!r}", file=sys.stderr)
+            if title:
+                emit_progress(title=title)
 
     transcript = None
     if caption_path:

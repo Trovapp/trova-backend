@@ -25,6 +25,8 @@ public class PipelineRunner {
     private static final long TIMEOUT_MINUTES = 5;
     /** 파이프라인(extract_places.py)이 Gemini 하루 한도 소진 때 남기는 표식(#63) — 두 곳의 문자열이 같아야 한다. */
     public static final String DAILY_QUOTA_MARKER = "GEMINI_DAILY_QUOTA_EXCEEDED";
+    /** 파이프라인(run_pipeline.py)이 인스타그램 속도 제한(429) 때 남기는 표식(#65). */
+    public static final String SOURCE_RATE_LIMIT_MARKER = "SOURCE_RATE_LIMITED";
     private static final long PROGRESS_POLL_MILLIS = 500;
     private static final long STDOUT_JOIN_TIMEOUT_MILLIS = 30_000;
 
