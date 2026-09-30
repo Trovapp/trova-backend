@@ -96,8 +96,13 @@ def build_parts(
     frame_paths: list[Path] | None,
     prompt: str,
     candidates: list[str] | None = None,
+    video_uri: str | None = None,
 ) -> list[dict]:
     parts: list[dict] = []
+    if video_uri:
+        # 공개 유튜브 영상은 Gemini가 직접 가져가 본다 — 서버가 내려받지 않아 데이터센터 IP 봇 차단과 무관하다(#57).
+        parts.append({"file_data": {"file_uri": video_uri}})
+        parts.append({"text": "위 유튜브 영상의 음성, 화면 자막, 위치 태그를 모두 보고 장소를 찾으세요."})
     if transcript:
         parts.append({"text": f"자막/전사 텍스트:\n{transcript}"})
     if audio_path:
@@ -269,6 +274,7 @@ def collect_candidates(
     frame_paths: list[Path] | None,
     model: str,
     api_key: str,
+    video_uri: str | None = None,
 ) -> list[str]:
     """1단계: 필터링 없이 장소일 가능성이 있는 고유명사를 최대한 후하게 나열한다."""
     def _parse(text: str) -> list[str]:
@@ -280,7 +286,7 @@ def collect_candidates(
             raise ValueError(f"응답이 배열이 아님: {text[:500]}")
         return candidates
 
-    parts = build_parts(transcript, audio_path, frame_paths, prompt=COLLECT_PROMPT)
+    parts = build_parts(transcript, audio_path, frame_paths, prompt=COLLECT_PROMPT, video_uri=video_uri)
     return call_gemini_with_repair(parts, model, api_key, "extract_places.collect", _parse)
 
 
@@ -289,12 +295,13 @@ def extract_places(
     audio_path: Path | None = None,
     frame_paths: list[Path] | None = None,
     model: str = DEFAULT_MODEL,
+    video_uri: str | None = None,
 ) -> list[dict]:
-    if not transcript and not audio_path and not frame_paths:
-        raise ValueError("transcript, audio_path, frame_paths 중 하나는 필요합니다")
+    if not transcript and not audio_path and not frame_paths and not video_uri:
+        raise ValueError("transcript, audio_path, frame_paths, video_uri 중 하나는 필요합니다")
     api_key = load_api_key()
 
-    candidates = collect_candidates(transcript, audio_path, frame_paths, model, api_key)
+    candidates = collect_candidates(transcript, audio_path, frame_paths, model, api_key, video_uri=video_uri)
 
     def _parse(text: str) -> list[dict]:
         try:
@@ -305,7 +312,9 @@ def extract_places(
             raise ValueError(f"응답이 배열이 아님: {text[:500]}")
         return places
 
-    parts = build_parts(transcript, audio_path, frame_paths, prompt=FILTER_PROMPT, candidates=candidates)
+    parts = build_parts(
+        transcript, audio_path, frame_paths, prompt=FILTER_PROMPT, candidates=candidates, video_uri=video_uri
+    )
     places = call_gemini_with_repair(parts, model, api_key, "extract_places.filter", _parse)
     return _normalize_name_candidates(_normalize_day_fields(places))
 

@@ -11,8 +11,11 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
+import urllib.parse
+import urllib.request
 from pathlib import Path
 
 import download
@@ -41,16 +44,55 @@ def emit_progress(**fields) -> None:
     print(f"TROVA_PROGRESS:{json.dumps(fields, ensure_ascii=False)}", file=sys.stderr, flush=True)
 
 
+YOUTUBE_URL = re.compile(r"^https?://(?:www\.|m\.)?(?:youtube\.com|youtu\.be)/", re.IGNORECASE)
+# Gemini가 영상에 접근하지 못할 때(퍼가기 금지 등) 돌려주는 오류 — 이때만 다운로드 방식으로 다시 시도한다.
+VIDEO_ACCESS_ERRORS = ("Gemini API error 403", "Gemini API error 400")
+
+
+def youtube_title(url: str) -> str | None:
+    """유튜브 oEmbed(키 불필요)로 실제 제목을 가져온다. 영상을 내려받지 않아 서버 IP 차단과 무관하다(#57)."""
+    try:
+        with urllib.request.urlopen(
+            "https://www.youtube.com/oembed?format=json&url=" + urllib.parse.quote(url, safe=""), timeout=15
+        ) as response:
+            return json.loads(response.read()).get("title")
+    except Exception as exc:  # 제목은 보여주기용이라 실패해도 분석은 계속한다
+        print(f"[pipeline] 제목 조회 실패: {exc}", file=sys.stderr)
+        return None
+
+
 def run(url: str, work_dir: Path) -> dict:
+    # 유튜브는 Gemini가 링크를 직접 본다(#57). 운영 서버(데이터센터 IP)에서는 yt-dlp 다운로드가 봇으로 막혔다.
+    if YOUTUBE_URL.match(url):
+        title = youtube_title(url)
+        print(f"[pipeline] 제목: {title!r}", file=sys.stderr)
+        if title:
+            emit_progress(title=title)
+        print("[pipeline] Gemini 호출(유튜브 링크 직접)", file=sys.stderr)
+        try:
+            places = extract_places(video_uri=url)
+        except SystemExit as exc:
+            if not str(exc).startswith(VIDEO_ACCESS_ERRORS):
+                raise
+            print(f"[pipeline] Gemini가 영상에 접근하지 못함 — 다운로드 방식으로 다시 시도: {str(exc)[:120]}", file=sys.stderr)
+            return run_download(url, work_dir, title)
+        emit_progress(placeNames=[p["name"] for p in places if p.get("name")])
+        return {"title": title, "places": places}
+    return run_download(url, work_dir)
+
+
+def run_download(url: str, work_dir: Path, title: str | None = None) -> dict:
+    """영상을 내려받아 자막·오디오·프레임으로 추출한다 — 인스타그램, 그리고 유튜브 직접 입력이 안 될 때."""
     print(f"[pipeline] 다운로드 중: {url}", file=sys.stderr)
     info = download.download(url, work_dir / "download")
     video_path = info["video_path"]
     caption_path = info["caption_path"]
 
-    title = download.get_title(url)
-    print(f"[pipeline] 제목: {title!r}", file=sys.stderr)
-    if title:
-        emit_progress(title=title)
+    if title is None:
+        title = download.get_title(url)
+        print(f"[pipeline] 제목: {title!r}", file=sys.stderr)
+        if title:
+            emit_progress(title=title)
 
     transcript = None
     if caption_path:
