@@ -119,7 +119,8 @@ public class PlaceReviewService {
             // 상세보기 할 때 ReviewSummaryRunner의 작업 디렉터리가 충돌한다 —
             // PlaceTaggingRunner/RecommendationService와 동일하게 요청마다 고유한
             // System.nanoTime()을 쓴다.
-            summary = reviewSummaryRunner.run(reviewTexts, System.nanoTime());
+            // 저장 전에 정리해 둔다 — 캐시에도 기호 없는 문장이 남는다(#53).
+            summary = reviewSummaryRunner.run(reviewTexts, System.nanoTime()).cleaned();
         } catch (Exception e) {
             // Details 호출은 이미 유료로 나갔지만, 여기서 실패하면 아무것도 캐시하지
             // 않아 다음 요청에서 처음부터 다시 시도할 수 있게 한다.
@@ -147,7 +148,8 @@ public class PlaceReviewService {
 
     private ReviewSummary deserializeSummary(String json) {
         try {
-            return MAPPER.readValue(json, ReviewSummary.class);
+            // 정리 규칙이 생기기 전에 캐시된 요약에도 기호가 남아 있을 수 있어 읽을 때 한 번 더 정리한다(#53).
+            return MAPPER.readValue(json, ReviewSummary.class).cleaned();
         } catch (Exception e) {
             log.warn("캐시된 리뷰요약 파싱 실패(예전 포맷으로 추정) — 새로 생성합니다: {}", e.getMessage());
             return null;
