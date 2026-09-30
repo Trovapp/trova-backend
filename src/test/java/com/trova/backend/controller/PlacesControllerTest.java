@@ -210,6 +210,19 @@ class PlacesControllerTest {
     }
 
     @Test
+    void AI_한도로_실패한_작업은_failureReason이_AI_QUOTA다() throws Exception {
+        User me = userRepository.save(new User("google", "quota1", "한도유저", null));
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(me, "https://youtu.be/quota1", SourcePlatform.YOUTUBE));
+        job.markFailed(ProcessingJob.AI_QUOTA_MESSAGE);
+        processingJobRepository.save(job);
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("quota1", "한도유저")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].failureReason").value("AI_QUOTA"));
+    }
+
+    @Test
     void 일정형_장소는_dayNumber와_orderInDay를_반환한다() throws Exception {
         User me = userRepository.save(new User("google", "hhh", "일정유저", null));
         ProcessingJob job = processingJobRepository.save(

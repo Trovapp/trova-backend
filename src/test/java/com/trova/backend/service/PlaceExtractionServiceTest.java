@@ -6,6 +6,7 @@ import com.trova.backend.geocoding.KakaoGeocodingService;
 import com.trova.backend.pipeline.ExtractedPlace;
 import com.trova.backend.pipeline.PipelineOutput;
 import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.pipeline.PipelineException;
 import com.trova.backend.pipeline.PipelineProgress;
 import com.trova.backend.pipeline.PipelineRunner;
 import com.trova.backend.pipeline.PlaceSelectionRunner;
@@ -126,5 +127,18 @@ class PlaceExtractionServiceTest {
         verify(lifecycleService, never()).markDone(any());
         verify(lifecycleService, never()).savePlace(any(), any(), any());
         verify(kakaoGeocodingService, never()).geocode(any(), any(), any(), any(Set.class), anyLong());
+    }
+
+    @Test
+    void Gemini_하루_한도_소진으로_실패하면_AI_한도_실패로_기록한다() {
+        // 일반 실패로 두면 앱이 "다시 시도"를 보여주는데, 한도가 초기화되기 전엔 다시 해도 실패한다(#63).
+        Long jobId = 5L;
+        when(lifecycleService.markProcessing(jobId)).thenReturn("https://youtu.be/q");
+        when(pipelineRunner.run(eq("https://youtu.be/q"), eq(jobId), any())).thenThrow(new PipelineException(
+                "파이프라인 실행 실패(exit=1): GEMINI_DAILY_QUOTA_EXCEEDED Gemini 하루 한도 소진: {...}"));
+
+        placeExtractionService.process(jobId);
+
+        verify(lifecycleService).markFailed(jobId, ProcessingJob.AI_QUOTA_MESSAGE);
     }
 }

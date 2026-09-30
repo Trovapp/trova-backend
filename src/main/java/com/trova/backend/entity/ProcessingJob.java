@@ -11,6 +11,8 @@ public class ProcessingJob {
     // 영상에서 장소를 하나도 못 찾은 경우의 실패 문구(#55). DB 컬럼을 늘리지 않고 errorMessage에 이 문구로 남기고,
     // 응답에서 이 문구와 같으면 failureReason=NO_PLACES로 알려준다.
     public static final String NO_PLACES_MESSAGE = "영상에서 장소를 찾지 못했어요";
+    // Gemini 무료 하루 한도 소진(#63). 태평양 시간 자정(한국 오후 4~5시)에 초기화되기 전엔 다시 해도 실패한다.
+    public static final String AI_QUOTA_MESSAGE = "오늘 AI 분석 한도를 다 썼어요";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -99,6 +101,7 @@ public class ProcessingJob {
     public ProcessingStage getCurrentStage() { return currentStage; }
     public String getErrorMessage() { return errorMessage; }
     public boolean isNoPlacesFailure() { return status == JobStatus.FAILED && NO_PLACES_MESSAGE.equals(errorMessage); }
+    public boolean isAiQuotaFailure() { return status == JobStatus.FAILED && AI_QUOTA_MESSAGE.equals(errorMessage); }
     public int getRetryCount() { return retryCount; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

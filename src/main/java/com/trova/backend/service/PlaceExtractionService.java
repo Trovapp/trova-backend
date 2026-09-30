@@ -114,7 +114,9 @@ public class PlaceExtractionService {
             log.info("ProcessingJob {} DONE", jobId);
         } catch (Exception e) {
             log.error("ProcessingJob {} 처리 실패", jobId, e);
-            lifecycleService.markFailed(jobId, e.getMessage());
+            // 하루 한도 소진은 앱이 원인과 다시 가능한 시점을 알려줄 수 있게 정해진 문구로 남긴다(#63).
+            boolean dailyQuota = e.getMessage() != null && e.getMessage().contains(PipelineRunner.DAILY_QUOTA_MARKER);
+            lifecycleService.markFailed(jobId, dailyQuota ? ProcessingJob.AI_QUOTA_MESSAGE : e.getMessage());
         } finally {
             foundPlaceNameStore.clear(jobId);
         }
