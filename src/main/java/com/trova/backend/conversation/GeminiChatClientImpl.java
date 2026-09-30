@@ -3,10 +3,13 @@ package com.trova.backend.conversation;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +21,8 @@ public class GeminiChatClientImpl implements GeminiChatClient {
     private static final Logger log = LoggerFactory.getLogger(GeminiChatClientImpl.class);
     // GeminiTextClientImpl과 동일 모델 — 이 프로젝트가 실제로 쓰는 생성 모델과 통일한다.
     private static final String MODEL = "gemini-3.5-flash-lite";
+    static final String BASE_URL = "https://generativelanguage.googleapis.com";
+    static final Duration READ_TIMEOUT = Duration.ofSeconds(20);
 
     // 2026-09-15 실사용 확인: 시스템 지시문 없이는 답변에 마크다운(별표 강조, 번호
     // 목록)이 섞여 나오고, 도구로 찾은 후보를 텍스트로도 다시 나열해서 앱이 같은
@@ -26,12 +31,17 @@ public class GeminiChatClientImpl implements GeminiChatClient {
     // 테스트(같은 패키지)에서 요청 본문 검증에 재사용할 수 있도록 package-private로 둔다 —
     // 문구를 테스트에 하드코딩해서 중복·불일치가 생기는 걸 막는다.
     static final String SYSTEM_INSTRUCTION =
-            "당신은 여행 일정을 도와주는 대화형 비서입니다. 사용자가 원하는 조건의 장소를 찾아달라고 " +
-            "하면 제공된 도구를 사용하세요.\n\n" +
+            // 도구 호출 모드는 AUTO다. 2026-09-30 실측(#69)에서 예전 지시문은 찾기 요청 6개 중 1개만 도구를
+            // 불렀고 나머지는 도구 없이 "카드로 보여드릴게요"라고만 답했다. 찾기 요청이면 도구가 먼저라는 것,
+            // 카드는 도구 결과로만 생긴다는 것, 장소 정보를 지어내지 말라는 것을 명시한다.
+            "당신은 여행 일정을 도와주는 대화형 비서입니다. 사용자가 장소를 찾거나 추천해달라고 하면 " +
+            "답하기 전에 반드시 find_alternatives 같은 장소 찾기 도구를 먼저 호출하세요. 장소 정보는 도구 " +
+            "결과로만 알 수 있으니 장소 이름, 영업시간, 평점 같은 정보를 스스로 지어내지 마세요.\n\n" +
             "답변 규칙:\n" +
             "1. 마크다운 문법(별표, 물결표, 헤더, 번호나 기호로 된 목록 등)을 절대 쓰지 말고 자연스러운 " +
             "문장으로만 답하세요.\n" +
-            "2. 도구로 찾은 후보 장소는 앱 화면에 카드로 따로 표시되니, 답변 텍스트에서 후보들의 이름과 " +
+            "2. 앱 화면의 카드는 이번에 도구를 호출해서 받은 후보로만 만들어집니다. 도구를 호출하지 않았다면 " +
+            "카드, 화면, 찾아드렸다 같은 표현을 쓰지 마세요. 도구로 찾은 후보 장소는 카드로 따로 표시되니, 답변 텍스트에서 후보들의 이름과 " +
             "평점을 다시 나열하지 마세요. 대신 짧은 소개나 대화하듯 1~2문장으로 답하세요.\n" +
             "3. 친근하고 간결한 한국어로 답하세요.\n" +
             "4. 대시(—, –, -), 글머리 기호, 따옴표(\"\", ''), 화살표·별표 같은 기호를 문장에 넣지 말고, " +
@@ -40,13 +50,29 @@ public class GeminiChatClientImpl implements GeminiChatClient {
     private final String apiKey;
     private final RestClient restClient;
 
+    @Autowired
     public GeminiChatClientImpl(
             @Value("${app.pipeline.gemini-api-key}") String apiKey,
             RestClient.Builder restClientBuilder
     ) {
+        this(apiKey, restClientBuilder.requestFactory(chatRequestFactory()), BASE_URL);
+    }
+
+    // 공용 빌더의 읽기 대기 5초로는 Gemini가 잠시 느려질 때 대화가 끊긴다(#69, 2026-09-30 운영 서버
+    // 실측: 평소 약 1초, 느린 시간대엔 5번 중 2번이 정확히 5초에 끊김). 앱은 AI 응답을 60초까지 기다리므로
+    // Gemini 두 번 호출(각 20초)과 도구 실행(약 11초)을 합쳐도 그 안에 들어온다.
+    static SimpleClientHttpRequestFactory chatRequestFactory() {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(3));
+        requestFactory.setReadTimeout(READ_TIMEOUT);
+        return requestFactory;
+    }
+
+    // 테스트가 가짜 Gemini 서버 주소와 HTTP 설정을 넣을 수 있게 분리했다(운영은 위 생성자만 쓴다).
+    GeminiChatClientImpl(String apiKey, RestClient.Builder restClientBuilder, String baseUrl) {
         this.apiKey = apiKey;
         this.restClient = restClientBuilder
-                .baseUrl("https://generativelanguage.googleapis.com")
+                .baseUrl(baseUrl)
                 .build();
     }
 

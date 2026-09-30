@@ -31,7 +31,7 @@ class GeminiChatClientImplTest {
                         {"candidates":[{"content":{"parts":[{"text":"안녕하세요"}],"role":"model"}}]}
                         """, MediaType.APPLICATION_JSON));
 
-        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder);
+        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder, GeminiChatClientImpl.BASE_URL);
         GeminiChatClient.ChatResult result = client.sendMessage(List.of(), "안녕", List.of());
 
         assertThat(result.text()).isEqualTo("안녕하세요");
@@ -49,7 +49,7 @@ class GeminiChatClientImplTest {
                         ],"role":"model"}}]}
                         """, MediaType.APPLICATION_JSON));
 
-        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder);
+        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder, GeminiChatClientImpl.BASE_URL);
         var tools = List.of(new GeminiChatClient.ToolDeclaration(
                 "find_alternatives", "설명",
                 Map.of("category", new GeminiChatClient.ParamSchema("string", "카테고리"))));
@@ -73,7 +73,7 @@ class GeminiChatClientImplTest {
                         ],"role":"model"}}]}
                         """, MediaType.APPLICATION_JSON));
 
-        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder);
+        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder, GeminiChatClientImpl.BASE_URL);
         var tools = List.of(new GeminiChatClient.ToolDeclaration(
                 "find_alternatives", "설명",
                 Map.of("category", new GeminiChatClient.ParamSchema("string", "카테고리"))));
@@ -109,7 +109,7 @@ class GeminiChatClientImplTest {
                         {"candidates":[{"content":{"parts":[{"text":"커피한약방을 추천해요"}],"role":"model"}}]}
                         """, MediaType.APPLICATION_JSON));
 
-        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder);
+        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder, GeminiChatClientImpl.BASE_URL);
         var tools = List.of(new GeminiChatClient.ToolDeclaration(
                 "find_alternatives", "설명",
                 Map.of("category", new GeminiChatClient.ParamSchema("string", "카테고리"))));
@@ -128,7 +128,7 @@ class GeminiChatClientImplTest {
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
         server.expect(requestTo(URL)).andRespond(withServerError());
 
-        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder);
+        GeminiChatClientImpl client = new GeminiChatClientImpl("test-key", builder, GeminiChatClientImpl.BASE_URL);
         GeminiChatClient.ChatResult result = client.sendMessage(List.of(), "안녕", List.of());
 
         assertThat(result.text()).isNull();
