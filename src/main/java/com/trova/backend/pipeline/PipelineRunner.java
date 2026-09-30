@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @Component
@@ -22,6 +23,7 @@ public class PipelineRunner {
     private static final Logger log = LoggerFactory.getLogger(PipelineRunner.class);
 
     private static final long TIMEOUT_MINUTES = 5;
+    private static final long PROGRESS_POLL_MILLIS = 500;
     private static final long STDOUT_JOIN_TIMEOUT_MILLIS = 30_000;
 
     private final String scriptPath;
@@ -42,6 +44,11 @@ public class PipelineRunner {
     }
 
     public PipelineOutput run(String url, Long jobId) {
+        return run(url, jobId, progress -> { });
+    }
+
+    /** onProgress: 실행 중 파이프라인이 알려준 제목·찾은 장소 이름(#51). 이 메서드를 부른 스레드에서 호출된다. */
+    public PipelineOutput run(String url, Long jobId, Consumer<PipelineProgress> onProgress) {
         Path workDir = Path.of(workDirBase, "job-" + jobId);
         ProcessBuilder builder = new ProcessBuilder("python3", scriptPath, url, workDir.toString());
         builder.environment().put("GEMINI_API_KEY", geminiApiKey);
@@ -66,7 +73,14 @@ public class PipelineRunner {
             stdoutReader.setDaemon(true);
             stdoutReader.start();
 
-            boolean finished = process.waitFor(TIMEOUT_MINUTES, TimeUnit.MINUTES);
+            // 끝날 때까지 기다리면서 0.5초마다 stderr에 새로 찍힌 진행 표식을 읽는다.
+            StderrProgressTail tail = new StderrProgressTail(stderrFile.toPath(), onProgress);
+            long deadline = System.nanoTime() + TimeUnit.MINUTES.toNanos(TIMEOUT_MINUTES);
+            boolean finished = false;
+            while (!finished && System.nanoTime() < deadline) {
+                finished = process.waitFor(PROGRESS_POLL_MILLIS, TimeUnit.MILLISECONDS);
+                tail.poll();
+            }
             if (!finished) {
                 process.destroyForcibly();
                 log.error("ProcessingJob {} 파이프라인 실행 시간 초과({}분): {}", jobId, TIMEOUT_MINUTES, url);

@@ -9,6 +9,7 @@ import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.service.ItineraryGenerationService;
 import org.junit.jupiter.api.Test;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -48,6 +49,9 @@ class PlacesControllerTest {
 
     @Autowired
     private SavedPlaceRepository savedPlaceRepository;
+
+    @Autowired
+    private com.trova.backend.service.FoundPlaceNameStore foundPlaceNameStore;
 
     @MockitoBean
     private ItineraryGenerationService itineraryGenerationService;
@@ -166,6 +170,24 @@ class PlacesControllerTest {
         mockMvc.perform(get("/api/places/pending").with(loginAs("kkk", "제목유저2")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value("서울 카페 투어"));
+    }
+
+    @Test
+    void pending_목록에_분석_중_찾은_장소_이름이_포함된다() throws Exception {
+        // 분석이 끝나기 전에 파이프라인이 알려준 이름을 앱이 폴링으로 받아 보여준다(#51).
+        User me = userRepository.save(new User("google", "found1", "찾은이름유저", null));
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(me, "https://youtu.be/found1", SourcePlatform.YOUTUBE));
+        foundPlaceNameStore.put(job.getId(), List.of("해운대 암소갈비집", "흰여울 카페"));
+
+        try {
+            mockMvc.perform(get("/api/places/pending").with(loginAs("found1", "찾은이름유저")))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[0].foundPlaceNames[0]").value("해운대 암소갈비집"))
+                    .andExpect(jsonPath("$[0].foundPlaceNames[1]").value("흰여울 카페"));
+        } finally {
+            foundPlaceNameStore.clear(job.getId());
+        }
     }
 
     @Test

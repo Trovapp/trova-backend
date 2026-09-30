@@ -10,6 +10,7 @@
 """
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -35,6 +36,11 @@ def extract_audio(video_path: Path, out_path: Path) -> Path:
     return out_path
 
 
+def emit_progress(**fields) -> None:
+    """서버(PipelineRunner)가 실행 중에 읽어 가는 중간 결과 — 앱 분석 화면에 제목·찾은 장소를 먼저 보여준다(#51)."""
+    print(f"TROVA_PROGRESS:{json.dumps(fields, ensure_ascii=False)}", file=sys.stderr, flush=True)
+
+
 def run(url: str, work_dir: Path) -> dict:
     print(f"[pipeline] 다운로드 중: {url}", file=sys.stderr)
     info = download.download(url, work_dir / "download")
@@ -43,6 +49,8 @@ def run(url: str, work_dir: Path) -> dict:
 
     title = download.get_title(url)
     print(f"[pipeline] 제목: {title!r}", file=sys.stderr)
+    if title:
+        emit_progress(title=title)
 
     transcript = None
     if caption_path:
@@ -59,6 +67,7 @@ def run(url: str, work_dir: Path) -> dict:
 
     print("[pipeline] Gemini 호출", file=sys.stderr)
     places = extract_places(transcript=transcript, audio_path=audio_path, frame_paths=frame_paths)
+    emit_progress(placeNames=[p["name"] for p in places if p.get("name")])
     return {"title": title, "places": places}
 
 
@@ -70,5 +79,4 @@ if __name__ == "__main__":
     work_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("work") / "run"
     result = run(url, work_dir)
 
-    import json
     print(json.dumps(result, ensure_ascii=False, indent=2))
