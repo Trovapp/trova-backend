@@ -39,11 +39,20 @@ def extract_audio(video_path: Path, out_path: Path) -> Path:
     return out_path
 
 
+def has_audio_stream(video_path: Path) -> bool:
+    result = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries", "stream=index", "-of", "csv=p=0", str(video_path)],
+        capture_output=True, text=True,
+    )
+    return result.returncode == 0 and bool(result.stdout.strip())
+
+
 def emit_progress(**fields) -> None:
     """서버(PipelineRunner)가 실행 중에 읽어 가는 중간 결과 — 앱 분석 화면에 제목·찾은 장소를 먼저 보여준다(#51)."""
     print(f"TROVA_PROGRESS:{json.dumps(fields, ensure_ascii=False)}", file=sys.stderr, flush=True)
 
 
+INSTAGRAM_URL = re.compile(r"^https?://(?:www\.|m\.)?instagram\.com/", re.IGNORECASE)
 YOUTUBE_URL = re.compile(r"^https?://(?:www\.|m\.)?(?:youtube\.com|youtu\.be)/", re.IGNORECASE)
 # Gemini가 영상에 접근하지 못할 때(퍼가기 금지 등) 돌려주는 오류 — 이때만 다운로드 방식으로 다시 시도한다.
 VIDEO_ACCESS_ERRORS = ("Gemini API error 403", "Gemini API error 400")
@@ -59,6 +68,37 @@ def youtube_title(url: str) -> str | None:
     except Exception as exc:  # 제목은 보여주기용이라 실패해도 분석은 계속한다
         print(f"[pipeline] 제목 조회 실패: {exc}", file=sys.stderr)
         return None
+
+
+# 인스타그램이 캡션만 있고 제목이 없을 때 붙이는 자동 제목("Video by 계정명") — 사용자에게 의미가 없다.
+PLACEHOLDER_TITLE = re.compile(r"^(video|reel|post|photo) by\s", re.IGNORECASE)
+
+
+def instagram_post_info(url: str) -> tuple[str | None, str | None]:
+    """영상을 내려받지 않고 게시물 정보만 조회해 (제목, 게시물 설명)을 돌려준다(#59).
+
+    제목이 자동 제목이면 설명의 첫 줄을 제목으로 쓴다. 실패해도 분석은 계속한다.
+    """
+    try:
+        result = subprocess.run(
+            ["yt-dlp", "--no-warnings", "--skip-download", "--dump-single-json", "--", url],
+            capture_output=True, text=True, timeout=60,
+        )
+        info = json.loads(result.stdout) if result.returncode == 0 else {}
+    except (subprocess.TimeoutExpired, json.JSONDecodeError) as exc:
+        print(f"[pipeline] 게시물 정보 조회 실패: {exc}", file=sys.stderr)
+        return None, None
+    description = (info.get("description") or "").strip() or None
+    title = info.get("title")
+    if (not title or PLACEHOLDER_TITLE.match(title)) and description:
+        title = next((line.strip() for line in description.splitlines() if is_title_like(line)), None)
+        title = title[:100] if title else None
+    return title, description
+
+
+def is_title_like(line: str) -> bool:
+    """해시태그·기호만 있는 줄("#솔내음한정식#", "-", ".")은 제목으로 쓰지 않는다 — 글자가 두 자 이상 남아야 한다."""
+    return len(re.sub(r"[^0-9A-Za-z가-힣]", "", re.sub(r"#\S+", "", line))) >= 2
 
 
 def run(url: str, work_dir: Path) -> dict:
@@ -83,6 +123,16 @@ def run(url: str, work_dir: Path) -> dict:
 
 def run_download(url: str, work_dir: Path, title: str | None = None) -> dict:
     """영상을 내려받아 자막·오디오·프레임으로 추출한다 — 인스타그램, 그리고 유튜브 직접 입력이 안 될 때."""
+    post_description = None
+    if INSTAGRAM_URL.match(url):
+        # 다운로드 전에 게시물 정보부터 — 제목을 바로 보여주고, 설명(장소 태그·주소)을 추출에 함께 쓴다(#59).
+        info_title, post_description = instagram_post_info(url)
+        if title is None and info_title:
+            title = info_title
+            print(f"[pipeline] 제목: {title!r}", file=sys.stderr)
+            emit_progress(title=title)
+        print(f"[pipeline] 게시물 설명 {'있음 (' + str(len(post_description)) + '자)' if post_description else '없음'}", file=sys.stderr)
+
     print(f"[pipeline] 다운로드 중: {url}", file=sys.stderr)
     info = download.download(url, work_dir / "download")
     video_path = info["video_path"]
@@ -101,14 +151,21 @@ def run_download(url: str, work_dir: Path, title: str | None = None) -> dict:
     else:
         print("[pipeline] 자막 없음", file=sys.stderr)
 
-    print("[pipeline] 오디오 추출", file=sys.stderr)
-    audio_path = extract_audio(video_path, work_dir / "audio.mp3")
+    # 음악 없이 화면만 있는 릴스도 있다 — 오디오 추출 실패로 분석 전체가 멈추지 않게, 없으면 건너뛴다(#59).
+    audio_path = None
+    if has_audio_stream(video_path):
+        print("[pipeline] 오디오 추출", file=sys.stderr)
+        audio_path = extract_audio(video_path, work_dir / "audio.mp3")
+    else:
+        print("[pipeline] 오디오 트랙 없음 — 화면·자막·게시물 설명으로만 찾는다", file=sys.stderr)
 
     print(f"[pipeline] 프레임 추출 (최대 {MAX_FRAMES}장)", file=sys.stderr)
     frame_paths = frames_mod.extract_frames(video_path, work_dir / "frames", max_frames=MAX_FRAMES)
 
     print("[pipeline] Gemini 호출", file=sys.stderr)
-    places = extract_places(transcript=transcript, audio_path=audio_path, frame_paths=frame_paths)
+    places = extract_places(
+        transcript=transcript, audio_path=audio_path, frame_paths=frame_paths, post_description=post_description
+    )
     emit_progress(placeNames=[p["name"] for p in places if p.get("name")])
     return {"title": title, "places": places}
 
