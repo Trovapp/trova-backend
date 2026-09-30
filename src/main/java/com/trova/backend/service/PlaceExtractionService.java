@@ -115,8 +115,15 @@ public class PlaceExtractionService {
         } catch (Exception e) {
             log.error("ProcessingJob {} 처리 실패", jobId, e);
             // 하루 한도 소진은 앱이 원인과 다시 가능한 시점을 알려줄 수 있게 정해진 문구로 남긴다(#63).
-            boolean dailyQuota = e.getMessage() != null && e.getMessage().contains(PipelineRunner.DAILY_QUOTA_MARKER);
-            lifecycleService.markFailed(jobId, dailyQuota ? ProcessingJob.AI_QUOTA_MESSAGE : e.getMessage());
+            String message = e.getMessage() == null ? "" : e.getMessage();
+            if (message.contains(PipelineRunner.DAILY_QUOTA_MARKER)) {
+                lifecycleService.markFailed(jobId, ProcessingJob.AI_QUOTA_MESSAGE);
+            } else if (message.contains(PipelineRunner.SOURCE_RATE_LIMIT_MARKER)) {
+                // 인스타 속도 제한도 원인을 알려야 사용자가 무작정 다시 누르지 않는다(#65).
+                lifecycleService.markFailed(jobId, ProcessingJob.SOURCE_RATE_LIMIT_MESSAGE);
+            } else {
+                lifecycleService.markFailed(jobId, e.getMessage());
+            }
         } finally {
             foundPlaceNameStore.clear(jobId);
         }

@@ -13,6 +13,8 @@ public class ProcessingJob {
     public static final String NO_PLACES_MESSAGE = "영상에서 장소를 찾지 못했어요";
     // Gemini 무료 하루 한도 소진(#63). 태평양 시간 자정(한국 오후 4~5시)에 초기화되기 전엔 다시 해도 실패한다.
     public static final String AI_QUOTA_MESSAGE = "오늘 AI 분석 한도를 다 썼어요";
+    // 인스타그램이 서버 IP에 속도 제한(429)을 건 경우(#65). 제한이 풀리는 시점은 알 수 없다.
+    public static final String SOURCE_RATE_LIMIT_MESSAGE = "인스타그램이 잠시 요청을 막았어요";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,6 +104,7 @@ public class ProcessingJob {
     public String getErrorMessage() { return errorMessage; }
     public boolean isNoPlacesFailure() { return status == JobStatus.FAILED && NO_PLACES_MESSAGE.equals(errorMessage); }
     public boolean isAiQuotaFailure() { return status == JobStatus.FAILED && AI_QUOTA_MESSAGE.equals(errorMessage); }
+    public boolean isSourceRateLimitFailure() { return status == JobStatus.FAILED && SOURCE_RATE_LIMIT_MESSAGE.equals(errorMessage); }
     public int getRetryCount() { return retryCount; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
