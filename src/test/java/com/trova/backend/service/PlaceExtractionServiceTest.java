@@ -5,6 +5,7 @@ import com.trova.backend.geocoding.GeocodingResult;
 import com.trova.backend.geocoding.KakaoGeocodingService;
 import com.trova.backend.pipeline.ExtractedPlace;
 import com.trova.backend.pipeline.PipelineOutput;
+import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.pipeline.PipelineProgress;
 import com.trova.backend.pipeline.PipelineRunner;
 import com.trova.backend.pipeline.PlaceSelectionRunner;
@@ -24,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -107,5 +109,22 @@ class PlaceExtractionServiceTest {
         assertThat(namesSeenDuringRun).containsExactly(List.of("가야랜드", "수로왕릉"));
         // 작업이 끝나면(성공·실패 모두) 메모리에서 지운다.
         assertThat(foundPlaceNameStore.get(jobId)).isEmpty();
+    }
+
+    @Test
+    void 장소를_하나도_못_찾으면_완료가_아니라_장소_없음으로_실패_처리한다() {
+        // DONE으로 끝내면 앱은 결과 화면에서 "해당 영상을 찾을 수 없어요"를 띄우고, 영상은 어디에도 남지 않았다(#55).
+        Long jobId = 4L;
+        when(lifecycleService.markProcessing(jobId)).thenReturn("https://youtu.be/empty");
+        when(pipelineRunner.run(eq("https://youtu.be/empty"), eq(jobId), any()))
+                .thenReturn(new PipelineOutput("그냥 일상 브이로그", List.of()));
+
+        placeExtractionService.process(jobId);
+
+        verify(lifecycleService).setTitle(jobId, "그냥 일상 브이로그");
+        verify(lifecycleService).markFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
+        verify(lifecycleService, never()).markDone(any());
+        verify(lifecycleService, never()).savePlace(any(), any(), any());
+        verify(kakaoGeocodingService, never()).geocode(any(), any(), any(Set.class), anyLong());
     }
 }

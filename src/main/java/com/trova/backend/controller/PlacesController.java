@@ -71,7 +71,9 @@ public class PlacesController {
             Long jobId, String sourceUrl, String title, String sourcePlatform, String status, String createdAt,
             String currentStage, Integer progressPercent, String stageMessage,
             // 분석이 끝나기 전에 파이프라인이 먼저 찾은 장소 이름(#51). 아직 없으면 빈 배열.
-            List<String> foundPlaceNames
+            List<String> foundPlaceNames,
+            // 실패 이유 코드(#55). 영상에서 장소를 못 찾았으면 NO_PLACES, 그 외 실패·진행 중이면 null.
+            String failureReason
     ) {
         static PendingJobResponse from(ProcessingJob job, List<String> foundPlaceNames) {
             ProcessingStage stage = job.getCurrentStage();
@@ -81,7 +83,8 @@ public class PlacesController {
                     stage != null ? stage.name() : null,
                     stage != null ? stage.percent() : null,
                     stage != null ? stage.message() : null,
-                    foundPlaceNames
+                    foundPlaceNames,
+                    job.isNoPlacesFailure() ? "NO_PLACES" : null
             );
         }
     }

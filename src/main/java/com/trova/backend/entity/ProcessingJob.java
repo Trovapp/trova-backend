@@ -8,6 +8,10 @@ import java.time.LocalDateTime;
 @Table(name = "processing_jobs")
 public class ProcessingJob {
 
+    // 영상에서 장소를 하나도 못 찾은 경우의 실패 문구(#55). DB 컬럼을 늘리지 않고 errorMessage에 이 문구로 남기고,
+    // 응답에서 이 문구와 같으면 failureReason=NO_PLACES로 알려준다.
+    public static final String NO_PLACES_MESSAGE = "영상에서 장소를 찾지 못했어요";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -94,6 +98,7 @@ public class ProcessingJob {
     public JobStatus getStatus() { return status; }
     public ProcessingStage getCurrentStage() { return currentStage; }
     public String getErrorMessage() { return errorMessage; }
+    public boolean isNoPlacesFailure() { return status == JobStatus.FAILED && NO_PLACES_MESSAGE.equals(errorMessage); }
     public int getRetryCount() { return retryCount; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
