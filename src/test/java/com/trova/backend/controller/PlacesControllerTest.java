@@ -191,6 +191,25 @@ class PlacesControllerTest {
     }
 
     @Test
+    void 장소를_못_찾아_실패한_작업은_failureReason이_NO_PLACES다() throws Exception {
+        // 앱이 "장소를 찾지 못했어요"를 일반 실패와 구분해서 보여줄 수 있게 한다(#55).
+        User me = userRepository.save(new User("google", "noplace1", "빈결과유저", null));
+        ProcessingJob noPlaces = processingJobRepository.save(
+                new ProcessingJob(me, "https://youtu.be/noplace1", SourcePlatform.YOUTUBE));
+        noPlaces.markFailed(ProcessingJob.NO_PLACES_MESSAGE);
+        processingJobRepository.save(noPlaces);
+        ProcessingJob otherFailure = processingJobRepository.save(
+                new ProcessingJob(me, "https://youtu.be/noplace2", SourcePlatform.YOUTUBE));
+        otherFailure.markFailed("파이프라인 실행 실패(exit=1)");
+        processingJobRepository.save(otherFailure);
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("noplace1", "빈결과유저")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.jobId == %d)].failureReason", noPlaces.getId()).value("NO_PLACES"))
+                .andExpect(jsonPath("$[?(@.jobId == %d)].failureReason", otherFailure.getId()).value(org.hamcrest.Matchers.contains((Object) null)));
+    }
+
+    @Test
     void 일정형_장소는_dayNumber와_orderInDay를_반환한다() throws Exception {
         User me = userRepository.save(new User("google", "hhh", "일정유저", null));
         ProcessingJob job = processingJobRepository.save(

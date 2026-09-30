@@ -1,5 +1,6 @@
 package com.trova.backend.service;
 
+import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.ProcessingStage;
 import com.trova.backend.geocoding.GeocodingResult;
 import com.trova.backend.geocoding.KakaoGeocodingService;
@@ -73,6 +74,14 @@ public class PlaceExtractionService {
             log.info("ProcessingJob {} 파이프라인 완료: {}개 장소 추출", jobId, output.places().size());
 
             lifecycleService.setTitle(jobId, output.title());
+
+            // 장소가 0곳이면 완료로 끝내지 않는다 — 결과 화면에 보여줄 게 없고, 영상 기록(저장된 장소 기준)에도
+            // 남지 않아 사용자가 무슨 일이 있었는지 알 수 없었다(#55). 실패로 남겨 처리 중 목록에서 이유를 보여준다.
+            if (output.places().isEmpty()) {
+                log.info("ProcessingJob {} 장소 0곳 — 장소 없음으로 실패 처리", jobId);
+                lifecycleService.markFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
+                return;
+            }
 
             List<ExtractedPlace> extractedList = output.places();
             List<GeocodingResult> geocodedList = new ArrayList<>();
