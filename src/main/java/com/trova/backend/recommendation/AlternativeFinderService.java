@@ -118,13 +118,16 @@ public class AlternativeFinderService {
                     System.currentTimeMillis() - searchStart, false, e.getMessage(), null, null, null);
             return Optional.of(List.of());
         }
+        long searchMs = System.currentTimeMillis() - searchStart;
         List<GooglePlacesNearbySearchResponse.Place> raw =
                 response.places() != null ? response.places() : List.of();
         if (raw.isEmpty()) {
             return Optional.of(List.of());
         }
 
+        long upsertStart = System.currentTimeMillis();
         List<Place> candidates = placeCatalogService.upsertAll(raw);
+        long upsertMs = System.currentTimeMillis() - upsertStart;
 
         // 교체 대상 자기 자신이 후보로 딸려오면 안 된다 — 선택 시 applyReplacement가
         // 아무 변화 없이 memo만 지우는 무의미한 "교체"가 되어버린다.
@@ -134,9 +137,11 @@ public class AlternativeFinderService {
                     .toList();
         }
 
+        long tagStart = System.currentTimeMillis();
         if (Boolean.TRUE.equals(filter.indoorOnly())) {
             candidates = filterIndoor(candidates);
         }
+        long tagMs = System.currentTimeMillis() - tagStart;
 
         // includedType으로 못 걸렀으면(매핑 없던 카테고리) 이름/카테고리 텍스트로 후처리 필터링.
         if (includedType == null && filter.category() != null && !filter.category().isBlank()) {
@@ -146,7 +151,11 @@ public class AlternativeFinderService {
                     .toList();
         }
 
+        long embeddingStart = System.currentTimeMillis();
         placeEmbeddingService.ensureEmbeddings(candidates);
+        long embeddingMs = System.currentTimeMillis() - embeddingStart;
+        long congestionMs = 0;
+        long personalizationMs = 0;
 
         List<AlternativeCandidate> result = new ArrayList<>();
         Map<Long, Double> scoreByPlaceId = new java.util.HashMap<>();
@@ -182,6 +191,7 @@ public class AlternativeFinderService {
 
             boolean congestionAvailable = false;
             String congestionLevel = null;
+            long congestionStart = System.currentTimeMillis();
             if (SeoulCongestionAreaCache.isKnownArea(candidate.getName())) {
                 Optional<SeoulCongestionResponse> congestion = seoulCongestionApiClient.fetchCongestion(candidate.getName());
                 if (congestion.isPresent() && congestion.get().cityData() != null
@@ -192,7 +202,11 @@ public class AlternativeFinderService {
                 }
             }
 
+            congestionMs += System.currentTimeMillis() - congestionStart;
+
+            long personalizationStart = System.currentTimeMillis();
             PersonalizationService.PersonalizationResult personalization = personalizationService.retrieveAndScore(user, candidate);
+            personalizationMs += System.currentTimeMillis() - personalizationStart;
             double score = Math.max(PlaceScoring.baseScore(candidate), MIN_BASE_SCORE_FOR_BOOST)
                     * (1 + personalization.score() * PERSONALIZATION_BOOST_WEIGHT);
             scoreByPlaceId.put(candidate.getId(), score);
@@ -211,6 +225,7 @@ public class AlternativeFinderService {
 
         // 상위 EXPLANATION_TOP_N개에만 추천 이유를 생성한다 — 무료 티어 한도 안에서
         // 감당하기 위해 요청당 생성 호출을 이 개수로 제한한다(스펙 "생성 단계" 절).
+        long explanationStart = System.currentTimeMillis();
         List<AlternativeCandidate> withReasons = new ArrayList<>();
         for (int i = 0; i < result.size(); i++) {
             AlternativeCandidate c = result.get(i);
@@ -231,6 +246,12 @@ public class AlternativeFinderService {
                 withReasons.add(c);
             }
         }
+        // 처음 보는 지역의 첫 대화가 느린 구간을 찾으려고 요청마다 구간별 시간을 한 줄로 남긴다(#77).
+        // 임베딩 구간의 요청/저장 세부는 PlaceEmbeddingService가 따로 남긴다.
+        log.info("대안 찾기 구간별 시간: 검색={}ms 카탈로그저장={}ms({}곳) 실내태그={}ms 임베딩={}ms 혼잡도={}ms 개인화조회={}ms({}곳) 추천이유={}ms",
+                searchMs,
+                upsertMs, raw.size(), tagMs, embeddingMs, congestionMs, personalizationMs, result.size(),
+                System.currentTimeMillis() - explanationStart);
         return Optional.of(withReasons);
     }
 

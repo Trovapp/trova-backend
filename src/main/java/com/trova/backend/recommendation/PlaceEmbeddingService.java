@@ -88,6 +88,7 @@ public class PlaceEmbeddingService {
             log.warn("장소 임베딩 묶음 생성 실패, 이번 요청은 건너뜁니다: {}개", places.size());
             return;
         }
+        long saveStart = System.currentTimeMillis();
         for (int i = 0; i < places.size(); i++) {
             Place place = places.get(i);
             // updateEmbedding도 네이티브 쿼리라 DB 오류 가능성이 있다 — 한 장소의 저장
@@ -98,6 +99,8 @@ public class PlaceEmbeddingService {
                 log.warn("장소 임베딩 저장 실패, 건너뜁니다: placeId={}", place.getId(), e);
             }
         }
+        // 구간별 시간 확인용(#77): 묶음 요청과 DB 저장(장소마다 한 번씩) 중 어디가 긴지 본다.
+        log.info("장소 임베딩 묶음: {}개, 요청={}ms, 저장={}ms", places.size(), latency, System.currentTimeMillis() - saveStart);
     }
 
     /** mood/reviewSummary는 있을 때만 붙인다 — 태깅 전이거나 리뷰 요약이 없는 장소도 임베딩 대상이다. */
