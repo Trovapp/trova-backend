@@ -3,6 +3,7 @@ package com.trova.backend.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trova.backend.entity.ApiCallLog;
+import com.trova.backend.repository.ApiCallLogJdbcRepository;
 import com.trova.backend.repository.ApiCallLogRepository;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -30,11 +31,41 @@ public class ApiCallLogService {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     private final ApiCallLogRepository apiCallLogRepository;
+    private final ApiCallLogJdbcRepository apiCallLogJdbcRepository;
     private final MeterRegistry meterRegistry;
 
-    public ApiCallLogService(ApiCallLogRepository apiCallLogRepository, MeterRegistry meterRegistry) {
+    public ApiCallLogService(
+            ApiCallLogRepository apiCallLogRepository,
+            ApiCallLogJdbcRepository apiCallLogJdbcRepository,
+            MeterRegistry meterRegistry
+    ) {
         this.apiCallLogRepository = apiCallLogRepository;
+        this.apiCallLogJdbcRepository = apiCallLogJdbcRepository;
         this.meterRegistry = meterRegistry;
+    }
+
+    /**
+     * 같은 외부 호출이 여러 건으로 세어질 때(예: 묶음 임베딩은 무료 한도를 문장 수로 셈) 기록을 count줄 남기되,
+     * DB에는 묶음 INSERT 한 번으로 보낸다(#79). 기록 실패가 본 동작을 막지 않도록 예외는 삼킨다.
+     */
+    public void recordBatch(String provider, String operation, long latencyMs, boolean success, String errorMessage, int count) {
+        if (count <= 0) {
+            return;
+        }
+        try {
+            apiCallLogJdbcRepository.insertCopies(new ApiCallLog(
+                    provider, operation, null, latencyMs, success, errorMessage, null, null, null), count);
+        } catch (Exception e) {
+            log.warn("호출 기록 묶음 저장 실패: {} {} {}줄", provider, operation, count, e);
+        }
+        Timer timer = Timer.builder("trova.api_call")
+                .tag("provider", provider)
+                .tag("operation", operation)
+                .tag("success", String.valueOf(success))
+                .register(meterRegistry);
+        for (int i = 0; i < count; i++) {
+            timer.record(latencyMs, TimeUnit.MILLISECONDS);
+        }
     }
 
     public void record(

@@ -2,6 +2,7 @@ package com.trova.backend.recommendation;
 
 import com.trova.backend.embedding.GeminiEmbeddingClient;
 import com.trova.backend.entity.Place;
+import com.trova.backend.repository.PlaceEmbeddingJdbcRepository;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -21,6 +23,7 @@ class PlaceEmbeddingServiceTest {
 
     @Mock private GeminiEmbeddingClient geminiEmbeddingClient;
     @Mock private PlaceRepository placeRepository;
+    @Mock private PlaceEmbeddingJdbcRepository placeEmbeddingJdbcRepository;
     @Mock private ApiCallLogService apiCallLogService;
     @InjectMocks private PlaceEmbeddingService placeEmbeddingService;
 
@@ -54,7 +57,7 @@ class PlaceEmbeddingServiceTest {
 
         placeEmbeddingService.ensureEmbeddings(List.of(place));
 
-        verify(placeRepository).updateEmbedding(eq(2L), eq("[0.6,0.8]"));
+        verify(placeEmbeddingJdbcRepository).updateEmbeddings(Map.of(2L, "[0.6,0.8]"));
     }
 
     @Test
@@ -66,7 +69,7 @@ class PlaceEmbeddingServiceTest {
 
         placeEmbeddingService.ensureEmbeddings(List.of(place));
 
-        verify(placeRepository, never()).updateEmbedding(anyLong(), anyString());
+        verify(placeEmbeddingJdbcRepository, never()).updateEmbeddings(anyMap());
     }
 
     @Test
@@ -97,12 +100,13 @@ class PlaceEmbeddingServiceTest {
 
         verify(geminiEmbeddingClient, times(1)).embedBatch(List.of("가 cafe", "나 cafe", "다 cafe"));
         verify(geminiEmbeddingClient, never()).embed(anyString());
-        verify(placeRepository).updateEmbedding(11L, "[1.0]");
-        verify(placeRepository).updateEmbedding(12L, "[0.5]");
-        verify(placeRepository).updateEmbedding(13L, "[0.25]");
-        // 무료 한도는 문장 수로 세므로, 호출 기록도 문장마다 한 줄씩 남긴다.
-        verify(apiCallLogService, times(3)).record(eq("gemini"), eq("place-embedding-batch"), isNull(), anyLong(),
-                eq(true), isNull(), isNull(), isNull(), isNull());
+        // 장소마다 UPDATE를 따로 보내지 않고 묶음 전송 한 번으로 저장한다(#79).
+        verify(placeEmbeddingJdbcRepository, times(1)).updateEmbeddings(Map.of(11L, "[1.0]", 12L, "[0.5]", 13L, "[0.25]"));
+        verify(placeRepository, never()).updateEmbedding(anyLong(), anyString());
+        // 무료 한도는 문장 수로 세므로 호출 기록도 문장 수(3줄)만큼 남기되, 묶음 INSERT 한 번으로 보낸다.
+        verify(apiCallLogService, times(1)).recordBatch(eq("gemini"), eq("place-embedding-batch"), anyLong(),
+                eq(true), isNull(), eq(3));
+        verify(apiCallLogService, never()).record(any(), any(), any(), anyLong(), anyBoolean(), any(), any(), any(), any());
     }
 
     @Test
@@ -114,8 +118,7 @@ class PlaceEmbeddingServiceTest {
         placeEmbeddingService.ensureEmbeddings(places);
 
         verify(geminiEmbeddingClient).embedBatch(List.of("나 cafe"));
-        verify(placeRepository).updateEmbedding(22L, "[1.0]");
-        verify(placeRepository, never()).updateEmbedding(eq(21L), anyString());
+        verify(placeEmbeddingJdbcRepository).updateEmbeddings(Map.of(22L, "[1.0]"));
     }
 
     @Test
@@ -134,19 +137,21 @@ class PlaceEmbeddingServiceTest {
 
         verify(geminiEmbeddingClient).embedBatch(argThat(texts -> texts.size() == 100));
         verify(geminiEmbeddingClient).embedBatch(argThat(texts -> texts.size() == 1));
-        verify(placeRepository, times(101)).updateEmbedding(anyLong(), anyString());
+        verify(placeEmbeddingJdbcRepository).updateEmbeddings(argThat(m -> m.size() == 100));
+        verify(placeEmbeddingJdbcRepository).updateEmbeddings(argThat(m -> m.size() == 1));
     }
 
     @Test
-    void 한_장소_저장이_실패해도_나머지는_저장한다() {
+    void 묶음_저장이_실패해도_예외_없이_끝난다() {
+        // 묶음 전송은 한 건이 실패하면 전체가 실패할 수 있다 — 저장 안 된 장소는 다음 검색 때 다시 대상이 된다(#79에서 받아들인 트레이드오프).
         List<Place> places = List.of(place(31, "가"), place(32, "나"));
         when(placeRepository.findIdsWithEmbedding(List.of(31L, 32L))).thenReturn(List.of());
         when(geminiEmbeddingClient.embedBatch(anyList())).thenReturn(Optional.of(List.of(new float[]{1f}, new float[]{1f})));
-        doThrow(new RuntimeException("DB 오류")).when(placeRepository).updateEmbedding(eq(31L), anyString());
+        doThrow(new RuntimeException("DB 오류")).when(placeEmbeddingJdbcRepository).updateEmbeddings(anyMap());
 
         placeEmbeddingService.ensureEmbeddings(places);
 
-        verify(placeRepository).updateEmbedding(32L, "[1.0]");
+        verify(placeEmbeddingJdbcRepository).updateEmbeddings(anyMap());
     }
 
     @Test
@@ -157,8 +162,8 @@ class PlaceEmbeddingServiceTest {
 
         placeEmbeddingService.ensureEmbeddings(places);
 
-        verify(placeRepository, never()).updateEmbedding(anyLong(), anyString());
-        verify(apiCallLogService, times(2)).record(eq("gemini"), eq("place-embedding-batch"), isNull(), anyLong(),
-                eq(false), eq("embedding generation failed"), isNull(), isNull(), isNull());
+        verify(placeEmbeddingJdbcRepository, never()).updateEmbeddings(anyMap());
+        verify(apiCallLogService, times(1)).recordBatch(eq("gemini"), eq("place-embedding-batch"), anyLong(),
+                eq(false), eq("embedding generation failed"), eq(2));
     }
 }
