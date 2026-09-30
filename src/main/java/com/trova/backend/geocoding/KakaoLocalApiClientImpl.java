@@ -11,6 +11,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 @Component
 public class KakaoLocalApiClientImpl implements KakaoLocalApiClient {
@@ -39,11 +40,41 @@ public class KakaoLocalApiClientImpl implements KakaoLocalApiClient {
 
     @Override
     public KakaoKeywordSearchResponse searchKeyword(String query) {
+        return withRetry(query, () -> doSearchKeyword(query));
+    }
+
+    @Override
+    public KakaoAddressSearchResponse searchAddress(String query) {
+        return withRetry(query, () -> restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v2/local/search/address.json")
+                        .queryParam("query", query)
+                        .build())
+                .retrieve()
+                .body(KakaoAddressSearchResponse.class));
+    }
+
+    @Override
+    public KakaoKeywordSearchResponse searchKeywordNear(String query, double x, double y, int radiusMeters) {
+        return withRetry(query, () -> restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v2/local/search/keyword.json")
+                        .queryParam("query", query)
+                        .queryParam("x", x)
+                        .queryParam("y", y)
+                        .queryParam("radius", radiusMeters)
+                        .queryParam("sort", "distance")
+                        .build())
+                .retrieve()
+                .body(KakaoKeywordSearchResponse.class));
+    }
+
+    private <T> T withRetry(String query, Supplier<T> call) {
         RuntimeException lastFailure = null;
 
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
             try {
-                return doSearchKeyword(query);
+                return call.get();
             } catch (HttpClientErrorException.TooManyRequests
                      | HttpServerErrorException
                      | ResourceAccessException e) {

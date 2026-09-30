@@ -13,6 +13,11 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class KakaoGeocodingServiceTest {
 
@@ -218,5 +223,60 @@ class KakaoGeocodingServiceTest {
         GeocodingResult result = kakaoGeocodingService.geocode(List.of("해운대"), "부산", Set.of(), 1L);
 
         assertThat(result.alternativeCandidates()).isEmpty();
+    }
+
+    // ---- 주소로 좌표 찾기(#61) ----
+
+    private static KakaoAddressSearchResponse addressAt(String x, String y) {
+        return new KakaoAddressSearchResponse(List.of(new KakaoAddressSearchResponse.Document(
+                "부산 해운대구 우동 629-16", x, y,
+                new KakaoAddressSearchResponse.RoadAddress("부산 해운대구 우동1로 45"))));
+    }
+
+    @Test
+    void 주소가_있으면_주소_좌표_근처에서_이름으로_찾은_장소를_쓴다() {
+        when(kakaoLocalApiClient.searchAddress("부산 해운대구 우동1로 45")).thenReturn(addressAt("129.1601", "35.1631"));
+        when(kakaoLocalApiClient.searchKeywordNear("요미우돈교자", 129.1601, 35.1631, KakaoGeocodingService.ADDRESS_NEARBY_RADIUS_METERS))
+                .thenReturn(new KakaoKeywordSearchResponse(List.of(new KakaoKeywordSearchResponse.Document(
+                        "요미우돈교자 해운대점", "129.1602", "35.1632", "051-000-0000",
+                        "부산 해운대구 우동 629-16", "부산 해운대구 우동1로 45", "음식점 > 일식 > 우동",
+                        "http://place.map.kakao.com/1"))));
+
+        GeocodingResult result = kakaoGeocodingService.geocode(
+                List.of("요미우돈교자"), "부산", "부산 해운대구 우동1로 45", Set.of(), 1L);
+
+        assertThat(result.matchedName()).isEqualTo("요미우돈교자 해운대점");
+        assertThat(result.latitude()).isEqualTo(35.1632);
+        assertThat(result.phone()).isEqualTo("051-000-0000");
+        verify(kakaoLocalApiClient, never()).searchKeyword(any());
+    }
+
+    @Test
+    void 주소_근처에서_이름을_못_찾으면_주소_좌표를_그대로_쓴다() {
+        // 지역 중심 좌표(region 폴백)보다 작성자가 적은 주소의 좌표가 훨씬 정확하다.
+        when(kakaoLocalApiClient.searchAddress("부산 해운대구 우동1로 45")).thenReturn(addressAt("129.1601", "35.1631"));
+        when(kakaoLocalApiClient.searchKeywordNear(any(), anyDouble(), anyDouble(), anyInt()))
+                .thenReturn(new KakaoKeywordSearchResponse(List.of()));
+
+        GeocodingResult result = kakaoGeocodingService.geocode(
+                List.of("요미우돈교자"), "부산", "부산 해운대구 우동1로 45", Set.of(), 1L);
+
+        assertThat(result.latitude()).isEqualTo(35.1631);
+        assertThat(result.longitude()).isEqualTo(129.1601);
+        assertThat(result.matchedName()).isNull();
+        assertThat(result.roadAddress()).isEqualTo("부산 해운대구 우동1로 45");
+        verify(kakaoLocalApiClient, never()).searchKeyword(any());
+    }
+
+    @Test
+    void 주소_검색이_실패하면_기존처럼_이름으로_찾는다() {
+        when(kakaoLocalApiClient.searchAddress("지어낸 주소")).thenReturn(new KakaoAddressSearchResponse(List.of()));
+        when(kakaoLocalApiClient.searchKeyword("부산 해운대")).thenReturn(
+                new KakaoKeywordSearchResponse(List.of(new KakaoKeywordSearchResponse.Document(
+                        "해운대해수욕장", "129.160384", "35.158698", null, null, null, null, null))));
+
+        GeocodingResult result = kakaoGeocodingService.geocode(List.of("해운대"), "부산", "지어낸 주소", Set.of(), 1L);
+
+        assertThat(result.matchedName()).isEqualTo("해운대해수욕장");
     }
 }

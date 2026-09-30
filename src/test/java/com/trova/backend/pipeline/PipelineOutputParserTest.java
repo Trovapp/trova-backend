@@ -151,4 +151,18 @@ class PipelineOutputParserTest {
         assertThat(places.get(0).dayNumber()).isNull();
         assertThat(places.get(0).orderInDay()).isNull();
     }
+
+    @Test
+    void 장소별_주소가_있으면_함께_읽고_없으면_null이다() {
+        // 게시물 설명·화면에 적힌 주소는 좌표를 찾을 때 이름보다 먼저 쓴다(#61).
+        PipelineOutput output = PipelineOutputParser.parse("""
+                {"title": "해리단길", "places": [
+                  {"name": "요미우돈교자", "region": "부산", "address": "부산 해운대구 우동1로 45 1층"},
+                  {"name": "해리단길", "region": "부산"}
+                ]}
+                """);
+
+        assertThat(output.places().get(0).address()).isEqualTo("부산 해운대구 우동1로 45 1층");
+        assertThat(output.places().get(1).address()).isNull();
+    }
 }

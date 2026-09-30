@@ -92,7 +92,7 @@ public class PlaceExtractionService {
             Set<String> usedCoordinateKeys = new HashSet<>();
             for (ExtractedPlace extracted : extractedList) {
                 GeocodingResult geocoded = kakaoGeocodingService.geocode(
-                        extracted.nameCandidates(), extracted.region(), usedCoordinateKeys, jobId);
+                        extracted.nameCandidates(), extracted.region(), extracted.address(), usedCoordinateKeys, jobId);
                 if (geocoded.latitude() != null) {
                     usedCoordinateKeys.add(geocoded.coordinateKey());
                 }

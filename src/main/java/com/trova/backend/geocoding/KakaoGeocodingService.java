@@ -11,6 +11,9 @@ import java.util.Set;
 @Service
 public class KakaoGeocodingService {
 
+    // 주소 좌표에서 이름 검색 반경 — 같은 건물·바로 옆 가게까지만(너무 넓으면 동명 다른 지점이 잡힌다).
+    static final int ADDRESS_NEARBY_RADIUS_METERS = 300;
+
     private static final Logger log = LoggerFactory.getLogger(KakaoGeocodingService.class);
 
     private final KakaoLocalApiClient kakaoLocalApiClient;
@@ -24,6 +27,23 @@ public class KakaoGeocodingService {
     public GeocodingResult geocode(
             List<String> nameCandidates, String region, Set<String> usedCoordinateKeys, Long jobId
     ) {
+        return geocode(nameCandidates, region, null, usedCoordinateKeys, jobId);
+    }
+
+    /**
+     * address: 게시물 설명·화면에 작성자가 직접 적은 주소(없으면 null). 있으면 이름보다 먼저 쓴다(#61) —
+     * 이름 검색이 실패해 지역 중심 좌표로 떨어지던 곳(예: 요미우돈교자)도 정확한 위치를 얻는다.
+     * 주소 좌표 근처에서 이름을 찾으면 그 장소 정보를, 못 찾으면 주소 좌표를 쓴다. 주소 검색이 실패하면 기존 흐름.
+     */
+    public GeocodingResult geocode(
+            List<String> nameCandidates, String region, String address, Set<String> usedCoordinateKeys, Long jobId
+    ) {
+        if (address != null && !address.isBlank()) {
+            GeocodingResult byAddress = geocodeByAddress(nameCandidates, address, jobId);
+            if (byAddress.latitude() != null) {
+                return byAddress;
+            }
+        }
         boolean hasRegion = region != null && !region.isBlank();
 
         // STT/화면 텍스트 오인식으로 name이 정확히 매칭 안 될 수 있음 — Gemini가 함께
@@ -69,6 +89,50 @@ public class KakaoGeocodingService {
     // region-only 폴백까지 포함해 "선택 재검토" 대상으로 넘길 대안 후보 개수 상한
     // (1등 제외, 최대 이만큼만) — 토큰 절약을 위해 상위 몇 개만 본다.
     private static final int MAX_ALTERNATIVE_CANDIDATES = 4;
+
+    private GeocodingResult geocodeByAddress(List<String> nameCandidates, String address, Long jobId) {
+        long start = System.currentTimeMillis();
+        KakaoAddressSearchResponse.Document point;
+        try {
+            KakaoAddressSearchResponse response = kakaoLocalApiClient.searchAddress(address);
+            apiCallLogService.record(
+                    "kakao", "address_search", jobId, System.currentTimeMillis() - start,
+                    true, null, null, null, null);
+            if (response == null || response.documents() == null || response.documents().isEmpty()) {
+                log.info("주소 검색 결과 없음 — 이름으로 찾습니다(address={})", address);
+                return GeocodingResult.empty();
+            }
+            point = response.documents().get(0);
+        } catch (Exception e) {
+            apiCallLogService.record(
+                    "kakao", "address_search", jobId, System.currentTimeMillis() - start,
+                    false, e.getMessage(), null, null, null);
+            log.warn("카카오 주소 검색 실패(address={}) — 이름으로 찾습니다", address, e);
+            return GeocodingResult.empty();
+        }
+        double x = Double.parseDouble(point.x());
+        double y = Double.parseDouble(point.y());
+
+        for (String name : nameCandidates) {
+            long nearStart = System.currentTimeMillis();
+            try {
+                KakaoKeywordSearchResponse near = kakaoLocalApiClient.searchKeywordNear(name, x, y, ADDRESS_NEARBY_RADIUS_METERS);
+                apiCallLogService.record(
+                        "kakao", "keyword_search_near", jobId, System.currentTimeMillis() - nearStart,
+                        true, null, null, null, null);
+                if (near != null && near.documents() != null && !near.documents().isEmpty()) {
+                    return GeocodingResult.fromDocument(near.documents().get(0));
+                }
+            } catch (Exception e) {
+                apiCallLogService.record(
+                        "kakao", "keyword_search_near", jobId, System.currentTimeMillis() - nearStart,
+                        false, e.getMessage(), null, null, null);
+                log.warn("주소 근처 이름 검색 실패(name={}, address={})", name, address, e);
+            }
+        }
+        String road = point.roadAddress() != null ? point.roadAddress().addressName() : null;
+        return GeocodingResult.addressOnly(y, x, point.addressName(), road);
+    }
 
     private GeocodingResult search(String query, Long jobId) {
         long start = System.currentTimeMillis();

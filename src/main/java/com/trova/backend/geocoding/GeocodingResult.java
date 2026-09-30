@@ -27,6 +27,13 @@ public record GeocodingResult(
     }
 
     /**
+     * 작성자가 적은 주소로 찾은 좌표(#61) — 상호명·전화번호는 모르지만 위치와 주소는 정확하다.
+     */
+    public static GeocodingResult addressOnly(Double latitude, Double longitude, String address, String roadAddress) {
+        return new GeocodingResult(latitude, longitude, null, null, address, roadAddress, null, null, List.of());
+    }
+
+    /**
      * 같은 배치(영상) 안에서 이미 확정된 좌표와의 충돌을 감지하기 위한 키.
      * 좌표(latitude)가 null인 결과에는 호출하지 않는다 — 호출 측(PlaceExtractionService)이
      * 좌표가 있는 결과만 누적 Set에 넣는다.
