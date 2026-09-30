@@ -56,7 +56,7 @@ class PlaceExtractionServiceTest {
         when(lifecycleService.markProcessing(jobId)).thenReturn("https://youtu.be/x");
         when(pipelineRunner.run(eq("https://youtu.be/x"), eq(jobId), any()))
                 .thenReturn(new PipelineOutput("부산 여행", List.of(extracted)));
-        when(kakaoGeocodingService.geocode(any(), any(), any(Set.class), anyLong()))
+        when(kakaoGeocodingService.geocode(any(), any(), any(), any(Set.class), anyLong()))
                 .thenReturn(GeocodingResult.coordinatesOnly(35.16, 129.16));
         // 후보가 여러 개도 아니고(선택 대상 없음), 확신도 0.95라 검증 대상도 아니므로
         // selectAmongAlternatives/verifyUncertainMatches는 둘 다 Gemini 호출 없이 스킵된다 —
@@ -125,6 +125,6 @@ class PlaceExtractionServiceTest {
         verify(lifecycleService).markFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
         verify(lifecycleService, never()).markDone(any());
         verify(lifecycleService, never()).savePlace(any(), any(), any());
-        verify(kakaoGeocodingService, never()).geocode(any(), any(), any(Set.class), anyLong());
+        verify(kakaoGeocodingService, never()).geocode(any(), any(), any(), any(Set.class), anyLong());
     }
 }

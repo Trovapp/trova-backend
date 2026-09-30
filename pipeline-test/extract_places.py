@@ -61,6 +61,8 @@ FILTER_PROMPT = """당신은 여행 영상 자막/음성/화면 텍스트에서 
   예: name이 "하늘기"인데 "하늘길"일 수도 있다면 ["하늘기", "하늘길"]. name 자체를
   포함해서 최대 3개까지. 확실해서 대안이 필요 없으면 [name]처럼 name 하나만 담으세요.
 - region: 알 수 있는 상위 지역/도시명 (모르면 null)
+- address: 게시물 설명이나 화면에 이 장소의 주소(도로명 또는 지번)가 직접 적혀 있으면 그대로 옮겨 적으세요.
+  주소가 직접 적혀 있지 않으면 반드시 null로 두고, 지역명이나 짐작으로 주소를 만들지 마세요.
 - category: "restaurant" | "cafe" | "attraction" | "lodging" | "shopping" | "other" 중 하나
 - confidence: 0~1 사이 숫자 (얼마나 확실한 장소명인지)
 - dayNumber: 몇 일차인지 (1부터 시작하는 정수, 일정형이 아니면 null)
