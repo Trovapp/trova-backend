@@ -166,6 +166,10 @@ def _normalize_name_candidates(places: list[dict]) -> list[dict]:
 
 
 MAX_ATTEMPTS = 5
+# 하루 한도(RPD) 소진 표식 — 서버(PlaceExtractionService)가 이 문자열로 "AI 한도" 실패를 구분한다(#63).
+DAILY_QUOTA_MARKER = "GEMINI_DAILY_QUOTA_EXCEEDED"
+# 분당 한도에 걸렸을 때 응답이 알려준 대기 시간을 이 이상이면 따르지 않는다(작업 하나가 너무 오래 붙잡히지 않게).
+MAX_SUGGESTED_RETRY_DELAY = 60.0
 RETRY_BASE_DELAY = 5.0  # 무료 티어 RPM 제한 대응 — 429/일시 오류 시 지수 백오프
 
 API_LOG_MARKER = "TROVA_API_LOG:"
@@ -192,6 +196,31 @@ def _log_api_call(
         entry["responseTokens"] = usage.get("candidatesTokenCount")
         entry["totalTokens"] = usage.get("totalTokenCount")
     print(f"{API_LOG_MARKER}{json.dumps(entry, ensure_ascii=False)}", file=sys.stderr)
+
+
+def _quota_info(detail: str) -> tuple[bool, float | None]:
+    """429 응답 본문에서 (하루 한도 소진인지, 응답이 알려준 대기 초)를 읽는다(#63).
+
+    하루 한도는 태평양 시간 자정에야 초기화되므로 재시도해도 소용없다. 공식 문서에 형식이 명시돼 있지 않아
+    한도 이름(quotaId)의 "PerDay"와 메시지의 "per day"를 함께 본다 — 판별이 안 되면 기존처럼 재시도한다.
+    """
+    try:
+        error = json.loads(detail).get("error", {})
+    except (json.JSONDecodeError, AttributeError):
+        return False, None
+    daily = "per day" in str(error.get("message", "")).lower()
+    retry_delay = None
+    for item in error.get("details") or []:
+        for violation in item.get("violations") or []:
+            if "perday" in str(violation.get("quotaId", "")).lower():
+                daily = True
+        delay = item.get("retryDelay")
+        if isinstance(delay, str) and delay.endswith("s"):
+            try:
+                retry_delay = float(delay[:-1])
+            except ValueError:
+                pass
+    return daily, retry_delay
 
 
 def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> dict:
@@ -225,9 +254,21 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
                 _log_api_call(operation, started_at, False, error=f"Gemini API error {exc.code}: {detail[:500]}")
                 raise SystemExit(f"Gemini API error {exc.code}: {detail[:500]}")
 
+            suggested = None
+            if exc.code == 429:
+                daily, suggested = _quota_info(detail)
+                if daily:
+                    _log_api_call(operation, started_at, False, error=f"Gemini 하루 한도 소진: {detail[:300]}")
+                    raise SystemExit(f"{DAILY_QUOTA_MARKER} Gemini 하루 한도 소진: {detail[:300]}")
+
             if attempt < MAX_ATTEMPTS - 1:
                 retry_after = exc.headers.get("Retry-After") if exc.headers else None
-                delay = float(retry_after) if retry_after else RETRY_BASE_DELAY * (2 ** attempt)
+                if retry_after:
+                    delay = float(retry_after)
+                elif suggested is not None and suggested <= MAX_SUGGESTED_RETRY_DELAY:
+                    delay = suggested
+                else:
+                    delay = RETRY_BASE_DELAY * (2 ** attempt)
                 print(
                     f"[extract_places] Gemini {exc.code} — {delay:.0f}초 대기 후 재시도 "
                     f"({attempt + 2}/{MAX_ATTEMPTS})",
