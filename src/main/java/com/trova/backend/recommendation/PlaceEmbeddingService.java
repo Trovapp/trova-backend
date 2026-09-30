@@ -24,6 +24,8 @@ import java.util.stream.IntStream;
 public class PlaceEmbeddingService {
 
     private static final Logger log = LoggerFactory.getLogger(PlaceEmbeddingService.class);
+    // batchEmbedContents 한 번에 보낼 수 있는 최대 문장 수
+    static final int MAX_BATCH_SIZE = 100;
 
     private final GeminiEmbeddingClient geminiEmbeddingClient;
     private final PlaceRepository placeRepository;
@@ -57,33 +59,44 @@ public class PlaceEmbeddingService {
             return;
         }
 
-        for (Place place : candidates) {
-            if (alreadyEmbedded.contains(place.getId())) {
-                continue;
-            }
-            ensureEmbedding(place);
+        List<Place> missing = candidates.stream()
+                .filter(place -> !alreadyEmbedded.contains(place.getId()))
+                .toList();
+        for (int from = 0; from < missing.size(); from += MAX_BATCH_SIZE) {
+            embedBatch(missing.subList(from, Math.min(from + MAX_BATCH_SIZE, missing.size())));
         }
     }
 
-    private void ensureEmbedding(Place place) {
-        String text = buildEmbeddingText(place);
+    // 처음 보는 지역에서는 새 장소가 한꺼번에 들어온다(운영 실측: 김해 19개, 전주 16개). 하나씩 부르면
+    // 개당 약 0.4~0.5초가 쌓여 대화 첫 응답이 8~9초 늦어져서, 요청 한 번으로 묶는다(#73).
+    // 묶음이 실패하면 이번엔 전부 건너뛴다 — 저장되지 않은 장소는 다음 검색 때 다시 대상이 된다.
+    private void embedBatch(List<Place> places) {
+        List<String> texts = places.stream().map(this::buildEmbeddingText).toList();
         long start = System.currentTimeMillis();
-        Optional<float[]> embedding = geminiEmbeddingClient.embed(text);
-        apiCallLogService.record(
-                "gemini", "place-embedding", null, System.currentTimeMillis() - start,
-                embedding.isPresent(), embedding.isPresent() ? null : "embedding generation failed",
-                null, null, null);
+        Optional<List<float[]>> embeddings = geminiEmbeddingClient.embedBatch(texts);
+        long latency = System.currentTimeMillis() - start;
+        // 무료 한도는 묶음 안의 문장 수로 센다 — 호출 기록도 문장마다 한 줄씩 남겨 줄 수가 사용량과 같게 한다.
+        // latency는 묶음 요청 한 번의 시간이다.
+        for (int i = 0; i < places.size(); i++) {
+            apiCallLogService.record(
+                    "gemini", "place-embedding-batch", null, latency,
+                    embeddings.isPresent(), embeddings.isPresent() ? null : "embedding generation failed",
+                    null, null, null);
+        }
 
-        if (embedding.isEmpty()) {
-            log.warn("장소 임베딩 생성 실패, 건너뜁니다: placeId={}", place.getId());
+        if (embeddings.isEmpty()) {
+            log.warn("장소 임베딩 묶음 생성 실패, 이번 요청은 건너뜁니다: {}개", places.size());
             return;
         }
-        // updateEmbedding도 네이티브 쿼리라 DB 오류 가능성이 있다 — 한 장소의 저장
-        // 실패로 배치 전체(나머지 후보들)가 중단되면 안 되므로 여기서 잡고 다음으로 넘어간다.
-        try {
-            placeRepository.updateEmbedding(place.getId(), toVectorLiteral(embedding.get()));
-        } catch (Exception e) {
-            log.warn("장소 임베딩 저장 실패, 건너뜁니다: placeId={}", place.getId(), e);
+        for (int i = 0; i < places.size(); i++) {
+            Place place = places.get(i);
+            // updateEmbedding도 네이티브 쿼리라 DB 오류 가능성이 있다 — 한 장소의 저장
+            // 실패로 나머지 후보들이 중단되면 안 되므로 여기서 잡고 다음으로 넘어간다.
+            try {
+                placeRepository.updateEmbedding(place.getId(), toVectorLiteral(embeddings.get().get(i)));
+            } catch (Exception e) {
+                log.warn("장소 임베딩 저장 실패, 건너뜁니다: placeId={}", place.getId(), e);
+            }
         }
     }
 
