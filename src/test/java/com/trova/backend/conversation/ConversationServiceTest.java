@@ -128,4 +128,16 @@ class ConversationServiceTest {
         verify(apiCallLogService).record(
                 eq("gemini"), eq("conversation-turn"), eq(null), anyLong(), anyBoolean(), any(), any(), any(), any());
     }
+
+    @Test
+    void 답변에_섞인_대시_글머리_따옴표는_지우고_보낸다() {
+        // 지시문을 어기고 "AI가 쓴 글"처럼 기호를 섞어도 사용자에겐 자연스러운 문장만 간다(#53).
+        ConversationState state = new ConversationState(1L, 10L, 100L, null, null);
+        when(geminiChatClient.sendMessage(any(), eq("추천해줘"), any()))
+                .thenReturn(new GeminiChatClient.ChatResult(null, "- \"뷰 맛집\" 카페예요 — 오전이 한적해요"));
+
+        ConversationService.TurnResult result = service.sendMessage(user, state, "추천해줘");
+
+        assertThat(result.reply()).isEqualTo("뷰 맛집 카페예요, 오전이 한적해요");
+    }
 }

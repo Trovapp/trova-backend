@@ -181,4 +181,24 @@ class PlaceReviewServiceTest {
 
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void 기호가_남아_있는_예전_캐시_요약도_정리해서_돌려준다() throws Exception {
+        // 정리 규칙이 생기기 전에 저장된 요약에도 기호가 있을 수 있다. 하이라이트의 **강조**는 앱이 굵게 보여주므로 남긴다(#53).
+        Place place = newPlace();
+        ReviewSummary oldCache = new ReviewSummary(
+                "**바다 뷰**가 멋져요 — \"인생샷\" 명소", List.of("- 친절해요", "• 깨끗해요"), List.of(),
+                "10:00–18:00", null, List.of("※ 주말엔 붐벼요"), List.of("1. 주차 확인"));
+        place.applyReviewSummary(toJson(oldCache));
+        when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
+
+        ReviewSummary summary = placeReviewService.getOrGenerateSummary(1L).orElseThrow().summary();
+
+        assertThat(summary.highlights()).isEqualTo("**바다 뷰**가 멋져요, 인생샷 명소");
+        assertThat(summary.pros()).containsExactly("친절해요", "깨끗해요");
+        assertThat(summary.hours()).isEqualTo("10:00~18:00");
+        assertThat(summary.fee()).isNull();
+        assertThat(summary.tips()).containsExactly("주말엔 붐벼요");
+        assertThat(summary.checklist()).containsExactly("주차 확인");
+    }
 }

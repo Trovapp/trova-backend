@@ -2,6 +2,7 @@ package com.trova.backend.conversation;
 
 import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.AlternativeCandidate;
+import com.trova.backend.service.AiTextSanitizer;
 import com.trova.backend.service.ApiCallLogService;
 import org.springframework.stereotype.Service;
 
@@ -87,6 +88,8 @@ public class ConversationService {
         }
 
         state.appendTurn(ConversationState.ROLE_USER, message);
+        // 지시문으로도 막지만 모델이 가끔 대시·글머리·따옴표를 섞어서 보내기 직전에 한 번 더 정리한다(#53).
+        reply = AiTextSanitizer.clean(reply);
         state.appendTurn(ConversationState.ROLE_MODEL, reply);
         if (candidates != null && !candidates.isEmpty()) {
             // functionCall/functionResponse 왕복 자체는 히스토리에 남기지 않으므로,

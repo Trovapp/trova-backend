@@ -6,6 +6,7 @@ import com.trova.backend.entity.Place;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
+import com.trova.backend.service.AiTextSanitizer;
 import com.trova.backend.service.ApiCallLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,8 @@ public class PersonalizationService {
                 .collect(Collectors.joining(", "));
         String prompt = String.format(
                 "사용자가 예전에 좋아한 장소들: %s. 이번 추천 후보: %s(%s). " +
-                        "왜 이 후보를 추천하는지 20자 내외 한국어 한 문장으로만 답해.",
+                        "왜 이 후보를 추천하는지 20자 내외 한국어 한 문장으로만 답해. " +
+                        "대시, 글머리 기호, 따옴표, 화살표 같은 기호 없이 자연스러운 문장으로 써.",
                 pastPlaces, candidate.getName(), candidate.getCategory() != null ? candidate.getCategory() : "");
 
         long start = System.currentTimeMillis();
@@ -96,7 +98,8 @@ public class PersonalizationService {
                 explanation.isPresent(), explanation.isPresent() ? null : "generation failed",
                 null, null, null);
 
-        return explanation;
+        // 지시문으로도 막지만 모델이 가끔 기호를 섞어서 보내기 직전에 한 번 더 정리한다(#53).
+        return explanation.map(AiTextSanitizer::clean).filter(text -> !text.isBlank());
     }
 
     public Optional<String> explainRecommendation(User user, Place candidate) {

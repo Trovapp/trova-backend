@@ -33,7 +33,9 @@ public class GeminiChatClientImpl implements GeminiChatClient {
             "문장으로만 답하세요.\n" +
             "2. 도구로 찾은 후보 장소는 앱 화면에 카드로 따로 표시되니, 답변 텍스트에서 후보들의 이름과 " +
             "평점을 다시 나열하지 마세요. 대신 짧은 소개나 대화하듯 1~2문장으로 답하세요.\n" +
-            "3. 친근하고 간결한 한국어로 답하세요.";
+            "3. 친근하고 간결한 한국어로 답하세요.\n" +
+            "4. 대시(—, –, -), 글머리 기호, 따옴표(\"\", ''), 화살표·별표 같은 기호를 문장에 넣지 말고, " +
+            "쉼표와 마침표만으로 자연스럽게 이어 쓰세요.";
 
     private final String apiKey;
     private final RestClient restClient;

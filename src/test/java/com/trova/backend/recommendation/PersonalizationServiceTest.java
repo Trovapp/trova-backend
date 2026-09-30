@@ -181,4 +181,20 @@ class PersonalizationServiceTest {
         verifyNoInteractions(placeRepository);
         verifyNoInteractions(userPreferenceSignalRepository);
     }
+
+    @Test
+    void 추천_이유에_섞인_기호는_지우고_돌려준다() {
+        // 20자 남짓한 이유에도 따옴표·대시가 섞이면 AI 티가 난다(#53).
+        User user = user(1L);
+        Place candidate = place(10L);
+        when(placeRepository.findEmbeddingText(10L)).thenReturn(Optional.of("[0.1,0.2]"));
+        when(userPreferenceSignalRepository.findTopSimilarSignals(1L, "[0.1,0.2]")).thenReturn(List.of(
+                similarSignal("카페A", "cafe", "차분한", 0.9)
+        ));
+        when(geminiTextClient.generate(anyString())).thenReturn(Optional.of("'카페A'처럼 조용해요 — 취향 저격"));
+
+        Optional<String> reason = personalizationService.explainRecommendation(user, candidate);
+
+        assertThat(reason).contains("카페A처럼 조용해요, 취향 저격");
+    }
 }
