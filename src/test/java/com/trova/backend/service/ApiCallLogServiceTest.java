@@ -1,6 +1,7 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.ApiCallLog;
+import com.trova.backend.repository.ApiCallLogJdbcRepository;
 import com.trova.backend.repository.ApiCallLogRepository;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
 class ApiCallLogServiceTest {
@@ -23,11 +28,14 @@ class ApiCallLogServiceTest {
     @Mock
     private ApiCallLogRepository apiCallLogRepository;
 
+    @Mock
+    private ApiCallLogJdbcRepository apiCallLogJdbcRepository;
+
     private ApiCallLogService apiCallLogService;
 
     @BeforeEach
     void setUp() {
-        apiCallLogService = new ApiCallLogService(apiCallLogRepository, new SimpleMeterRegistry());
+        apiCallLogService = new ApiCallLogService(apiCallLogRepository, apiCallLogJdbcRepository, new SimpleMeterRegistry());
     }
 
     @Test
@@ -115,5 +123,23 @@ class ApiCallLogServiceTest {
         apiCallLogService.record("kakao", "keyword_search", 15L, 120, true, null, null, null, null);
 
         verify(apiCallLogRepository, times(1)).save(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void 묶음_기록은_같은_기록_N줄을_묶음_INSERT_한_번으로_남긴다() {
+        apiCallLogService.recordBatch("gemini", "place-embedding-batch", 1500L, true, null, 18);
+
+        ArgumentCaptor<ApiCallLog> captor = ArgumentCaptor.forClass(ApiCallLog.class);
+        verify(apiCallLogJdbcRepository, times(1)).insertCopies(captor.capture(), eq(18));
+        assertThat(captor.getValue().getOperation()).isEqualTo("place-embedding-batch");
+        assertThat(captor.getValue().getLatencyMs()).isEqualTo(1500L);
+        verify(apiCallLogRepository, never()).save(any());
+    }
+
+    @Test
+    void 묶음_기록이_실패해도_예외를_던지지_않는다() {
+        doThrow(new RuntimeException("DB 오류")).when(apiCallLogJdbcRepository).insertCopies(any(), anyInt());
+
+        apiCallLogService.recordBatch("gemini", "place-embedding-batch", 1500L, true, null, 2);
     }
 }
