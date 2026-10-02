@@ -177,6 +177,9 @@ DAILY_QUOTA_MARKER = "GEMINI_DAILY_QUOTA_EXCEEDED"
 # 분당 한도에 걸렸을 때 응답이 알려준 대기 시간을 이 이상이면 따르지 않는다(작업 하나가 너무 오래 붙잡히지 않게).
 MAX_SUGGESTED_RETRY_DELAY = 60.0
 RETRY_BASE_DELAY = 5.0  # 무료 티어 RPM 제한 대응 — 429/일시 오류 시 지수 백오프
+# 지수 증가·Retry-After 헤더 대기의 상한(#7). 없으면 5번째 시도 전 40초를 쉬고, 헤더가 큰 값을 주면 그만큼 그대로 쉬어
+# 서버의 파이프라인 제한 시간(PipelineRunner, 5분)을 대기만으로 잡아먹을 수 있다. 분당 한도 안내(retryDelay)는 위 60초 상한을 따른다.
+MAX_RETRY_DELAY = 30.0
 
 API_LOG_MARKER = "TROVA_API_LOG:"
 
@@ -270,11 +273,11 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
             if attempt < MAX_ATTEMPTS - 1:
                 retry_after = exc.headers.get("Retry-After") if exc.headers else None
                 if retry_after:
-                    delay = float(retry_after)
+                    delay = min(MAX_RETRY_DELAY, float(retry_after))
                 elif suggested is not None and suggested <= MAX_SUGGESTED_RETRY_DELAY:
                     delay = suggested
                 else:
-                    delay = RETRY_BASE_DELAY * (2 ** attempt)
+                    delay = min(MAX_RETRY_DELAY, RETRY_BASE_DELAY * (2 ** attempt))
                 print(
                     f"[extract_places] Gemini {exc.code} — {delay:.0f}초 대기 후 재시도 "
                     f"({attempt + 2}/{MAX_ATTEMPTS})",
