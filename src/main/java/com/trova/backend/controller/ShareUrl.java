@@ -30,6 +30,14 @@ public record ShareUrl(SourcePlatform platform, String canonicalUrl) {
     // 문자(/ ? & % 등)가 들어오면 안 된다.
     private static final Pattern VIDEO_ID = Pattern.compile("[A-Za-z0-9_-]{1,64}");
 
+    /**
+     * 같은 영상인지 비교할 때 쓰는 열쇠. 정식 주소로 바꿀 수 있으면 정식 주소를, 아니면 받은 주소를 그대로 쓴다.
+     * 정식 주소로 저장하기(#49) 전의 예전 작업은 ?si= 같은 꼬리가 붙은 채 저장돼 있어 그대로 비교하면 다른 영상으로 보인다.
+     */
+    public static String videoKey(String sourceUrl) {
+        return parse(sourceUrl).map(ShareUrl::canonicalUrl).orElse(sourceUrl);
+    }
+
     public static Optional<ShareUrl> parse(String raw) {
         if (raw == null || raw.isBlank()) {
             return Optional.empty();

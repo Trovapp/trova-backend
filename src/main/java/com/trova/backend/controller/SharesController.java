@@ -7,6 +7,7 @@ import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.ProcessingJobRepository;
+import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.PlaceExtractionService;
 import org.springframework.http.HttpStatus;
@@ -26,23 +27,32 @@ public class SharesController {
     private final DailyQuotaService dailyQuotaService;
     private final ProcessingJobRepository processingJobRepository;
     private final PlaceExtractionService placeExtractionService;
+    private final SavedPlaceRepository savedPlaceRepository;
 
     public SharesController(
             CurrentUserService currentUserService,
             ProcessingJobRepository processingJobRepository,
             PlaceExtractionService placeExtractionService,
-            DailyQuotaService dailyQuotaService
+            DailyQuotaService dailyQuotaService,
+            SavedPlaceRepository savedPlaceRepository
     ) {
+        this.savedPlaceRepository = savedPlaceRepository;
         this.currentUserService = currentUserService;
         this.dailyQuotaService = dailyQuotaService;
         this.processingJobRepository = processingJobRepository;
         this.placeExtractionService = placeExtractionService;
     }
 
-    public record CreateShareRequest(String url) {
+    // reanalyze: 이미 분석한 영상이라도 새로 분석한다(앱의 "다시 분석하기"). 없으면 false.
+    public record CreateShareRequest(String url, Boolean reanalyze) {
     }
 
-    public record ShareResponse(Long jobId, String status) {
+    // alreadyAnalyzed: 새로 분석하지 않고 이미 있는 결과(jobId)를 알려준 경우 true(#87). 예전 앱은 이 칸을 몰라도
+    // status=DONE인 작업으로 받아 결과 화면으로 넘어간다.
+    public record ShareResponse(Long jobId, String status, boolean alreadyAnalyzed) {
+        ShareResponse(Long jobId, String status) {
+            this(jobId, status, false);
+        }
     }
 
     public record ErrorResponse(String message) {
@@ -63,6 +73,17 @@ public class SharesController {
         String url = shareUrl.get().canonicalUrl();
         SourcePlatform platform = shareUrl.get().platform();
         User user = currentUserService.resolve(authentication);
+
+        // 이미 분석해 장소가 남아 있는 영상이면 새로 분석하지 않고 그 결과를 알려준다(#87). 운영에서 같은 영상을
+        // 다시 넣을 때마다 새로 분석해 결과가 쌓였다(김해 5번, 사당 3번) — Gemini 호출과 무료 한도도 그만큼 썼다.
+        // 결과의 장소를 모두 지운 영상은 대표 결과가 없으므로 새로 분석한다.
+        if (!Boolean.TRUE.equals(request.reanalyze())) {
+            Long existingJobId = VideoResults.latestJobIdByVideo(savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(user))
+                    .get(url);
+            if (existingJobId != null) {
+                return ResponseEntity.ok(new ShareResponse(existingJobId, JobStatus.DONE.name(), true));
+            }
+        }
 
         // 같은 URL이 이미 처리 대기/진행 중이면 새 job을 또 만들지 않는다 — 중복 제출로
         // Gemini/카카오 호출이 두 번 나가는 걸 막기 위함. Trova는 단일 인스턴스라 분산 락

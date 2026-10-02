@@ -220,6 +220,26 @@ class PlacesControllerTest {
                 .andExpect(jsonPath("$[0].jobId").value(failed.getId()));
     }
 
+    // #87: 같은 영상의 성공 결과가 여러 개면 영상 기록에 같은 영상이 여러 줄로 보였다(운영: 사당 3줄).
+    // 장소가 있는 가장 최근 결과의 장소만 내려준다 — 데이터는 지우지 않는다.
+    @Test
+    void 같은_영상의_결과가_여러_개면_가장_최근_결과의_장소만_내려준다() throws Exception {
+        User me = userRepository.save(new User("google", "dup1", "나", null));
+        ProcessingJob older = doneJob(me, "https://www.youtube.com/shorts/dupVideo");
+        savedPlaceRepository.save(new SavedPlace(older, me, "예전 결과 장소", null, "cafe", 37.5, 127.0));
+        ProcessingJob newer = doneJob(me, "https://youtube.com/shorts/dupVideo?si=tail");
+        savedPlaceRepository.save(new SavedPlace(newer, me, "최근 결과 장소", null, "cafe", 37.5, 127.0));
+        ProcessingJob other = doneJob(me, "https://www.youtube.com/shorts/otherVideo2");
+        savedPlaceRepository.save(new SavedPlace(other, me, "다른 영상 장소", null, "cafe", 37.5, 127.0));
+
+        mockMvc.perform(get("/api/places").with(loginAs("dup1", "나")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[?(@.placeName == '최근 결과 장소')]").exists())
+                .andExpect(jsonPath("$[?(@.placeName == '다른 영상 장소')]").exists())
+                .andExpect(jsonPath("$[?(@.placeName == '예전 결과 장소')]").doesNotExist());
+    }
+
     @Test
     void 장소_목록에_영상_제목이_포함된다() throws Exception {
         User me = userRepository.save(new User("google", "jjj", "제목유저", null));
