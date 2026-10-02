@@ -89,7 +89,7 @@ def instagram_fetch(url: str, out_dir: Path) -> tuple[Path, str | None, str | No
     for stale in out_dir.iterdir():
         stale.unlink()
     result = subprocess.run(
-        ["yt-dlp", "--no-warnings", "--no-simulate", "--dump-single-json", "-f", "bv*+ba/b",
+        ["yt-dlp", "--no-warnings", "--no-simulate", "--dump-single-json", "-f", "bv*+ba/b", "-S", download.MAX_RESOLUTION_SORT,
          "-o", str(out_dir / "video.%(ext)s"), "--", url],
         capture_output=True, text=True, timeout=240,
     )

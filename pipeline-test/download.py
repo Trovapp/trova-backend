@@ -15,6 +15,10 @@ from pathlib import Path
 SUB_LANGS = "ko,en"
 MAX_ATTEMPTS = 4
 RETRY_BASE_DELAY = 20.0  # 유튜브 자체 요청 속도 제한(429) 대응 — 넉넉하게 대기
+# 짧은 변 720 이하 중 가장 좋은 화질을 고른다(#7). 프레임은 가로 512px로 줄여 쓰므로(frames.py) 그 이상은 필요 없다 —
+# 기본값은 쇼츠를 4K(84MB)로 받아 다운로드·프레임 추출이 느렸다. 정렬 조건이라 720 이하가 없어도 실패하지 않는다
+# (높이 필터 "height<=480"은 세로 360x640만 주는 릴스에서 형식 없음으로 실패했다).
+MAX_RESOLUTION_SORT = "res:720"
 
 
 def _run_yt_dlp(args: list[str]) -> subprocess.CompletedProcess:
@@ -35,7 +39,7 @@ def download(url: str, out_dir: Path) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     out_tmpl = str(out_dir / "video.%(ext)s")
     base_args = [
-        "-f", "bv*+ba/b",
+        "-f", "bv*+ba/b", "-S", MAX_RESOLUTION_SORT,
         "--write-auto-sub", "--write-sub", "--sub-lang", SUB_LANGS,
         "--sub-format", "vtt",
         "-o", out_tmpl,
