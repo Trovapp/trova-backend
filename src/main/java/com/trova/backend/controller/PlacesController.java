@@ -103,7 +103,12 @@ public class PlacesController {
     @GetMapping
     public List<PlaceResponse> list(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
-        return savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(user).stream()
+        List<SavedPlace> places = savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(user);
+        // 같은 영상의 결과가 여러 개면 대표 결과의 장소만 내려준다(#87, VideoResults). 데이터는 지우지 않는다.
+        Map<String, Long> representative = VideoResults.latestJobIdByVideo(places);
+        return places.stream()
+                .filter(place -> place.getProcessingJob().getId().equals(
+                        representative.get(ShareUrl.videoKey(place.getProcessingJob().getSourceUrl()))))
                 .map(PlaceResponse::from)
                 .toList();
     }
@@ -133,17 +138,14 @@ public class PlacesController {
         }
         Map<String, Long> latestJobIdByVideo = new HashMap<>();
         for (ProcessingJob job : processingJobRepository.findByUserOrderByCreatedAtDescIdDesc(user)) {
-            latestJobIdByVideo.merge(videoKey(job.getSourceUrl()), job.getId(), Math::max);
+            latestJobIdByVideo.merge(ShareUrl.videoKey(job.getSourceUrl()), job.getId(), Math::max);
         }
         return jobs.stream()
                 .filter(job -> job.getStatus() != JobStatus.FAILED
-                        || job.getId().equals(latestJobIdByVideo.get(videoKey(job.getSourceUrl()))))
+                        || job.getId().equals(latestJobIdByVideo.get(ShareUrl.videoKey(job.getSourceUrl()))))
                 .toList();
     }
 
-    private static String videoKey(String sourceUrl) {
-        return ShareUrl.parse(sourceUrl).map(ShareUrl::canonicalUrl).orElse(sourceUrl);
-    }
 
     @DeleteMapping("/pending/{jobId}")
     public ResponseEntity<Void> deletePendingJob(Authentication authentication, @PathVariable Long jobId) {
