@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -111,11 +113,36 @@ public class PlacesController {
         User user = currentUserService.resolve(authentication);
         // FAILED도 포함한다 — 실패한 job은 SavedPlace가 안 생겨서, 여기서 빼면
         // 사용자 입장에서 요청이 이유 없이 사라진 것처럼 보인다.
-        return processingJobRepository.findByUserAndStatusIn(
-                        user, List.of(JobStatus.PENDING, JobStatus.PROCESSING, JobStatus.FAILED))
-                .stream()
+        List<ProcessingJob> jobs = processingJobRepository.findByUserAndStatusIn(
+                user, List.of(JobStatus.PENDING, JobStatus.PROCESSING, JobStatus.FAILED));
+        return hideSupersededFailures(user, jobs).stream()
                 .map(job -> PendingJobResponse.from(job, foundPlaceNameStore.get(job.getId())))
                 .toList();
+    }
+
+    /**
+     * 실패 카드는 그 영상의 가장 최근 작업이 실패일 때만 보여준다(#83). 운영에서 9월 초 실패한 영상들이 나중에
+     * 다시 분석돼 성공했는데도 실패 카드가 영상 기록 맨 위에 계속 남았고, 30초 간격으로 두 번 실패한 영상은
+     * 카드가 두 장이었다. 이후 작업(성공·처리 중·더 최근 실패)이 있으면 예전 실패는 목록에서만 뺀다 — 데이터는 지우지 않는다.
+     * 같은 영상인지는 정식 주소로 비교한다(#49 이전 작업은 ?si= 같은 꼬리가 붙어 저장돼 있다).
+     */
+    private List<ProcessingJob> hideSupersededFailures(User user, List<ProcessingJob> jobs) {
+        if (jobs.stream().noneMatch(job -> job.getStatus() == JobStatus.FAILED)) {
+            // 처리 목록은 분석 중 몇 초마다 폴링된다 — 실패가 없으면 전체 작업 조회를 하지 않는다.
+            return jobs;
+        }
+        Map<String, Long> latestJobIdByVideo = new HashMap<>();
+        for (ProcessingJob job : processingJobRepository.findByUserOrderByCreatedAtDescIdDesc(user)) {
+            latestJobIdByVideo.merge(videoKey(job.getSourceUrl()), job.getId(), Math::max);
+        }
+        return jobs.stream()
+                .filter(job -> job.getStatus() != JobStatus.FAILED
+                        || job.getId().equals(latestJobIdByVideo.get(videoKey(job.getSourceUrl()))))
+                .toList();
+    }
+
+    private static String videoKey(String sourceUrl) {
+        return ShareUrl.parse(sourceUrl).map(ShareUrl::canonicalUrl).orElse(sourceUrl);
     }
 
     @DeleteMapping("/pending/{jobId}")

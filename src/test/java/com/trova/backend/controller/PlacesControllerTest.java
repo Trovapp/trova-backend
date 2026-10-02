@@ -145,6 +145,81 @@ class PlacesControllerTest {
                 .andExpect(jsonPath("$[0].status").value("FAILED"));
     }
 
+    // #83: 실패 카드는 그 영상의 가장 최근 작업이 실패일 때만 보인다. 운영에서 9월 초 실패한 영상들이 나중에 다시 성공했는데도
+    // 실패 카드가 영상 기록 맨 위에 계속 남았고, 30초 간격으로 두 번 실패한 영상은 카드가 두 장이었다.
+    private ProcessingJob failedJob(User user, String url) {
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, url, SourcePlatform.YOUTUBE));
+        job.markFailed("파이프라인 실행 실패(exit=1)");
+        return processingJobRepository.save(job);
+    }
+
+    private ProcessingJob doneJob(User user, String url) {
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, url, SourcePlatform.YOUTUBE));
+        job.markProcessing();
+        job.markDone();
+        return processingJobRepository.save(job);
+    }
+
+    @Test
+    void 나중에_다시_성공한_영상의_실패는_목록에서_빠진다() throws Exception {
+        User me = userRepository.save(new User("google", "sup1", "나", null));
+        failedJob(me, "https://www.youtube.com/shorts/sameVideo1");
+        doneJob(me, "https://www.youtube.com/shorts/sameVideo1");
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("sup1", "나")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void 같은_영상이_여러_번_실패하면_가장_최근_실패만_보인다() throws Exception {
+        User me = userRepository.save(new User("google", "sup2", "나", null));
+        failedJob(me, "https://www.youtube.com/shorts/twiceFail");
+        ProcessingJob latest = failedJob(me, "https://www.youtube.com/shorts/twiceFail");
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("sup2", "나")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].jobId").value(latest.getId()));
+    }
+
+    @Test
+    void 다시_시도해_처리_중이면_예전_실패는_빠지고_처리_중만_보인다() throws Exception {
+        User me = userRepository.save(new User("google", "sup3", "나", null));
+        failedJob(me, "https://www.youtube.com/shorts/retrying");
+        ProcessingJob retry = processingJobRepository.save(
+                new ProcessingJob(me, "https://www.youtube.com/shorts/retrying", SourcePlatform.YOUTUBE));
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("sup3", "나")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].jobId").value(retry.getId()));
+    }
+
+    @Test
+    void 주소_형식이_달라도_같은_영상이면_같은_영상으로_본다() throws Exception {
+        User me = userRepository.save(new User("google", "sup4", "나", null));
+        // 정식 주소로 바꾸기(#49) 전에 저장된 예전 작업은 ?si= 같은 꼬리가 붙어 있다(운영 DB에 실제로 있음).
+        failedJob(me, "https://youtube.com/shorts/formVideo?si=abc123");
+        doneJob(me, "https://www.youtube.com/shorts/formVideo");
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("sup4", "나")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void 다른_영상의_성공은_실패_카드에_영향이_없다() throws Exception {
+        User me = userRepository.save(new User("google", "sup5", "나", null));
+        ProcessingJob failed = failedJob(me, "https://www.youtube.com/shorts/onlyFailed");
+        doneJob(me, "https://www.youtube.com/shorts/otherVideo");
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("sup5", "나")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].jobId").value(failed.getId()));
+    }
+
     @Test
     void 장소_목록에_영상_제목이_포함된다() throws Exception {
         User me = userRepository.save(new User("google", "jjj", "제목유저", null));
