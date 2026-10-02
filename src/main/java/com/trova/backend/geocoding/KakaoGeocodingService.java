@@ -38,6 +38,18 @@ public class KakaoGeocodingService {
     public GeocodingResult geocode(
             List<String> nameCandidates, String region, String address, Set<String> usedCoordinateKeys, Long jobId
     ) {
+        GeocodingResult matched = searchCandidates(nameCandidates, region, address, jobId);
+        if (matched.latitude() != null) {
+            return matched;
+        }
+        return resolveRegionFallback(nameCandidates, region, usedCoordinateKeys, jobId);
+    }
+
+    /**
+     * 주소·이름 후보로만 찾는다. usedCoordinateKeys를 쓰지 않아 장소마다 독립적이므로 여러 장소를 동시에 불러도 안전하다
+     * (PlaceExtractionService가 병렬로 부른다, #7). 못 찾으면 빈 결과 — 지역 중심 폴백은 resolveRegionFallback이 맡는다.
+     */
+    public GeocodingResult searchCandidates(List<String> nameCandidates, String region, String address, Long jobId) {
         if (address != null && !address.isBlank()) {
             GeocodingResult byAddress = geocodeByAddress(nameCandidates, address, jobId);
             if (byAddress.latitude() != null) {
@@ -56,8 +68,17 @@ public class KakaoGeocodingService {
                 return result;
             }
         }
+        return GeocodingResult.empty();
+    }
 
-        if (!hasRegion) {
+    /**
+     * 이름 후보를 전부 못 찾았을 때만 부른다. usedCoordinateKeys를 읽으므로 같은 영상 안에서는 장소 순서대로
+     * 하나씩 불러야 한다 — 앞 장소의 좌표가 반영되기 전에 부르면 같은 지역 중심 좌표가 겹칠 수 있다.
+     */
+    public GeocodingResult resolveRegionFallback(
+            List<String> nameCandidates, String region, Set<String> usedCoordinateKeys, Long jobId
+    ) {
+        if (region == null || region.isBlank()) {
             return GeocodingResult.empty();
         }
 
