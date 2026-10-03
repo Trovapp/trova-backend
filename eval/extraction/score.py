@@ -46,7 +46,8 @@ def haversine_m(a, b) -> float:
 def kakao(path: str, params: dict) -> dict:
     key = os.environ.get("KAKAO_REST_API_KEY")
     if not key:
-        return {}
+        # 키 없이 돌면 정답 좌표가 전부 '없음'으로 캐시에 굳는다(2026-10-03 실제로 그랬다) — 저장하기 전에 멈춘다.
+        sys.exit("KAKAO_REST_API_KEY가 없다 — 로컬 서버 .env를 불러온 뒤 채점한다.")
     url = "https://dapi.kakao.com" + path + "?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url, headers={"Authorization": "KakaoAK " + key})
     with urllib.request.urlopen(req, timeout=10) as r:

@@ -1,0 +1,170 @@
+{
+  "video_no": 3,
+  "repeat": 2,
+  "url": "https://www.youtube.com/shorts/xl2s78K2luM",
+  "submit_status": 202,
+  "job_id": 65,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 8.6,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 8.196049
+  },
+  "places": [
+    {
+      "name": "트로페오비토리아",
+      "region": "서울",
+      "category": "other",
+      "latitude": 37.473550920816,
+      "longitude": 126.980704667302,
+      "address": "서울 관악구 남현동 602-365",
+      "road_address": "서울 관악구 승방3길 2",
+      "kakao_place_url": "http://place.map.kakao.com/376141606"
+    },
+    {
+      "name": "작은피자집",
+      "region": "서울",
+      "category": "restaurant",
+      "latitude": 37.4772502892516,
+      "longitude": 126.979643257223,
+      "address": "서울 동작구 사당동 1044-36",
+      "road_address": "서울 동작구 동작대로1길 31",
+      "kakao_place_url": "http://place.map.kakao.com/1071921277"
+    },
+    {
+      "name": "서울시립 남서울미술관",
+      "region": "서울",
+      "category": "attraction",
+      "latitude": 37.4760753445337,
+      "longitude": 126.979480778792,
+      "address": "서울 관악구 남현동 1059-13",
+      "road_address": "서울 관악구 남부순환로 2076",
+      "kakao_place_url": "http://place.map.kakao.com/7937927"
+    },
+    {
+      "name": "꿈꾸는크루아상",
+      "region": "서울",
+      "category": "shopping",
+      "latitude": 37.4881007665714,
+      "longitude": 126.98299401925,
+      "address": "서울 서초구 방배동 1848",
+      "road_address": "서울 서초구 서초대로1길 19-6",
+      "kakao_place_url": "http://place.map.kakao.com/1998611209"
+    },
+    {
+      "name": "도쿄빙수 본점",
+      "region": "서울",
+      "category": "cafe",
+      "latitude": 37.5564355723165,
+      "longitude": 126.905136849074,
+      "address": "서울 마포구 망원동 414-56",
+      "road_address": "서울 마포구 포은로8길 9",
+      "kakao_place_url": "http://place.map.kakao.com/445276408"
+    },
+    {
+      "name": "아트나인",
+      "region": "서울",
+      "category": "attraction",
+      "latitude": 37.4846217805965,
+      "longitude": 126.98170019714,
+      "address": "서울 동작구 사당동 147-53",
+      "road_address": "서울 동작구 동작대로 89",
+      "kakao_place_url": "http://place.map.kakao.com/18722015"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 2628,
+      "prompt_tokens": 4608,
+      "response_tokens": 109,
+      "total_tokens": 4717,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3259,
+      "prompt_tokens": 5532,
+      "response_tokens": 500,
+      "total_tokens": 6032,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 59,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 73,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 70,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 69,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 72,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 74,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1191,
+      "prompt_tokens": 932,
+      "response_tokens": 49,
+      "total_tokens": 981,
+      "error_message": null
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "video_no": 5,
+  "repeat": 2,
+  "url": "https://www.youtube.com/shorts/NvdrCwcTnlE",
+  "submit_status": 202,
+  "job_id": 67,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 10.7,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 9.502867
+  },
+  "places": [
+    {
+      "name": "CGV 부산명지",
+      "region": "Busan",
+      "category": "attraction",
+      "latitude": 35.0944146620419,
+      "longitude": 128.903474632696,
+      "address": "부산 강서구 명지동 3586-4",
+      "road_address": "부산 강서구 명지국제8로10번길 38",
+      "kakao_place_url": "http://place.map.kakao.com/2116074814"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 4427,
+      "prompt_tokens": 4146,
+      "response_tokens": 17,
+      "total_tokens": 4163,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 2803,
+      "prompt_tokens": 4998,
+      "response_tokens": 85,
+      "total_tokens": 5083,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 109,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1277,
+      "prompt_tokens": 725,
+      "response_tokens": 26,
+      "total_tokens": 751,
+      "error_message": null
+    }
+  ]
+}

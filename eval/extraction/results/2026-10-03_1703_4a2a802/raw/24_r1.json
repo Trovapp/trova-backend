@@ -1,0 +1,140 @@
+{
+  "video_no": 24,
+  "repeat": 1,
+  "url": "https://www.instagram.com/reel/DUX2qkMEQAQ/",
+  "submit_status": 202,
+  "job_id": 60,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 17.1,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 16.044471
+  },
+  "places": [
+    {
+      "name": "경포대",
+      "region": "강릉",
+      "category": "attraction",
+      "latitude": 37.7950741626953,
+      "longitude": 128.896636344738,
+      "address": "강원특별자치도 강릉시 저동 94",
+      "road_address": "강원특별자치도 강릉시 경포로 365",
+      "kakao_place_url": "http://place.map.kakao.com/10158575"
+    },
+    {
+      "name": "해연가",
+      "region": "강릉",
+      "category": "restaurant",
+      "latitude": 37.7906128465767,
+      "longitude": 128.920783875756,
+      "address": "강원특별자치도 강릉시 강문동 27-23",
+      "road_address": "강원특별자치도 강릉시 해안로 280",
+      "kakao_place_url": "http://place.map.kakao.com/870953811"
+    },
+    {
+      "name": "강문해변",
+      "region": "강릉",
+      "category": "attraction",
+      "latitude": 37.7948207421998,
+      "longitude": 128.919175274112,
+      "address": "강원특별자치도 강릉시 강문동 182-1",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/8680336"
+    },
+    {
+      "name": "세인트존스호텔",
+      "region": "강릉",
+      "category": "lodging",
+      "latitude": 37.791254740225,
+      "longitude": 128.920974177961,
+      "address": "강원특별자치도 강릉시 강문동 1-1",
+      "road_address": "강원특별자치도 강릉시 창해로 307",
+      "kakao_place_url": "http://place.map.kakao.com/1613530490"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 6763,
+      "prompt_tokens": 10540,
+      "response_tokens": 41,
+      "total_tokens": 10581,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3071,
+      "prompt_tokens": 11410,
+      "response_tokens": 364,
+      "total_tokens": 11774,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 143,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 155,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 161,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 163,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 50,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1444,
+      "prompt_tokens": 1636,
+      "response_tokens": 72,
+      "total_tokens": 1708,
+      "error_message": null
+    }
+  ]
+}

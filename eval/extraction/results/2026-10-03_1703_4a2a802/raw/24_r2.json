@@ -1,0 +1,100 @@
+{
+  "video_no": 24,
+  "repeat": 2,
+  "url": "https://www.instagram.com/reel/DUX2qkMEQAQ/",
+  "submit_status": 202,
+  "job_id": 84,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 12.8,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 11.691844
+  },
+  "places": [
+    {
+      "name": "경포대",
+      "region": "강릉시",
+      "category": "attraction",
+      "latitude": 37.7950741626953,
+      "longitude": 128.896636344738,
+      "address": "강원특별자치도 강릉시 저동 94",
+      "road_address": "강원특별자치도 강릉시 경포로 365",
+      "kakao_place_url": "http://place.map.kakao.com/10158575"
+    },
+    {
+      "name": "해연가",
+      "region": "강릉시",
+      "category": "restaurant",
+      "latitude": 37.7906128465767,
+      "longitude": 128.920783875756,
+      "address": "강원특별자치도 강릉시 강문동 27-23",
+      "road_address": "강원특별자치도 강릉시 해안로 280",
+      "kakao_place_url": "http://place.map.kakao.com/870953811"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 2754,
+      "prompt_tokens": 10540,
+      "response_tokens": 39,
+      "total_tokens": 10579,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3498,
+      "prompt_tokens": 11410,
+      "response_tokens": 190,
+      "total_tokens": 11600,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 66,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 71,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 126,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 948,
+      "prompt_tokens": 741,
+      "response_tokens": 26,
+      "total_tokens": 767,
+      "error_message": null
+    }
+  ]
+}

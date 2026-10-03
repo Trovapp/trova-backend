@@ -1,0 +1,70 @@
+{
+  "video_no": 26,
+  "repeat": 2,
+  "url": "https://www.instagram.com/reel/DX-rrm8BHCr/",
+  "submit_status": 202,
+  "job_id": 86,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 10.7,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 9.675188
+  },
+  "places": [
+    {
+      "name": "쇠마실",
+      "region": "부산",
+      "category": "cafe",
+      "latitude": 35.2730110104588,
+      "longitude": 129.150276239523,
+      "address": "부산 기장군 철마면 장전리 257-2",
+      "road_address": "부산 기장군 철마면 개좌로 818",
+      "kakao_place_url": "http://place.map.kakao.com/1612635752"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 3014,
+      "prompt_tokens": 10855,
+      "response_tokens": 10,
+      "total_tokens": 10865,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 2933,
+      "prompt_tokens": 11702,
+      "response_tokens": 95,
+      "total_tokens": 11797,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 57,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 42,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    }
+  ]
+}
