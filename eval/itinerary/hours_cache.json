@@ -4305,5 +4305,413 @@
     }
    }
   ]
+ },
+ "광안리해수욕장|35.15319,129.11898": {
+  "status": "NO_HOURS",
+  "google_id": "ChIJxw7HJy_taDUR-xaSTeHwbf8",
+  "google_name": "광안리해수욕장",
+  "distance_m": 28,
+  "periods": null
+ },
+ "썰스데이파티|35.15419,129.06073": {
+  "status": "OK",
+  "google_id": "ChIJ6Suhq3rraDURwYS5KpCIDJs",
+  "google_name": "썰스데이파티 서면1호점",
+  "distance_m": 8,
+  "periods": [
+   {
+    "open": {
+     "day": 0,
+     "hour": 19,
+     "minute": 0
+    },
+    "close": {
+     "day": 1,
+     "hour": 4,
+     "minute": 30
+    }
+   },
+   {
+    "open": {
+     "day": 1,
+     "hour": 19,
+     "minute": 0
+    },
+    "close": {
+     "day": 2,
+     "hour": 4,
+     "minute": 30
+    }
+   },
+   {
+    "open": {
+     "day": 2,
+     "hour": 19,
+     "minute": 0
+    },
+    "close": {
+     "day": 3,
+     "hour": 4,
+     "minute": 30
+    }
+   },
+   {
+    "open": {
+     "day": 3,
+     "hour": 19,
+     "minute": 0
+    },
+    "close": {
+     "day": 4,
+     "hour": 4,
+     "minute": 30
+    }
+   },
+   {
+    "open": {
+     "day": 4,
+     "hour": 19,
+     "minute": 0
+    },
+    "close": {
+     "day": 5,
+     "hour": 4,
+     "minute": 30
+    }
+   },
+   {
+    "open": {
+     "day": 5,
+     "hour": 19,
+     "minute": 0
+    },
+    "close": {
+     "day": 6,
+     "hour": 5,
+     "minute": 30
+    }
+   },
+   {
+    "open": {
+     "day": 6,
+     "hour": 19,
+     "minute": 0
+    },
+    "close": {
+     "day": 0,
+     "hour": 5,
+     "minute": 30
+    }
+   }
+  ]
+ },
+ "제주국제공항|33.50684,126.49272": {
+  "status": "NO_HOURS",
+  "google_id": "ChIJxb_FCjv7DDURZ8wL9kMz_-0",
+  "google_name": "제주국제공항",
+  "distance_m": 71,
+  "periods": null
+ },
+ "순두부젤라또 2호점|37.77137,128.94710": {
+  "status": "OK",
+  "google_id": "ChIJz0wKrPXnYTURM6xm-JQeq8Q",
+  "google_name": "순두부젤라또 안목점",
+  "distance_m": 3,
+  "periods": [
+   {
+    "open": {
+     "day": 0,
+     "hour": 9,
+     "minute": 30
+    },
+    "close": {
+     "day": 0,
+     "hour": 21,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 1,
+     "hour": 9,
+     "minute": 30
+    },
+    "close": {
+     "day": 1,
+     "hour": 21,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 2,
+     "hour": 9,
+     "minute": 30
+    },
+    "close": {
+     "day": 2,
+     "hour": 21,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 3,
+     "hour": 9,
+     "minute": 30
+    },
+    "close": {
+     "day": 3,
+     "hour": 21,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 4,
+     "hour": 9,
+     "minute": 30
+    },
+    "close": {
+     "day": 4,
+     "hour": 21,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 5,
+     "hour": 9,
+     "minute": 30
+    },
+    "close": {
+     "day": 5,
+     "hour": 21,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 6,
+     "hour": 9,
+     "minute": 30
+    },
+    "close": {
+     "day": 6,
+     "hour": 21,
+     "minute": 0
+    }
+   }
+  ]
+ },
+ "초당모꼬지|37.78981,128.91464": {
+  "status": "OK",
+  "google_id": "ChIJDTNhp9fnYTURnBpd5ueWyqA",
+  "google_name": "초당모꼬지",
+  "distance_m": 6,
+  "periods": [
+   {
+    "open": {
+     "day": 0,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 0,
+     "hour": 20,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 1,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 1,
+     "hour": 20,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 2,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 2,
+     "hour": 20,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 3,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 3,
+     "hour": 15,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 4,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 4,
+     "hour": 20,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 5,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 5,
+     "hour": 20,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 6,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 6,
+     "hour": 20,
+     "minute": 0
+    }
+   }
+  ]
+ },
+ "오브더모먼트|37.75819,128.89156": {
+  "status": "OK",
+  "google_id": "ChIJW6hu1zDlYTURkmvMJE0_Su0",
+  "google_name": "오브더모먼트",
+  "distance_m": 3,
+  "periods": [
+   {
+    "open": {
+     "day": 0,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 0,
+     "hour": 22,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 1,
+     "hour": 11,
+     "minute": 0
+    },
+    "close": {
+     "day": 1,
+     "hour": 17,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 3,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 3,
+     "hour": 22,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 4,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 4,
+     "hour": 22,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 5,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 5,
+     "hour": 22,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 6,
+     "hour": 10,
+     "minute": 0
+    },
+    "close": {
+     "day": 6,
+     "hour": 22,
+     "minute": 0
+    }
+   }
+  ]
+ },
+ "언론중재위원회 전북중재부|35.81823,127.10646": {
+  "status": "NO_HOURS",
+  "google_id": "ChIJJ0OKIKAkcDURs_fTiZsXzXM",
+  "google_name": "언론중재위원회 전북사무소",
+  "distance_m": 2,
+  "periods": null
+ },
+ "부산역|35.11520,129.04155": {
+  "status": "NO_HOURS",
+  "google_id": "ChIJqxrVY9jraDURTqBi-qe-mAI",
+  "google_name": "부산",
+  "distance_m": 63,
+  "periods": null
+ },
+ "해운대역 부산2호선|35.16365,129.15890": {
+  "status": "NO_HOURS",
+  "google_id": "ChIJQ6Q4p2CNaDURssSu6FmG8iA",
+  "google_name": "해운대도시철도역",
+  "distance_m": 22,
+  "periods": null
+ },
+ "도째비골 해랑전망대|37.55380,129.12024": {
+  "status": "NO_HOURS",
+  "google_id": "ChIJ86S4hknHYTUR-iPlk5ZFGyQ",
+  "google_name": "도째비골 해랑 전망대 화장실",
+  "distance_m": 19,
+  "periods": null
+ },
+ "묵호역|37.54682,129.10769": {
+  "status": "NO_HOURS",
+  "google_id": "ChIJ44lntAjHYTURSROKbgVR6Ls",
+  "google_name": "묵호",
+  "distance_m": 11,
+  "periods": null
+ },
+ "사마르칸트|37.32902,126.78963": {
+  "status": "NO_MATCH"
  }
 }
