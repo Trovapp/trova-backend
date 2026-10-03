@@ -3,6 +3,7 @@ package com.trova.backend.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "saved_places")
@@ -59,6 +60,10 @@ public class SavedPlace {
 
     @Column(name = "kakao_place_url")
     private String kakaoPlaceUrl;
+
+    // 영상이 이 장소에 대해 말하거나 보여준 구체 정보(#104). 한 줄짜리 문장 몇 개를 줄바꿈으로 이어 저장한다.
+    @Column(name = "video_notes", columnDefinition = "TEXT")
+    private String videoNotes;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -123,6 +128,18 @@ public class SavedPlace {
     public String getKakaoCategoryName() { return kakaoCategoryName; }
     public String getKakaoPlaceUrl() { return kakaoPlaceUrl; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public List<String> getVideoNotes() {
+        return videoNotes == null || videoNotes.isBlank() ? List.of() : List.of(videoNotes.split("\n"));
+    }
+
+    public void applyVideoNotes(List<String> notes) {
+        List<String> lines = notes == null ? List.of() : notes.stream()
+                .filter(n -> n != null && !n.isBlank())
+                .map(n -> n.replace('\n', ' ').trim())
+                .toList();
+        this.videoNotes = lines.isEmpty() ? null : String.join("\n", lines);
+    }
 
     public void assignToDay(Integer dayNumber, Integer orderInDay) {
         this.dayNumber = dayNumber;
