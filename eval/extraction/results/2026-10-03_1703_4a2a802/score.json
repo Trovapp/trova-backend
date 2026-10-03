@@ -1,43 +1,43 @@
 {
   "summary": {
     "overall": {
-      "tp": 197,
+      "tp": 199,
       "fp": 55,
-      "fn": 47,
-      "ambiguous": 2,
-      "precision": 0.782,
-      "recall": 0.807,
-      "f1": 0.794,
+      "fn": 45,
+      "ambiguous": 0,
+      "precision": 0.783,
+      "recall": 0.816,
+      "f1": 0.799,
       "coord_ok_ratio": 1.0,
       "coord_checked": 25
     },
     "by_repeat": {
       "1": {
-        "tp": 99,
+        "tp": 100,
         "fp": 25,
-        "fn": 23,
-        "ambiguous": 1,
-        "precision": 0.798,
-        "recall": 0.811,
-        "f1": 0.804,
+        "fn": 22,
+        "ambiguous": 0,
+        "precision": 0.8,
+        "recall": 0.82,
+        "f1": 0.81,
         "coord_ok_ratio": 1.0,
         "coord_checked": 13
       },
       "2": {
-        "tp": 98,
+        "tp": 99,
         "fp": 30,
-        "fn": 24,
-        "ambiguous": 1,
-        "precision": 0.766,
-        "recall": 0.803,
-        "f1": 0.784,
+        "fn": 23,
+        "ambiguous": 0,
+        "precision": 0.767,
+        "recall": 0.811,
+        "f1": 0.788,
         "coord_ok_ratio": 1.0,
         "coord_checked": 12
       }
     },
     "error_types": {
       "정답에 없는 장소": 55,
-      "누락": 47
+      "누락": 45
     },
     "runs": 48,
     "failures": [
@@ -746,10 +746,10 @@
     {
       "video_no": 6,
       "repeat": 1,
-      "tp": 5,
+      "tp": 6,
       "fp": 4,
-      "fn": 6,
-      "ambiguous": 1,
+      "fn": 5,
+      "ambiguous": 0,
       "coord_checked": 0,
       "coord_ok": 0,
       "rows": [
@@ -771,9 +771,9 @@
         },
         {
           "result_name": "광안리어방축제",
-          "verdict": "확인 필요",
-          "answer_place_name": "",
-          "how": "수동 보류",
+          "verdict": "맞음",
+          "answer_place_name": "광안리",
+          "how": "수동",
           "error_type": "",
           "distance_m": null
         },
@@ -852,14 +852,6 @@
         {
           "result_name": "",
           "verdict": "누락",
-          "answer_place_name": "광안리",
-          "how": "",
-          "error_type": "누락",
-          "distance_m": null
-        },
-        {
-          "result_name": "",
-          "verdict": "누락",
           "answer_place_name": "해변포차",
           "how": "",
           "error_type": "누락",
@@ -886,10 +878,10 @@
     {
       "video_no": 6,
       "repeat": 2,
-      "tp": 5,
+      "tp": 6,
       "fp": 6,
-      "fn": 6,
-      "ambiguous": 1,
+      "fn": 5,
+      "ambiguous": 0,
       "coord_checked": 0,
       "coord_ok": 0,
       "rows": [
@@ -919,9 +911,9 @@
         },
         {
           "result_name": "광안리어방축제",
-          "verdict": "확인 필요",
-          "answer_place_name": "",
-          "how": "수동 보류",
+          "verdict": "맞음",
+          "answer_place_name": "광안리",
+          "how": "수동",
           "error_type": "",
           "distance_m": null
         },
@@ -1001,14 +993,6 @@
           "result_name": "",
           "verdict": "누락",
           "answer_place_name": "해운대역",
-          "how": "",
-          "error_type": "누락",
-          "distance_m": null
-        },
-        {
-          "result_name": "",
-          "verdict": "누락",
-          "answer_place_name": "광안리",
           "how": "",
           "error_type": "누락",
           "distance_m": null
