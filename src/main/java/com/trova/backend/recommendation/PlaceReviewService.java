@@ -42,7 +42,12 @@ public class PlaceReviewService {
     private final ReviewSummaryRunner reviewSummaryRunner;
     private final ApiCallLogService apiCallLogService;
 
-    public record PlaceReviewInfo(ReviewSummary summary, List<String> snippets) {
+    // phone: Google 장소 상세의 국내 전화번호(없으면 null, #99).
+    public record PlaceReviewInfo(ReviewSummary summary, List<String> snippets, String phone) {
+        public PlaceReviewInfo(ReviewSummary summary, List<String> snippets) {
+            this(summary, snippets, null);
+        }
+
     }
 
     private record PlaceState(Place place, PlaceReviewInfo cachedInfo) {
@@ -84,10 +89,15 @@ public class PlaceReviewService {
         if (state.isEmpty()) {
             return Optional.empty();
         }
-        if (state.get().cachedInfo() != null) {
-            return Optional.of(state.get().cachedInfo());
-        }
         Place place = state.get().place();
+        if (state.get().cachedInfo() != null) {
+            PlaceReviewInfo cached = state.get().cachedInfo();
+            // 요약이 전화번호를 받기 전에 만들어진 장소는 처음 열 때 번호만 한 번 채운다(#99, 리뷰는 다시 받지 않는다).
+            if (place.getPhoneCheckedAt() == null) {
+                fillPhone(place);
+            }
+            return Optional.of(new PlaceReviewInfo(cached.summary(), cached.snippets(), place.getPhone()));
+        }
 
         long start = System.currentTimeMillis();
         GooglePlacesDetailsResponse details;
@@ -104,12 +114,15 @@ public class PlaceReviewService {
             return Optional.of(new PlaceReviewInfo(FETCH_FAILED_SUMMARY, List.of()));
         }
 
+        // 같은 요청에 받아 온 전화번호 — 아래 cache()가 함께 저장한다(#99).
+        place.applyPhone(details.nationalPhoneNumber());
+
         List<String> reviewTexts = extractReviewTexts(details);
         if (reviewTexts.isEmpty()) {
             // 리뷰가 없다는 사실 자체도 캐시한다 — 안 그러면 이 장소의 상세보기를
             // 누를 때마다(다른 사용자여도) 매번 유료 Details API를 다시 부르게 된다.
             cache(place, NO_REVIEWS_SUMMARY, List.of());
-            return Optional.of(new PlaceReviewInfo(NO_REVIEWS_SUMMARY, List.of()));
+            return Optional.of(new PlaceReviewInfo(NO_REVIEWS_SUMMARY, List.of(), place.getPhone()));
         }
 
         List<String> snippets = reviewTexts.stream().limit(MAX_SNIPPETS).toList();
@@ -129,7 +142,28 @@ public class PlaceReviewService {
         }
 
         cache(place, summary, snippets);
-        return Optional.of(new PlaceReviewInfo(summary, snippets));
+        return Optional.of(new PlaceReviewInfo(summary, snippets, place.getPhone()));
+    }
+
+    /**
+     * 전화번호만 요청해 저장한다(Place Details Enterprise SKU, 리뷰를 함께 받는 상세보다 낮은 티어). 실패하면 확인 표시를
+     * 남기지 않아 다음에 다시 시도한다 — 번호 없이도 상세는 그대로 보여준다.
+     */
+    private void fillPhone(Place place) {
+        long start = System.currentTimeMillis();
+        try {
+            GooglePlacesDetailsResponse response = googlePlacesApiClient.getPhone(place.getGooglePlaceId());
+            apiCallLogService.record(
+                    "google-places", "place-details-phone", null, System.currentTimeMillis() - start,
+                    true, null, null, null, null);
+            place.applyPhone(response == null ? null : response.nationalPhoneNumber());
+            placeRepository.save(place);
+        } catch (Exception e) {
+            apiCallLogService.record(
+                    "google-places", "place-details-phone", null, System.currentTimeMillis() - start,
+                    false, e.getMessage(), null, null, null);
+            log.warn("전화번호 조회 실패(placeId={}) — 번호 없이 반환합니다", place.getId(), e);
+        }
     }
 
     private void cache(Place place, ReviewSummary summary, List<String> snippets) {

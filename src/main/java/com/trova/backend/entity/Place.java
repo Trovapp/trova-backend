@@ -58,6 +58,13 @@ public class Place {
     @Column(name = "review_summary_generated_at")
     private LocalDateTime reviewSummaryGeneratedAt;
 
+    // Google 장소 상세의 국내 전화번호(#99). 번호가 없는 장소도 있어, 확인한 시각(phoneCheckedAt)을 따로 남겨
+    // 같은 장소에 전화번호 요청이 다시 나가지 않게 한다.
+    private String phone;
+
+    @Column(name = "phone_checked_at")
+    private LocalDateTime phoneCheckedAt;
+
     @ElementCollection
     @CollectionTable(name = "place_review_snippets", joinColumns = @JoinColumn(name = "place_id"))
     @OrderColumn(name = "snippet_order")
@@ -97,6 +104,11 @@ public class Place {
         this.reviewSummaryGeneratedAt = LocalDateTime.now();
     }
 
+    public void applyPhone(String phone) {
+        this.phone = (phone == null || phone.isBlank()) ? null : phone.trim();
+        this.phoneCheckedAt = LocalDateTime.now();
+    }
+
     public void applyReviewSnippets(List<String> reviewSnippets) {
         this.reviewSnippets = new ArrayList<>(reviewSnippets);
     }
@@ -117,4 +129,6 @@ public class Place {
     public String getReviewSummary() { return reviewSummary; }
     public LocalDateTime getReviewSummaryGeneratedAt() { return reviewSummaryGeneratedAt; }
     public List<String> getReviewSnippets() { return List.copyOf(reviewSnippets); }
+    public String getPhone() { return phone; }
+    public LocalDateTime getPhoneCheckedAt() { return phoneCheckedAt; }
 }

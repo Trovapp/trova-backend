@@ -34,7 +34,10 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
             "places.userRatingCount", "places.priceLevel", "places.location", "places.formattedAddress");
 
     // reviews는 Enterprise + Atmosphere 티어라 유료 — getDetails()에서만 요청한다.
-    private static final String DETAILS_FIELD_MASK = "id,reviews";
+    // 요청은 그 안의 가장 높은 티어 하나로 과금되므로, Enterprise 티어인 전화번호를 같은 요청에 더해도 비용은 같다(#99).
+    private static final String DETAILS_FIELD_MASK = "id,reviews,nationalPhoneNumber";
+    // 리뷰 요약이 이미 저장된 장소에 전화번호만 채울 때(Enterprise 티어, Atmosphere보다 낮음). 장소당 한 번만 부른다.
+    private static final String PHONE_FIELD_MASK = "id,nationalPhoneNumber";
 
     private final RestClient restClient;
 
@@ -69,7 +72,12 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
 
     @Override
     public GooglePlacesDetailsResponse getDetails(String googlePlaceId) {
-        return withRetry(() -> doGetDetails(googlePlaceId));
+        return withRetry(() -> doGetDetails(googlePlaceId, DETAILS_FIELD_MASK));
+    }
+
+    @Override
+    public GooglePlacesDetailsResponse getPhone(String googlePlaceId) {
+        return withRetry(() -> doGetDetails(googlePlaceId, PHONE_FIELD_MASK));
     }
 
     private <T> T withRetry(Supplier<T> call) {
@@ -137,10 +145,10 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
                 .body(GooglePlacesNearbySearchResponse.class);
     }
 
-    private GooglePlacesDetailsResponse doGetDetails(String googlePlaceId) {
+    private GooglePlacesDetailsResponse doGetDetails(String googlePlaceId, String fieldMask) {
         return restClient.get()
                 .uri("/v1/places/{id}?languageCode=ko&regionCode=KR", googlePlaceId)
-                .header("X-Goog-FieldMask", DETAILS_FIELD_MASK)
+                .header("X-Goog-FieldMask", fieldMask)
                 .retrieve()
                 .body(GooglePlacesDetailsResponse.class);
     }
