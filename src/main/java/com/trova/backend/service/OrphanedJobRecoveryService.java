@@ -34,7 +34,8 @@ public class OrphanedJobRecoveryService {
     // 실측 처리 시간은 영상 처리 중앙값 26초·재구성 최대 38초. 대기열이 가득 찼을 때 마지막 작업이 시작되기까지
     // (50개 × 26초 ÷ 동시 2개 ≈ 11분) 갱신 없이 기다릴 수 있어 그보다 길게 잡는다.
     static final Duration STALE_AFTER = Duration.ofMinutes(15);
-    static final String STALE_MESSAGE = "처리가 중단됐어요. 다시 시도해주세요.";
+    // 사용자에게 그대로 보여줘도 되는 문구라 재구성 상태 응답이 원문 대신 이 값은 그대로 내려준다(#95).
+    public static final String STALE_MESSAGE = "처리가 중단됐어요. 다시 시도해주세요.";
     private static final List<JobStatus> IN_FLIGHT = List.of(JobStatus.PENDING, JobStatus.PROCESSING);
 
     private final ProcessingJobRepository processingJobRepository;

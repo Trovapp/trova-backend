@@ -10,6 +10,7 @@ import com.trova.backend.entity.User;
 import com.trova.backend.replan.TripReplanGraph;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.TripReplanJobRepository;
+import com.trova.backend.service.OrphanedJobRecoveryService;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.TripReplanJobService;
 import org.springframework.http.HttpStatus;
@@ -148,6 +149,22 @@ public class TripReplanController {
             }
         }
         return new ReplanJobStatusResponse(
-                job.getStatus().name(), job.getCompletedTargets(), job.getTotalTargets(), result, job.getErrorMessage());
+                job.getStatus().name(), job.getCompletedTargets(), job.getTotalTargets(), result, userFacingError(job));
+    }
+
+    static final String REPLAN_FAILED_MESSAGE = "일정을 다시 짜지 못했어요. 잠시 후 다시 시도해주세요.";
+
+    /**
+     * 앱은 errorMessage를 화면에 그대로 보여준다. 예외 원문(e.getMessage())에는 DB 오류 문장·외부 API 응답 같은
+     * 내부 내용이 들어갈 수 있어 정해진 문구로 바꿔 보낸다(#95). 원문은 DB·로그에 그대로 남아 원인 확인에 쓴다.
+     * 멈춘 작업 정리 문구는 원래 사용자용이라 그대로 보낸다.
+     */
+    private static String userFacingError(TripReplanJob job) {
+        if (job.getStatus() != JobStatus.FAILED) {
+            return null;
+        }
+        return OrphanedJobRecoveryService.STALE_MESSAGE.equals(job.getErrorMessage())
+                ? OrphanedJobRecoveryService.STALE_MESSAGE
+                : REPLAN_FAILED_MESSAGE;
     }
 }

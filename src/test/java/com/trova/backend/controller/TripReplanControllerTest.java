@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripReplanJob;
+import com.trova.backend.service.OrphanedJobRecoveryService;
 import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.AlternativeCandidate;
 import com.trova.backend.replan.TripReplanGraph;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -222,17 +224,33 @@ class TripReplanControllerTest {
     }
 
     @Test
-    void FAILED_상태를_폴링하면_에러메시지가_담긴다() throws Exception {
+    void FAILED_상태를_폴링하면_예외_원문_대신_정해진_안내_문구가_담긴다() throws Exception {
+        // 앱이 errorMessage를 화면에 그대로 보여주므로 내부 예외 원문(SQL 문장 등)이 새면 안 된다(#95).
         TripReplanJob job = tripReplanJobRepository.save(new TripReplanJob(me, trip, true));
         job.markProcessing();
-        job.markFailed("그래프 실행 중 예외 발생");
+        job.markFailed("could not execute statement [ERROR: relation \"trip_places\" does not exist]");
         tripReplanJobRepository.save(job);
 
         mockMvc.perform(get("/api/trips/" + trip.getId() + "/replan/" + job.getId())
                         .with(loginAs("replan1", "재구성유저")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("FAILED"))
-                .andExpect(jsonPath("$.errorMessage").value("그래프 실행 중 예외 발생"))
+                .andExpect(jsonPath("$.errorMessage").value(TripReplanController.REPLAN_FAILED_MESSAGE))
                 .andExpect(jsonPath("$.result").doesNotExist());
+        // 원문은 원인 확인용으로 DB에 그대로 남는다.
+        assertThat(tripReplanJobRepository.findById(job.getId()).orElseThrow().getErrorMessage()).contains("could not execute statement");
+    }
+
+    @Test
+    void 서버_재시작으로_중단된_작업은_중단_안내_문구를_그대로_보낸다() throws Exception {
+        TripReplanJob job = tripReplanJobRepository.save(new TripReplanJob(me, trip, true));
+        job.markProcessing();
+        job.markFailed(OrphanedJobRecoveryService.STALE_MESSAGE);
+        tripReplanJobRepository.save(job);
+
+        mockMvc.perform(get("/api/trips/" + trip.getId() + "/replan/" + job.getId())
+                        .with(loginAs("replan1", "재구성유저")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorMessage").value(OrphanedJobRecoveryService.STALE_MESSAGE));
     }
 }
