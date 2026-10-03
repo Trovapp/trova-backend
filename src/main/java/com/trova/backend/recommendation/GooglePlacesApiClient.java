@@ -7,4 +7,6 @@ public interface GooglePlacesApiClient {
     GooglePlacesDetailsResponse getDetails(String googlePlaceId);
     // 전화번호만 요청한다(Place Details Enterprise SKU) — 리뷰 요약이 이미 있는 장소에 번호를 채울 때 쓴다(#99).
     GooglePlacesDetailsResponse getPhone(String googlePlaceId);
+    // 이름 + 좌표 근처로 찾아 영업시간까지 받는다(Text Search Enterprise SKU) — 일정 에이전트의 휴무 확인용(#106).
+    GooglePlacesHoursResponse searchTextWithHours(String query, double latitude, double longitude, double radiusMeters);
 }

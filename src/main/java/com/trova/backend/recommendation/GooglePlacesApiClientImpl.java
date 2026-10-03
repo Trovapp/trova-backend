@@ -80,6 +80,28 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
         return withRetry(() -> doGetDetails(googlePlaceId, PHONE_FIELD_MASK));
     }
 
+    private static final String HOURS_SEARCH_FIELD_MASK = "places.id,places.location,places.regularOpeningHours";
+
+    @Override
+    public GooglePlacesHoursResponse searchTextWithHours(
+            String query, double latitude, double longitude, double radiusMeters
+    ) {
+        Map<String, Object> body = Map.of(
+                "textQuery", query,
+                "maxResultCount", 5,
+                "languageCode", "ko",
+                "regionCode", "KR",
+                "locationBias", Map.of("circle", Map.of(
+                        "center", Map.of("latitude", latitude, "longitude", longitude),
+                        "radius", radiusMeters)));
+        return withRetry(() -> restClient.post()
+                .uri("/v1/places:searchText")
+                .header("X-Goog-FieldMask", HOURS_SEARCH_FIELD_MASK)
+                .body(body)
+                .retrieve()
+                .body(GooglePlacesHoursResponse.class));
+    }
+
     private <T> T withRetry(Supplier<T> call) {
         RuntimeException lastFailure = null;
 
