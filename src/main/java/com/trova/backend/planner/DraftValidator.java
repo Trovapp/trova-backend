@@ -47,6 +47,7 @@ public final class DraftValidator {
         List<Violation> out = new ArrayList<>();
         int unknown = 0;
         int total = draft.days().stream().mapToInt(d -> d.items().size()).sum() + draft.excluded().size();
+        int scheduled = draft.days().stream().mapToInt(d -> d.items().size()).sum();
         boolean anyRestaurant = places.values().stream().anyMatch(p -> "restaurant".equals(p.getCategory()));
         if (draft.days().size() != days) {
             out.add(new Violation("DAYS", Severity.ERROR, 0, null, "요청 " + days + "일, 일정 " + draft.days().size() + "일"));
@@ -90,6 +91,10 @@ public final class DraftValidator {
             // 분량 — 너무 많으면 고쳐야 하고, 장소가 적어 생긴 빈 날은 알려만 준다.
             if (items.size() > DAY_MAX) {
                 out.add(new Violation("DAY_TOO_FULL", Severity.ERROR, day.day(), null, day.day() + "일차 " + items.size() + "곳"));
+            } else if (items.isEmpty() && scheduled >= DAY_MIN * draft.days().size()) {
+                // 장소가 날마다 2곳씩 나눌 만큼 있는데 빈 날이 있으면 고쳐야 한다(#108 재측정: 3일 요청에 [5, 3, 0]).
+                out.add(new Violation("EMPTY_DAY", Severity.ERROR, day.day(), null,
+                        day.day() + "일차가 비어 있음 — 다른 날 장소를 나눠 넣어야 함"));
             } else if (items.size() < DAY_MIN && total > 1) {
                 out.add(new Violation("DAY_TOO_LIGHT", Severity.WARNING, day.day(), null, day.day() + "일차 " + items.size() + "곳"));
             }

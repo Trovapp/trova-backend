@@ -76,4 +76,100 @@ class DraftFixerTest {
 
         assertThat(DraftFixer.reorder(day)).isSameAs(day);
     }
+
+    // ---- 근거 없이 뺀 장소 되살리기(#108) ----
+
+    private static DraftGenerator.Draft withExcluded(List<List<DraftGenerator.Item>> days, SavedPlace... excluded) {
+        DraftGenerator.Draft d = draft(days);
+        List<DraftGenerator.Excluded> ex = new java.util.ArrayList<>();
+        for (SavedPlace p : excluded) {
+            ex.add(new DraftGenerator.Excluded(p.getId(), p.getPlaceName(), "동선과 시간상 여유가 부족해 뺐어요."));
+        }
+        return new DraftGenerator.Draft(d.days(), ex, List.of(), List.of());
+    }
+
+    @Test
+    void 자리가_남는데_뺀_장소는_가까운_자리에_되살리고_앞_시각은_그대로_둔다() {
+        // 운영 김해 사례: 4곳뿐인 날에 만리향 만두를 "시간 부족"으로 뺐다.
+        SavedPlace royal = place(20, "수로왕릉", "attraction", 35.2353, 128.8785, null);
+        SavedPlace gukbap = place(21, "밀양돼지국밥", "restaurant", 35.2368, 128.9042, null);
+        SavedPlace park = place(22, "연지공원", "attraction", 35.2408, 128.8789, null);
+        SavedPlace gaya = place(23, "가야랜드", "attraction", 35.2605, 128.9020, null);
+        SavedPlace mandu = place(24, "만리향 만두", "restaurant", 35.2330, 128.8810, null);
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(royal, "09:30", "11:00"), item(gukbap, "11:30", "12:30"),
+                item(park, "13:00", "14:30"), item(gaya, "15:00", "16:30"))), mandu);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(royal, gukbap, park, gaya, mandu), null);
+
+        List<DraftGenerator.Item> day = fixed.draft().days().get(0).items();
+        assertThat(day).extracting(DraftGenerator.Item::name).contains("만리향 만두").hasSize(5);
+        assertThat(fixed.draft().excluded()).isEmpty();
+        assertThat(day.get(0).start()).isEqualTo(LocalTime.of(9, 30));
+        for (int i = 0; i + 1 < day.size(); i++) {
+            assertThat(day.get(i + 1).start()).isAfterOrEqualTo(day.get(i).end());
+        }
+        assertThat(day.get(day.size() - 1).end()).isBeforeOrEqualTo(DraftFixer.DAY_END);
+        assertThat(fixed.fixes()).anyMatch(f -> f.contains("만리향 만두은 1일차에 자리가 있어 다시 넣었어요"));
+    }
+
+    @Test
+    void 사실로_확인되는_이유로_뺀_장소는_그대로_둔다() {
+        SavedPlace a = place(30, "해운대해수욕장", "attraction", 35.1587, 129.1604, null);
+        SavedPlace b = place(31, "동백섬", "attraction", 35.1530, 129.1520, null);
+        SavedPlace dup = place(32, "해운대 바다", "attraction", 35.1590, 129.1610, null);        // 약 70m — 중복
+        SavedPlace far = place(33, "통도사", "attraction", 35.4880, 129.0630, null);           // 약 38km
+        SavedPlace station = place(34, "부산역", "other", 35.1150, 129.0410, null);            // 지나가는 곳
+        SavedPlace noCoord = org.mockito.Mockito.mock(SavedPlace.class);
+        org.mockito.Mockito.lenient().when(noCoord.getId()).thenReturn(35L);
+        org.mockito.Mockito.lenient().when(noCoord.getPlaceName()).thenReturn("좌표없는곳");
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(a, "10:00", "11:30"), item(b, "12:00", "13:00"))),
+                dup, far, station, noCoord);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(a, b, dup, far, station, noCoord), null);
+
+        assertThat(fixed.draft().excluded()).extracting(DraftGenerator.Excluded::name)
+                .containsExactlyInAnyOrder("해운대 바다", "통도사", "부산역", "좌표없는곳");
+        assertThat(fixed.draft().days().get(0).items()).hasSize(2);
+    }
+
+    @Test
+    void 그날_휴무거나_하루_7곳이_찼거나_21시를_넘기면_되살리지_않는다() {
+        // 월요일(10/5) 하루: 휴무인 박물관은 못 넣고, 7곳 찬 날에도 못 넣는다.
+        SavedPlace open = place(40, "해수욕장", "attraction", 35.101, 129.031, EVERY_DAY);
+        SavedPlace closedMon = place(41, "월요휴무관", "attraction", 35.102, 129.032, CLOSED_MONDAY);
+        DraftGenerator.Draft closed = withExcluded(List.of(List.of(item(open, "10:00", "11:00"))), closedMon);
+        assertThat(DraftFixer.fix(closed, byId(open, closedMon), LocalDate.of(2026, 10, 5)).draft().excluded()).hasSize(1);
+
+        List<DraftGenerator.Item> full = new java.util.ArrayList<>();
+        SavedPlace[] seven = new SavedPlace[7];
+        for (int i = 0; i < 7; i++) {
+            seven[i] = place(50 + i, "곳" + i, "cafe", 35.10 + i * 0.001, 129.03, null);
+            full.add(item(seven[i], String.format("%02d:00", 9 + i), String.format("%02d:30", 9 + i)));
+        }
+        SavedPlace extra = place(60, "더", "cafe", 35.11, 129.03, null);
+        java.util.Map<Long, SavedPlace> all = byId(seven);
+        all.put(60L, extra);
+        assertThat(DraftFixer.fix(withExcluded(List.of(full), extra), all, null).draft().excluded()).hasSize(1);
+
+        SavedPlace late1 = place(70, "늦은1", "attraction", 35.10, 129.03, null);
+        SavedPlace late2 = place(71, "늦은2", "attraction", 35.101, 129.031, null);
+        SavedPlace more = place(72, "하나더", "attraction", 35.102, 129.032, null);
+        DraftGenerator.Draft lateDay = withExcluded(List.of(List.of(item(late1, "17:00", "18:30"), item(late2, "19:00", "20:30"))), more);
+        assertThat(DraftFixer.fix(lateDay, byId(late1, late2, more), null).draft().excluded()).hasSize(1);
+    }
+
+    @Test
+    void 사이에_넣으면_겹치는_만큼만_뒤로_민다() {
+        SavedPlace a = place(80, "A", "attraction", 35.00, 129.00, null);
+        SavedPlace b = place(81, "B", "restaurant", 35.01, 129.00, null);
+        SavedPlace x = place(82, "X", "cafe", 35.005, 129.00, null);
+        List<DraftGenerator.Item> day = List.of(item(a, "10:00", "11:00"), item(b, "18:00", "19:00"));
+
+        List<DraftGenerator.Item> out = DraftFixer.insertAndShift(day, 1,
+                new DraftGenerator.Item(82L, "X", "cafe", LocalTime.of(10, 0), LocalTime.of(10, 50), 35.005, 129.00));
+
+        assertThat(out).extracting(DraftGenerator.Item::name).containsExactly("A", "X", "B");
+        assertThat(out.get(1).start()).isEqualTo(LocalTime.of(11, 10)); // 11:00 + 이동 10분
+        assertThat(out.get(2).start()).isEqualTo(LocalTime.of(18, 0));  // 저녁 칸은 그대로
+    }
 }
