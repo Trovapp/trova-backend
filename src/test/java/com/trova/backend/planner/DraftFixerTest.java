@@ -235,4 +235,47 @@ class DraftFixerTest {
         List<DraftGenerator.Item> out = DraftFixer.fitMeals(tight, byId(lunch, late, s1, s2), null, 1, new java.util.ArrayList<>());
         assertThat(out.get(out.size() - 1).end()).isBeforeOrEqualTo(DraftFixer.DAY_END);
     }
+
+    // ---- 되살리기 시간 조건(#112) ----
+
+    @Test
+    void 점심_저녁이_다_차_있으면_식당은_되살리지_않는다() {
+        // 운영 제주 1일차 모양: 저녁 17:30이 이미 있는데 식당을 19:20에 또 넣었다.
+        SavedPlace lunch = place(300, "점심집", "restaurant", 33.50, 126.53, null);
+        SavedPlace dinner = place(301, "저녁집", "restaurant", 33.41, 126.27, null);
+        SavedPlace extra = place(302, "또식당", "restaurant", 33.24, 126.31, null);
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(s1, "10:00", "11:30"), item(lunch, "12:00", "13:00"),
+                item(s2, "14:00", "15:30"), item(dinner, "17:30", "18:30"))), extra);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(lunch, dinner, extra, s1, s2), null);
+
+        assertThat(fixed.draft().excluded()).extracting(DraftGenerator.Excluded::name).containsExactly("또식당");
+    }
+
+    @Test
+    void 저녁_칸이_비어_있으면_식당을_저녁_시간에_되살린다() {
+        SavedPlace lunch = place(310, "점심집", "restaurant", 33.45, 126.50, null);
+        SavedPlace extra = place(311, "저녁될집", "restaurant", 33.465, 126.515, null);
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(s1, "10:00", "11:30"), item(lunch, "12:00", "13:00"),
+                item(s2, "14:00", "15:30"))), extra);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(lunch, extra, s1, s2), null);
+
+        DraftGenerator.Item restored = fixed.draft().days().get(0).items().stream()
+                .filter(i -> i.name().equals("저녁될집")).findFirst().orElseThrow();
+        assertThat(restored.start()).isAfterOrEqualTo(LocalTime.of(17, 0)).isBefore(LocalTime.of(20, 0));
+    }
+
+    @Test
+    void 관광지는_18시_넘어_끝나는_자리에는_되살리지_않는다() {
+        // 운영 제주 2일차 모양: 저녁 뒤 송악산 19:10.
+        SavedPlace dinner = place(320, "저녁집", "restaurant", 33.46, 126.51, null);
+        SavedPlace mountain = place(321, "오름", "attraction", 33.47, 126.52, null);
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(s1, "09:00", "11:00"), item(s2, "11:10", "13:30"),
+                item(s3, "13:40", "17:20"), item(dinner, "17:30", "18:30"))), mountain);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(dinner, mountain, s1, s2, s3), null);
+
+        assertThat(fixed.draft().excluded()).extracting(DraftGenerator.Excluded::name).containsExactly("오름");
+    }
 }

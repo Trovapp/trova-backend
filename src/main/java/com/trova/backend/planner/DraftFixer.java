@@ -20,6 +20,7 @@ import java.util.Optional;
  *    좌표 없음, 공항·역 같은 지나가는 곳, 이미 넣은 곳과 150m 안(중복), 넣은 곳 모두와 30km 넘게 떨어짐, 그날 휴무 — 나머지는 하루 7곳 미만인 날 중
  *    연속 이동이 모두 30km 안이고 21시 안에 끝나며 영업시간 위반이 늘지 않는 자리에 넣는다. 앞 장소 시각은 그대로 두고
  *    넣은 자리부터 겹치는 만큼만 뒤로 민다(AI가 잡은 저녁 시간 같은 빈칸을 지키려고).
+ *    #112: 식당은 비어 있는 식사 칸에만, 관광지는 18시까지 끝나는 자리에만, 원래 채워진 식사 칸을 비우지 않을 때만 되살린다.
  * 4) 식사 칸 맞추기(#110): 그날 식당이 있는데 점심(11~14시)·저녁(17~20시) 칸이 비어 있으면 그 식당을 칸에 맞게 옮긴다
  *    (#108 재측정에서 식사 경고 13건 중 11건이 이 경우 — 예: 식당 3곳이 09:00·10:10·17:40에 몰려 점심이 빔).
  *    아침(10시 반 전) 식당은 아침 식사로 보고 옮기지 않는다(사용자 결정). 옮긴 날도 연속 이동 30km 안·21시 안·영업시간 위반이
@@ -113,16 +114,16 @@ public final class DraftFixer {
                         || (date != null && OpeningHoursService.isOpenOn(p.getOpeningPeriods(), date).equals(Optional.of(false)))) {
                     continue;
                 }
-                int at = insertAt(day, item);
-                List<DraftGenerator.Item> trial = insertAndShift(day, at, item);
-                if (!fits(trial, day, places, date)) {
-                    continue;
-                }
-                double added = pathKm(trial) - pathKm(day);
-                if (added < bestAdded) {
-                    bestAdded = added;
-                    bestDay = d;
-                    bestTrial = trial;
+                for (List<DraftGenerator.Item> trial : restoreTrials(day, item)) {
+                    if (!fits(trial, day, places, date) || !keepsMeals(trial, day) || !inDaylight(trial, item)) {
+                        continue;
+                    }
+                    double added = pathKm(trial) - pathKm(day);
+                    if (added < bestAdded) {
+                        bestAdded = added;
+                        bestDay = d;
+                        bestTrial = trial;
+                    }
                 }
             }
             if (bestDay != null) {
@@ -131,6 +132,55 @@ public final class DraftFixer {
                 fixes.add(p.getPlaceName() + "은 " + (bestDay + 1) + "일차에 자리가 있어 다시 넣었어요.");
             }
         }
+    }
+
+    static final LocalTime DAYLIGHT_END = LocalTime.of(18, 0);
+
+    /**
+     * 되살릴 자리 후보(#112). 식당은 그날 비어 있는 식사 칸(점심·저녁)에만 — 칸이 다 차 있으면 후보가 없다(저녁을 두 번 넣지 않으려고).
+     * 나머지는 모든 자리를 후보로 두고, 관광지는 inDaylight로 18시까지 끝나는 자리만 남긴다.
+     */
+    private static List<List<DraftGenerator.Item>> restoreTrials(List<DraftGenerator.Item> day, DraftGenerator.Item item) {
+        List<List<DraftGenerator.Item>> trials = new ArrayList<>();
+        if ("restaurant".equals(item.category())) {
+            LocalTime[][] windows = {{DraftValidator.LUNCH_FROM, DraftValidator.LUNCH_TO},
+                    {DraftValidator.DINNER_FROM, DraftValidator.DINNER_TO}};
+            for (LocalTime[] w : windows) {
+                if (hasMealIn(day, w[0], w[1])) {
+                    continue;
+                }
+                for (int k = 0; k <= day.size(); k++) {
+                    List<DraftGenerator.Item> trial = placeMeal(day, k, item, w[0]);
+                    if (trial.get(k).start().isBefore(w[1])) {
+                        trials.add(trial);
+                    }
+                }
+            }
+            return trials;
+        }
+        for (int k = 0; k <= day.size(); k++) {
+            trials.add(insertAndShift(day, k, item));
+        }
+        return trials;
+    }
+
+    /** 되살린 장소 때문에 원래 채워져 있던 점심·저녁 칸이 비면 안 된다. */
+    private static boolean keepsMeals(List<DraftGenerator.Item> trial, List<DraftGenerator.Item> original) {
+        return mealsCovered(trial) >= mealsCovered(original);
+    }
+
+    private static int mealsCovered(List<DraftGenerator.Item> items) {
+        return (hasMealIn(items, DraftValidator.LUNCH_FROM, DraftValidator.LUNCH_TO) ? 1 : 0)
+                + (hasMealIn(items, DraftValidator.DINNER_FROM, DraftValidator.DINNER_TO) ? 1 : 0);
+    }
+
+    /** 관광지는 해가 지기 전(18시)에 끝나는 자리에만 되살린다 — 저녁 뒤 오름·해변 방문을 막으려고(#112). */
+    private static boolean inDaylight(List<DraftGenerator.Item> trial, DraftGenerator.Item item) {
+        if (!"attraction".equals(item.category())) {
+            return true;
+        }
+        return trial.stream().filter(it -> it.placeId().equals(item.placeId())).findFirst()
+                .map(it -> !it.end().isAfter(DAYLIGHT_END)).orElse(false);
     }
 
     /** 사실로 확인되는 제외 이유가 없는지 — 좌표·교통시설·중복만 본다(휴무는 날마다 따로). */
