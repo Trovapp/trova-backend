@@ -102,4 +102,23 @@ class DraftValidatorTest {
         assertThat(types(r)).containsExactlyInAnyOrder("NO_LUNCH", "NO_DINNER");
         assertThat(r.errors()).isZero();
     }
+
+    @Test
+    void 장소가_충분한데_빈_날이_있으면_ERROR이고_장소가_모자라면_WARNING만() {
+        SavedPlace[] ps = new SavedPlace[8];
+        List<DraftGenerator.Item> d1 = new java.util.ArrayList<>();
+        List<DraftGenerator.Item> d2 = new java.util.ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            ps[i] = place(100 + i, "곳" + i, "attraction", 35.10, 129.03, null);
+            (i < 5 ? d1 : d2).add(item(ps[i], String.format("%02d:00", 9 + i % 5), String.format("%02d:30", 9 + i % 5)));
+        }
+        DraftValidator.Report r = DraftValidator.validate(draft(List.of(d1, d2, List.of())), byId(ps), 3, null);
+        assertThat(r.violations()).extracting(DraftValidator.Violation::type, DraftValidator.Violation::severity)
+                .contains(org.assertj.core.groups.Tuple.tuple("EMPTY_DAY", DraftValidator.Severity.ERROR));
+
+        SavedPlace only = place(120, "한곳", "restaurant", 35.10, 129.03, null);
+        DraftValidator.Report one = DraftValidator.validate(draft(List.of(List.of(item(only, "12:00", "13:00")), List.of())),
+                byId(only), 2, null);
+        assertThat(one.errors()).isZero();
+    }
 }
