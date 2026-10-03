@@ -83,7 +83,10 @@ def db():
         sys.exit("운영 DB를 가리키고 있다 — 측정은 개발 DB에서만 한다.")
     conn = psycopg.connect(host=host, port=m.group(2) or 5432, dbname=m.group(3),
                            user=os.environ["SPRING_DATASOURCE_USERNAME"],
-                           password=os.environ["SPRING_DATASOURCE_PASSWORD"], sslmode="require")
+                           password=os.environ["SPRING_DATASOURCE_PASSWORD"], sslmode="require",
+                           # Supabase pooler(트랜잭션 모드)는 prepared statement를 못 쓴다 — psycopg가 같은 쿼리를
+                           # 5번 넘게 돌리면 자동으로 쓰려다 "_pg3_0 does not exist"로 멈췄다(2026-10-03 실측).
+                           prepare_threshold=None)
     conn.autocommit = True
     return conn
 
@@ -105,9 +108,9 @@ def pipeline_hashes(pipeline_dir: Path) -> dict:
     return hashes
 
 
-def new_result_dir(kind: str) -> Path:
+def new_result_dir(kind: str, suffix: str | None = None) -> Path:
     stamp = dt.datetime.now().strftime("%Y-%m-%d_%H%M")
-    d = Path(__file__).resolve().parent / kind / "results" / f"{stamp}_{git_commit()}"
+    d = Path(__file__).resolve().parent / kind / "results" / f"{stamp}_{git_commit()}{'_' + suffix if suffix else ''}"
     d.mkdir(parents=True, exist_ok=True)
     return d
 
