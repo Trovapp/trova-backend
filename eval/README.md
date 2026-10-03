@@ -7,7 +7,8 @@
 1. 로컬 서버를 운영과 같은 main 코드로 띄운다(개발 DB). 측정 스크립트는 localhost가 아니면 멈춘다.
 2. 서버를 띄운 것과 같은 `.env`를 불러온다: `set -a && source <로컬 서버>/.env && set +a`
    (JWT_SECRET, SPRING_DATASOURCE_*, KAKAO_REST_API_KEY, GOOGLE_PLACES_API_KEY)
-   `EVAL_PROD_DB_HOST`에 운영 DB 호스트를 넣으면 실수로 운영 DB를 가리킬 때 멈춘다.
+   `EVAL_PROD_DB_HOST`·`EVAL_PROD_DB_USER`에 운영 DB 호스트·사용자 이름을 넣으면 실수로 운영 DB를 가리킬 때 멈춘다.
+   Supabase pooler는 운영·개발이 같은 호스트라 사용자 이름까지 넣어야 구분된다(2026-10-03 실제로 걸림).
 3. `pip install -r eval/requirements.txt`
 4. 운영 서버의 `pipeline-test/*.py` 해시를 결과의 `meta.json`(`pipeline_sha256_16`)과 비교해 같은 설정인지 확인한다.
 

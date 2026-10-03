@@ -7,6 +7,8 @@
   SPRING_DATASOURCE_URL / SPRING_DATASOURCE_USERNAME / SPRING_DATASOURCE_PASSWORD
                            서버가 쓰는 DB. EVAL_PROD_DB_HOST와 같은 호스트면 거부한다(운영 DB 보호).
   EVAL_PROD_DB_HOST        운영 DB 호스트(선택). 설정하면 실수로 운영 DB를 가리킬 때 멈춘다.
+  EVAL_PROD_DB_USER        운영 DB 사용자 이름(선택). Supabase pooler는 운영·개발이 같은 호스트를 쓰고
+                           사용자 이름(postgres.<프로젝트>)으로 나뉘어서, 호스트와 함께 비교해야 구분된다.
 """
 from __future__ import annotations
 
@@ -74,7 +76,10 @@ def db():
         sys.exit("SPRING_DATASOURCE_URL가 없거나 형식이 다르다.")
     host = m.group(1)
     prod_host = os.environ.get("EVAL_PROD_DB_HOST")
-    if prod_host and host == prod_host:
+    prod_user = os.environ.get("EVAL_PROD_DB_USER")
+    db_user = os.environ.get("SPRING_DATASOURCE_USERNAME")
+    # 사용자 이름을 모르면 호스트만으로 판단한다(같은 pooler를 쓰는 개발 DB도 멈추지만 안전한 쪽).
+    if prod_host and host == prod_host and (not prod_user or db_user == prod_user):
         sys.exit("운영 DB를 가리키고 있다 — 측정은 개발 DB에서만 한다.")
     conn = psycopg.connect(host=host, port=m.group(2) or 5432, dbname=m.group(3),
                            user=os.environ["SPRING_DATASOURCE_USERNAME"],
