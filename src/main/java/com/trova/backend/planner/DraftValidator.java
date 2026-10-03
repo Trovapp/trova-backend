@@ -98,7 +98,14 @@ public final class DraftValidator {
             } else if (items.size() < DAY_MIN && total > 1) {
                 out.add(new Violation("DAY_TOO_LIGHT", Severity.WARNING, day.day(), null, day.day() + "일차 " + items.size() + "곳"));
             }
-            // 식사 — 식당이 하나라도 있을 때만, 3곳 이상인 날에 점심·저녁 시간대 식당이 없으면 알린다.
+            // 해 진 뒤 관광지(#112) — 알려만 준다. 고치기는 DraftFixer.daylightSwap(코드)가 먼저 한다.
+            for (DraftGenerator.Item it : items) {
+                if (DraftFixer.daylightOnly(it) && it.end().isAfter(DraftFixer.DAYLIGHT_END)) {
+                    out.add(new Violation("AFTER_DARK", Severity.WARNING, day.day(), it.placeId(),
+                            day.day() + "일차 " + it.name() + "이 해 진 뒤(" + it.end() + "까지)"));
+                }
+            }
+                        // 식사 — 식당이 하나라도 있을 때만, 3곳 이상인 날에 점심·저녁 시간대 식당이 없으면 알린다.
             if (anyRestaurant && items.size() >= 3) {
                 if (!hasMeal(items, LUNCH_FROM, LUNCH_TO)) {
                     out.add(new Violation("NO_LUNCH", Severity.WARNING, day.day(), null, day.day() + "일차 점심 시간대 식당 없음"));

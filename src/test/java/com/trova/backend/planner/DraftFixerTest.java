@@ -278,4 +278,40 @@ class DraftFixerTest {
 
         assertThat(fixed.draft().excluded()).extracting(DraftGenerator.Excluded::name).containsExactly("오름");
     }
+
+    @Test
+    void 해_진_뒤_관광지는_앞쪽_카페_자리와_바꾸고_야경_명소는_둔다() {
+        SavedPlace cafe = place(330, "카페", "cafe", 33.45, 126.50, null);
+        SavedPlace lunch = place(331, "점심집", "restaurant", 33.451, 126.501, null);
+        SavedPlace beach = place(332, "해변", "attraction", 33.46, 126.51, null);
+        SavedPlace dinner = place(333, "저녁집", "restaurant", 33.461, 126.511, null);
+        SavedPlace night = place(334, "야경 전망대", "attraction", 33.47, 126.52, null);
+        List<DraftGenerator.Item> day = List.of(item(cafe, "10:00", "11:00"), item(lunch, "12:00", "13:00"),
+                item(s1, "13:30", "16:00"), item(dinner, "17:00", "18:00"), item(beach, "18:30", "20:00"), item(night, "20:10", "20:50"));
+        List<String> fixes = new java.util.ArrayList<>();
+
+        List<DraftGenerator.Item> out = DraftFixer.daylightSwap(day, byId(cafe, lunch, beach, dinner, night, s1), null, 1, fixes);
+
+        DraftGenerator.Item b = out.stream().filter(i -> i.name().equals("해변")).findFirst().orElseThrow();
+        assertThat(b.end()).isBeforeOrEqualTo(LocalTime.of(18, 0));
+        assertThat(out.stream().filter(i -> i.name().equals("야경 전망대")).findFirst().orElseThrow().start())
+                .isAfterOrEqualTo(LocalTime.of(20, 0));
+        assertThat(out.stream().filter(i -> i.name().equals("점심집")).findFirst().orElseThrow().start()).isEqualTo(LocalTime.of(12, 0));
+        for (int i = 0; i + 1 < out.size(); i++) {
+            assertThat(out.get(i + 1).start()).isAfterOrEqualTo(out.get(i).end());
+        }
+        assertThat(fixes).anyMatch(f -> f.contains("해변은 해가 진 뒤라 1일차"));
+    }
+
+    @Test
+    void 바꿀_카페_쇼핑이_없으면_그대로_두고_검증기가_알린다() {
+        SavedPlace lunch = place(340, "점심집", "restaurant", 33.45, 126.50, null);
+        SavedPlace oreum = place(341, "오름", "attraction", 33.46, 126.51, null);
+        List<DraftGenerator.Item> day = List.of(item(s1, "10:00", "11:30"), item(lunch, "12:00", "13:00"),
+                item(s2, "14:00", "17:00"), item(oreum, "17:30", "19:00"));
+
+        assertThat(DraftFixer.daylightSwap(day, byId(lunch, oreum, s1, s2), null, 1, new java.util.ArrayList<>())).isSameAs(day);
+        assertThat(DraftValidator.validate(draft(List.of(day)), byId(lunch, oreum, s1, s2), 1, null).violations())
+                .anyMatch(v -> v.type().equals("AFTER_DARK") && v.severity() == DraftValidator.Severity.WARNING);
+    }
 }
