@@ -121,4 +121,42 @@ class DraftGeneratorTest {
 
         assertThat(json).contains("\"date\":\"2026-10-10\"").contains("\"start\":\"10:00\"");
     }
+
+    @Test
+    void 저장한_JSON을_다시_읽으면_같은_초안이다() {
+        when(gemini.generateJson(anyString(), eq(DraftGenerator.OPERATION))).thenReturn(Optional.of(VALID));
+        DraftGenerator.Draft d = generator.generate(2, LocalDate.of(2026, 10, 5), places).draft().orElseThrow();
+
+        assertThat(DraftGenerator.fromJson(DraftGenerator.toJson(d))).isEqualTo(d);
+        assertThat(DraftGenerator.toJson(d, List.of("고침"), List.of("남음"))).contains("\"fixes\":[\"고침\"]")
+                .contains("\"problems\":[\"남음\"]");
+    }
+
+    @Test
+    void 규칙_수정은_지금_초안과_문제를_알려_한_번_부른다() {
+        when(gemini.generateJson(anyString(), eq(DraftGenerator.OPERATION))).thenReturn(Optional.of(VALID));
+        DraftGenerator.Draft d = generator.generate(2, null, places).draft().orElseThrow();
+        when(gemini.generateJson(contains("[반드시] 수로왕릉 휴무"), eq(DraftGenerator.RULE_REPAIR_OPERATION)))
+                .thenReturn(Optional.of(VALID));
+
+        DraftGenerator.Result r = generator.repairRules(2, null, places, d, List.of("[반드시] 수로왕릉 휴무"));
+
+        assertThat(r.geminiCalls()).isEqualTo(1);
+        assertThat(r.draft()).isPresent();
+        verify(gemini).generateJson(contains("\"placeId\":1"), eq(DraftGenerator.RULE_REPAIR_OPERATION));
+    }
+
+    @Test
+    void 영상_속_숙소가_있으면_그날_마지막_장소에서_가까운_숙소를_안내한다() {
+        SavedPlace near = place(7, "가까운 숙소", "lodging", null);
+        SavedPlace far = mock(SavedPlace.class);
+        lenient().when(far.getPlaceName()).thenReturn("먼 숙소");
+        lenient().when(far.getLatitude()).thenReturn(37.5);
+        lenient().when(far.getLongitude()).thenReturn(127.0);
+        DraftGenerator.Item last = new DraftGenerator.Item(1L, "수로왕릉", "attraction", LocalTime.of(10, 0), LocalTime.of(11, 0), 35.2, 128.9);
+        List<DraftGenerator.Day> days = List.of(new DraftGenerator.Day(1, null, List.of(last)), new DraftGenerator.Day(2, null, List.of()));
+
+        assertThat(DraftGenerator.lodging(days, List.of(far, near))).containsExactly("1일차 숙소: 가까운 숙소(영상 속 숙소)");
+        assertThat(DraftGenerator.lodging(days, List.of())).singleElement().asString().contains("숙소 미정");
+    }
 }

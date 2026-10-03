@@ -9,6 +9,7 @@ import com.trova.backend.entity.User;
 import com.trova.backend.planner.DraftGenerator;
 import com.trova.backend.planner.OpeningHoursService;
 import com.trova.backend.planner.PlanRequestParser;
+import com.trova.backend.planner.TripPlanGraph;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripDraftRepository;
@@ -32,8 +33,8 @@ class TripPlannerServiceTest {
     private final SavedPlaceRepository saved = mock(SavedPlaceRepository.class);
     private final PlanRequestParser parser = mock(PlanRequestParser.class);
     private final OpeningHoursService hours = mock(OpeningHoursService.class);
-    private final DraftGenerator generator = mock(DraftGenerator.class);
-    private final TripPlannerService service = new TripPlannerService(drafts, jobs, saved, parser, hours, generator);
+    private final TripPlanGraph graph = mock(TripPlanGraph.class);
+    private final TripPlannerService service = new TripPlannerService(drafts, jobs, saved, parser, hours, graph);
     private final User user = userWithId(1L);
 
     // 저장 전 엔티티는 id가 없어 소유자 비교를 할 수 없다 — id만 돌려주는 가짜 사용자를 쓴다.
@@ -84,8 +85,8 @@ class TripPlannerServiceTest {
         when(hours.fillMissing(anyList())).thenReturn(1);
         DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(new DraftGenerator.Day(1, null, List.of())),
                 List.of(), List.of(), List.of("이동 시간은 직선거리로 어림했어요."));
-        when(generator.generate(org.mockito.ArgumentMatchers.anyInt(), any(), anyList()))
-                .thenReturn(new DraftGenerator.Result(Optional.of(plan), 1, null));
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList()))
+                .thenReturn(new TripPlanGraph.Outcome(Optional.of(plan), 1, 0, 0, 0, List.of(), List.of(), null));
 
         service.process(9L);
 
@@ -101,14 +102,36 @@ class TripPlannerServiceTest {
         TripDraft draft = draft(List.of(1L));
         ProcessingJob gimhae = job(1L);
         when(saved.findByProcessingJob(gimhae)).thenReturn(List.of(place(gimhae, 35.23, 128.88)));
-        when(generator.generate(org.mockito.ArgumentMatchers.anyInt(), any(), anyList()))
-                .thenReturn(new DraftGenerator.Result(Optional.empty(), 2, "형식 오류: 목록에 없는 placeId 99"));
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList()))
+                .thenReturn(new TripPlanGraph.Outcome(Optional.empty(), 2, 0, -1, -1, List.of(), List.of(),
+                        "형식 오류: 목록에 없는 placeId 99"));
 
         service.process(9L);
 
         assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.FAILED);
         assertThat(draft.getErrorMessage()).doesNotContain("placeId");
         assertThat(draft.getGeminiCalls()).isEqualTo(2);
+    }
+
+    @Test
+    void 영상_속_숙소는_일정_칸이_아니라_숙소_안내로_쓰고_영업시간도_묻지_않는다() {
+        TripDraft draft = draft(List.of(1L));
+        ProcessingJob jeju = job(1L);
+        SavedPlace sight = new SavedPlace(jeju, user, "성산일출봉", null, "attraction", 33.458, 126.942);
+        SavedPlace stay = new SavedPlace(jeju, user, "봄빛코티지", null, "lodging", 33.45, 126.9);
+        when(saved.findByProcessingJob(jeju)).thenReturn(List.of(sight, stay));
+        DraftGenerator.Item item = new DraftGenerator.Item(1L, "성산일출봉", "attraction",
+                java.time.LocalTime.of(10, 0), java.time.LocalTime.of(11, 0), 33.458, 126.942);
+        DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(new DraftGenerator.Day(1, null, List.of(item)),
+                new DraftGenerator.Day(2, null, List.of())), List.of(), List.of(), List.of());
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList()))
+                .thenReturn(new TripPlanGraph.Outcome(Optional.of(plan), 1, 0, 0, 0, List.of(), List.of("2일차 0곳"), null));
+
+        service.process(9L);
+
+        verify(hours).fillMissing(List.of(sight));
+        verify(graph).run(2, null, List.of(sight));
+        assertThat(draft.getDraftJson()).contains("1일차 숙소: 봄빛코티지(영상 속 숙소)").contains("\"problems\":[\"2일차 0곳\"]");
     }
 
     @Test

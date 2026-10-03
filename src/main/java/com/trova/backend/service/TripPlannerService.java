@@ -10,6 +10,7 @@ import com.trova.backend.planner.DraftGenerator;
 import com.trova.backend.planner.OpeningHoursService;
 import com.trova.backend.planner.PlanPlaceGatherer;
 import com.trova.backend.planner.PlanRequestParser;
+import com.trova.backend.planner.TripPlanGraph;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripDraftRepository;
@@ -25,8 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * 일정 에이전트(#106). 1일차 범위: 요청 해석 → 고른 영상들의 장소 모으기 → (영상 지역이 멀면) 질문하고 멈춤 →
- * 영업시간 채우기 → 요약 저장. 초안 생성·검증·수정은 2·3일차에 이어 붙인다.
+ * 일정 에이전트(#106): 요청 해석 → 고른 영상들의 장소 모으기 → (영상 지역이 멀면) 질문하고 멈춤 →
+ * 영업시간 채우기 → 초안 생성·검증·수정(TripPlanGraph) → 저장. 승인해야 여행이 된다(4일차).
  */
 @Service
 public class TripPlannerService {
@@ -40,17 +41,17 @@ public class TripPlannerService {
     private final SavedPlaceRepository savedPlaceRepository;
     private final PlanRequestParser planRequestParser;
     private final OpeningHoursService openingHoursService;
-    private final DraftGenerator draftGenerator;
+    private final TripPlanGraph tripPlanGraph;
 
     public TripPlannerService(TripDraftRepository tripDraftRepository, ProcessingJobRepository processingJobRepository,
                               SavedPlaceRepository savedPlaceRepository, PlanRequestParser planRequestParser,
-                              OpeningHoursService openingHoursService, DraftGenerator draftGenerator) {
+                              OpeningHoursService openingHoursService, TripPlanGraph tripPlanGraph) {
         this.tripDraftRepository = tripDraftRepository;
         this.processingJobRepository = processingJobRepository;
         this.savedPlaceRepository = savedPlaceRepository;
         this.planRequestParser = planRequestParser;
         this.openingHoursService = openingHoursService;
-        this.draftGenerator = draftGenerator;
+        this.tripPlanGraph = tripPlanGraph;
     }
 
     /** 고른 영상이 모두 이 사용자의 완료된 분석이어야 만든다. 아니면 빈 값(컨트롤러가 400). */
@@ -103,27 +104,50 @@ public class TripPlannerService {
                 return;
             }
             List<SavedPlace> all = gathered.videos().stream().flatMap(v -> v.places().stream()).toList();
-            int calls = openingHoursService.fillMissing(all);
-
-            // 2일차: 초안 생성(Gemini 1번, 형식이 틀리면 1번 더). 규칙 검증·수정은 3일차에 이어 붙인다.
-            DraftGenerator.Result result = draftGenerator.generate(request.days(), request.startDate(), all);
-            draft.addGeminiCalls(result.geminiCalls());
-            if (result.draft().isEmpty()) {
-                log.warn("TripDraft {} 초안 생성 실패: {}", draftId, result.failure());
+            // 숙소는 방문지가 아니라 일정 칸에 넣지 않고 숙소 안내에만 쓴다 — 영업시간도 묻지 않는다(무료 한도 보호).
+            List<SavedPlace> lodging = all.stream().filter(TripPlannerService::isLodging).toList();
+            List<SavedPlace> visits = all.stream().filter(p -> !isLodging(p)).toList();
+            if (visits.isEmpty()) {
+                draft.markFailed("고른 영상에 숙소 말고 갈 장소가 없어요.");
+                tripDraftRepository.save(draft);
+                return;
+            }
+            int calls = openingHoursService.fillMissing(visits);
+            TripPlanGraph.Outcome outcome = tripPlanGraph.run(request.days(), request.startDate(), visits);
+            draft.addGeminiCalls(outcome.geminiCalls());
+            if (outcome.draft().isEmpty()) {
+                log.warn("TripDraft {} 초안 생성 실패: {}", draftId, outcome.failure());
                 draft.markFailed("일정 초안을 만들지 못했어요. 잠시 후 다시 시도해주세요.");
                 tripDraftRepository.save(draft);
                 return;
             }
-            draft.markReady(summaryJson(gathered, calls), DraftGenerator.toJson(result.draft().get()));
+            DraftGenerator.Draft plan = withLodging(outcome.draft().get(), lodging);
+            draft.markReady(summaryJson(gathered, calls),
+                    DraftGenerator.toJson(plan, outcome.fixes(), outcome.problems()));
             tripDraftRepository.save(draft);
-            log.info("TripDraft {} 초안 완료: 영상 {}개, 장소 {}곳, 영업시간 조회 {}번, Gemini {}번",
-                    draftId, videos.size(), gathered.totalPlaces(), calls, draft.getGeminiCalls());
+            log.info("TripDraft {} 초안 완료: 영상 {}개, 장소 {}곳, 영업시간 조회 {}번, Gemini {}번, AI 수정 {}번, ERROR {}→{}건",
+                    draftId, videos.size(), gathered.totalPlaces(), calls, draft.getGeminiCalls(),
+                    outcome.aiRepairs(), outcome.firstErrors(), outcome.finalErrors());
         } catch (Exception e) {
             log.error("TripDraft {} 처리 실패", draftId, e);
             // 앱에 내부 예외 문장을 보여주지 않는다(#95와 같은 원칙) — 원문은 로그에 있다.
             draft.markFailed("일정 초안을 만들지 못했어요. 잠시 후 다시 시도해주세요.");
             tripDraftRepository.save(draft);
         }
+    }
+
+    private static boolean isLodging(SavedPlace p) {
+        return "lodging".equals(p.getCategory());
+    }
+
+    /** 숙소 안내를 최종 동선 기준으로 다시 만든다. 당일 일정이면 영상 속 숙소는 뺀 장소로 알린다. */
+    static DraftGenerator.Draft withLodging(DraftGenerator.Draft plan, List<SavedPlace> lodging) {
+        List<DraftGenerator.Excluded> excluded = new ArrayList<>(plan.excluded());
+        if (plan.days().size() == 1) {
+            lodging.forEach(p -> excluded.add(new DraftGenerator.Excluded(p.getId(), p.getPlaceName(),
+                    "당일 일정이라 숙소는 넣지 않았어요.")));
+        }
+        return new DraftGenerator.Draft(plan.days(), excluded, DraftGenerator.lodging(plan.days(), lodging), plan.assumptions());
     }
 
     static String summaryJson(PlanPlaceGatherer.Gathered gathered, int hoursCalls) {
