@@ -24,7 +24,11 @@
 2. `python eval/itinerary/run.py --jobs <Part A 결과>/kept_jobs.json --max-google-calls 300`
    — 영업시간은 Google Text Search(regularOpeningHours, Enterprise SKU 월 1,000건 무료)로 장소당 한 번 받아 `hours_cache.json`에 저장한다.
 3. `python eval/itinerary/score.py <결과 폴더>`
-4. 측정이 끝나면 남긴 작업을 지운다(개발 DB, 테스트 계정).
+4. 일정 에이전트(#106)를 같은 요청으로 잰다: 에이전트가 든 서버를 다른 포트(예: 8090)에 띄우고
+   `EVAL_BASE_URL=http://localhost:8090 python eval/itinerary/run_agent.py --jobs <kept_jobs.json> --server-commit <커밋>`
+   → `python eval/itinerary/score.py <결과>_agent` → `python eval/itinerary/compare.py <지금 기능 결과> <에이전트 결과>`(compare.md 표).
+   시작 전 질문이 오면 "지역별로 나누기"로 답하고, 초안은 승인하지 않고 끝에 지운다.
+5. 측정이 끝나면 남긴 작업을 지운다(개발 DB, 테스트 계정).
 
 ## 규칙과 상수 (2026-10-03 승인)
 - 좌표 맞음: 정답 좌표에서 200m 안 / 다른 지역 오탐: 정답 좌표에서 50km 밖
