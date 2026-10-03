@@ -9,7 +9,11 @@ import java.util.List;
  * DETAILS_FIELD_MASK를 통해 이 호출에서만 요청한다.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record GooglePlacesDetailsResponse(String id, List<Review> reviews) {
+public record GooglePlacesDetailsResponse(String id, List<Review> reviews, String nationalPhoneNumber) {
+
+    public GooglePlacesDetailsResponse(String id, List<Review> reviews) {
+        this(id, reviews, null);
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Review(ReviewText text) {

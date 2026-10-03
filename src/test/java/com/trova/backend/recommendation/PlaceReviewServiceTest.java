@@ -56,6 +56,7 @@ class PlaceReviewServiceTest {
                 List.of("일찍 가세요"), List.of("주차 확인"));
         place.applyReviewSummary(toJson(cached));
         place.applyReviewSnippets(List.of("좋아요", "친절해요"));
+        place.applyPhone("02-111-2222"); // 번호도 이미 확인한 장소
         when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
 
         Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
@@ -63,7 +64,9 @@ class PlaceReviewServiceTest {
         assertThat(result).isPresent();
         assertThat(result.get().summary()).isEqualTo(cached);
         assertThat(result.get().snippets()).containsExactly("좋아요", "친절해요");
+        assertThat(result.get().phone()).isEqualTo("02-111-2222");
         verify(googlePlacesApiClient, never()).getDetails(any());
+        verify(googlePlacesApiClient, never()).getPhone(any());
         verify(reviewSummaryRunner, never()).run(any(), anyLong());
     }
 
@@ -200,5 +203,65 @@ class PlaceReviewServiceTest {
         assertThat(summary.fee()).isNull();
         assertThat(summary.tips()).containsExactly("주말엔 붐벼요");
         assertThat(summary.checklist()).containsExactly("주차 확인");
+    }
+
+    @Test
+    void 처음_상세를_만들면_리뷰와_같은_요청에서_받은_전화번호를_저장하고_돌려준다() {
+        // 전화번호를 리뷰 요청에 더해도 같은 티어로 과금되므로 따로 요청하지 않는다(#99).
+        Place place = newPlace();
+        when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(googlePlacesApiClient.getDetails("g1")).thenReturn(new GooglePlacesDetailsResponse("g1", List.of(), "032-123-4567"));
+
+        Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
+
+        assertThat(result.get().phone()).isEqualTo("032-123-4567");
+        assertThat(place.getPhone()).isEqualTo("032-123-4567");
+        assertThat(place.getPhoneCheckedAt()).isNotNull();
+        verify(googlePlacesApiClient, never()).getPhone(any());
+    }
+
+    @Test
+    void 요약은_있지만_번호를_확인한_적_없는_장소는_전화번호만_한_번_요청해_채운다() throws Exception {
+        Place place = newPlace();
+        place.applyReviewSummary(toJson(new ReviewSummary("요약", List.of(), List.of(), null, null, List.of(), List.of())));
+        when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(googlePlacesApiClient.getPhone("g1")).thenReturn(new GooglePlacesDetailsResponse("g1", null, "032-987-6543"));
+
+        Optional<PlaceReviewInfo> first = placeReviewService.getOrGenerateSummary(1L);
+        Optional<PlaceReviewInfo> second = placeReviewService.getOrGenerateSummary(1L);
+
+        assertThat(first.get().phone()).isEqualTo("032-987-6543");
+        assertThat(second.get().phone()).isEqualTo("032-987-6543");
+        verify(googlePlacesApiClient, times(1)).getPhone("g1"); // 두 번째부터는 저장된 번호
+        verify(googlePlacesApiClient, never()).getDetails(any()); // 리뷰는 다시 받지 않는다
+        verify(placeRepository).save(place);
+    }
+
+    @Test
+    void 번호가_없는_장소도_확인했다고_남겨_다시_요청하지_않는다() throws Exception {
+        Place place = newPlace();
+        place.applyReviewSummary(toJson(new ReviewSummary("요약", List.of(), List.of(), null, null, List.of(), List.of())));
+        when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(googlePlacesApiClient.getPhone("g1")).thenReturn(new GooglePlacesDetailsResponse("g1", null, null));
+
+        placeReviewService.getOrGenerateSummary(1L);
+        Optional<PlaceReviewInfo> second = placeReviewService.getOrGenerateSummary(1L);
+
+        assertThat(second.get().phone()).isNull();
+        verify(googlePlacesApiClient, times(1)).getPhone("g1");
+    }
+
+    @Test
+    void 전화번호_요청이_실패해도_상세는_그대로_주고_다음에_다시_시도한다() throws Exception {
+        Place place = newPlace();
+        place.applyReviewSummary(toJson(new ReviewSummary("요약", List.of(), List.of(), null, null, List.of(), List.of())));
+        when(placeRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(googlePlacesApiClient.getPhone("g1")).thenThrow(new RuntimeException("timeout"));
+
+        Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
+
+        assertThat(result.get().summary().highlights()).isEqualTo("요약");
+        assertThat(result.get().phone()).isNull();
+        assertThat(place.getPhoneCheckedAt()).isNull();
     }
 }

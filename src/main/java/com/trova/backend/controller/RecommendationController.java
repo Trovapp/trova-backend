@@ -43,7 +43,7 @@ public class RecommendationController {
             Double latitude, Double longitude, String address,
             String highlights, List<String> pros, List<String> cons,
             String hours, String fee, List<String> tips, List<String> checklist,
-            List<String> reviewSnippets
+            List<String> reviewSnippets, String phone
     ) {
         static PlaceDetailResponse from(Place place, PlaceReviewService.PlaceReviewInfo reviewInfo) {
             ReviewSummary summary = reviewInfo.summary();
@@ -53,7 +53,7 @@ public class RecommendationController {
                     place.getLatitude(), place.getLongitude(), place.getAddress(),
                     summary.highlights(), summary.pros(), summary.cons(),
                     summary.hours(), summary.fee(), summary.tips(), summary.checklist(),
-                    reviewInfo.snippets());
+                    reviewInfo.snippets(), reviewInfo.phone());
         }
     }
 
