@@ -1,0 +1,70 @@
+{
+  "video_no": 21,
+  "repeat": 1,
+  "url": "https://www.instagram.com/reel/C8rEkjCyMG9/",
+  "submit_status": 202,
+  "job_id": 129,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 10.7,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 9.076312
+  },
+  "places": [
+    {
+      "name": "솔내음한정식",
+      "region": "부산",
+      "category": "restaurant",
+      "latitude": 35.1586623388674,
+      "longitude": 129.175040428992,
+      "address": "부산 해운대구 중동 1509-5",
+      "road_address": "부산 해운대구 달맞이길117번길 17-11",
+      "kakao_place_url": "http://place.map.kakao.com/16610024"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 2612,
+      "prompt_tokens": 9348,
+      "response_tokens": 23,
+      "total_tokens": 9371,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 2566,
+      "prompt_tokens": 10337,
+      "response_tokens": 219,
+      "total_tokens": 10556,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 62,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 47,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+ "request": {
+  "id": "B2",
+  "videos": [
+   5
+  ],
+  "days": 1,
+  "start": null,
+  "purpose": "기본"
+ },
+ "mode": "agent",
+ "videos": [
+  {
+   "video_no": 5,
+   "job_id": 115,
+   "generate": {
+    "result": "DONE",
+    "seconds": 2.3
+   },
+   "input_place_ids": [
+    615
+   ],
+   "places": [
+    {
+     "id": 615,
+     "name": "CGV 부산명지",
+     "region": "Busan",
+     "latitude": 35.0944146620419,
+     "longitude": 128.903474632696,
+     "day": 1,
+     "order": 1
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "trip-plan.draft",
+     "success": true,
+     "latency_ms": 866,
+     "prompt_tokens": 603,
+     "response_tokens": 82
+    }
+   ]
+  }
+ ],
+ "agent": {
+  "draft_id": 94,
+  "message": "당일치기",
+  "status": "READY",
+  "question": null,
+  "answer": null,
+  "gemini_calls": 1,
+  "agent_google_hours_calls": 1,
+  "error": null,
+  "excluded": [],
+  "lodging": [],
+  "fixes": [],
+  "problems": [],
+  "draft": {
+   "days": [
+    {
+     "day": 1,
+     "date": null,
+     "items": [
+      {
+       "placeId": 615,
+       "name": "CGV 부산명지",
+       "category": "attraction",
+       "start": "09:00",
+       "end": "11:00",
+       "latitude": 35.0944146620419,
+       "longitude": 128.903474632696
+      }
+     ]
+    }
+   ],
+   "excluded": [],
+   "lodging": [],
+   "assumptions": [
+    "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+    "영업시간을 확인하지 못한 장소가 1곳 있어요.",
+    "이동 시간은 직선거리로 어림했어요."
+   ],
+   "fixes": [],
+   "problems": []
+  }
+ },
+ "inputs": [
+  {
+   "id": 615,
+   "name": "CGV 부산명지",
+   "region": "Busan",
+   "latitude": 35.0944146620419,
+   "longitude": 128.903474632696,
+   "day": null,
+   "order": null
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "615": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJZwrBbMbFaDURoMqRLWyghy0",
+   "google_name": "CGV 부산명지",
+   "distance_m": 10,
+   "periods": null
+  }
+ }
+}

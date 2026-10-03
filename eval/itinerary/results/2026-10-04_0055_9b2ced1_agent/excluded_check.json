@@ -1,0 +1,252 @@
+{
+ "summary": {
+  "excluded": 67,
+  "restorable": 15,
+  "scheduled": 168,
+  "requests_with_restorable": [
+   "B4",
+   "B8",
+   "B9",
+   "B18",
+   "B19"
+  ]
+ },
+ "rows": [
+  {
+   "id": "B1",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 6
+  },
+  {
+   "id": "B2",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 1
+  },
+  {
+   "id": "B3",
+   "excluded": 2,
+   "restorable": [],
+   "scheduled": 12
+  },
+  {
+   "id": "B4",
+   "excluded": 6,
+   "restorable": [
+    {
+     "name": "용머리해안",
+     "reason": "다른 장소들과 동선을 맞추기 위해 이번 일정에서 뺐어요.",
+     "fits_days": [
+      2,
+      3
+     ]
+    },
+    {
+     "name": "송악산",
+     "reason": "다른 장소들과 동선을 맞추기 위해 이번 일정에서 뺐어요.",
+     "fits_days": [
+      2,
+      3
+     ]
+    },
+    {
+     "name": "순천미향 제주산방산본점",
+     "reason": "다른 장소들과 동선을 맞추기 위해 이번 일정에서 뺐어요.",
+     "fits_days": [
+      2,
+      3
+     ]
+    },
+    {
+     "name": "돈어길",
+     "reason": "다른 장소들과 동선을 맞추기 위해 이번 일정에서 뺐어요.",
+     "fits_days": [
+      2,
+      3
+     ]
+    },
+    {
+     "name": "화순한가네식당",
+     "reason": "다른 장소들과 동선을 맞추기 위해 이번 일정에서 뺐어요.",
+     "fits_days": [
+      2,
+      3
+     ]
+    },
+    {
+     "name": "미영이네 본점",
+     "reason": "다른 장소들과 동선을 맞추기 위해 이번 일정에서 뺐어요.",
+     "fits_days": [
+      2,
+      3
+     ]
+    }
+   ],
+   "scheduled": 16
+  },
+  {
+   "id": "B5",
+   "excluded": 2,
+   "restorable": [],
+   "scheduled": 10
+  },
+  {
+   "id": "B6",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 8
+  },
+  {
+   "id": "B7",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 7
+  },
+  {
+   "id": "B8",
+   "excluded": 1,
+   "restorable": [
+    {
+     "name": "언론중재위원회 전북중재부",
+     "reason": "관광이나 여가 목적의 장소가 아니어서 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    }
+   ],
+   "scheduled": 5
+  },
+  {
+   "id": "B9",
+   "excluded": 5,
+   "restorable": [
+    {
+     "name": "표선해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1,
+      3
+     ]
+    },
+    {
+     "name": "쇠소깍",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      2,
+      3
+     ]
+    },
+    {
+     "name": "황우지해안 (폐쇄)",
+     "reason": "폐쇄된 장소여서 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "name": "약천사",
+     "reason": "하루 최대 7곳의 제한으로 인해 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "scheduled": 15
+  },
+  {
+   "id": "B10",
+   "excluded": 13,
+   "restorable": [],
+   "scheduled": 18
+  },
+  {
+   "id": "B11",
+   "excluded": 13,
+   "restorable": [],
+   "scheduled": 14
+  },
+  {
+   "id": "B12",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 5
+  },
+  {
+   "id": "B13",
+   "excluded": 5,
+   "restorable": [],
+   "scheduled": 9
+  },
+  {
+   "id": "B14",
+   "excluded": 2,
+   "restorable": [],
+   "scheduled": 10
+  },
+  {
+   "id": "B15",
+   "excluded": 1,
+   "restorable": [],
+   "scheduled": 5
+  },
+  {
+   "id": "B16",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 1
+  },
+  {
+   "id": "B17",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 1
+  },
+  {
+   "id": "B18",
+   "excluded": 12,
+   "restorable": [
+    {
+     "name": "표선해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    }
+   ],
+   "scheduled": 20
+  },
+  {
+   "id": "B19",
+   "excluded": 5,
+   "restorable": [
+    {
+     "name": "삼양해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    },
+    {
+     "name": "함덕해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    },
+    {
+     "name": "김녕해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    }
+   ],
+   "scheduled": 5
+  }
+ ]
+}
