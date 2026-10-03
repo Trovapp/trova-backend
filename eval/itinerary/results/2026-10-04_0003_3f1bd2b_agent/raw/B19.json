@@ -1,0 +1,403 @@
+{
+ "request": {
+  "id": "B19",
+  "videos": [
+   7
+  ],
+  "days": 1,
+  "start": null,
+  "purpose": "장소 많은데 짧은 기간"
+ },
+ "mode": "agent",
+ "videos": [
+  {
+   "video_no": 7,
+   "job_id": 69,
+   "generate": {
+    "result": "DONE",
+    "seconds": 2.3
+   },
+   "input_place_ids": [
+    375,
+    376,
+    377,
+    378,
+    379,
+    380,
+    381,
+    382,
+    383,
+    384
+   ],
+   "places": [
+    {
+     "id": 375,
+     "name": "삼양해수욕장",
+     "region": "제주",
+     "latitude": 33.5258670153237,
+     "longitude": 126.585537319057,
+     "day": 1,
+     "order": 2
+    },
+    {
+     "id": 376,
+     "name": "함덕해수욕장",
+     "region": "제주",
+     "latitude": 33.5430615661113,
+     "longitude": 126.669238934013,
+     "day": 1,
+     "order": 3
+    },
+    {
+     "id": 377,
+     "name": "김녕해수욕장",
+     "region": "제주",
+     "latitude": 33.5574388587079,
+     "longitude": 126.759313988844,
+     "day": 1,
+     "order": 4
+    },
+    {
+     "id": 378,
+     "name": "세화해변",
+     "region": "제주",
+     "latitude": 33.5251436596119,
+     "longitude": 126.86025618946,
+     "day": 1,
+     "order": 5
+    },
+    {
+     "id": 384,
+     "name": "이호테우해수욕장",
+     "region": "제주",
+     "latitude": 33.4973768007144,
+     "longitude": 126.452690819027,
+     "day": 1,
+     "order": 1
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "trip-plan.draft",
+     "success": true,
+     "latency_ms": 1802,
+     "prompt_tokens": 957,
+     "response_tokens": 464
+    }
+   ]
+  }
+ ],
+ "agent": {
+  "draft_id": 35,
+  "message": "당일치기",
+  "status": "READY",
+  "question": null,
+  "answer": null,
+  "gemini_calls": 1,
+  "agent_google_hours_calls": 0,
+  "error": null,
+  "excluded": [
+   {
+    "placeId": 379,
+    "name": "표선해수욕장",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 380,
+    "name": "중문색달해수욕장",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 381,
+    "name": "화순금모래해수욕장",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 382,
+    "name": "판포포구",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 383,
+    "name": "협재해수욕장",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   }
+  ],
+  "lodging": [],
+  "fixes": [],
+  "problems": [],
+  "draft": {
+   "days": [
+    {
+     "day": 1,
+     "date": null,
+     "items": [
+      {
+       "placeId": 384,
+       "name": "이호테우해수욕장",
+       "category": "attraction",
+       "start": "09:00",
+       "end": "10:30",
+       "latitude": 33.4973768007144,
+       "longitude": 126.452690819027
+      },
+      {
+       "placeId": 375,
+       "name": "삼양해수욕장",
+       "category": "attraction",
+       "start": "11:00",
+       "end": "12:30",
+       "latitude": 33.5258670153237,
+       "longitude": 126.585537319057
+      },
+      {
+       "placeId": 376,
+       "name": "함덕해수욕장",
+       "category": "attraction",
+       "start": "13:30",
+       "end": "15:00",
+       "latitude": 33.5430615661113,
+       "longitude": 126.669238934013
+      },
+      {
+       "placeId": 377,
+       "name": "김녕해수욕장",
+       "category": "attraction",
+       "start": "15:30",
+       "end": "17:00",
+       "latitude": 33.5574388587079,
+       "longitude": 126.759313988844
+      },
+      {
+       "placeId": 378,
+       "name": "세화해변",
+       "category": "attraction",
+       "start": "17:30",
+       "end": "19:00",
+       "latitude": 33.5251436596119,
+       "longitude": 126.86025618946
+      }
+     ]
+    }
+   ],
+   "excluded": [
+    {
+     "placeId": 379,
+     "name": "표선해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 380,
+     "name": "중문색달해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 381,
+     "name": "화순금모래해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 382,
+     "name": "판포포구",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 383,
+     "name": "협재해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    }
+   ],
+   "lodging": [],
+   "assumptions": [
+    "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+    "영업시간을 확인하지 못한 장소가 6곳 있어요.",
+    "이동 시간은 직선거리로 어림했어요."
+   ],
+   "fixes": [],
+   "problems": []
+  }
+ },
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "375": {
+   "status": "OK",
+   "google_id": "ChIJWVLk54bjDDURAgo7ldkktR4",
+   "google_name": "삼양해수욕장",
+   "distance_m": 129,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "376": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJVSv3qq_8DDURcLh4pWxZ0vA",
+   "google_name": "함덕해수욕장",
+   "distance_m": 64,
+   "periods": null
+  },
+  "377": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJnWoxZkcYDTURJT2wzlzI5eM",
+   "google_name": "김녕해수욕장",
+   "distance_m": 99,
+   "periods": null
+  },
+  "378": {
+   "status": "OK",
+   "google_id": "ChIJT0n_YzoXDTURcrZLa9grm4Y",
+   "google_name": "세화해변",
+   "distance_m": 47,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "379": {
+   "status": "OK",
+   "google_id": "ChIJy-enok8PDTURZYi00I4pGd8",
+   "google_name": "표선해수욕장",
+   "distance_m": 33,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "380": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJ79AXk8haDDURrfp2JK5_izk",
+   "google_name": "중문 색달해수욕장",
+   "distance_m": 34,
+   "periods": null
+  },
+  "381": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJbeFnYWlDDDURQAvGdeYWCTE",
+   "google_name": "화순금모래해변",
+   "distance_m": 29,
+   "periods": null
+  },
+  "382": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJh3Vgz89nDDURTQYaSNXa9UQ",
+   "google_name": "판포 포구",
+   "distance_m": 45,
+   "periods": null
+  },
+  "383": {
+   "status": "OK",
+   "google_id": "ChIJ8bBzwwBhDDURAISiRyzO4mw",
+   "google_name": "협재해수욕장",
+   "distance_m": 21,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "384": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJF2wgtzz7DDURDzj9E87gjLI",
+   "google_name": "이호테우해변",
+   "distance_m": 76,
+   "periods": null
+  }
+ }
+}

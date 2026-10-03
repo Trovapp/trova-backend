@@ -1,0 +1,398 @@
+{
+ "request": {
+  "id": "B12",
+  "videos": [
+   13
+  ],
+  "days": 1,
+  "start": "weekend",
+  "purpose": "날짜 지정(주말)"
+ },
+ "videos": [
+  {
+   "video_no": 13,
+   "job_id": 75,
+   "generate": {
+    "result": "DONE",
+    "seconds": 2.1,
+    "since": "2026-10-04 00:02:08.361184"
+   },
+   "input_place_ids": [
+    442,
+    443,
+    444,
+    445,
+    446
+   ],
+   "places": [
+    {
+     "id": 442,
+     "name": "전주난장",
+     "region": "전북 전주시",
+     "latitude": 35.8185302921246,
+     "longitude": 127.152556435027,
+     "day": 1,
+     "order": 1
+    },
+    {
+     "id": 443,
+     "name": "경기전",
+     "region": "전북 전주시",
+     "latitude": 35.8153794432041,
+     "longitude": 127.149723250334,
+     "day": 1,
+     "order": 2
+    },
+    {
+     "id": 444,
+     "name": "전주천",
+     "region": "전북 전주시",
+     "latitude": 35.851657406306,
+     "longitude": 127.112956320794,
+     "day": 1,
+     "order": 3
+    },
+    {
+     "id": 445,
+     "name": "청연루",
+     "region": "전북 전주시",
+     "latitude": 35.8106731680088,
+     "longitude": 127.153213023533,
+     "day": 1,
+     "order": 4
+    },
+    {
+     "id": 446,
+     "name": "연화정도서관",
+     "region": "전북 전주시",
+     "latitude": 35.8491145652129,
+     "longitude": 127.123440322004,
+     "day": 1,
+     "order": 5
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "generate_itinerary",
+     "success": true,
+     "latency_ms": 1629,
+     "prompt_tokens": 433,
+     "response_tokens": 173
+    }
+   ]
+  }
+ ],
+ "start_date": "2026-10-10",
+ "closed_day_note": null,
+ "hours": {
+  "442": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJBeCtXWEjcDURh7CRoxB8Euo",
+   "google_name": "전주난장",
+   "distance_m": 2,
+   "periods": null
+  },
+  "443": {
+   "status": "OK",
+   "google_id": "ChIJ5WryHGAjcDURMUsEZ8rflR8",
+   "google_name": "전주 경기전",
+   "distance_m": 7,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 18,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "444": {
+   "status": "NO_MATCH"
+  },
+  "445": {
+   "status": "OK",
+   "google_id": "ChIJMVLQGpwkcDURyPF0APbrpVY",
+   "google_name": "전주천 남천교(청연루)",
+   "distance_m": 13,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "446": {
+   "status": "OK",
+   "google_id": "ChIJqWlvO5s9cDURHZQKyhF2C9c",
+   "google_name": "연화정 도서관",
+   "distance_m": 12,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  }
+ },
+ "trips": [
+  {
+   "video_no": 13,
+   "trip": {
+    "id": 11,
+    "title": "eval B12",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10"
+   },
+   "detail": {
+    "id": 11,
+    "title": "eval B12",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10",
+    "days": [
+     {
+      "id": 23,
+      "day": 1,
+      "date": "2026-10-10",
+      "places": [
+       {
+        "id": 121,
+        "placeName": "전주난장",
+        "region": "전북 전주시",
+        "category": "attraction",
+        "latitude": 35.8185302921246,
+        "longitude": 127.152556435027,
+        "phone": "063-244-0001",
+        "address": "전북특별자치도 전주시 완산구 풍남동2가 32-5",
+        "visitOrder": 1,
+        "source": "VIDEO",
+        "googlePlaceId": null,
+        "visitStartTime": null,
+        "visitEndTime": null,
+        "arrivalTransportMode": null,
+        "memo": null
+       },
+       {
+        "id": 122,
+        "placeName": "경기전",
+        "region": "전북 전주시",
+        "category": "attraction",
+        "latitude": 35.8153794432041,
+        "longitude": 127.149723250334,
+        "phone": "063-281-2788",
+        "address": "전북특별자치도 전주시 완산구 풍남동3가 102",
+        "visitOrder": 2,
+        "source": "VIDEO",
+        "googlePlaceId": null,
+        "visitStartTime": null,
+        "visitEndTime": null,
+        "arrivalTransportMode": null,
+        "memo": null
+       },
+       {
+        "id": 123,
+        "placeName": "전주천",
+        "region": "전북 전주시",
+        "category": "attraction",
+        "latitude": 35.851657406306,
+        "longitude": 127.112956320794,
+        "phone": "",
+        "address": "전북특별자치도 전주시 덕진구 팔복동1가",
+        "visitOrder": 3,
+        "source": "VIDEO",
+        "googlePlaceId": null,
+        "visitStartTime": null,
+        "visitEndTime": null,
+        "arrivalTransportMode": null,
+        "memo": null
+       },
+       {
+        "id": 124,
+        "placeName": "청연루",
+        "region": "전북 전주시",
+        "category": "attraction",
+        "latitude": 35.8106731680088,
+        "longitude": 127.153213023533,
+        "phone": "",
+        "address": "전북특별자치도 전주시 완산구 동서학동 940-2",
+        "visitOrder": 4,
+        "source": "VIDEO",
+        "googlePlaceId": null,
+        "visitStartTime": null,
+        "visitEndTime": null,
+        "arrivalTransportMode": null,
+        "memo": null
+       },
+       {
+        "id": 125,
+        "placeName": "연화정도서관",
+        "region": "전북 전주시",
+        "category": "attraction",
+        "latitude": 35.8491145652129,
+        "longitude": 127.123440322004,
+        "phone": "063-714-3527",
+        "address": "전북특별자치도 전주시 덕진구 덕진동1가 1316-2",
+        "visitOrder": 5,
+        "source": "VIDEO",
+        "googlePlaceId": null,
+        "visitStartTime": null,
+        "visitEndTime": null,
+        "arrivalTransportMode": null,
+        "memo": null
+       }
+      ]
+     }
+    ]
+   },
+   "reused_existing": false
+  }
+ ]
+}

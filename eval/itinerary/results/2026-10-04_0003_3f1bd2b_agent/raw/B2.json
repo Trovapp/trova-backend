@@ -1,0 +1,90 @@
+{
+ "request": {
+  "id": "B2",
+  "videos": [
+   5
+  ],
+  "days": 1,
+  "start": null,
+  "purpose": "기본"
+ },
+ "mode": "agent",
+ "videos": [
+  {
+   "video_no": 5,
+   "job_id": 67,
+   "generate": {
+    "result": "DONE",
+    "seconds": 2.3
+   },
+   "input_place_ids": [
+    362
+   ],
+   "places": [],
+   "gemini": [
+    {
+     "operation": "trip-plan.draft",
+     "success": true,
+     "latency_ms": 1413,
+     "prompt_tokens": 506,
+     "response_tokens": 68
+    }
+   ]
+  }
+ ],
+ "agent": {
+  "draft_id": 18,
+  "message": "당일치기",
+  "status": "READY",
+  "question": null,
+  "answer": null,
+  "gemini_calls": 1,
+  "agent_google_hours_calls": 1,
+  "error": null,
+  "excluded": [
+   {
+    "placeId": 362,
+    "name": "CGV 부산명지",
+    "reason": "일정에 포함하기에 장소 수가 부족하고 단독으로 방문하기에 적절하지 않아 이번 일정에서 뺐어요."
+   }
+  ],
+  "lodging": [],
+  "fixes": [],
+  "problems": [],
+  "draft": {
+   "days": [
+    {
+     "day": 1,
+     "date": null,
+     "items": []
+    }
+   ],
+   "excluded": [
+    {
+     "placeId": 362,
+     "name": "CGV 부산명지",
+     "reason": "일정에 포함하기에 장소 수가 부족하고 단독으로 방문하기에 적절하지 않아 이번 일정에서 뺐어요."
+    }
+   ],
+   "lodging": [],
+   "assumptions": [
+    "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+    "영업시간을 확인하지 못한 장소가 1곳 있어요.",
+    "이동 시간은 직선거리로 어림했어요."
+   ],
+   "fixes": [],
+   "problems": []
+  }
+ },
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "362": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJZwrBbMbFaDURoMqRLWyghy0",
+   "google_name": "CGV 부산명지",
+   "distance_m": 10,
+   "periods": null
+  }
+ }
+}

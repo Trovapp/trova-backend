@@ -1,0 +1,322 @@
+{
+ "request": {
+  "id": "B8",
+  "videos": [
+   13,
+   14
+  ],
+  "days": 1,
+  "start": null,
+  "purpose": "같은 지역 합치기"
+ },
+ "videos": [
+  {
+   "video_no": 13,
+   "job_id": 75,
+   "generate": {
+    "result": "DONE",
+    "seconds": 2.1,
+    "since": "2026-10-03 23:57:14.931216"
+   },
+   "input_place_ids": [
+    442,
+    443,
+    444,
+    445,
+    446
+   ],
+   "places": [
+    {
+     "id": 442,
+     "name": "전주난장",
+     "region": "전북 전주시",
+     "latitude": 35.8185302921246,
+     "longitude": 127.152556435027,
+     "day": 1,
+     "order": 1
+    },
+    {
+     "id": 443,
+     "name": "경기전",
+     "region": "전북 전주시",
+     "latitude": 35.8153794432041,
+     "longitude": 127.149723250334,
+     "day": 1,
+     "order": 2
+    },
+    {
+     "id": 444,
+     "name": "전주천",
+     "region": "전북 전주시",
+     "latitude": 35.851657406306,
+     "longitude": 127.112956320794,
+     "day": 1,
+     "order": 3
+    },
+    {
+     "id": 445,
+     "name": "청연루",
+     "region": "전북 전주시",
+     "latitude": 35.8106731680088,
+     "longitude": 127.153213023533,
+     "day": 1,
+     "order": 4
+    },
+    {
+     "id": 446,
+     "name": "연화정도서관",
+     "region": "전북 전주시",
+     "latitude": 35.8491145652129,
+     "longitude": 127.123440322004,
+     "day": 1,
+     "order": 5
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "generate_itinerary",
+     "success": true,
+     "latency_ms": 1314,
+     "prompt_tokens": 433,
+     "response_tokens": 173
+    }
+   ]
+  },
+  {
+   "video_no": 14,
+   "job_id": 76,
+   "generate": {
+    "result": "DONE",
+    "seconds": 2.3,
+    "since": "2026-10-03 23:57:30.338278"
+   },
+   "input_place_ids": [
+    447
+   ],
+   "places": [
+    {
+     "id": 447,
+     "name": "전주한옥마을",
+     "region": "전주",
+     "latitude": 35.814777443298,
+     "longitude": 127.152557001422,
+     "day": 1,
+     "order": 1
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "generate_itinerary",
+     "success": true,
+     "latency_ms": 1030,
+     "prompt_tokens": 304,
+     "response_tokens": 37
+    }
+   ]
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "442": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJBeCtXWEjcDURh7CRoxB8Euo",
+   "google_name": "전주난장",
+   "distance_m": 2,
+   "periods": null
+  },
+  "443": {
+   "status": "OK",
+   "google_id": "ChIJ5WryHGAjcDURMUsEZ8rflR8",
+   "google_name": "전주 경기전",
+   "distance_m": 7,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 18,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "444": {
+   "status": "NO_MATCH"
+  },
+  "445": {
+   "status": "OK",
+   "google_id": "ChIJMVLQGpwkcDURyPF0APbrpVY",
+   "google_name": "전주천 남천교(청연루)",
+   "distance_m": 13,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "446": {
+   "status": "OK",
+   "google_id": "ChIJqWlvO5s9cDURHZQKyhF2C9c",
+   "google_name": "연화정 도서관",
+   "distance_m": 12,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "447": {
+   "status": "NO_MATCH"
+  }
+ }
+}
