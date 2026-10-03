@@ -359,7 +359,7 @@ class TripServiceIntegrationTest {
                 new GooglePlacesNearbySearchResponse.Place.DisplayName("우도땅콩아이스크림"),
                 List.of("cafe"), 4.4, 300, null,
                 new GooglePlacesNearbySearchResponse.Place.Location(33.5, 126.9), "제주 우도");
-        when(googlePlacesApiClient.searchText("우도땅콩아이스크림"))
+        when(googlePlacesApiClient.searchText("제주 우도땅콩아이스크림")) // 지역을 붙여 검색한다(#101)
                 .thenReturn(new GooglePlacesNearbySearchResponse(List.of(raw)));
 
         Place resolved = tripService.resolveDetailsPlace(user, videoPlace.getId()).orElseThrow();
@@ -371,6 +371,48 @@ class TripServiceIntegrationTest {
         assertThat(signals).hasSize(1);
         assertThat(signals.get(0).getSignalType()).isEqualTo(SignalType.VIDEO_PLACE_MATCHED);
         assertThat(signals.get(0).getPlace().getGooglePlaceId()).isEqualTo("trip-place-test-signal-video-match");
+    }
+
+    private static GooglePlacesNearbySearchResponse.Place rawPlace(String id, String name, double lat, double lng, String address) {
+        return new GooglePlacesNearbySearchResponse.Place(
+                id, new GooglePlacesNearbySearchResponse.Place.DisplayName(name),
+                List.of("amusement_park"), 4.0, 100, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(lat, lng), address);
+    }
+
+    @Test
+    void resolveDetailsPlace는_같은_이름의_다른_지역_결과만_있으면_연결하지_않는다() {
+        // 개발 DB에서 김해 "가야랜드"가 파주 가야랜드(341km)로 연결됐던 상황(#101).
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "김해 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        Itinerary itinerary = itineraryRepository.findByTripAndDay(trip, 1).orElseThrow();
+        TripPlace gimhae = tripPlaceRepository.save(new TripPlace(
+                itinerary, "가야랜드", "김해", "attraction",
+                35.2605, 128.9020, null, "경남 김해시 삼방동", 1, PlaceSource.VIDEO, 43L));
+        when(googlePlacesApiClient.searchText("김해 가야랜드")).thenReturn(new GooglePlacesNearbySearchResponse(List.of(
+                rawPlace("match-test-paju", "가야랜드", 37.8514, 126.8566, "경기도 파주시 법원읍"))));
+
+        Optional<Place> resolved = tripService.resolveDetailsPlace(user, gimhae.getId());
+
+        assertThat(resolved).isEmpty();
+        assertThat(tripPlaceRepository.findById(gimhae.getId()).orElseThrow().getGooglePlaceId()).isNull();
+    }
+
+    @Test
+    void resolveDetailsPlace는_검색_1등이_멀면_근처의_다음_결과를_연결한다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "김해 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        Itinerary itinerary = itineraryRepository.findByTripAndDay(trip, 1).orElseThrow();
+        TripPlace gimhae = tripPlaceRepository.save(new TripPlace(
+                itinerary, "가야랜드", "김해", "attraction",
+                35.2605, 128.9020, null, "경남 김해시 삼방동", 1, PlaceSource.VIDEO, 44L));
+        when(googlePlacesApiClient.searchText("김해 가야랜드")).thenReturn(new GooglePlacesNearbySearchResponse(List.of(
+                rawPlace("match-test-paju-2", "가야랜드", 37.8514, 126.8566, "경기도 파주시 법원읍"),
+                rawPlace("match-test-gimhae", "가야랜드 엔젤파크", 35.2612, 128.9014, "경상남도 김해시 인제로 368"))));
+
+        Place resolved = tripService.resolveDetailsPlace(user, gimhae.getId()).orElseThrow();
+
+        assertThat(resolved.getGooglePlaceId()).isEqualTo("match-test-gimhae");
     }
 
     @Test
