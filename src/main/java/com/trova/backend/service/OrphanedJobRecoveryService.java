@@ -2,8 +2,11 @@ package com.trova.backend.service;
 
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.TripDraft;
+import com.trova.backend.entity.TripDraftStatus;
 import com.trova.backend.entity.TripReplanJob;
 import com.trova.backend.repository.ProcessingJobRepository;
+import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.repository.TripReplanJobRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,15 +40,20 @@ public class OrphanedJobRecoveryService {
     // 사용자에게 그대로 보여줘도 되는 문구라 재구성 상태 응답이 원문 대신 이 값은 그대로 내려준다(#95).
     public static final String STALE_MESSAGE = "처리가 중단됐어요. 다시 시도해주세요.";
     private static final List<JobStatus> IN_FLIGHT = List.of(JobStatus.PENDING, JobStatus.PROCESSING);
+    // 일정 초안(#106)도 같은 @Async 대기열 문제를 겪는다. NEEDS_INPUT은 사용자 답을 기다리는 정상 상태라 고르지 않는다.
+    private static final List<TripDraftStatus> DRAFT_IN_FLIGHT = List.of(TripDraftStatus.PENDING, TripDraftStatus.PROCESSING);
 
     private final ProcessingJobRepository processingJobRepository;
     private final TripReplanJobRepository tripReplanJobRepository;
+    private final TripDraftRepository tripDraftRepository;
 
     public OrphanedJobRecoveryService(
-            ProcessingJobRepository processingJobRepository, TripReplanJobRepository tripReplanJobRepository
+            ProcessingJobRepository processingJobRepository, TripReplanJobRepository tripReplanJobRepository,
+            TripDraftRepository tripDraftRepository
     ) {
         this.processingJobRepository = processingJobRepository;
         this.tripReplanJobRepository = tripReplanJobRepository;
+        this.tripDraftRepository = tripDraftRepository;
     }
 
     /** 서버가 뜰 때 한 번 — 직전 종료로 멈춘 작업을 바로 정리한다. */
@@ -69,9 +77,11 @@ public class OrphanedJobRecoveryService {
         processingJobs.forEach(job -> job.markFailed(STALE_MESSAGE));
         List<TripReplanJob> replanJobs = tripReplanJobRepository.findByStatusInAndUpdatedAtBefore(IN_FLIGHT, threshold);
         replanJobs.forEach(job -> job.markFailed(STALE_MESSAGE));
-        if (!processingJobs.isEmpty() || !replanJobs.isEmpty()) {
-            log.warn("멈춘 작업 정리: 영상 처리 {}건, 일정 재구성 {}건을 FAILED로 변경(기준 {}분 무갱신)",
-                    processingJobs.size(), replanJobs.size(), STALE_AFTER.toMinutes());
+        List<TripDraft> drafts = tripDraftRepository.findByStatusInAndUpdatedAtBefore(DRAFT_IN_FLIGHT, threshold);
+        drafts.forEach(draft -> draft.markFailed(STALE_MESSAGE));
+        if (!processingJobs.isEmpty() || !replanJobs.isEmpty() || !drafts.isEmpty()) {
+            log.warn("멈춘 작업 정리: 영상 처리 {}건, 일정 재구성 {}건, 일정 초안 {}건을 FAILED로 변경(기준 {}분 무갱신)",
+                    processingJobs.size(), replanJobs.size(), drafts.size(), STALE_AFTER.toMinutes());
         }
     }
 }

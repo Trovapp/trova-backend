@@ -33,6 +33,19 @@ public class AsyncConfig {
         return executor;
     }
 
+    // 일정 에이전트 초안(#106). Gemini·Google 호출이 몇 번 이어지는 작업이라 재구성과 같은 작은 풀.
+    @Bean("planTaskExecutor")
+    public Executor planTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(2);
+        executor.setQueueCapacity(20);
+        executor.setThreadNamePrefix("plan-");
+        applyGracefulShutdown(executor);
+        executor.initialize();
+        return executor;
+    }
+
     /**
      * 영상 하나의 장소별 카카오 검색을 동시에 보내는 풀(#7). process()가 도는 pipelineTaskExecutor에 같이 넣으면
      * 그 풀의 스레드가 자기가 넣은 하위 작업을 기다리며 서로 자리를 막으므로 따로 둔다.

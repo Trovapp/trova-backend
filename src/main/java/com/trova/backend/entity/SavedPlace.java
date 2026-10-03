@@ -61,6 +61,18 @@ public class SavedPlace {
     @Column(name = "kakao_place_url")
     private String kakaoPlaceUrl;
 
+    // 일정 에이전트가 휴무·영업시간을 확인하려고 Google에서 받아 둔 정보(#106). 장소당 한 번만 받는다 —
+    // 근처에 맞는 Google 장소가 없거나 영업시간이 없어도 확인 시각을 남겨 다시 묻지 않는다.
+    @Column(name = "google_place_id")
+    private String googlePlaceId;
+
+    // Google regularOpeningHours.periods 원문(JSON). 없으면 null.
+    @Column(name = "opening_periods", columnDefinition = "TEXT")
+    private String openingPeriods;
+
+    @Column(name = "hours_checked_at")
+    private LocalDateTime hoursCheckedAt;
+
     // 영상이 이 장소에 대해 말하거나 보여준 구체 정보(#104). 한 줄짜리 문장 몇 개를 줄바꿈으로 이어 저장한다.
     @Column(name = "video_notes", columnDefinition = "TEXT")
     private String videoNotes;
@@ -128,6 +140,15 @@ public class SavedPlace {
     public String getKakaoCategoryName() { return kakaoCategoryName; }
     public String getKakaoPlaceUrl() { return kakaoPlaceUrl; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public String getGooglePlaceId() { return googlePlaceId; }
+    public String getOpeningPeriods() { return openingPeriods; }
+    public LocalDateTime getHoursCheckedAt() { return hoursCheckedAt; }
+
+    public void applyOpeningHours(String googlePlaceId, String openingPeriodsJson) {
+        this.googlePlaceId = googlePlaceId;
+        this.openingPeriods = openingPeriodsJson;
+        this.hoursCheckedAt = LocalDateTime.now();
+    }
 
     public List<String> getVideoNotes() {
         return videoNotes == null || videoNotes.isBlank() ? List.of() : List.of(videoNotes.split("\n"));
