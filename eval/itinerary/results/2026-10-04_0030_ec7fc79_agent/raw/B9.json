@@ -1,0 +1,1047 @@
+{
+ "request": {
+  "id": "B9",
+  "videos": [
+   7,
+   9
+  ],
+  "days": 3,
+  "start": null,
+  "purpose": "같은 섬 합치기"
+ },
+ "mode": "agent",
+ "videos": [
+  {
+   "video_no": 7,
+   "job_id": 93,
+   "generate": {
+    "result": "DONE",
+    "seconds": 4.6
+   },
+   "input_place_ids": [
+    500,
+    501,
+    502,
+    503,
+    504,
+    505,
+    506,
+    507,
+    508,
+    509
+   ],
+   "places": [
+    {
+     "id": 500,
+     "name": "삼양해수욕장",
+     "region": "제주",
+     "latitude": 33.5258670153237,
+     "longitude": 126.585537319057,
+     "day": 1,
+     "order": 1
+    },
+    {
+     "id": 501,
+     "name": "함덕해수욕장",
+     "region": "제주",
+     "latitude": 33.5430615661113,
+     "longitude": 126.669238934013,
+     "day": 1,
+     "order": 3
+    },
+    {
+     "id": 502,
+     "name": "김녕해수욕장",
+     "region": "제주",
+     "latitude": 33.5574388587079,
+     "longitude": 126.759313988844,
+     "day": 1,
+     "order": 4
+    },
+    {
+     "id": 503,
+     "name": "세화해변",
+     "region": "제주",
+     "latitude": 33.5251436596119,
+     "longitude": 126.86025618946,
+     "day": 1,
+     "order": 5
+    },
+    {
+     "id": 504,
+     "name": "표선해수욕장",
+     "region": "제주",
+     "latitude": 33.3275109235413,
+     "longitude": 126.837424825392,
+     "day": 2,
+     "order": 1
+    },
+    {
+     "id": 505,
+     "name": "중문색달해수욕장",
+     "region": "제주",
+     "latitude": 33.2450381505136,
+     "longitude": 126.411498674889,
+     "day": 3,
+     "order": 5
+    },
+    {
+     "id": 509,
+     "name": "이호테우해수욕장",
+     "region": "제주",
+     "latitude": 33.4973768007144,
+     "longitude": 126.452690819027,
+     "day": 1,
+     "order": 2
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "trip-plan.draft",
+     "success": true,
+     "latency_ms": 2932,
+     "prompt_tokens": 1602,
+     "response_tokens": 920
+    }
+   ]
+  },
+  {
+   "video_no": 9,
+   "job_id": 95,
+   "generate": {
+    "result": "DONE",
+    "seconds": null
+   },
+   "input_place_ids": [
+    534,
+    535,
+    536,
+    537,
+    538,
+    539,
+    540,
+    541,
+    542,
+    543
+   ],
+   "places": [
+    {
+     "id": 534,
+     "name": "중문대포주상절리대",
+     "region": "제주특별자치도 서귀포시",
+     "latitude": 33.2379849473195,
+     "longitude": 126.426011064029,
+     "day": 3,
+     "order": 4
+    },
+    {
+     "id": 535,
+     "name": "쇠소깍",
+     "region": "제주특별자치도 서귀포시",
+     "latitude": 33.2525162738708,
+     "longitude": 126.623442770166,
+     "day": 2,
+     "order": 2
+    },
+    {
+     "id": 537,
+     "name": "정방폭포",
+     "region": "제주특별자치도 서귀포시",
+     "latitude": 33.2449088834419,
+     "longitude": 126.571526308344,
+     "day": 2,
+     "order": 4
+    },
+    {
+     "id": 538,
+     "name": "약천사",
+     "region": "제주특별자치도 서귀포시",
+     "latitude": 33.2462362179287,
+     "longitude": 126.449458505086,
+     "day": 3,
+     "order": 3
+    },
+    {
+     "id": 539,
+     "name": "천지연폭포",
+     "region": "제주특별자치도 서귀포시",
+     "latitude": 33.2447422391372,
+     "longitude": 126.559696068521,
+     "day": 2,
+     "order": 5
+    },
+    {
+     "id": 540,
+     "name": "서귀포치유의숲",
+     "region": "제주특별자치도 서귀포시",
+     "latitude": 33.2945654206187,
+     "longitude": 126.525208143088,
+     "day": 3,
+     "order": 1
+    },
+    {
+     "id": 541,
+     "name": "엉또폭포",
+     "region": "제주특별자치도 서귀포시",
+     "latitude": 33.2685321560634,
+     "longitude": 126.4999654844,
+     "day": 3,
+     "order": 2
+    },
+    {
+     "id": 542,
+     "name": "소천지",
+     "region": "제주특별자치도 서귀포시",
+     "latitude": 33.2395691257879,
+     "longitude": 126.592088654722,
+     "day": 2,
+     "order": 3
+    }
+   ],
+   "gemini": []
+  }
+ ],
+ "agent": {
+  "draft_id": 63,
+  "message": "2박 3일",
+  "status": "READY",
+  "question": null,
+  "answer": null,
+  "gemini_calls": 1,
+  "agent_google_hours_calls": 0,
+  "error": null,
+  "excluded": [
+   {
+    "placeId": 506,
+    "name": "화순금모래해수욕장",
+    "reason": "이미 일정에 포함된 다른 장소들과 거리가 멀어져 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 507,
+    "name": "판포포구",
+    "reason": "이미 일정에 포함된 다른 장소들과 거리가 멀어져 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 508,
+    "name": "협재해수욕장",
+    "reason": "이미 일정에 포함된 다른 장소들과 거리가 멀어져 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 536,
+    "name": "황우지해안 (폐쇄)",
+    "reason": "이미 넣은 장소와 같은 곳이거나 폐쇄된 장소여서 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 543,
+    "name": "중문색달해수욕장",
+    "reason": "이미 넣은 장소와 중복되어 이번 일정에서 뺐어요."
+   }
+  ],
+  "lodging": [
+   "1일차 숙소 미정 — 마지막 장소(세화해변) 근처를 추천해요.",
+   "2일차 숙소 미정 — 마지막 장소(천지연폭포) 근처를 추천해요."
+  ],
+  "fixes": [],
+  "problems": [],
+  "draft": {
+   "days": [
+    {
+     "day": 1,
+     "date": null,
+     "items": [
+      {
+       "placeId": 500,
+       "name": "삼양해수욕장",
+       "category": "attraction",
+       "start": "09:00",
+       "end": "11:00",
+       "latitude": 33.5258670153237,
+       "longitude": 126.585537319057
+      },
+      {
+       "placeId": 509,
+       "name": "이호테우해수욕장",
+       "category": "attraction",
+       "start": "11:30",
+       "end": "13:30",
+       "latitude": 33.4973768007144,
+       "longitude": 126.452690819027
+      },
+      {
+       "placeId": 501,
+       "name": "함덕해수욕장",
+       "category": "attraction",
+       "start": "14:30",
+       "end": "16:30",
+       "latitude": 33.5430615661113,
+       "longitude": 126.669238934013
+      },
+      {
+       "placeId": 502,
+       "name": "김녕해수욕장",
+       "category": "attraction",
+       "start": "17:15",
+       "end": "19:15",
+       "latitude": 33.5574388587079,
+       "longitude": 126.759313988844
+      },
+      {
+       "placeId": 503,
+       "name": "세화해변",
+       "category": "attraction",
+       "start": "19:45",
+       "end": "21:45",
+       "latitude": 33.5251436596119,
+       "longitude": 126.86025618946
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "date": null,
+     "items": [
+      {
+       "placeId": 504,
+       "name": "표선해수욕장",
+       "category": "attraction",
+       "start": "09:30",
+       "end": "11:30",
+       "latitude": 33.3275109235413,
+       "longitude": 126.837424825392
+      },
+      {
+       "placeId": 535,
+       "name": "쇠소깍",
+       "category": "attraction",
+       "start": "12:00",
+       "end": "14:00",
+       "latitude": 33.2525162738708,
+       "longitude": 126.623442770166
+      },
+      {
+       "placeId": 542,
+       "name": "소천지",
+       "category": "attraction",
+       "start": "14:30",
+       "end": "16:30",
+       "latitude": 33.2395691257879,
+       "longitude": 126.592088654722
+      },
+      {
+       "placeId": 537,
+       "name": "정방폭포",
+       "category": "attraction",
+       "start": "17:00",
+       "end": "19:00",
+       "latitude": 33.2449088834419,
+       "longitude": 126.571526308344
+      },
+      {
+       "placeId": 539,
+       "name": "천지연폭포",
+       "category": "attraction",
+       "start": "19:20",
+       "end": "21:20",
+       "latitude": 33.2447422391372,
+       "longitude": 126.559696068521
+      }
+     ]
+    },
+    {
+     "day": 3,
+     "date": null,
+     "items": [
+      {
+       "placeId": 540,
+       "name": "서귀포치유의숲",
+       "category": "attraction",
+       "start": "09:30",
+       "end": "11:30",
+       "latitude": 33.2945654206187,
+       "longitude": 126.525208143088
+      },
+      {
+       "placeId": 541,
+       "name": "엉또폭포",
+       "category": "attraction",
+       "start": "12:00",
+       "end": "14:00",
+       "latitude": 33.2685321560634,
+       "longitude": 126.4999654844
+      },
+      {
+       "placeId": 538,
+       "name": "약천사",
+       "category": "attraction",
+       "start": "14:30",
+       "end": "16:30",
+       "latitude": 33.2462362179287,
+       "longitude": 126.449458505086
+      },
+      {
+       "placeId": 534,
+       "name": "중문대포주상절리대",
+       "category": "attraction",
+       "start": "17:00",
+       "end": "19:00",
+       "latitude": 33.2379849473195,
+       "longitude": 126.426011064029
+      },
+      {
+       "placeId": 505,
+       "name": "중문색달해수욕장",
+       "category": "attraction",
+       "start": "19:15",
+       "end": "21:15",
+       "latitude": 33.2450381505136,
+       "longitude": 126.411498674889
+      }
+     ]
+    }
+   ],
+   "excluded": [
+    {
+     "placeId": 506,
+     "name": "화순금모래해수욕장",
+     "reason": "이미 일정에 포함된 다른 장소들과 거리가 멀어져 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 507,
+     "name": "판포포구",
+     "reason": "이미 일정에 포함된 다른 장소들과 거리가 멀어져 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 508,
+     "name": "협재해수욕장",
+     "reason": "이미 일정에 포함된 다른 장소들과 거리가 멀어져 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 536,
+     "name": "황우지해안 (폐쇄)",
+     "reason": "이미 넣은 장소와 같은 곳이거나 폐쇄된 장소여서 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 543,
+     "name": "중문색달해수욕장",
+     "reason": "이미 넣은 장소와 중복되어 이번 일정에서 뺐어요."
+    }
+   ],
+   "lodging": [
+    "1일차 숙소 미정 — 마지막 장소(세화해변) 근처를 추천해요.",
+    "2일차 숙소 미정 — 마지막 장소(천지연폭포) 근처를 추천해요."
+   ],
+   "assumptions": [
+    "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+    "영업시간을 확인하지 못한 장소가 12곳 있어요.",
+    "이동 시간은 직선거리로 어림했어요."
+   ],
+   "fixes": [],
+   "problems": []
+  }
+ },
+ "inputs": [
+  {
+   "id": 500,
+   "name": "삼양해수욕장",
+   "region": "제주",
+   "latitude": 33.5258670153237,
+   "longitude": 126.585537319057,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 501,
+   "name": "함덕해수욕장",
+   "region": "제주",
+   "latitude": 33.5430615661113,
+   "longitude": 126.669238934013,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 502,
+   "name": "김녕해수욕장",
+   "region": "제주",
+   "latitude": 33.5574388587079,
+   "longitude": 126.759313988844,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 503,
+   "name": "세화해변",
+   "region": "제주",
+   "latitude": 33.5251436596119,
+   "longitude": 126.86025618946,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 504,
+   "name": "표선해수욕장",
+   "region": "제주",
+   "latitude": 33.3275109235413,
+   "longitude": 126.837424825392,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 505,
+   "name": "중문색달해수욕장",
+   "region": "제주",
+   "latitude": 33.2450381505136,
+   "longitude": 126.411498674889,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 506,
+   "name": "화순금모래해수욕장",
+   "region": "제주",
+   "latitude": 33.2400324295842,
+   "longitude": 126.333589345833,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 507,
+   "name": "판포포구",
+   "region": "제주",
+   "latitude": 33.365021627537,
+   "longitude": 126.200023263531,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 508,
+   "name": "협재해수욕장",
+   "region": "제주",
+   "latitude": 33.3943144950162,
+   "longitude": 126.239652349668,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 509,
+   "name": "이호테우해수욕장",
+   "region": "제주",
+   "latitude": 33.4973768007144,
+   "longitude": 126.452690819027,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 534,
+   "name": "중문대포주상절리대",
+   "region": "제주특별자치도 서귀포시",
+   "latitude": 33.2379849473195,
+   "longitude": 126.426011064029,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 535,
+   "name": "쇠소깍",
+   "region": "제주특별자치도 서귀포시",
+   "latitude": 33.2525162738708,
+   "longitude": 126.623442770166,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 536,
+   "name": "황우지해안 (폐쇄)",
+   "region": "제주특별자치도 서귀포시",
+   "latitude": 33.2414671811999,
+   "longitude": 126.550527835146,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 537,
+   "name": "정방폭포",
+   "region": "제주특별자치도 서귀포시",
+   "latitude": 33.2449088834419,
+   "longitude": 126.571526308344,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 538,
+   "name": "약천사",
+   "region": "제주특별자치도 서귀포시",
+   "latitude": 33.2462362179287,
+   "longitude": 126.449458505086,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 539,
+   "name": "천지연폭포",
+   "region": "제주특별자치도 서귀포시",
+   "latitude": 33.2447422391372,
+   "longitude": 126.559696068521,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 540,
+   "name": "서귀포치유의숲",
+   "region": "제주특별자치도 서귀포시",
+   "latitude": 33.2945654206187,
+   "longitude": 126.525208143088,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 541,
+   "name": "엉또폭포",
+   "region": "제주특별자치도 서귀포시",
+   "latitude": 33.2685321560634,
+   "longitude": 126.4999654844,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 542,
+   "name": "소천지",
+   "region": "제주특별자치도 서귀포시",
+   "latitude": 33.2395691257879,
+   "longitude": 126.592088654722,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 543,
+   "name": "중문색달해수욕장",
+   "region": "제주특별자치도 서귀포시",
+   "latitude": 33.2450381505136,
+   "longitude": 126.411498674889,
+   "day": null,
+   "order": null
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "500": {
+   "status": "OK",
+   "google_id": "ChIJWVLk54bjDDURAgo7ldkktR4",
+   "google_name": "삼양해수욕장",
+   "distance_m": 129,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "501": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJVSv3qq_8DDURcLh4pWxZ0vA",
+   "google_name": "함덕해수욕장",
+   "distance_m": 64,
+   "periods": null
+  },
+  "502": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJnWoxZkcYDTURJT2wzlzI5eM",
+   "google_name": "김녕해수욕장",
+   "distance_m": 99,
+   "periods": null
+  },
+  "503": {
+   "status": "OK",
+   "google_id": "ChIJT0n_YzoXDTURcrZLa9grm4Y",
+   "google_name": "세화해변",
+   "distance_m": 47,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "504": {
+   "status": "OK",
+   "google_id": "ChIJy-enok8PDTURZYi00I4pGd8",
+   "google_name": "표선해수욕장",
+   "distance_m": 33,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "505": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJ79AXk8haDDURrfp2JK5_izk",
+   "google_name": "중문 색달해수욕장",
+   "distance_m": 34,
+   "periods": null
+  },
+  "506": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJbeFnYWlDDDURQAvGdeYWCTE",
+   "google_name": "화순금모래해변",
+   "distance_m": 29,
+   "periods": null
+  },
+  "507": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJh3Vgz89nDDURTQYaSNXa9UQ",
+   "google_name": "판포 포구",
+   "distance_m": 45,
+   "periods": null
+  },
+  "508": {
+   "status": "OK",
+   "google_id": "ChIJ8bBzwwBhDDURAISiRyzO4mw",
+   "google_name": "협재해수욕장",
+   "distance_m": 21,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "509": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJF2wgtzz7DDURDzj9E87gjLI",
+   "google_name": "이호테우해변",
+   "distance_m": 76,
+   "periods": null
+  },
+  "534": {
+   "status": "OK",
+   "google_id": "ChIJr-HZOq5aDDUR0zeYswF6-jU",
+   "google_name": "대포해안주상절리대",
+   "distance_m": 30,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 17,
+      "minute": 30
+     }
+    }
+   ]
+  },
+  "535": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJb-2bVsyrDTUR8n0loLTI1ZU",
+   "google_name": "쇠소깍 인증센터",
+   "distance_m": 28,
+   "periods": null
+  },
+  "536": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJcYjj-w1TDDURWyvy60kLs2w",
+   "google_name": "황우지 해안",
+   "distance_m": 29,
+   "periods": null
+  },
+  "537": {
+   "status": "OK",
+   "google_id": "ChIJ8afI-XNTDDURC7OZzyBO8KA",
+   "google_name": "정방폭포",
+   "distance_m": 8,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 17,
+      "minute": 20
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 17,
+      "minute": 20
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 17,
+      "minute": 20
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 17,
+      "minute": 20
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 17,
+      "minute": 20
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 17,
+      "minute": 20
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 17,
+      "minute": 20
+     }
+    }
+   ]
+  },
+  "538": {
+   "status": "OK",
+   "google_id": "ChIJDdwmAW1QDDURI3Krk7ygNuo",
+   "google_name": "대한불교조계종 약천사(서귀포)",
+   "distance_m": 9,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "539": {
+   "status": "NO_MATCH"
+  },
+  "540": {
+   "status": "NO_MATCH"
+  },
+  "541": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJ71PXqj9RDDURq2aHO7tTbMI",
+   "google_name": "엉또폭포",
+   "distance_m": 8,
+   "periods": null
+  },
+  "542": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJyy7w0xhTDDURiYPpTS9zWF8",
+   "google_name": "소천지",
+   "distance_m": 90,
+   "periods": null
+  },
+  "543": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJ79AXk8haDDURrfp2JK5_izk",
+   "google_name": "중문 색달해수욕장",
+   "distance_m": 34,
+   "periods": null
+  }
+ }
+}

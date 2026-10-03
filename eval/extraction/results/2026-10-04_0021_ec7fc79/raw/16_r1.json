@@ -1,0 +1,70 @@
+{
+  "video_no": 16,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/YrN-JLPp0wg",
+  "submit_status": 202,
+  "job_id": 102,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 8.6,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 6.486831
+  },
+  "places": [
+    {
+      "name": "해운대해수욕장",
+      "region": null,
+      "category": "attraction",
+      "latitude": 35.1585232170784,
+      "longitude": 129.159854668484,
+      "address": "부산 해운대구 우동",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/7913306"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 2439,
+      "prompt_tokens": 2059,
+      "response_tokens": 8,
+      "total_tokens": 2067,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 1938,
+      "prompt_tokens": 3037,
+      "response_tokens": 89,
+      "total_tokens": 3126,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 107,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1082,
+      "prompt_tokens": 680,
+      "response_tokens": 26,
+      "total_tokens": 706,
+      "error_message": null
+    }
+  ]
+}

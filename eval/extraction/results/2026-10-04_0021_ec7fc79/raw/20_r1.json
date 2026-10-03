@@ -1,0 +1,100 @@
+{
+  "video_no": 20,
+  "repeat": 1,
+  "url": "https://www.instagram.com/reel/DHyL4IITv4q/",
+  "submit_status": 202,
+  "job_id": 104,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 12.8,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 11.293398
+  },
+  "places": [
+    {
+      "name": "오륙도해맞이공원",
+      "region": "부산",
+      "category": "attraction",
+      "latitude": 35.1022136829983,
+      "longitude": 129.123373881646,
+      "address": "부산 남구 용호동 산 196-8",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/19157377"
+    },
+    {
+      "name": "오륙도스카이워크",
+      "region": "부산",
+      "category": "attraction",
+      "latitude": 35.1006495749289,
+      "longitude": 129.124487940263,
+      "address": "부산 남구 용호동 산 197-4",
+      "road_address": "부산 남구 오륙도로 137",
+      "kakao_place_url": "http://place.map.kakao.com/22250028"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 3276,
+      "prompt_tokens": 10163,
+      "response_tokens": 56,
+      "total_tokens": 10219,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3415,
+      "prompt_tokens": 11179,
+      "response_tokens": 314,
+      "total_tokens": 11493,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 88,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 88,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 50,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1233,
+      "prompt_tokens": 510,
+      "response_tokens": 26,
+      "total_tokens": 536,
+      "error_message": null
+    }
+  ]
+}

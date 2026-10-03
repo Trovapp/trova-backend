@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-04T00:30:25+09:00",
+  "commit": "ec7fc79",
+  "server": "http://localhost:8090",
+  "model": "gemini-3.5-flash-lite",
+  "pipeline_dir": "/Users/gimtaehyeong/Downloads/buildlog/trova-backend/.claude/worktrees/eval/pipeline-test",
+  "pipeline_sha256_16": {
+    "extract_places.py": "338fb364ef8b5d95",
+    "run_pipeline.py": "a6d75d9ba577ff76",
+    "download.py": "6fa584e3dbeb79be",
+    "frames.py": "5cb5fe78eb8ba860",
+    "select_place_match.py": "75aa39a73dda323a",
+    "verify_places.py": "78545db090440a8e",
+    "generate_itinerary.py": "b9e2b5b1f5e43a1b"
+  },
+  "part": "B",
+  "mode": "agent",
+  "jobs_file": "/Users/gimtaehyeong/Downloads/buildlog/trova-backend/.claude/worktrees/eval/eval/extraction/results/2026-10-04_0021_ec7fc79/kept_jobs.json",
+  "requests": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B8",
+    "B9",
+    "B10",
+    "B11",
+    "B12",
+    "B13",
+    "B14",
+    "B15",
+    "B16",
+    "B17",
+    "B18",
+    "B19"
+  ],
+  "base_url": "http://localhost:8090",
+  "server_commit": "0c51bf2"
+}

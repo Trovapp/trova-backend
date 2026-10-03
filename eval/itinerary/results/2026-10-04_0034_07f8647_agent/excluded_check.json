@@ -1,0 +1,209 @@
+{
+ "summary": {
+  "excluded": 53,
+  "restorable": 10,
+  "scheduled": 171,
+  "requests_with_restorable": [
+   "B8",
+   "B9",
+   "B12",
+   "B18",
+   "B19"
+  ]
+ },
+ "rows": [
+  {
+   "id": "B1",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 6
+  },
+  {
+   "id": "B2",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 1
+  },
+  {
+   "id": "B3",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 10
+  },
+  {
+   "id": "B4",
+   "excluded": 2,
+   "restorable": [],
+   "scheduled": 21
+  },
+  {
+   "id": "B5",
+   "excluded": 2,
+   "restorable": [],
+   "scheduled": 8
+  },
+  {
+   "id": "B6",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 7
+  },
+  {
+   "id": "B7",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 7
+  },
+  {
+   "id": "B8",
+   "excluded": 2,
+   "restorable": [
+    {
+     "name": "언론중재위원회 전북중재부",
+     "reason": "관광지나 식당 등 여행 일정에 적합한 장소가 아니라서 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    }
+   ],
+   "scheduled": 5
+  },
+  {
+   "id": "B9",
+   "excluded": 4,
+   "restorable": [
+    {
+     "name": "중문대포주상절리대",
+     "reason": "이미 넣은 장소와 같은 곳(중복)이거나 다른 장소와 묶기 애매하여 이번 일정에서 뺐어요.",
+     "fits_days": [
+      2,
+      3
+     ]
+    },
+    {
+     "name": "약천사",
+     "reason": "동선 상 다른 장소들과의 거리 및 일정 효율을 고려하여 이번 일정에서 뺐어요.",
+     "fits_days": [
+      2,
+      3
+     ]
+    },
+    {
+     "name": "소천지",
+     "reason": "동선 상 다른 장소들과의 거리 및 일정 효율을 고려하여 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "scheduled": 16
+  },
+  {
+   "id": "B10",
+   "excluded": 6,
+   "restorable": [],
+   "scheduled": 21
+  },
+  {
+   "id": "B11",
+   "excluded": 15,
+   "restorable": [],
+   "scheduled": 14
+  },
+  {
+   "id": "B12",
+   "excluded": 1,
+   "restorable": [
+    {
+     "name": "언론중재위원회 전북중재부",
+     "reason": "공공기관 및 업무 시설로 여행 일정에 적합하지 않아 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    }
+   ],
+   "scheduled": 5
+  },
+  {
+   "id": "B13",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 10
+  },
+  {
+   "id": "B14",
+   "excluded": 2,
+   "restorable": [],
+   "scheduled": 8
+  },
+  {
+   "id": "B15",
+   "excluded": 1,
+   "restorable": [],
+   "scheduled": 5
+  },
+  {
+   "id": "B16",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 1
+  },
+  {
+   "id": "B17",
+   "excluded": 0,
+   "restorable": [],
+   "scheduled": 1
+  },
+  {
+   "id": "B18",
+   "excluded": 13,
+   "restorable": [
+    {
+     "name": "표선해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    }
+   ],
+   "scheduled": 20
+  },
+  {
+   "id": "B19",
+   "excluded": 5,
+   "restorable": [
+    {
+     "name": "표선해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    },
+    {
+     "name": "중문색달해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    },
+    {
+     "name": "판포포구",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    },
+    {
+     "name": "협재해수욕장",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요.",
+     "fits_days": [
+      1
+     ]
+    }
+   ],
+   "scheduled": 5
+  }
+ ]
+}
