@@ -73,6 +73,10 @@ FILTER_PROMPT = """당신은 여행 영상 자막/음성/화면 텍스트에서 
 - confidence: 0~1 사이 숫자 (얼마나 확실한 장소명인지)
 - dayNumber: 몇 일차인지 (1부터 시작하는 정수, 일정형이 아니면 null)
 - orderInDay: 그 날 안에서의 순서 (1부터 시작하는 정수, 일정형이 아니면 null)
+- videoNotes: 영상이 이 장소에 대해 실제로 말하거나 화면·게시물 설명에 보여준 구체 정보를 짧은 문장 배열로
+  (최대 3개, 각 40자 이내). 예: 추천 메뉴, 가격, 웨이팅, 영업시간·브레이크타임, 주차, 예약, 꼭 알아둘 팁.
+  "맛있다", "분위기 좋다" 같은 일반적인 감상은 넣지 마세요. 영상에 없는 내용을 짐작하거나 지어내지 마세요.
+  해당 정보가 없으면 빈 배열 []로 두세요.
 
 장소가 전혀 없으면 빈 배열 []을 반환하세요. JSON 배열 외의 다른 텍스트는 출력하지 마세요.
 """
@@ -157,6 +161,26 @@ def _normalize_day_fields(places: list[dict]) -> list[dict]:
                 place[key] = int(value)
             except (TypeError, ValueError):
                 place[key] = None
+    return places
+
+
+MAX_VIDEO_NOTES = 3
+MAX_VIDEO_NOTE_CHARS = 60
+
+
+def _normalize_video_notes(places: list) -> list:
+    """videoNotes를 짧은 한 줄 문장 배열로 정리한다(#104). 형식이 어긋나면 빈 배열 — 장소 저장을 막지 않는다."""
+    for place in places:
+        notes = place.get("videoNotes")
+        if not isinstance(notes, list):
+            notes = []
+        cleaned = []
+        for note in notes:
+            if isinstance(note, str):
+                text = " ".join(note.split())[:MAX_VIDEO_NOTE_CHARS]
+                if text and text not in cleaned:
+                    cleaned.append(text)
+        place["videoNotes"] = cleaned[:MAX_VIDEO_NOTES]
     return places
 
 
@@ -380,7 +404,7 @@ def extract_places(
         post_description=post_description,
     )
     places = call_gemini_with_repair(parts, model, api_key, "extract_places.filter", _parse)
-    return _normalize_name_candidates(_normalize_day_fields(places))
+    return _normalize_video_notes(_normalize_name_candidates(_normalize_day_fields(places)))
 
 
 if __name__ == "__main__":

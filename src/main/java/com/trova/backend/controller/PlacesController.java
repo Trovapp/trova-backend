@@ -55,7 +55,9 @@ public class PlacesController {
             Double latitude, Double longitude, String sourceUrl, String title,
             String sourcePlatform, String createdAt, Integer dayNumber, Integer orderInDay,
             String phone, String address, String roadAddress,
-            String kakaoCategoryName, String kakaoPlaceUrl
+            String kakaoCategoryName, String kakaoPlaceUrl,
+            // 영상에서 말한 내용(#104). 없으면 빈 배열.
+            List<String> videoNotes
     ) {
         static PlaceResponse from(SavedPlace place) {
             return new PlaceResponse(
@@ -64,7 +66,8 @@ public class PlacesController {
                     place.getTitle(), place.getSourcePlatform().name(), place.getCreatedAt().toString(),
                     place.getDayNumber(), place.getOrderInDay(),
                     place.getPhone(), place.getAddress(), place.getRoadAddress(),
-                    place.getKakaoCategoryName(), place.getKakaoPlaceUrl()
+                    place.getKakaoCategoryName(), place.getKakaoPlaceUrl(),
+                    place.getVideoNotes()
             );
         }
     }
