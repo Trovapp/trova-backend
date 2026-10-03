@@ -1,0 +1,193 @@
+{
+ "request": {
+  "id": "B16",
+  "videos": [
+   10
+  ],
+  "days": 1,
+  "start": null,
+  "purpose": "장소 2곳 이하"
+ },
+ "mode": "agent",
+ "videos": [
+  {
+   "video_no": 10,
+   "job_id": 120,
+   "generate": {
+    "result": "DONE",
+    "seconds": 1.2
+   },
+   "input_place_ids": [
+    673
+   ],
+   "places": [
+    {
+     "id": 673,
+     "name": "테라로사 본점",
+     "region": "강릉",
+     "latitude": 37.6965112381046,
+     "longitude": 128.892533492139,
+     "day": 1,
+     "order": 1
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "trip-plan.draft",
+     "success": true,
+     "latency_ms": 858,
+     "prompt_tokens": 609,
+     "response_tokens": 82
+    }
+   ]
+  }
+ ],
+ "agent": {
+  "draft_id": 127,
+  "message": "당일치기",
+  "status": "READY",
+  "question": null,
+  "answer": null,
+  "gemini_calls": 1,
+  "agent_google_hours_calls": 0,
+  "error": null,
+  "excluded": [],
+  "lodging": [],
+  "fixes": [],
+  "problems": [],
+  "draft": {
+   "days": [
+    {
+     "day": 1,
+     "date": null,
+     "items": [
+      {
+       "placeId": 673,
+       "name": "테라로사 본점",
+       "category": "cafe",
+       "start": "10:00",
+       "end": "11:00",
+       "latitude": 37.6965112381046,
+       "longitude": 128.892533492139
+      }
+     ]
+    }
+   ],
+   "excluded": [],
+   "lodging": [],
+   "assumptions": [
+    "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+    "이동 시간은 직선거리로 어림했어요."
+   ],
+   "fixes": [],
+   "problems": []
+  }
+ },
+ "inputs": [
+  {
+   "id": 673,
+   "name": "테라로사 본점",
+   "region": "강릉",
+   "latitude": 37.6965112381046,
+   "longitude": 128.892533492139,
+   "day": null,
+   "order": null
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "673": {
+   "status": "OK",
+   "google_id": "ChIJ31UGj8fuYTURDk7i7HlRcYA",
+   "google_name": "테라로사 커피공장 강릉본점",
+   "distance_m": 41,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  }
+ }
+}

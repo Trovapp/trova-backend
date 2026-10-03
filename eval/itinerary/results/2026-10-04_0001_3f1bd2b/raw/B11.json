@@ -1,0 +1,2169 @@
+{
+ "request": {
+  "id": "B11",
+  "videos": [
+   4,
+   8
+  ],
+  "days": 2,
+  "start": null,
+  "purpose": "먼 두 지역"
+ },
+ "videos": [
+  {
+   "video_no": 4,
+   "job_id": 66,
+   "generate": {
+    "result": "DONE",
+    "seconds": 2.1,
+    "since": "2026-10-03 23:54:29.782107"
+   },
+   "input_place_ids": [
+    356,
+    357,
+    358,
+    359,
+    360,
+    361
+   ],
+   "places": [
+    {
+     "id": 356,
+     "name": "안산역 4호선",
+     "region": "경기도",
+     "latitude": 37.3268586764125,
+     "longitude": 126.789216349384,
+     "day": 1,
+     "order": 1
+    },
+    {
+     "id": 357,
+     "name": "임페리아푸드",
+     "region": "경기도",
+     "latitude": 37.3300100285267,
+     "longitude": 126.789974817826,
+     "day": 1,
+     "order": 2
+    },
+    {
+     "id": 358,
+     "name": "후르세다사마르칸트",
+     "region": "경기도",
+     "latitude": null,
+     "longitude": null,
+     "day": 1,
+     "order": 4
+    },
+    {
+     "id": 359,
+     "name": "컴포즈커피 안산다문화거리점",
+     "region": "경기도",
+     "latitude": 37.3306878808,
+     "longitude": 126.792686616092,
+     "day": 1,
+     "order": 6
+    },
+    {
+     "id": 360,
+     "name": "미쉐 원곡점",
+     "region": "경기도",
+     "latitude": 37.3308664745351,
+     "longitude": 126.792281046223,
+     "day": 1,
+     "order": 5
+    },
+    {
+     "id": 361,
+     "name": "마리나베이커리",
+     "region": "경기도",
+     "latitude": 37.339367731581,
+     "longitude": 126.794886997375,
+     "day": 1,
+     "order": 3
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "generate_itinerary",
+     "success": true,
+     "latency_ms": 1321,
+     "prompt_tokens": 466,
+     "response_tokens": 207
+    }
+   ]
+  },
+  {
+   "video_no": 8,
+   "job_id": 70,
+   "generate": {
+    "result": "DONE",
+    "seconds": 4.1,
+    "since": "2026-10-04 00:01:41.104392"
+   },
+   "input_place_ids": [
+    385,
+    386,
+    387,
+    388,
+    389,
+    390,
+    391,
+    392,
+    393,
+    394,
+    395,
+    396,
+    397,
+    398,
+    399,
+    400,
+    401,
+    402,
+    403,
+    404,
+    405,
+    406,
+    407
+   ],
+   "places": [
+    {
+     "id": 385,
+     "name": "우진해장국",
+     "region": "제주",
+     "latitude": 33.5115168965646,
+     "longitude": 126.520001280272,
+     "day": 1,
+     "order": 1
+    },
+    {
+     "id": 386,
+     "name": "삼무국수 본점",
+     "region": "제주",
+     "latitude": 33.4905616413749,
+     "longitude": 126.490967206434,
+     "day": 1,
+     "order": 2
+    },
+    {
+     "id": 387,
+     "name": "제주당",
+     "region": "제주",
+     "latitude": 33.3544721055684,
+     "longitude": 126.355834145436,
+     "day": 2,
+     "order": 3
+    },
+    {
+     "id": 388,
+     "name": "금오름",
+     "region": "제주",
+     "latitude": 33.354572330016,
+     "longitude": 126.305838863043,
+     "day": 2,
+     "order": 1
+    },
+    {
+     "id": 389,
+     "name": "성이시돌목장",
+     "region": "제주",
+     "latitude": 33.3477698762559,
+     "longitude": 126.327321076199,
+     "day": 2,
+     "order": 2
+    },
+    {
+     "id": 390,
+     "name": "봄빛코티지",
+     "region": "제주",
+     "latitude": 33.309511055802,
+     "longitude": 126.240179885561,
+     "day": 2,
+     "order": 5
+    },
+    {
+     "id": 391,
+     "name": "신창풍차해안",
+     "region": "제주",
+     "latitude": 33.3453432809008,
+     "longitude": 126.177627548487,
+     "day": 3,
+     "order": 4
+    },
+    {
+     "id": 392,
+     "name": "돈어길",
+     "region": "제주",
+     "latitude": 33.2807773957709,
+     "longitude": 126.285400354834,
+     "day": 2,
+     "order": 4
+    },
+    {
+     "id": 393,
+     "name": "오설록 티뮤지엄",
+     "region": "제주",
+     "latitude": 33.305919603702,
+     "longitude": 126.28949031798,
+     "day": 4,
+     "order": 1
+    },
+    {
+     "id": 394,
+     "name": "제주곶자왈도립공원",
+     "region": "제주",
+     "latitude": 33.2889458961902,
+     "longitude": 126.271720306227,
+     "day": 4,
+     "order": 2
+    },
+    {
+     "id": 395,
+     "name": "한라산아래첫마을 영농조합법인",
+     "region": "제주",
+     "latitude": 33.3282091639847,
+     "longitude": 126.379549637958,
+     "day": 4,
+     "order": 3
+    },
+    {
+     "id": 396,
+     "name": "중문고등어쌈밥 제주점",
+     "region": "제주",
+     "latitude": 33.2652744365041,
+     "longitude": 126.38092659649,
+     "day": 4,
+     "order": 4
+    },
+    {
+     "id": 397,
+     "name": "화순한가네식당",
+     "region": "제주",
+     "latitude": 33.2392189190606,
+     "longitude": 126.336578263224,
+     "day": 5,
+     "order": 1
+    },
+    {
+     "id": 398,
+     "name": "용머리해안",
+     "region": "제주",
+     "latitude": 33.2316602910162,
+     "longitude": 126.314723725713,
+     "day": 5,
+     "order": 2
+    },
+    {
+     "id": 399,
+     "name": "송악산",
+     "region": "제주",
+     "latitude": 33.1990829393471,
+     "longitude": 126.289791427536,
+     "day": 5,
+     "order": 3
+    },
+    {
+     "id": 400,
+     "name": "미영이네 본점",
+     "region": "제주",
+     "latitude": 33.2177436406572,
+     "longitude": 126.249828864588,
+     "day": 5,
+     "order": 4
+    },
+    {
+     "id": 401,
+     "name": "순천미향 제주산방산본점",
+     "region": "제주",
+     "latitude": 33.2356601196546,
+     "longitude": 126.312482383203,
+     "day": 6,
+     "order": 1
+    },
+    {
+     "id": 402,
+     "name": "뚱보아저씨",
+     "region": "제주",
+     "latitude": 33.3306580298117,
+     "longitude": 126.255360525288,
+     "day": 6,
+     "order": 2
+    },
+    {
+     "id": 403,
+     "name": "협재해수욕장",
+     "region": "제주",
+     "latitude": 33.3943144950162,
+     "longitude": 126.239652349668,
+     "day": 3,
+     "order": 1
+    },
+    {
+     "id": 404,
+     "name": "호텔샌드",
+     "region": "제주",
+     "latitude": 33.3938885608837,
+     "longitude": 126.240472920343,
+     "day": 3,
+     "order": 2
+    },
+    {
+     "id": 405,
+     "name": "한림칼국수",
+     "region": "제주",
+     "latitude": 33.4155670879451,
+     "longitude": 126.261506447291,
+     "day": 3,
+     "order": 3
+    },
+    {
+     "id": 406,
+     "name": "제주동문시장",
+     "region": "제주",
+     "latitude": 33.5127839649331,
+     "longitude": 126.528303387228,
+     "day": 1,
+     "order": 3
+    },
+    {
+     "id": 407,
+     "name": "빽다방베이커리 제주사수점",
+     "region": "제주",
+     "latitude": 33.5092496624846,
+     "longitude": 126.4766511483,
+     "day": 1,
+     "order": 4
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "generate_itinerary",
+     "success": true,
+     "latency_ms": 2558,
+     "prompt_tokens": 1019,
+     "response_tokens": 785
+    }
+   ]
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "356": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJAVHrXSxuezUR8D1fSmXO_FY",
+   "google_name": "안산역",
+   "distance_m": 45,
+   "periods": null
+  },
+  "357": {
+   "status": "OK",
+   "google_id": "ChIJ9cv-km9vezURR7R7vRExjls",
+   "google_name": "임페리아 푸드",
+   "distance_m": 39,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 1,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 1,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "358": {
+   "status": "NO_COORD"
+  },
+  "359": {
+   "status": "OK",
+   "google_id": "ChIJWRfADABvezURAHWbQN44jqc",
+   "google_name": "컴포즈커피 안산다문화거리점",
+   "distance_m": 5,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 22,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "360": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJcQRVewBvezURHDEVy0AkiPE",
+   "google_name": "미쉐 원곡점",
+   "distance_m": 1,
+   "periods": null
+  },
+  "361": {
+   "status": "OK",
+   "google_id": "ChIJI8Poa75vezURnJ_7rgrjnBU",
+   "google_name": "마리나 베이커리",
+   "distance_m": 2,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 22,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "385": {
+   "status": "OK",
+   "google_id": "ChIJ1RG1J6vkDDURux7pPbxUvbY",
+   "google_name": "우진해장국",
+   "distance_m": 3,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 6,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 6,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 6,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 6,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 6,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 6,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 6,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 22,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "386": {
+   "status": "OK",
+   "google_id": "ChIJk_pJ8g_7DDURyV6CLoVlGjY",
+   "google_name": "삼무국수",
+   "distance_m": 7,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 23,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 23,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "387": {
+   "status": "OK",
+   "google_id": "ChIJkViqegBZDDURloZmDhwAIZ4",
+   "google_name": "제주당",
+   "distance_m": 32,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 21,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "388": {
+   "status": "OK",
+   "google_id": "ChIJEyxq5X1eDDURPI4URzIgD0k",
+   "google_name": "금오름",
+   "distance_m": 113,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "389": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJzV8NvZ9eDDURLc_ALAg_hrI",
+   "google_name": "성 이시돌 목장",
+   "distance_m": 3,
+   "periods": null
+  },
+  "390": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJqz8yLoJnDDURC1wzs-p3BaI",
+   "google_name": "봄빛코티지",
+   "distance_m": 2,
+   "periods": null
+  },
+  "391": {
+   "status": "NO_MATCH"
+  },
+  "392": {
+   "status": "OK",
+   "google_id": "ChIJ2yzukLRdDDURZECLg3Evigg",
+   "google_name": "돈어길",
+   "distance_m": 6,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 0,
+      "hour": 16,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 1,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 16,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 16,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 3,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 16,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 4,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 16,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 16,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 16,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 22,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "393": {
+   "status": "OK",
+   "google_id": "ChIJEczrGRJdDDUR0cpD2okSp7g",
+   "google_name": "오설록 티 뮤지엄",
+   "distance_m": 6,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "394": {
+   "status": "NO_MATCH"
+  },
+  "395": {
+   "status": "OK",
+   "google_id": "ChIJyfIvp2RZDDUROFm8J38Xch8",
+   "google_name": "한라산아래첫마을영농조합법인",
+   "distance_m": 226,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 18,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 18,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 3,
+      "hour": 18,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 4,
+      "hour": 18,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 18,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 18,
+      "minute": 30
+     }
+    }
+   ]
+  },
+  "396": {
+   "status": "OK",
+   "google_id": "ChIJXahjXqdbDDURvaV68VQyUoo",
+   "google_name": "중문고등어쌈밥",
+   "distance_m": 49,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 1,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 3,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 4,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 20,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "397": {
+   "status": "OK",
+   "google_id": "ChIJGw3aUDFDDDURQ7FhmcqPsOw",
+   "google_name": "화순한가네식당",
+   "distance_m": 5,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 17,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 17,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 17,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 17,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 17,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 17,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "398": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJW-FwpwdDDDURKKvdKdJhhF8",
+   "google_name": "용머리해안",
+   "distance_m": 11,
+   "periods": null
+  },
+  "399": {
+   "status": "NO_MATCH"
+  },
+  "400": {
+   "status": "OK",
+   "google_id": "ChIJAzVlLPdpDDURwtrd3yMUWnM",
+   "google_name": "미영이네",
+   "distance_m": 6,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 1,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 4,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 21,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "401": {
+   "status": "OK",
+   "google_id": "ChIJU6lmqAZDDDURjHsfGQi6ZBc",
+   "google_name": "순천미향 제주산방산본점",
+   "distance_m": 6,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "402": {
+   "status": "OK",
+   "google_id": "ChIJ_0VQBbtnDDURwVrJLstCxBs",
+   "google_name": "뚱보아저씨",
+   "distance_m": 9,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 15,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 0,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 1,
+      "hour": 15,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 15,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 3,
+      "hour": 15,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 15,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 15,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 20,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "403": {
+   "status": "OK",
+   "google_id": "ChIJ8bBzwwBhDDURAISiRyzO4mw",
+   "google_name": "협재해수욕장",
+   "distance_m": 21,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "404": {
+   "status": "OK",
+   "google_id": "ChIJOdkMyPZhDDURVsdtpJxFcHc",
+   "google_name": "호텔 샌드",
+   "distance_m": 19,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 1,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 3,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 4,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 22,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "405": {
+   "status": "OK",
+   "google_id": "ChIJjcmBt3dgDDURhFF2rygqU6Y",
+   "google_name": "한림칼국수",
+   "distance_m": 8,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 30
+     }
+    }
+   ]
+  },
+  "406": {
+   "status": "OK",
+   "google_id": "ChIJpyFxA1TjDDUR1kddP-9mN0Y",
+   "google_name": "동문재래시장",
+   "distance_m": 64,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 21,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "407": {
+   "status": "OK",
+   "google_id": "ChIJ8_kh3eD7DDURYHUUw2fs_kQ",
+   "google_name": "빽다방베이커리 제주사수본점",
+   "distance_m": 9,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 21,
+      "minute": 0
+     }
+    }
+   ]
+  }
+ }
+}

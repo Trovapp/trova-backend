@@ -1,0 +1,418 @@
+{
+ "request": {
+  "id": "B3",
+  "videos": [
+   6
+  ],
+  "days": 2,
+  "start": null,
+  "purpose": "영상보다 짧게 요청"
+ },
+ "mode": "agent",
+ "videos": [
+  {
+   "video_no": 6,
+   "job_id": 68,
+   "generate": {
+    "result": "DONE",
+    "seconds": 4.4
+   },
+   "input_place_ids": [
+    363,
+    364,
+    365,
+    366,
+    367,
+    368,
+    369,
+    370,
+    371,
+    372,
+    373,
+    374
+   ],
+   "places": [
+    {
+     "id": 363,
+     "name": "카츠키친 전포점",
+     "region": "부산",
+     "latitude": 35.1585232170784,
+     "longitude": 129.159854668484,
+     "day": 2,
+     "order": 3
+    },
+    {
+     "id": 365,
+     "name": "해운대해수욕장",
+     "region": "부산",
+     "latitude": 35.1585232170784,
+     "longitude": 129.159854668484,
+     "day": 1,
+     "order": 1
+    },
+    {
+     "id": 366,
+     "name": "광안리어방축제",
+     "region": "부산",
+     "latitude": 35.1528774702102,
+     "longitude": 129.118329318701,
+     "day": 2,
+     "order": 1
+    },
+    {
+     "id": 367,
+     "name": "썰스데이파티",
+     "region": "부산",
+     "latitude": 35.1516495419692,
+     "longitude": 129.116763584835,
+     "day": 2,
+     "order": 2
+    },
+    {
+     "id": 368,
+     "name": "타이가텐푸라&마초도 해리단길점",
+     "region": "부산",
+     "latitude": null,
+     "longitude": null,
+     "day": 1,
+     "order": 2
+    },
+    {
+     "id": 369,
+     "name": "코오리마찌 해리단길점",
+     "region": "부산",
+     "latitude": null,
+     "longitude": null,
+     "day": 1,
+     "order": 3
+    },
+    {
+     "id": 370,
+     "name": "해운대 메인 거리 & 시장",
+     "region": "부산",
+     "latitude": null,
+     "longitude": null,
+     "day": 1,
+     "order": 4
+    },
+    {
+     "id": 372,
+     "name": "개미집 해운대역점",
+     "region": "부산",
+     "latitude": null,
+     "longitude": null,
+     "day": 1,
+     "order": 5
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "trip-plan.draft",
+     "success": true,
+     "latency_ms": 2104,
+     "prompt_tokens": 924,
+     "response_tokens": 581
+    }
+   ]
+  }
+ ],
+ "agent": {
+  "draft_id": 19,
+  "message": "1박 2일",
+  "status": "READY",
+  "question": null,
+  "answer": null,
+  "gemini_calls": 1,
+  "agent_google_hours_calls": 6,
+  "error": null,
+  "excluded": [
+   {
+    "placeId": 364,
+    "name": "이바비커피 전포점",
+    "reason": "좌표 정보가 부족하고 동선상 우선순위에서 밀려 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 371,
+    "name": "해운대 바다",
+    "reason": "이미 포함된 해운대해수욕장과 중복되는 장소여서 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 373,
+    "name": "T1베이스캠프 부산점",
+    "reason": "다른 관광 및 식당 동선과 연계하기에 애매하여 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 374,
+    "name": "해운대해수욕장",
+    "reason": "이미 포함된 해운대해수욕장과 중복되는 장소여서 이번 일정에서 뺐어요."
+   }
+  ],
+  "lodging": [
+   "1일차 숙소 미정 — 마지막 장소(개미집 해운대역점) 근처를 추천해요."
+  ],
+  "fixes": [],
+  "problems": [],
+  "draft": {
+   "days": [
+    {
+     "day": 1,
+     "date": null,
+     "items": [
+      {
+       "placeId": 365,
+       "name": "해운대해수욕장",
+       "category": "attraction",
+       "start": "10:00",
+       "end": "12:00",
+       "latitude": 35.1585232170784,
+       "longitude": 129.159854668484
+      },
+      {
+       "placeId": 368,
+       "name": "타이가텐푸라&마초도 해리단길점",
+       "category": "restaurant",
+       "start": "12:30",
+       "end": "13:30",
+       "latitude": null,
+       "longitude": null
+      },
+      {
+       "placeId": 369,
+       "name": "코오리마찌 해리단길점",
+       "category": "cafe",
+       "start": "14:00",
+       "end": "15:00",
+       "latitude": null,
+       "longitude": null
+      },
+      {
+       "placeId": 370,
+       "name": "해운대 메인 거리 & 시장",
+       "category": "shopping",
+       "start": "15:30",
+       "end": "16:30",
+       "latitude": null,
+       "longitude": null
+      },
+      {
+       "placeId": 372,
+       "name": "개미집 해운대역점",
+       "category": "restaurant",
+       "start": "18:00",
+       "end": "19:00",
+       "latitude": null,
+       "longitude": null
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "date": null,
+     "items": [
+      {
+       "placeId": 366,
+       "name": "광안리어방축제",
+       "category": "attraction",
+       "start": "10:00",
+       "end": "12:00",
+       "latitude": 35.1528774702102,
+       "longitude": 129.118329318701
+      },
+      {
+       "placeId": 367,
+       "name": "썰스데이파티",
+       "category": "restaurant",
+       "start": "12:30",
+       "end": "13:30",
+       "latitude": 35.1516495419692,
+       "longitude": 129.116763584835
+      },
+      {
+       "placeId": 363,
+       "name": "카츠키친 전포점",
+       "category": "restaurant",
+       "start": "17:30",
+       "end": "18:30",
+       "latitude": 35.1585232170784,
+       "longitude": 129.159854668484
+      }
+     ]
+    }
+   ],
+   "excluded": [
+    {
+     "placeId": 364,
+     "name": "이바비커피 전포점",
+     "reason": "좌표 정보가 부족하고 동선상 우선순위에서 밀려 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 371,
+     "name": "해운대 바다",
+     "reason": "이미 포함된 해운대해수욕장과 중복되는 장소여서 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 373,
+     "name": "T1베이스캠프 부산점",
+     "reason": "다른 관광 및 식당 동선과 연계하기에 애매하여 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 374,
+     "name": "해운대해수욕장",
+     "reason": "이미 포함된 해운대해수욕장과 중복되는 장소여서 이번 일정에서 뺐어요."
+    }
+   ],
+   "lodging": [
+    "1일차 숙소 미정 — 마지막 장소(개미집 해운대역점) 근처를 추천해요."
+   ],
+   "assumptions": [
+    "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+    "영업시간을 확인하지 못한 장소가 10곳 있어요.",
+    "위치를 확인하지 못한 장소가 6곳 있어 동선이 정확하지 않을 수 있어요.",
+    "이동 시간은 직선거리로 어림했어요."
+   ],
+   "fixes": [],
+   "problems": []
+  }
+ },
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "363": {
+   "status": "NO_MATCH"
+  },
+  "364": {
+   "status": "NO_COORD"
+  },
+  "365": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJXwf-DlyNaDURmKxjwdWxY5k",
+   "google_name": "해운대해수욕장",
+   "distance_m": 52,
+   "periods": null
+  },
+  "366": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJxw7HJy_taDUR-xaSTeHwbf8",
+   "google_name": "광안리해수욕장",
+   "distance_m": 45,
+   "periods": null
+  },
+  "367": {
+   "status": "OK",
+   "google_id": "ChIJUczZHybtaDUR7An41W9uprk",
+   "google_name": "썰스데이파티 광안리점",
+   "distance_m": 1,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 4,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 4,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 4,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 4,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 4,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 4,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "368": {
+   "status": "NO_COORD"
+  },
+  "369": {
+   "status": "NO_COORD"
+  },
+  "370": {
+   "status": "NO_COORD"
+  },
+  "371": {
+   "status": "NO_COORD"
+  },
+  "372": {
+   "status": "NO_COORD"
+  },
+  "373": {
+   "status": "OK",
+   "google_id": "ChIJqY7vZQCNaDURMyFRxr32XVg",
+   "google_name": "T1 BASE CAMP BUSAN",
+   "distance_m": 3,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "374": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJXwf-DlyNaDURmKxjwdWxY5k",
+   "google_name": "해운대해수욕장",
+   "distance_m": 52,
+   "periods": null
+  }
+ }
+}

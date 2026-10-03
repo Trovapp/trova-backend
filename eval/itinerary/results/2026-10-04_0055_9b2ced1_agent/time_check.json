@@ -1,0 +1,179 @@
+{
+ "summary": {
+  "dinner_dup": 0,
+  "lunch_dup": 1,
+  "dark_attraction": 18,
+  "dark_restored": 2
+ },
+ "rows": [
+  {
+   "id": "B1",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 가야랜드 ~20:30"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B2",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B3",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "2일차 T1베이스캠프 부산점 ~19:30"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B4",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "3일차 제주곶자왈도립공원 ~21:00"
+   ],
+   "dark_restored": [
+    "3일차 제주곶자왈도립공원 ~21:00"
+   ]
+  },
+  {
+   "id": "B5",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B6",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B7",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 CGV 부산명지 ~18:55"
+   ],
+   "dark_restored": [
+    "1일차 CGV 부산명지 ~18:55"
+   ]
+  },
+  {
+   "id": "B8",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 연화정도서관 ~20:15"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B9",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 김녕해수욕장 ~18:45",
+    "1일차 세화해변 ~21:00",
+    "2일차 중문색달해수욕장 ~19:00",
+    "2일차 중문대포주상절리대 ~21:00",
+    "3일차 정방폭포 ~18:15",
+    "3일차 소천지 ~20:45"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B10",
+   "dinner_dup": [],
+   "lunch_dup": [
+    "1일차 ['초당모꼬지', '초당명가짬뽕순두부']"
+   ],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B11",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "2일차 용머리해안 ~20:00"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B12",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 청연루 ~18:30"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B13",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "2일차 T1베이스캠프 부산점 ~21:00"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B14",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 안목해변 ~20:00"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B15",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B16",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B17",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B18",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 세화해변 ~19:30",
+    "3일차 신창풍차해안 ~18:10"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B19",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 이호테우해수욕장 ~19:30"
+   ],
+   "dark_restored": []
+  }
+ ]
+}

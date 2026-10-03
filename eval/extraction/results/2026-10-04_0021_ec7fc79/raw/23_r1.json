@@ -1,0 +1,130 @@
+{
+  "video_no": 23,
+  "repeat": 1,
+  "url": "https://www.instagram.com/reel/DGnDPoIycOI/",
+  "submit_status": 202,
+  "job_id": 107,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 10.7,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 10.317256
+  },
+  "places": [
+    {
+      "name": "홍시궁 객리단길본점",
+      "region": "전주시 완산구",
+      "category": "cafe",
+      "latitude": 35.8204123252812,
+      "longitude": 127.138231917307,
+      "address": "전북특별자치도 전주시 완산구 다가동4가 35",
+      "road_address": "전북특별자치도 전주시 완산구 전주객사1길 94",
+      "kakao_place_url": "http://place.map.kakao.com/397006979"
+    },
+    {
+      "name": "오원집 본점",
+      "region": "전주시 완산구",
+      "category": "restaurant",
+      "latitude": 35.8260970813278,
+      "longitude": 127.140895564707,
+      "address": "전북특별자치도 전주시 완산구 태평동 10-9",
+      "road_address": "전북특별자치도 전주시 완산구 공북로 84",
+      "kakao_place_url": "http://place.map.kakao.com/8481800"
+    },
+    {
+      "name": "우미네등갈비찜 본점",
+      "region": "전주시 완산구",
+      "category": "restaurant",
+      "latitude": 35.7981289224058,
+      "longitude": 127.112929178714,
+      "address": "전북특별자치도 전주시 완산구 삼천동1가 284-32",
+      "road_address": "전북특별자치도 전주시 완산구 용리로 30",
+      "kakao_place_url": "http://place.map.kakao.com/24324738"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 4015,
+      "prompt_tokens": 9699,
+      "response_tokens": 28,
+      "total_tokens": 9727,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 2984,
+      "prompt_tokens": 10693,
+      "response_tokens": 465,
+      "total_tokens": 11158,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 60,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 61,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 70,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 111,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 102,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 124,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    }
+  ]
+}

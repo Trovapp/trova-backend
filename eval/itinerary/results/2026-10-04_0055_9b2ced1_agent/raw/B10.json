@@ -1,0 +1,2138 @@
+{
+ "request": {
+  "id": "B10",
+  "videos": [
+   11,
+   12,
+   2
+  ],
+  "days": 3,
+  "start": null,
+  "purpose": "영상 3개"
+ },
+ "mode": "agent",
+ "videos": [
+  {
+   "video_no": 11,
+   "job_id": 121,
+   "generate": {
+    "result": "DONE",
+    "seconds": 8.9
+   },
+   "input_place_ids": [
+    674,
+    675,
+    676,
+    677,
+    678,
+    679,
+    680,
+    681,
+    682,
+    683,
+    684,
+    685,
+    686
+   ],
+   "places": [
+    {
+     "id": 676,
+     "name": "순두부젤라또 2호점",
+     "region": "강릉",
+     "latitude": 37.7713694926946,
+     "longitude": 128.947103514725,
+     "day": 2,
+     "order": 5
+    },
+    {
+     "id": 677,
+     "name": "안목해변",
+     "region": "강릉",
+     "latitude": 37.7722617595376,
+     "longitude": 128.948275405137,
+     "day": 2,
+     "order": 4
+    },
+    {
+     "id": 678,
+     "name": "강릉중앙시장",
+     "region": "강릉",
+     "latitude": 37.7540251176578,
+     "longitude": 128.89862379001,
+     "day": 2,
+     "order": 6
+    },
+    {
+     "id": 680,
+     "name": "초당모꼬지",
+     "region": "강릉",
+     "latitude": 37.7898147281653,
+     "longitude": 128.914641405075,
+     "day": 1,
+     "order": 1
+    },
+    {
+     "id": 681,
+     "name": "소돌해변",
+     "region": "강릉",
+     "latitude": 37.9069740745975,
+     "longitude": 128.825167878323,
+     "day": 3,
+     "order": 1
+    },
+    {
+     "id": 682,
+     "name": "소돌항",
+     "region": "강릉",
+     "latitude": 37.9049479503698,
+     "longitude": 128.830802425681,
+     "day": 3,
+     "order": 2
+    },
+    {
+     "id": 684,
+     "name": "레드망치",
+     "region": "강릉",
+     "latitude": 37.7612107791981,
+     "longitude": 128.894336775343,
+     "day": 3,
+     "order": 5
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "trip-plan.draft",
+     "success": true,
+     "latency_ms": 3594,
+     "prompt_tokens": 2000,
+     "response_tokens": 1393
+    },
+    {
+     "operation": "trip-plan.draft.repair",
+     "success": true,
+     "latency_ms": 3653,
+     "prompt_tokens": 3429,
+     "response_tokens": 1387
+    }
+   ]
+  },
+  {
+   "video_no": 12,
+   "job_id": 122,
+   "generate": {
+    "result": "DONE",
+    "seconds": null
+   },
+   "input_place_ids": [
+    687,
+    688,
+    689,
+    690,
+    691,
+    692,
+    693,
+    694,
+    695,
+    696,
+    697
+   ],
+   "places": [
+    {
+     "id": 687,
+     "name": "초당명가짬뽕순두부",
+     "region": "강릉",
+     "latitude": 37.7895187933719,
+     "longitude": 128.915168414793,
+     "day": 1,
+     "order": 2
+    },
+    {
+     "id": 689,
+     "name": "강릉조개빵",
+     "region": "강릉",
+     "latitude": 37.795178661695,
+     "longitude": 128.91722173969,
+     "day": 1,
+     "order": 3
+    },
+    {
+     "id": 690,
+     "name": "강릉감자닭강정",
+     "region": "강릉",
+     "latitude": 37.7939820454803,
+     "longitude": 128.918844795597,
+     "day": 1,
+     "order": 4
+    },
+    {
+     "id": 691,
+     "name": "사근진해변",
+     "region": "강릉",
+     "latitude": 37.8136129609739,
+     "longitude": 128.897555797396,
+     "day": 3,
+     "order": 3
+    },
+    {
+     "id": 692,
+     "name": "백야커피",
+     "region": "강릉",
+     "latitude": 37.8115245862634,
+     "longitude": 128.899079504156,
+     "day": 3,
+     "order": 4
+    },
+    {
+     "id": 693,
+     "name": "강바다식당",
+     "region": "강릉",
+     "latitude": 37.7706838797437,
+     "longitude": 128.949123703342,
+     "day": 2,
+     "order": 3
+    },
+    {
+     "id": 695,
+     "name": "명성오징어순대 1호점",
+     "region": "강릉",
+     "latitude": 37.7537820934687,
+     "longitude": 128.899393637383,
+     "day": 2,
+     "order": 7
+    },
+    {
+     "id": 697,
+     "name": "박종주반죽소 전국본점",
+     "region": "강릉",
+     "latitude": 37.7534340794659,
+     "longitude": 128.89862910399,
+     "day": 3,
+     "order": 6
+    }
+   ],
+   "gemini": []
+  },
+  {
+   "video_no": 2,
+   "job_id": 112,
+   "generate": {
+    "result": "DONE",
+    "seconds": null
+   },
+   "input_place_ids": [
+    596,
+    597,
+    598,
+    599,
+    600,
+    601,
+    602,
+    603
+   ],
+   "places": [
+    {
+     "id": 597,
+     "name": "동쪽바다중앙시장",
+     "region": "동해",
+     "latitude": 37.5507432924746,
+     "longitude": 129.108613983206,
+     "day": 3,
+     "order": 7
+    },
+    {
+     "id": 598,
+     "name": "어달삼거리",
+     "region": "동해",
+     "latitude": 37.566494003894,
+     "longitude": 129.119551218199,
+     "day": 2,
+     "order": 2
+    },
+    {
+     "id": 600,
+     "name": "카페어달",
+     "region": "동해",
+     "latitude": 37.5625670708906,
+     "longitude": 129.120113237767,
+     "day": 2,
+     "order": 1
+    }
+   ],
+   "gemini": []
+  }
+ ],
+ "agent": {
+  "draft_id": 121,
+  "message": "2박 3일",
+  "status": "READY",
+  "question": null,
+  "answer": null,
+  "gemini_calls": 2,
+  "agent_google_hours_calls": 0,
+  "error": null,
+  "excluded": [
+   {
+    "placeId": 674,
+    "name": "서울역",
+    "reason": "공항·기차역·터미널 같은 지나가는 곳은 일정에 넣지 않아요."
+   },
+   {
+    "placeId": 675,
+    "name": "강릉역",
+    "reason": "공항·기차역·터미널 같은 지나가는 곳은 일정에 넣지 않아요."
+   },
+   {
+    "placeId": 685,
+    "name": "고동장칼국수",
+    "reason": "좌표가 없어 위치를 확인할 수 없어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 686,
+    "name": "우브더모먼트",
+    "reason": "좌표가 없어 위치를 확인할 수 없어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 683,
+    "name": "아들바위공원",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 688,
+    "name": "카페미밀",
+    "reason": "좌표가 없어 위치를 확인할 수 없어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 696,
+    "name": "강릉사임당오징어순대",
+    "reason": "이미 넣은 장소와 같은 곳이라 중복되어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 596,
+    "name": "하평해변",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 599,
+    "name": "어달항",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 601,
+    "name": "논골담길",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 602,
+    "name": "비비소",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 603,
+    "name": "도째비골 해랑전망대",
+    "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+   },
+   {
+    "placeId": 694,
+    "name": "강릉중앙시장",
+    "reason": "이미 넣은 장소와 같은 곳이라 중복되어 이번 일정에서 뺐어요."
+   }
+  ],
+  "lodging": [
+   "1일차 숙소: 여름의집 Casa de Verano(영상 속 숙소)",
+   "2일차 숙소: 여름의집 Casa de Verano(영상 속 숙소)"
+  ],
+  "fixes": [
+   "소돌항은 3일차에 자리가 있어 다시 넣었어요.",
+   "소돌해변은 3일차에 자리가 있어 다시 넣었어요.",
+   "어달삼거리은 2일차에 자리가 있어 다시 넣었어요.",
+   "카페어달은 2일차에 자리가 있어 다시 넣었어요.",
+   "동쪽바다중앙시장은 3일차에 자리가 있어 다시 넣었어요.",
+   "강바다식당을 2일차 점심 시간(12:30)으로 옮겼어요."
+  ],
+  "problems": [
+   "3일차 점심 시간대 식당 없음"
+  ],
+  "draft": {
+   "days": [
+    {
+     "day": 1,
+     "date": null,
+     "items": [
+      {
+       "placeId": 680,
+       "name": "초당모꼬지",
+       "category": "restaurant",
+       "start": "11:30",
+       "end": "12:30",
+       "latitude": 37.7898147281653,
+       "longitude": 128.914641405075
+      },
+      {
+       "placeId": 687,
+       "name": "초당명가짬뽕순두부",
+       "category": "restaurant",
+       "start": "12:45",
+       "end": "13:45",
+       "latitude": 37.7895187933719,
+       "longitude": 128.915168414793
+      },
+      {
+       "placeId": 689,
+       "name": "강릉조개빵",
+       "category": "shopping",
+       "start": "14:00",
+       "end": "15:00",
+       "latitude": 37.795178661695,
+       "longitude": 128.91722173969
+      },
+      {
+       "placeId": 690,
+       "name": "강릉감자닭강정",
+       "category": "restaurant",
+       "start": "18:00",
+       "end": "19:00",
+       "latitude": 37.7939820454803,
+       "longitude": 128.918844795597
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "date": null,
+     "items": [
+      {
+       "placeId": 600,
+       "name": "카페어달",
+       "category": "cafe",
+       "start": "09:00",
+       "end": "09:50",
+       "latitude": 37.5625670708906,
+       "longitude": 129.120113237767
+      },
+      {
+       "placeId": 598,
+       "name": "어달삼거리",
+       "category": "attraction",
+       "start": "10:00",
+       "end": "11:30",
+       "latitude": 37.566494003894,
+       "longitude": 129.119551218199
+      },
+      {
+       "placeId": 693,
+       "name": "강바다식당",
+       "category": "restaurant",
+       "start": "12:30",
+       "end": "13:30",
+       "latitude": 37.7706838797437,
+       "longitude": 128.949123703342
+      },
+      {
+       "placeId": 677,
+       "name": "안목해변",
+       "category": "attraction",
+       "start": "13:40",
+       "end": "15:10",
+       "latitude": 37.7722617595376,
+       "longitude": 128.948275405137
+      },
+      {
+       "placeId": 676,
+       "name": "순두부젤라또 2호점",
+       "category": "cafe",
+       "start": "15:20",
+       "end": "16:20",
+       "latitude": 37.7713694926946,
+       "longitude": 128.947103514725
+      },
+      {
+       "placeId": 678,
+       "name": "강릉중앙시장",
+       "category": "shopping",
+       "start": "16:30",
+       "end": "17:30",
+       "latitude": 37.7540251176578,
+       "longitude": 128.89862379001
+      },
+      {
+       "placeId": 695,
+       "name": "명성오징어순대 1호점",
+       "category": "restaurant",
+       "start": "18:00",
+       "end": "19:00",
+       "latitude": 37.7537820934687,
+       "longitude": 128.899393637383
+      }
+     ]
+    },
+    {
+     "day": 3,
+     "date": null,
+     "items": [
+      {
+       "placeId": 681,
+       "name": "소돌해변",
+       "category": "attraction",
+       "start": "10:00",
+       "end": "11:30",
+       "latitude": 37.9069740745975,
+       "longitude": 128.825167878323
+      },
+      {
+       "placeId": 682,
+       "name": "소돌항",
+       "category": "attraction",
+       "start": "11:40",
+       "end": "13:10",
+       "latitude": 37.9049479503698,
+       "longitude": 128.830802425681
+      },
+      {
+       "placeId": 691,
+       "name": "사근진해변",
+       "category": "attraction",
+       "start": "13:40",
+       "end": "15:10",
+       "latitude": 37.8136129609739,
+       "longitude": 128.897555797396
+      },
+      {
+       "placeId": 692,
+       "name": "백야커피",
+       "category": "cafe",
+       "start": "15:20",
+       "end": "16:20",
+       "latitude": 37.8115245862634,
+       "longitude": 128.899079504156
+      },
+      {
+       "placeId": 684,
+       "name": "레드망치",
+       "category": "shopping",
+       "start": "16:40",
+       "end": "17:40",
+       "latitude": 37.7612107791981,
+       "longitude": 128.894336775343
+      },
+      {
+       "placeId": 697,
+       "name": "박종주반죽소 전국본점",
+       "category": "restaurant",
+       "start": "18:00",
+       "end": "19:00",
+       "latitude": 37.7534340794659,
+       "longitude": 128.89862910399
+      },
+      {
+       "placeId": 597,
+       "name": "동쪽바다중앙시장",
+       "category": "shopping",
+       "start": "20:00",
+       "end": "21:00",
+       "latitude": 37.5507432924746,
+       "longitude": 129.108613983206
+      }
+     ]
+    }
+   ],
+   "excluded": [
+    {
+     "placeId": 674,
+     "name": "서울역",
+     "reason": "공항·기차역·터미널 같은 지나가는 곳은 일정에 넣지 않아요."
+    },
+    {
+     "placeId": 675,
+     "name": "강릉역",
+     "reason": "공항·기차역·터미널 같은 지나가는 곳은 일정에 넣지 않아요."
+    },
+    {
+     "placeId": 685,
+     "name": "고동장칼국수",
+     "reason": "좌표가 없어 위치를 확인할 수 없어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 686,
+     "name": "우브더모먼트",
+     "reason": "좌표가 없어 위치를 확인할 수 없어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 683,
+     "name": "아들바위공원",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 688,
+     "name": "카페미밀",
+     "reason": "좌표가 없어 위치를 확인할 수 없어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 696,
+     "name": "강릉사임당오징어순대",
+     "reason": "이미 넣은 장소와 같은 곳이라 중복되어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 596,
+     "name": "하평해변",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 599,
+     "name": "어달항",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 601,
+     "name": "논골담길",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 602,
+     "name": "비비소",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 603,
+     "name": "도째비골 해랑전망대",
+     "reason": "다른 장소들과 30km 넘게 떨어져 있어 이번 일정에서 뺐어요."
+    },
+    {
+     "placeId": 694,
+     "name": "강릉중앙시장",
+     "reason": "이미 넣은 장소와 같은 곳이라 중복되어 이번 일정에서 뺐어요."
+    }
+   ],
+   "lodging": [
+    "1일차 숙소: 여름의집 Casa de Verano(영상 속 숙소)",
+    "2일차 숙소: 여름의집 Casa de Verano(영상 속 숙소)"
+   ],
+   "assumptions": [
+    "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+    "영업시간을 확인하지 못한 장소가 17곳 있어요.",
+    "위치를 확인하지 못한 장소가 3곳 있어 동선이 정확하지 않을 수 있어요.",
+    "이동 시간은 직선거리로 어림했어요."
+   ],
+   "fixes": [
+    "소돌항은 3일차에 자리가 있어 다시 넣었어요.",
+    "소돌해변은 3일차에 자리가 있어 다시 넣었어요.",
+    "어달삼거리은 2일차에 자리가 있어 다시 넣었어요.",
+    "카페어달은 2일차에 자리가 있어 다시 넣었어요.",
+    "동쪽바다중앙시장은 3일차에 자리가 있어 다시 넣었어요.",
+    "강바다식당을 2일차 점심 시간(12:30)으로 옮겼어요."
+   ],
+   "problems": [
+    "3일차 점심 시간대 식당 없음"
+   ]
+  }
+ },
+ "inputs": [
+  {
+   "id": 674,
+   "name": "서울역",
+   "region": "서울",
+   "latitude": 37.5540688873318,
+   "longitude": 126.970703352534,
+   "day": 1,
+   "order": 1
+  },
+  {
+   "id": 675,
+   "name": "강릉역",
+   "region": "강릉",
+   "latitude": 37.7645235587621,
+   "longitude": 128.899627553491,
+   "day": 1,
+   "order": 2
+  },
+  {
+   "id": 676,
+   "name": "순두부젤라또 2호점",
+   "region": "강릉",
+   "latitude": 37.7713694926946,
+   "longitude": 128.947103514725,
+   "day": 1,
+   "order": 3
+  },
+  {
+   "id": 677,
+   "name": "안목해변",
+   "region": "강릉",
+   "latitude": 37.7722617595376,
+   "longitude": 128.948275405137,
+   "day": 1,
+   "order": 4
+  },
+  {
+   "id": 678,
+   "name": "강릉중앙시장",
+   "region": "강릉",
+   "latitude": 37.7540251176578,
+   "longitude": 128.89862379001,
+   "day": 1,
+   "order": 5
+  },
+  {
+   "id": 679,
+   "name": "여름의집 Casa de Verano",
+   "region": "강릉",
+   "latitude": 37.7618387655698,
+   "longitude": 128.892705191362,
+   "day": 1,
+   "order": 6
+  },
+  {
+   "id": 680,
+   "name": "초당모꼬지",
+   "region": "강릉",
+   "latitude": 37.7898147281653,
+   "longitude": 128.914641405075,
+   "day": 2,
+   "order": 1
+  },
+  {
+   "id": 681,
+   "name": "소돌해변",
+   "region": "강릉",
+   "latitude": 37.9069740745975,
+   "longitude": 128.825167878323,
+   "day": 2,
+   "order": 2
+  },
+  {
+   "id": 682,
+   "name": "소돌항",
+   "region": "강릉",
+   "latitude": 37.9049479503698,
+   "longitude": 128.830802425681,
+   "day": 2,
+   "order": 3
+  },
+  {
+   "id": 683,
+   "name": "아들바위공원",
+   "region": "강릉",
+   "latitude": 37.9059578450621,
+   "longitude": 128.830277178125,
+   "day": 2,
+   "order": 4
+  },
+  {
+   "id": 684,
+   "name": "레드망치",
+   "region": "강릉",
+   "latitude": 37.7612107791981,
+   "longitude": 128.894336775343,
+   "day": 2,
+   "order": 5
+  },
+  {
+   "id": 685,
+   "name": "고동장칼국수",
+   "region": "강릉",
+   "latitude": null,
+   "longitude": null,
+   "day": 3,
+   "order": 1
+  },
+  {
+   "id": 686,
+   "name": "우브더모먼트",
+   "region": "강릉",
+   "latitude": null,
+   "longitude": null,
+   "day": 3,
+   "order": 2
+  },
+  {
+   "id": 687,
+   "name": "초당명가짬뽕순두부",
+   "region": "강릉",
+   "latitude": 37.7895187933719,
+   "longitude": 128.915168414793,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 688,
+   "name": "카페미밀",
+   "region": "강릉",
+   "latitude": null,
+   "longitude": null,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 689,
+   "name": "강릉조개빵",
+   "region": "강릉",
+   "latitude": 37.795178661695,
+   "longitude": 128.91722173969,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 690,
+   "name": "강릉감자닭강정",
+   "region": "강릉",
+   "latitude": 37.7939820454803,
+   "longitude": 128.918844795597,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 691,
+   "name": "사근진해변",
+   "region": "강릉",
+   "latitude": 37.8136129609739,
+   "longitude": 128.897555797396,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 692,
+   "name": "백야커피",
+   "region": "강릉",
+   "latitude": 37.8115245862634,
+   "longitude": 128.899079504156,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 693,
+   "name": "강바다식당",
+   "region": "강릉",
+   "latitude": 37.7706838797437,
+   "longitude": 128.949123703342,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 694,
+   "name": "강릉중앙시장",
+   "region": "강릉",
+   "latitude": 37.7540251176578,
+   "longitude": 128.89862379001,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 695,
+   "name": "명성오징어순대 1호점",
+   "region": "강릉",
+   "latitude": 37.7537820934687,
+   "longitude": 128.899393637383,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 696,
+   "name": "강릉사임당오징어순대",
+   "region": "강릉",
+   "latitude": 37.7538580025939,
+   "longitude": 128.899546479274,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 697,
+   "name": "박종주반죽소 전국본점",
+   "region": "강릉",
+   "latitude": 37.7534340794659,
+   "longitude": 128.89862910399,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 596,
+   "name": "하평해변",
+   "region": "동해",
+   "latitude": 37.5335215015062,
+   "longitude": 129.116388838715,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 597,
+   "name": "동쪽바다중앙시장",
+   "region": "동해",
+   "latitude": 37.5507432924746,
+   "longitude": 129.108613983206,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 598,
+   "name": "어달삼거리",
+   "region": "동해",
+   "latitude": 37.566494003894,
+   "longitude": 129.119551218199,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 599,
+   "name": "어달항",
+   "region": "동해",
+   "latitude": 37.5614896322872,
+   "longitude": 129.120466313082,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 600,
+   "name": "카페어달",
+   "region": "동해",
+   "latitude": 37.5625670708906,
+   "longitude": 129.120113237767,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 601,
+   "name": "논골담길",
+   "region": "동해",
+   "latitude": 37.5527709036958,
+   "longitude": 129.116475044711,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 602,
+   "name": "비비소",
+   "region": "동해",
+   "latitude": 37.5520780945078,
+   "longitude": 129.118135695159,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 603,
+   "name": "도째비골 해랑전망대",
+   "region": "동해",
+   "latitude": 37.5538005195418,
+   "longitude": 129.120241546369,
+   "day": null,
+   "order": null
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "674": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJlU6-zWiifDURBCDQ_VkAI7s",
+   "google_name": "서울역",
+   "distance_m": 12,
+   "periods": null
+  },
+  "675": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJ5fJnlUflYTURWudXtcTihfU",
+   "google_name": "강릉역",
+   "distance_m": 8,
+   "periods": null
+  },
+  "676": {
+   "status": "OK",
+   "google_id": "ChIJz0wKrPXnYTURM6xm-JQeq8Q",
+   "google_name": "순두부젤라또 안목점",
+   "distance_m": 3,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 1,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 3,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 4,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 21,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "677": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJPWMuyALnYTURTC17g5aCCoU",
+   "google_name": "안목해변",
+   "distance_m": 133,
+   "periods": null
+  },
+  "678": {
+   "status": "OK",
+   "google_id": "ChIJ5-y4g_vlYTURGd4LueRcB1E",
+   "google_name": "강릉중앙시장",
+   "distance_m": 4,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "679": {
+   "status": "NO_MATCH"
+  },
+  "680": {
+   "status": "OK",
+   "google_id": "ChIJDTNhp9fnYTURnBpd5ueWyqA",
+   "google_name": "초당모꼬지",
+   "distance_m": 6,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 20,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "681": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJ_79lD7TiYTUR2X8doEhmu98",
+   "google_name": "소돌해변",
+   "distance_m": 10,
+   "periods": null
+  },
+  "682": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJmfbY6uPjYTURu9snS0HhN_M",
+   "google_name": "소돌항",
+   "distance_m": 50,
+   "periods": null
+  },
+  "683": {
+   "status": "OK",
+   "google_id": "ChIJpwW4urDiYTUR12-zBM6ElRg",
+   "google_name": "아들바위공원",
+   "distance_m": 13,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "684": {
+   "status": "OK",
+   "google_id": "ChIJR-kOkSTlYTURHmB42KklMLQ",
+   "google_name": "레드망치",
+   "distance_m": 3,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 1,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 3,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 4,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 18,
+      "minute": 50
+     }
+    }
+   ]
+  },
+  "685": {
+   "status": "NO_COORD"
+  },
+  "686": {
+   "status": "NO_COORD"
+  },
+  "687": {
+   "status": "OK",
+   "google_id": "ChIJ1239IcPnYTUR1UEJ74NEXuQ",
+   "google_name": "초당명가 짬뽕순두부",
+   "distance_m": 7,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 30
+     }
+    }
+   ]
+  },
+  "688": {
+   "status": "NO_COORD"
+  },
+  "689": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJ3wU3CADnYTURX6V6UWGaI9o",
+   "google_name": "강릉조개빵",
+   "distance_m": 2,
+   "periods": null
+  },
+  "690": {
+   "status": "OK",
+   "google_id": "ChIJowG8KADnYTURLjdbiwb8Rgc",
+   "google_name": "강릉감자닭강정",
+   "distance_m": 2,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 22,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "691": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJC18WeQPkYTUR9CB4M6kP-f8",
+   "google_name": "사근진해변",
+   "distance_m": 200,
+   "periods": null
+  },
+  "692": {
+   "status": "OK",
+   "google_id": "ChIJeQ2kHqDlYTUR8LngoXLjLi4",
+   "google_name": "백야커피",
+   "distance_m": 6,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 21,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "693": {
+   "status": "OK",
+   "google_id": "ChIJFwrGBwPnYTURGI3xxyQWKzM",
+   "google_name": "강과바다",
+   "distance_m": 3,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 21,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 21,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "694": {
+   "status": "OK",
+   "google_id": "ChIJ5-y4g_vlYTURGd4LueRcB1E",
+   "google_name": "강릉중앙시장",
+   "distance_m": 4,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "695": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJpwFdf7jlYTURzdLgFakq2mE",
+   "google_name": "명성오징어순대",
+   "distance_m": 2,
+   "periods": null
+  },
+  "696": {
+   "status": "OK",
+   "google_id": "ChIJLb6Nh_zlYTURvhAuvCpehHs",
+   "google_name": "강릉사임당오징어순대",
+   "distance_m": 5,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "697": {
+   "status": "OK",
+   "google_id": "ChIJkSLtePzlYTURnNBsCm9ATJI",
+   "google_name": "광덕식당 중앙시장점",
+   "distance_m": 31,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 7,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 20,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "596": {
+   "status": "NO_MATCH"
+  },
+  "597": {
+   "status": "OK",
+   "google_id": "ChIJQwPxmgbHYTURTW2-xP1FIoA",
+   "google_name": "동쪽바다중앙시장",
+   "distance_m": 35,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 17,
+      "minute": 30
+     }
+    }
+   ]
+  },
+  "598": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJLU7oJgDHYTURyjsp4dO2lPo",
+   "google_name": "어달삼거리",
+   "distance_m": 1,
+   "periods": null
+  },
+  "599": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJu7nHZVrGYTUROYY_Er6vU2c",
+   "google_name": "어달항",
+   "distance_m": 49,
+   "periods": null
+  },
+  "600": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJWRhCWlrGYTURz2DKh2H7eXk",
+   "google_name": "카페어달",
+   "distance_m": 3,
+   "periods": null
+  },
+  "601": {
+   "status": "OK",
+   "google_id": "ChIJ3f_jllTGYTURFAyaPmllVjs",
+   "google_name": "논골담길",
+   "distance_m": 15,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "602": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJnZuGqKzHYTURHu5-95dcHK0",
+   "google_name": "비비소",
+   "distance_m": 2,
+   "periods": null
+  },
+  "603": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJ86S4hknHYTUR-iPlk5ZFGyQ",
+   "google_name": "도째비골 해랑 전망대 화장실",
+   "distance_m": 19,
+   "periods": null
+  }
+ }
+}

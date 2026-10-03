@@ -1,0 +1,56 @@
+{
+ "request": {
+  "id": "B2",
+  "videos": [
+   5
+  ],
+  "days": 1,
+  "start": null,
+  "purpose": "기본"
+ },
+ "videos": [
+  {
+   "video_no": 5,
+   "job_id": 67,
+   "generate": {
+    "result": "DONE",
+    "seconds": 2.1,
+    "since": "2026-10-03 23:54:44.511500"
+   },
+   "input_place_ids": [
+    362
+   ],
+   "places": [
+    {
+     "id": 362,
+     "name": "CGV 부산명지",
+     "region": "Busan",
+     "latitude": 35.0944146620419,
+     "longitude": 128.903474632696,
+     "day": 1,
+     "order": 1
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "generate_itinerary",
+     "success": true,
+     "latency_ms": 1043,
+     "prompt_tokens": 303,
+     "response_tokens": 37
+    }
+   ]
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "362": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJZwrBbMbFaDURoMqRLWyghy0",
+   "google_name": "CGV 부산명지",
+   "distance_m": 10,
+   "periods": null
+  }
+ }
+}

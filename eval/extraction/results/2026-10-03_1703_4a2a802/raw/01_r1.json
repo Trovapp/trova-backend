@@ -1,0 +1,170 @@
+{
+  "video_no": 1,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/8vmpPuFwQ94",
+  "submit_status": 202,
+  "job_id": 38,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 10.4,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 9.373486
+  },
+  "places": [
+    {
+      "name": "가야랜드",
+      "region": "김해",
+      "category": "attraction",
+      "latitude": 35.2605105081932,
+      "longitude": 128.902009884799,
+      "address": "경남 김해시 삼방동 908-1",
+      "road_address": "경남 김해시 인제로 368",
+      "kakao_place_url": "http://place.map.kakao.com/9693807"
+    },
+    {
+      "name": "밀양돼지국밥",
+      "region": "김해",
+      "category": "restaurant",
+      "latitude": 35.2368511100353,
+      "longitude": 128.904176847368,
+      "address": "경남 김해시 어방동 1130-11",
+      "road_address": "경남 김해시 인제로 91",
+      "kakao_place_url": "http://place.map.kakao.com/10401233"
+    },
+    {
+      "name": "수로왕릉",
+      "region": "김해",
+      "category": "attraction",
+      "latitude": 35.2353095896182,
+      "longitude": 128.878495722377,
+      "address": "경남 김해시 서상동 312",
+      "road_address": "경남 김해시 왕릉길 26",
+      "kakao_place_url": "http://place.map.kakao.com/20197637"
+    },
+    {
+      "name": "김해한옥체험관 복합문화공간 명월",
+      "region": "김해",
+      "category": "cafe",
+      "latitude": 35.234263994954,
+      "longitude": 128.877116215707,
+      "address": "경남 김해시 봉황동 425-13",
+      "road_address": "경남 김해시 왕릉길 40",
+      "kakao_place_url": "http://place.map.kakao.com/1371897579"
+    },
+    {
+      "name": "만리향 만두",
+      "region": "김해",
+      "category": "restaurant",
+      "latitude": 35.2529902224833,
+      "longitude": 128.87522326819,
+      "address": "경남 김해시 구산동 636-1",
+      "road_address": "경남 김해시 가야로 281",
+      "kakao_place_url": "http://place.map.kakao.com/14096838"
+    },
+    {
+      "name": "연지공원",
+      "region": "김해",
+      "category": "attraction",
+      "latitude": 35.2463817870613,
+      "longitude": 128.868820366145,
+      "address": "경남 김해시 내동 1037-6",
+      "road_address": "경남 김해시 금관대로1368번길 7",
+      "kakao_place_url": "http://place.map.kakao.com/8014478"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 3101,
+      "prompt_tokens": 5237,
+      "response_tokens": 68,
+      "total_tokens": 5305,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3926,
+      "prompt_tokens": 6126,
+      "response_tokens": 512,
+      "total_tokens": 6638,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 74,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 76,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 79,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 79,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 79,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 87,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1272,
+      "prompt_tokens": 1929,
+      "response_tokens": 95,
+      "total_tokens": 2024,
+      "error_message": null
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "video_no": 4,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/uwPOCSjh3ZA",
+  "submit_status": 202,
+  "job_id": 41,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 8.5,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 8.091153
+  },
+  "places": [
+    {
+      "name": "안산역 4호선",
+      "region": "안산",
+      "category": "other",
+      "latitude": 37.3268586764125,
+      "longitude": 126.789216349384,
+      "address": "경기 안산시 단원구 원곡동 377-1",
+      "road_address": "경기 안산시 단원구 중앙대로 462",
+      "kakao_place_url": "http://place.map.kakao.com/21160743"
+    },
+    {
+      "name": "임페리아푸드",
+      "region": "안산",
+      "category": "shopping",
+      "latitude": 37.3300100285267,
+      "longitude": 126.789974817826,
+      "address": "경기 안산시 단원구 원곡동 791-18",
+      "road_address": "경기 안산시 단원구 다문화2길 13",
+      "kakao_place_url": "http://place.map.kakao.com/1015094163"
+    },
+    {
+      "name": "사마르칸트",
+      "region": "안산",
+      "category": "restaurant",
+      "latitude": 37.3290218865476,
+      "longitude": 126.78963004384,
+      "address": "경기 안산시 단원구 원곡동 788-7",
+      "road_address": "경기 안산시 단원구 다문화2길 3",
+      "kakao_place_url": "http://place.map.kakao.com/11833940"
+    },
+    {
+      "name": "컴포즈커피 안산다문화거리점",
+      "region": "안산",
+      "category": "attraction",
+      "latitude": 37.3306878808,
+      "longitude": 126.792686616092,
+      "address": "경기 안산시 단원구 원곡동 747-8",
+      "road_address": "경기 안산시 단원구 원본로 25",
+      "kakao_place_url": "http://place.map.kakao.com/459017890"
+    },
+    {
+      "name": "미쉐 원곡점",
+      "region": "안산",
+      "category": "cafe",
+      "latitude": 37.3308664745351,
+      "longitude": 126.792281046223,
+      "address": "경기 안산시 단원구 원곡동 747-11",
+      "road_address": "경기 안산시 단원구 원본로 21",
+      "kakao_place_url": "http://place.map.kakao.com/1234805232"
+    },
+    {
+      "name": "마리나베이커리",
+      "region": "안산",
+      "category": "shopping",
+      "latitude": 37.339367731581,
+      "longitude": 126.794886997375,
+      "address": "경기 안산시 단원구 선부동 983-17",
+      "road_address": "경기 안산시 단원구 부부로8길 19",
+      "kakao_place_url": "http://place.map.kakao.com/1467557071"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 2599,
+      "prompt_tokens": 5514,
+      "response_tokens": 69,
+      "total_tokens": 5583,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 2970,
+      "prompt_tokens": 6406,
+      "response_tokens": 519,
+      "total_tokens": 6925,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 79,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 70,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 72,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 76,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 85,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 94,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 38,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1501,
+      "prompt_tokens": 1340,
+      "response_tokens": 72,
+      "total_tokens": 1412,
+      "error_message": null
+    }
+  ]
+}

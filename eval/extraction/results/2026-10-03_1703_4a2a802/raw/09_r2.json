@@ -1,0 +1,250 @@
+{
+  "video_no": 9,
+  "repeat": 2,
+  "url": "https://www.youtube.com/shorts/wMBpwZ9GTRA",
+  "submit_status": 202,
+  "job_id": 71,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 27.5,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 26.149898
+  },
+  "places": [
+    {
+      "name": "중문대포주상절리대",
+      "region": "제주도",
+      "category": "attraction",
+      "latitude": 33.2379849473195,
+      "longitude": 126.426011064029,
+      "address": "제주특별자치도 서귀포시 중문동 2768-1",
+      "road_address": "제주특별자치도 서귀포시 이어도로 36-30",
+      "kakao_place_url": "http://place.map.kakao.com/10793668"
+    },
+    {
+      "name": "쇠소깍",
+      "region": "제주도",
+      "category": "attraction",
+      "latitude": 33.2525162738708,
+      "longitude": 126.623442770166,
+      "address": "제주특별자치도 서귀포시 하효동 1459",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/7962003"
+    },
+    {
+      "name": "황우지해안 (폐쇄)",
+      "region": "제주도",
+      "category": "attraction",
+      "latitude": 33.2414671811999,
+      "longitude": 126.550527835146,
+      "address": "제주특별자치도 서귀포시 서홍동",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/26974762"
+    },
+    {
+      "name": "정방폭포",
+      "region": "제주도",
+      "category": "attraction",
+      "latitude": 33.2449088834419,
+      "longitude": 126.571526308344,
+      "address": "제주특별자치도 서귀포시 서귀동",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/10717401"
+    },
+    {
+      "name": "약천사",
+      "region": "제주도",
+      "category": "attraction",
+      "latitude": 33.2462362179287,
+      "longitude": 126.449458505086,
+      "address": "제주특별자치도 서귀포시 대포동 1165",
+      "road_address": "제주특별자치도 서귀포시 이어도로 293-28",
+      "kakao_place_url": "http://place.map.kakao.com/7996060"
+    },
+    {
+      "name": "천지연폭포",
+      "region": "제주도",
+      "category": "attraction",
+      "latitude": 33.2447422391372,
+      "longitude": 126.559696068521,
+      "address": "제주특별자치도 서귀포시 서홍동 666-1",
+      "road_address": "제주특별자치도 서귀포시 남성중로 2-15",
+      "kakao_place_url": "http://place.map.kakao.com/8100102"
+    },
+    {
+      "name": "서귀포치유의숲",
+      "region": "제주도",
+      "category": "attraction",
+      "latitude": 33.2945654206187,
+      "longitude": 126.525208143088,
+      "address": "제주특별자치도 서귀포시 호근동 산 1",
+      "road_address": "제주특별자치도 서귀포시 산록남로 2271",
+      "kakao_place_url": "http://place.map.kakao.com/1766125269"
+    },
+    {
+      "name": "엉또폭포",
+      "region": "제주도",
+      "category": "attraction",
+      "latitude": 33.2685321560634,
+      "longitude": 126.4999654844,
+      "address": "제주특별자치도 서귀포시 강정동 5628",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/8008273"
+    },
+    {
+      "name": "소천지",
+      "region": "제주도",
+      "category": "attraction",
+      "latitude": 33.2395691257879,
+      "longitude": 126.592088654722,
+      "address": "제주특별자치도 서귀포시 보목동 1400",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/26818966"
+    },
+    {
+      "name": "중문색달해수욕장",
+      "region": "제주도",
+      "category": "attraction",
+      "latitude": 33.2450381505136,
+      "longitude": 126.411498674889,
+      "address": "제주특별자치도 서귀포시 색달동 3039",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/8069764"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 19304,
+      "prompt_tokens": 1608,
+      "response_tokens": 94,
+      "total_tokens": 1702,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3793,
+      "prompt_tokens": 2521,
+      "response_tokens": 895,
+      "total_tokens": 3416,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 71,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 63,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 63,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 67,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 67,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 67,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 71,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 77,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 41,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 135,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1482,
+      "prompt_tokens": 3737,
+      "response_tokens": 210,
+      "total_tokens": 3947,
+      "error_message": null
+    }
+  ]
+}

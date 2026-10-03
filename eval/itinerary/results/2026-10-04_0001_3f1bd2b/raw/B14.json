@@ -1,0 +1,584 @@
+{
+ "request": {
+  "id": "B14",
+  "videos": [
+   11
+  ],
+  "days": 2,
+  "start": "closed_day",
+  "purpose": "휴무일",
+  "replaced": "원래 영상 [28](긴 영상, 측정 보류) → 쇼츠로 교체(2026-10-03 사용자 선택)"
+ },
+ "videos": [
+  {
+   "video_no": 11,
+   "job_id": 73,
+   "generate": {
+    "result": "DONE",
+    "seconds": 3.1,
+    "since": "2026-10-04 00:02:28.293278"
+   },
+   "input_place_ids": [
+    419,
+    420,
+    421,
+    422,
+    423,
+    424,
+    425,
+    426,
+    427,
+    428,
+    429,
+    430
+   ],
+   "places": [
+    {
+     "id": 419,
+     "name": "서울역",
+     "region": "서울",
+     "latitude": 37.5540688873318,
+     "longitude": 126.970703352534,
+     "day": 1,
+     "order": 1
+    },
+    {
+     "id": 420,
+     "name": "강릉역",
+     "region": "강릉",
+     "latitude": 37.7645235587621,
+     "longitude": 128.899627553491,
+     "day": 1,
+     "order": 2
+    },
+    {
+     "id": 421,
+     "name": "순두부젤라또 1호점",
+     "region": "강릉",
+     "latitude": 37.7916865437933,
+     "longitude": 128.915479799983,
+     "day": 2,
+     "order": 2
+    },
+    {
+     "id": 422,
+     "name": "안목해변",
+     "region": "강릉",
+     "latitude": 37.7722617595376,
+     "longitude": 128.948275405137,
+     "day": 2,
+     "order": 3
+    },
+    {
+     "id": 423,
+     "name": "강릉중앙시장",
+     "region": "강릉",
+     "latitude": 37.7540251176578,
+     "longitude": 128.89862379001,
+     "day": 2,
+     "order": 4
+    },
+    {
+     "id": 424,
+     "name": "여름의집 Casa de Verano",
+     "region": "강릉",
+     "latitude": 37.7618387655698,
+     "longitude": 128.892705191362,
+     "day": 1,
+     "order": 3
+    },
+    {
+     "id": 425,
+     "name": "초당순두부마을",
+     "region": "강릉",
+     "latitude": 37.7944267920192,
+     "longitude": 128.915374615153,
+     "day": 2,
+     "order": 1
+    },
+    {
+     "id": 426,
+     "name": "소돌해변",
+     "region": "강릉",
+     "latitude": 37.9069740745975,
+     "longitude": 128.825167878323,
+     "day": 1,
+     "order": 4
+    },
+    {
+     "id": 427,
+     "name": "소돌항",
+     "region": "강릉",
+     "latitude": 37.9049479503698,
+     "longitude": 128.830802425681,
+     "day": 1,
+     "order": 5
+    },
+    {
+     "id": 428,
+     "name": "아들바위공원",
+     "region": "강릉",
+     "latitude": 37.9059578450621,
+     "longitude": 128.830277178125,
+     "day": 1,
+     "order": 6
+    },
+    {
+     "id": 429,
+     "name": "레드망치",
+     "region": "강릉",
+     "latitude": 37.7612107791981,
+     "longitude": 128.894336775343,
+     "day": 1,
+     "order": 7
+    },
+    {
+     "id": 430,
+     "name": "우브더모먼트",
+     "region": "강릉",
+     "latitude": null,
+     "longitude": null,
+     "day": 1,
+     "order": 8
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "generate_itinerary",
+     "success": true,
+     "latency_ms": 1899,
+     "prompt_tokens": 649,
+     "response_tokens": 411
+    }
+   ]
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": "휴무일 조건 만들 수 없음",
+ "hours": {
+  "419": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJlU6-zWiifDURBCDQ_VkAI7s",
+   "google_name": "서울역",
+   "distance_m": 12,
+   "periods": null
+  },
+  "420": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJ5fJnlUflYTURWudXtcTihfU",
+   "google_name": "강릉역",
+   "distance_m": 8,
+   "periods": null
+  },
+  "421": {
+   "status": "OK",
+   "google_id": "ChIJmwLdcwPnYTUR-Vpr6GRnFO0",
+   "google_name": "순두부젤라또 1호점",
+   "distance_m": 4,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 20
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 20
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 20
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 20
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 20
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 20
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 20
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 30
+     }
+    }
+   ]
+  },
+  "422": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJPWMuyALnYTURTC17g5aCCoU",
+   "google_name": "안목해변",
+   "distance_m": 133,
+   "periods": null
+  },
+  "423": {
+   "status": "OK",
+   "google_id": "ChIJ5-y4g_vlYTURGd4LueRcB1E",
+   "google_name": "강릉중앙시장",
+   "distance_m": 4,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 8,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "424": {
+   "status": "NO_MATCH"
+  },
+  "425": {
+   "status": "OK",
+   "google_id": "ChIJy_1lrJfmYTUR0PnAEqOIgxM",
+   "google_name": "초당순두부마을",
+   "distance_m": 253,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 1,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 3,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 4,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 20,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 8,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 20,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "426": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJ_79lD7TiYTUR2X8doEhmu98",
+   "google_name": "소돌해변",
+   "distance_m": 10,
+   "periods": null
+  },
+  "427": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJmfbY6uPjYTURu9snS0HhN_M",
+   "google_name": "소돌항",
+   "distance_m": 50,
+   "periods": null
+  },
+  "428": {
+   "status": "OK",
+   "google_id": "ChIJpwW4urDiYTUR12-zBM6ElRg",
+   "google_name": "아들바위공원",
+   "distance_m": 13,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "429": {
+   "status": "OK",
+   "google_id": "ChIJR-kOkSTlYTURHmB42KklMLQ",
+   "google_name": "레드망치",
+   "distance_m": 3,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 1,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 3,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 4,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 18,
+      "minute": 50
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 18,
+      "minute": 50
+     }
+    }
+   ]
+  },
+  "430": {
+   "status": "NO_COORD"
+  }
+ }
+}

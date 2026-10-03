@@ -1,0 +1,80 @@
+{
+  "video_no": 19,
+  "repeat": 1,
+  "url": "https://www.instagram.com/reel/DEUGXhcSmfA/",
+  "submit_status": 202,
+  "job_id": 54,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 10.7,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 10.063556
+  },
+  "places": [
+    {
+      "name": "요미우돈교자",
+      "region": "부산",
+      "category": "restaurant",
+      "latitude": 35.1654573658475,
+      "longitude": 129.157375384121,
+      "address": "부산 해운대구 우동1로 45",
+      "road_address": "부산 해운대구 우동1로 45",
+      "kakao_place_url": null
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 3171,
+      "prompt_tokens": 9583,
+      "response_tokens": 49,
+      "total_tokens": 9632,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 2483,
+      "prompt_tokens": 10461,
+      "response_tokens": 106,
+      "total_tokens": 10567,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 65,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 40,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "verify_places",
+      "success": true,
+      "latency_ms": 1017,
+      "prompt_tokens": 308,
+      "response_tokens": 23,
+      "total_tokens": 331,
+      "error_message": null
+    }
+  ]
+}

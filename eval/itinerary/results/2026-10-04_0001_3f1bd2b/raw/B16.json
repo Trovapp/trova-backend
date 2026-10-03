@@ -1,0 +1,141 @@
+{
+ "request": {
+  "id": "B16",
+  "videos": [
+   10
+  ],
+  "days": 1,
+  "start": null,
+  "purpose": "장소 2곳 이하"
+ },
+ "videos": [
+  {
+   "video_no": 10,
+   "job_id": 72,
+   "generate": {
+    "result": "DONE",
+    "seconds": 2.1,
+    "since": "2026-10-03 23:56:24.115230"
+   },
+   "input_place_ids": [
+    418
+   ],
+   "places": [
+    {
+     "id": 418,
+     "name": "테라로사 본점",
+     "region": "강릉",
+     "latitude": 37.6965112381046,
+     "longitude": 128.892533492139,
+     "day": 1,
+     "order": 1
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "generate_itinerary",
+     "success": true,
+     "latency_ms": 1230,
+     "prompt_tokens": 303,
+     "response_tokens": 37
+    }
+   ]
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "418": {
+   "status": "OK",
+   "google_id": "ChIJ31UGj8fuYTURDk7i7HlRcYA",
+   "google_name": "테라로사 커피공장 강릉본점",
+   "distance_m": 41,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  }
+ }
+}

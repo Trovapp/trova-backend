@@ -1,0 +1,160 @@
+{
+  "video_no": 22,
+  "repeat": 2,
+  "url": "https://www.instagram.com/reel/DWksnFLCR_J/",
+  "submit_status": 202,
+  "job_id": 82,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 12.8,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 10.593508
+  },
+  "places": [
+    {
+      "name": "키에키 로스팅 룸",
+      "region": "제주",
+      "category": "cafe",
+      "latitude": 33.5103678901057,
+      "longitude": 126.523640065089,
+      "address": "제주특별자치도 제주시 이도일동 1494-1",
+      "road_address": "제주특별자치도 제주시 중앙로 88-1",
+      "kakao_place_url": "http://place.map.kakao.com/1606863361"
+    },
+    {
+      "name": "푸아루",
+      "region": "제주",
+      "category": "cafe",
+      "latitude": 33.5100194781211,
+      "longitude": 126.521664858105,
+      "address": "제주특별자치도 제주시 삼도이동 826-3",
+      "road_address": "제주특별자치도 제주시 남성로23길 9",
+      "kakao_place_url": "http://place.map.kakao.com/1149793957"
+    },
+    {
+      "name": "소설과농담",
+      "region": "제주",
+      "category": "cafe",
+      "latitude": 33.5091551225982,
+      "longitude": 126.522435913618,
+      "address": "제주특별자치도 제주시 삼도이동 202-17",
+      "road_address": "제주특별자치도 제주시 남성로 160",
+      "kakao_place_url": "http://place.map.kakao.com/245023275"
+    },
+    {
+      "name": "시소카이막 동문시장점",
+      "region": "제주",
+      "category": "cafe",
+      "latitude": 33.5121264426866,
+      "longitude": 126.528945201585,
+      "address": "제주특별자치도 제주시 일도일동 1139-3",
+      "road_address": "제주특별자치도 제주시 동문로6길 9",
+      "kakao_place_url": "http://place.map.kakao.com/705500847"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 2887,
+      "prompt_tokens": 9947,
+      "response_tokens": 39,
+      "total_tokens": 9986,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3960,
+      "prompt_tokens": 10817,
+      "response_tokens": 400,
+      "total_tokens": 11217,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 65,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 70,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 70,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 70,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 50,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 41,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 41,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 45,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    }
+  ]
+}

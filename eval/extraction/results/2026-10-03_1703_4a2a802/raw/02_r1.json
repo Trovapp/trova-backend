@@ -1,0 +1,190 @@
+{
+  "video_no": 2,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/ppCfDrwbHMk",
+  "submit_status": 202,
+  "job_id": 39,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 8.4,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 8.11261
+  },
+  "places": [
+    {
+      "name": "하평해변",
+      "region": "동해",
+      "category": "attraction",
+      "latitude": 37.5335215015062,
+      "longitude": 129.116388838715,
+      "address": "강원특별자치도 동해시 평릉동 40-1",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/10865002"
+    },
+    {
+      "name": "동쪽바다중앙시장",
+      "region": "동해",
+      "category": "market",
+      "latitude": 37.5507432924746,
+      "longitude": 129.108613983206,
+      "address": "강원특별자치도 동해시 발한동 12-42",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/18524925"
+    },
+    {
+      "name": "어달삼거리",
+      "region": "동해",
+      "category": "attraction",
+      "latitude": 37.566494003894,
+      "longitude": 129.119551218199,
+      "address": "강원특별자치도 동해시 어달동 52-4",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/892201661"
+    },
+    {
+      "name": "어달항",
+      "region": "동해",
+      "category": "attraction",
+      "latitude": 37.5614896322872,
+      "longitude": 129.120466313082,
+      "address": "강원특별자치도 동해시 어달동",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/8461217"
+    },
+    {
+      "name": "카페어달",
+      "region": "동해",
+      "category": "cafe",
+      "latitude": 37.5625670708906,
+      "longitude": 129.120113237767,
+      "address": "강원특별자치도 동해시 어달동 190",
+      "road_address": "강원특별자치도 동해시 일출로 230",
+      "kakao_place_url": "http://place.map.kakao.com/852478988"
+    },
+    {
+      "name": "묵호항",
+      "region": "동해",
+      "category": "attraction",
+      "latitude": 37.5497974287221,
+      "longitude": 129.11239125626,
+      "address": "강원특별자치도 동해시 발한동 27-2",
+      "road_address": "강원특별자치도 동해시 임항로 121",
+      "kakao_place_url": "http://place.map.kakao.com/7873573"
+    },
+    {
+      "name": "논골담길",
+      "region": "동해",
+      "category": "attraction",
+      "latitude": 37.5527709036958,
+      "longitude": 129.116475044711,
+      "address": "강원특별자치도 동해시 묵호진동 18",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/25042265"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 2603,
+      "prompt_tokens": 5512,
+      "response_tokens": 74,
+      "total_tokens": 5586,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3130,
+      "prompt_tokens": 6405,
+      "response_tokens": 562,
+      "total_tokens": 6967,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 66,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 75,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 66,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 70,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 75,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 79,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 79,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1317,
+      "prompt_tokens": 2347,
+      "response_tokens": 141,
+      "total_tokens": 2488,
+      "error_message": null
+    }
+  ]
+}

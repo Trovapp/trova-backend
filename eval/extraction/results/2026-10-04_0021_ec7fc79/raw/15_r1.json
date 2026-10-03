@@ -1,0 +1,70 @@
+{
+  "video_no": 15,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/wD3lTewRoLE",
+  "submit_status": 202,
+  "job_id": 101,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 8.6,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 6.876264
+  },
+  "places": [
+    {
+      "name": "부산역",
+      "region": "부산",
+      "category": "attraction",
+      "latitude": 35.1152034062251,
+      "longitude": 129.041549851924,
+      "address": "부산 동구 초량동 1187-1",
+      "road_address": "부산 동구 중앙대로 206",
+      "kakao_place_url": "http://place.map.kakao.com/8329752"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 2818,
+      "prompt_tokens": 6256,
+      "response_tokens": 8,
+      "total_tokens": 6264,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 2109,
+      "prompt_tokens": 7234,
+      "response_tokens": 90,
+      "total_tokens": 7324,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 123,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1023,
+      "prompt_tokens": 727,
+      "response_tokens": 26,
+      "total_tokens": 753,
+      "error_message": null
+    }
+  ]
+}

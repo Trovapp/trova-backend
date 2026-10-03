@@ -1,0 +1,70 @@
+{
+  "video_no": 25,
+  "repeat": 1,
+  "url": "https://www.instagram.com/reel/DUSQvwkATzB/",
+  "submit_status": 202,
+  "job_id": 109,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 12.8,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 12.227496
+  },
+  "places": [
+    {
+      "name": "해운대 바다김밥",
+      "region": "부산",
+      "category": "restaurant",
+      "latitude": 35.162539343706,
+      "longitude": 129.163251812897,
+      "address": "부산 해운대구 중동 1378-7",
+      "road_address": "부산 해운대구 중동1로 33-1",
+      "kakao_place_url": "http://place.map.kakao.com/59328169"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 4554,
+      "prompt_tokens": 10010,
+      "response_tokens": 54,
+      "total_tokens": 10064,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 2712,
+      "prompt_tokens": 11024,
+      "response_tokens": 166,
+      "total_tokens": 11190,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 64,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1132,
+      "prompt_tokens": 500,
+      "response_tokens": 26,
+      "total_tokens": 526,
+      "error_message": null
+    }
+  ]
+}

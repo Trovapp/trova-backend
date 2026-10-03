@@ -1,0 +1,815 @@
+{
+ "summary": {
+  "requests": 19,
+  "judged": 19,
+  "failed": [],
+  "all_rules_pass": {
+   "count": 0,
+   "ratio": 0.0,
+   "ids": []
+  },
+  "no_violation_with_unknowns": {
+   "count": 5,
+   "ids": [
+    "B1",
+    "B2",
+    "B6",
+    "B12",
+    "B16"
+   ]
+  },
+  "violations_by_rule": {
+   "영업": 1,
+   "이동": 6,
+   "분량": 3,
+   "없는장소": 0,
+   "기간": 11,
+   "지역": 3
+  },
+  "unknown_by_rule": {
+   "영업": 18,
+   "이동": 4,
+   "분량": 3,
+   "없는장소": 0,
+   "기간": 0,
+   "지역": 0
+  },
+  "unsupported_conditions": {
+   "일수 지정": 19,
+   "여러 영상": 6
+  },
+  "seconds_per_generation": {
+   "median": 3.1,
+   "max": 4.2,
+   "n": 26
+  },
+  "gemini": {
+   "prompt_tokens": 14723,
+   "response_tokens": 8136,
+   "actual_cost_krw": 0,
+   "paid_equivalent_usd": 0.0248
+  }
+ },
+ "per_request": [
+  {
+   "id": "B1",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 6
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 0
+  },
+  {
+   "id": "B2",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 1
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "판정 불가",
+     "detail": [
+      "영상5 1일차 1곳"
+     ]
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 0
+  },
+  {
+   "id": "B3",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 12
+    },
+    "이동": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_pairs": 8
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 2일, 일정 3일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 1
+  },
+  {
+   "id": "B4",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 23
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 3일, 일정 6일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 1
+  },
+  {
+   "id": "B5",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 12
+    },
+    "이동": {
+     "verdict": "위반",
+     "detail": [
+      "서울역→강릉역 171km"
+     ],
+     "unknown_pairs": 1
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 3일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "위반",
+     "detail": [
+      "서울역"
+     ]
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 3
+  },
+  {
+   "id": "B6",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 9
+    },
+    "이동": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_pairs": 1
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 2일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 0
+  },
+  {
+   "id": "B7",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 7
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "위반",
+     "detail": [
+      "영상5 1일차 1곳"
+     ]
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 2일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정",
+    "여러 영상"
+   ],
+   "violations": 1
+  },
+  {
+   "id": "B8",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 6
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "위반",
+     "detail": [
+      "영상14 1일차 1곳"
+     ]
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정",
+    "여러 영상"
+   ],
+   "violations": 1
+  },
+  {
+   "id": "B9",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 20
+    },
+    "이동": {
+     "verdict": "위반",
+     "detail": [
+      "표선해수욕장→중문색달해수욕장 41km"
+     ],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 3일, 일정 4일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정",
+    "여러 영상"
+   ],
+   "violations": 2
+  },
+  {
+   "id": "B10",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 32
+    },
+    "이동": {
+     "verdict": "위반",
+     "detail": [
+      "서울역→강릉역 171km"
+     ],
+     "unknown_pairs": 2
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 3일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "위반",
+     "detail": [
+      "서울역"
+     ]
+    }
+   },
+   "unsupported": [
+    "일수 지정",
+    "여러 영상"
+   ],
+   "violations": 3
+  },
+  {
+   "id": "B11",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 29
+    },
+    "이동": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_pairs": 2
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 2일, 일정 6일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정",
+    "여러 영상"
+   ],
+   "violations": 1
+  },
+  {
+   "id": "B12",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 2
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 0
+  },
+  {
+   "id": "B13",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 10
+    },
+    "이동": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_pairs": 8
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 2일, 일정 3일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 1
+  },
+  {
+   "id": "B14",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 12
+    },
+    "이동": {
+     "verdict": "위반",
+     "detail": [
+      "서울역→강릉역 171km"
+     ],
+     "unknown_pairs": 1
+    },
+    "분량": {
+     "verdict": "위반",
+     "detail": [
+      "영상11 1일차 8곳"
+     ]
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 2일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "위반",
+     "detail": [
+      "서울역"
+     ]
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 3
+  },
+  {
+   "id": "B15",
+   "rules": {
+    "영업": {
+     "verdict": "위반",
+     "detail": [
+      "김해한옥체험관 복합문화공간 명월 1일차 휴무"
+     ],
+     "unknown_places": 1
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 1일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 2
+  },
+  {
+   "id": "B16",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 1
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "판정 불가",
+     "detail": [
+      "영상10 1일차 1곳"
+     ]
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 0
+  },
+  {
+   "id": "B17",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 1
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "판정 불가",
+     "detail": [
+      "영상21 1일차 1곳"
+     ]
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 2일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 1
+  },
+  {
+   "id": "B18",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 33
+    },
+    "이동": {
+     "verdict": "위반",
+     "detail": [
+      "표선해수욕장→중문색달해수욕장 41km"
+     ],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 3일, 일정 4일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정",
+    "여러 영상"
+   ],
+   "violations": 2
+  },
+  {
+   "id": "B19",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 10
+    },
+    "이동": {
+     "verdict": "위반",
+     "detail": [
+      "표선해수욕장→중문색달해수욕장 41km"
+     ],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 1일, 일정 4일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [
+    "일수 지정"
+   ],
+   "violations": 2
+  }
+ ]
+}

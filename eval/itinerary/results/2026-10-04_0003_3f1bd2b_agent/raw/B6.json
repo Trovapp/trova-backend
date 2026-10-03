@@ -1,0 +1,398 @@
+{
+ "request": {
+  "id": "B6",
+  "videos": [
+   2
+  ],
+  "days": 2,
+  "start": null,
+  "purpose": "영상보다 길게 요청"
+ },
+ "mode": "agent",
+ "videos": [
+  {
+   "video_no": 2,
+   "job_id": 64,
+   "generate": {
+    "result": "DONE",
+    "seconds": 5.5
+   },
+   "input_place_ids": [
+    341,
+    342,
+    343,
+    344,
+    345,
+    346,
+    347,
+    348,
+    349
+   ],
+   "places": [
+    {
+     "id": 341,
+     "name": "하평해변",
+     "region": "동해",
+     "latitude": 37.5335215015062,
+     "longitude": 129.116388838715,
+     "day": 1,
+     "order": 1
+    },
+    {
+     "id": 342,
+     "name": "동쪽바다중앙시장",
+     "region": "동해",
+     "latitude": 37.5507432924746,
+     "longitude": 129.108613983206,
+     "day": 1,
+     "order": 2
+    },
+    {
+     "id": 343,
+     "name": "어달삼거리",
+     "region": "동해",
+     "latitude": 37.566494003894,
+     "longitude": 129.119551218199,
+     "day": 2,
+     "order": 3
+    },
+    {
+     "id": 344,
+     "name": "어달항",
+     "region": "동해",
+     "latitude": 37.5614896322872,
+     "longitude": 129.120466313082,
+     "day": 2,
+     "order": 1
+    },
+    {
+     "id": 345,
+     "name": "카페어달",
+     "region": "동해",
+     "latitude": 37.5625670708906,
+     "longitude": 129.120113237767,
+     "day": 2,
+     "order": 2
+    },
+    {
+     "id": 346,
+     "name": "묵호항",
+     "region": "동해",
+     "latitude": 37.5497974287221,
+     "longitude": 129.11239125626,
+     "day": 1,
+     "order": 3
+    },
+    {
+     "id": 347,
+     "name": "논골담길",
+     "region": "동해",
+     "latitude": 37.5527709036958,
+     "longitude": 129.116475044711,
+     "day": 1,
+     "order": 4
+    },
+    {
+     "id": 348,
+     "name": "비비소",
+     "region": "동해",
+     "latitude": 37.5520780945078,
+     "longitude": 129.118135695159,
+     "day": 1,
+     "order": 5
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "trip-plan.draft",
+     "success": true,
+     "latency_ms": 1832,
+     "prompt_tokens": 856,
+     "response_tokens": 430
+    }
+   ]
+  }
+ ],
+ "agent": {
+  "draft_id": 22,
+  "message": "1박 2일",
+  "status": "READY",
+  "question": null,
+  "answer": null,
+  "gemini_calls": 1,
+  "agent_google_hours_calls": 8,
+  "error": null,
+  "excluded": [
+   {
+    "placeId": 349,
+    "name": "해란상만대",
+    "reason": "좌표 정보가 없어 이번 일정에서 뺐어요."
+   }
+  ],
+  "lodging": [
+   "1일차 숙소 미정 — 마지막 장소(비비소) 근처를 추천해요."
+  ],
+  "fixes": [],
+  "problems": [
+   "1일차 점심 시간대 식당 없음",
+   "2일차 점심 시간대 식당 없음"
+  ],
+  "draft": {
+   "days": [
+    {
+     "day": 1,
+     "date": null,
+     "items": [
+      {
+       "placeId": 341,
+       "name": "하평해변",
+       "category": "attraction",
+       "start": "10:00",
+       "end": "11:30",
+       "latitude": 37.5335215015062,
+       "longitude": 129.116388838715
+      },
+      {
+       "placeId": 342,
+       "name": "동쪽바다중앙시장",
+       "category": "shopping",
+       "start": "12:00",
+       "end": "13:00",
+       "latitude": 37.5507432924746,
+       "longitude": 129.108613983206
+      },
+      {
+       "placeId": 346,
+       "name": "묵호항",
+       "category": "attraction",
+       "start": "13:30",
+       "end": "15:00",
+       "latitude": 37.5497974287221,
+       "longitude": 129.11239125626
+      },
+      {
+       "placeId": 347,
+       "name": "논골담길",
+       "category": "attraction",
+       "start": "15:30",
+       "end": "17:30",
+       "latitude": 37.5527709036958,
+       "longitude": 129.116475044711
+      },
+      {
+       "placeId": 348,
+       "name": "비비소",
+       "category": "restaurant",
+       "start": "18:00",
+       "end": "19:00",
+       "latitude": 37.5520780945078,
+       "longitude": 129.118135695159
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "date": null,
+     "items": [
+      {
+       "placeId": 344,
+       "name": "어달항",
+       "category": "attraction",
+       "start": "10:00",
+       "end": "11:30",
+       "latitude": 37.5614896322872,
+       "longitude": 129.120466313082
+      },
+      {
+       "placeId": 345,
+       "name": "카페어달",
+       "category": "cafe",
+       "start": "12:00",
+       "end": "13:00",
+       "latitude": 37.5625670708906,
+       "longitude": 129.120113237767
+      },
+      {
+       "placeId": 343,
+       "name": "어달삼거리",
+       "category": "attraction",
+       "start": "13:30",
+       "end": "15:00",
+       "latitude": 37.566494003894,
+       "longitude": 129.119551218199
+      }
+     ]
+    }
+   ],
+   "excluded": [
+    {
+     "placeId": 349,
+     "name": "해란상만대",
+     "reason": "좌표 정보가 없어 이번 일정에서 뺐어요."
+    }
+   ],
+   "lodging": [
+    "1일차 숙소 미정 — 마지막 장소(비비소) 근처를 추천해요."
+   ],
+   "assumptions": [
+    "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+    "영업시간을 확인하지 못한 장소가 7곳 있어요.",
+    "위치를 확인하지 못한 장소가 1곳 있어 동선이 정확하지 않을 수 있어요.",
+    "이동 시간은 직선거리로 어림했어요."
+   ],
+   "fixes": [],
+   "problems": [
+    "1일차 점심 시간대 식당 없음",
+    "2일차 점심 시간대 식당 없음"
+   ]
+  }
+ },
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "341": {
+   "status": "NO_MATCH"
+  },
+  "342": {
+   "status": "OK",
+   "google_id": "ChIJQwPxmgbHYTURTW2-xP1FIoA",
+   "google_name": "동쪽바다중앙시장",
+   "distance_m": 35,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 17,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 17,
+      "minute": 30
+     }
+    }
+   ]
+  },
+  "343": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJLU7oJgDHYTURyjsp4dO2lPo",
+   "google_name": "어달삼거리",
+   "distance_m": 1,
+   "periods": null
+  },
+  "344": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJu7nHZVrGYTUROYY_Er6vU2c",
+   "google_name": "어달항",
+   "distance_m": 49,
+   "periods": null
+  },
+  "345": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJWRhCWlrGYTURz2DKh2H7eXk",
+   "google_name": "카페어달",
+   "distance_m": 3,
+   "periods": null
+  },
+  "346": {
+   "status": "NO_MATCH"
+  },
+  "347": {
+   "status": "OK",
+   "google_id": "ChIJ3f_jllTGYTURFAyaPmllVjs",
+   "google_name": "논골담길",
+   "distance_m": 15,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "348": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJnZuGqKzHYTURHu5-95dcHK0",
+   "google_name": "비비소",
+   "distance_m": 2,
+   "periods": null
+  },
+  "349": {
+   "status": "NO_COORD"
+  }
+ }
+}
