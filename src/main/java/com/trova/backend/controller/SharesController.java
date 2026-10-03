@@ -58,6 +58,23 @@ public class SharesController {
     public record ErrorResponse(String message) {
     }
 
+    // 같은 사용자의 같은 영상 제출을 한 번에 하나씩 처리하는 잠금(#97). "이미 있는 결과/처리 중인 작업" 확인과 새 작업 저장
+    // 사이에 틈이 있어, 동시에 들어온 요청 5개가 모두 확인을 통과해 작업 5개(Gemini 호출 16번)가 만들어졌다(로컬 실측).
+    // 영상마다 잠금을 만들면 계속 쌓이므로 개수를 고정한 묶음에서 해시로 골라 쓴다 — 다른 영상이 같은 잠금에 걸리면
+    // 아주 잠깐 순서대로 처리될 뿐 결과는 같다. 서버가 한 대(운영 E2.1.Micro)라 프로세스 안 잠금으로 충분하다.
+    private static final int LOCK_STRIPES = 64;
+    private static final Object[] SUBMISSION_LOCKS = new Object[LOCK_STRIPES];
+
+    static {
+        for (int i = 0; i < LOCK_STRIPES; i++) {
+            SUBMISSION_LOCKS[i] = new Object();
+        }
+    }
+
+    private static Object submissionLock(User user, String canonicalUrl) {
+        return SUBMISSION_LOCKS[Math.floorMod((user.getId() + "|" + canonicalUrl).hashCode(), LOCK_STRIPES)];
+    }
+
     @PostMapping("/api/shares")
     public ResponseEntity<?> create(
             Authentication authentication,
@@ -74,10 +91,17 @@ public class SharesController {
         SourcePlatform platform = shareUrl.get().platform();
         User user = currentUserService.resolve(authentication);
 
+        // 확인부터 작업 저장(커밋)까지를 잠금 안에서 한다 — 저장이 끝나야 다음 요청의 "처리 중" 확인에 보인다.
+        synchronized (submissionLock(user, url)) {
+            return createOrReuse(user, url, platform, Boolean.TRUE.equals(request.reanalyze()));
+        }
+    }
+
+    private ResponseEntity<?> createOrReuse(User user, String url, SourcePlatform platform, boolean reanalyze) {
         // 이미 분석해 장소가 남아 있는 영상이면 새로 분석하지 않고 그 결과를 알려준다(#87). 운영에서 같은 영상을
         // 다시 넣을 때마다 새로 분석해 결과가 쌓였다(김해 5번, 사당 3번) — Gemini 호출과 무료 한도도 그만큼 썼다.
         // 결과의 장소를 모두 지운 영상은 대표 결과가 없으므로 새로 분석한다.
-        if (!Boolean.TRUE.equals(request.reanalyze())) {
+        if (!reanalyze) {
             Long existingJobId = VideoResults.latestJobIdByVideo(savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(user))
                     .get(url);
             if (existingJobId != null) {
@@ -86,9 +110,7 @@ public class SharesController {
         }
 
         // 같은 URL이 이미 처리 대기/진행 중이면 새 job을 또 만들지 않는다 — 중복 제출로
-        // Gemini/카카오 호출이 두 번 나가는 걸 막기 위함. Trova는 단일 인스턴스라 분산 락
-        // 없이 이 조회-후-생성만으로 충분하지만, 두 요청이 정말 동시에 도착하는 극히 드문
-        // 경우까지 완벽히 막지는 못한다(체크와 저장 사이 짧은 틈은 남아있음).
+        // Gemini/카카오 호출이 두 번 나가는 걸 막기 위함. 동시에 도착한 요청은 위 잠금이 순서대로 세운다(#97).
         List<ProcessingJob> inFlight = processingJobRepository.findByUserAndSourceUrlAndStatusIn(
                 user, url, List.of(JobStatus.PENDING, JobStatus.PROCESSING));
         if (!inFlight.isEmpty()) {
