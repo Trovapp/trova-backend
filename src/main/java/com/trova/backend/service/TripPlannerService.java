@@ -6,6 +6,7 @@ import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.TripDraft;
 import com.trova.backend.entity.User;
+import com.trova.backend.planner.DraftGenerator;
 import com.trova.backend.planner.OpeningHoursService;
 import com.trova.backend.planner.PlanPlaceGatherer;
 import com.trova.backend.planner.PlanRequestParser;
@@ -39,15 +40,17 @@ public class TripPlannerService {
     private final SavedPlaceRepository savedPlaceRepository;
     private final PlanRequestParser planRequestParser;
     private final OpeningHoursService openingHoursService;
+    private final DraftGenerator draftGenerator;
 
     public TripPlannerService(TripDraftRepository tripDraftRepository, ProcessingJobRepository processingJobRepository,
                               SavedPlaceRepository savedPlaceRepository, PlanRequestParser planRequestParser,
-                              OpeningHoursService openingHoursService) {
+                              OpeningHoursService openingHoursService, DraftGenerator draftGenerator) {
         this.tripDraftRepository = tripDraftRepository;
         this.processingJobRepository = processingJobRepository;
         this.savedPlaceRepository = savedPlaceRepository;
         this.planRequestParser = planRequestParser;
         this.openingHoursService = openingHoursService;
+        this.draftGenerator = draftGenerator;
     }
 
     /** 고른 영상이 모두 이 사용자의 완료된 분석이어야 만든다. 아니면 빈 값(컨트롤러가 400). */
@@ -80,6 +83,7 @@ public class TripPlannerService {
 
             PlanRequestParser.PlanRequest request = planRequestParser.parse(draft.getMessage());
             draft.applyRequest(request.days(), request.startDate(), request.source());
+            draft.addGeminiCalls("AI".equals(request.source()) || "DEFAULT".equals(request.source()) ? 1 : 0);
 
             List<PlanPlaceGatherer.VideoPlaces> videos = new ArrayList<>();
             for (Long jobId : draft.getJobIds()) {
@@ -100,10 +104,20 @@ public class TripPlannerService {
             }
             List<SavedPlace> all = gathered.videos().stream().flatMap(v -> v.places().stream()).toList();
             int calls = openingHoursService.fillMissing(all);
-            draft.markReady(summaryJson(gathered, calls));
+
+            // 2일차: 초안 생성(Gemini 1번, 형식이 틀리면 1번 더). 규칙 검증·수정은 3일차에 이어 붙인다.
+            DraftGenerator.Result result = draftGenerator.generate(request.days(), request.startDate(), all);
+            draft.addGeminiCalls(result.geminiCalls());
+            if (result.draft().isEmpty()) {
+                log.warn("TripDraft {} 초안 생성 실패: {}", draftId, result.failure());
+                draft.markFailed("일정 초안을 만들지 못했어요. 잠시 후 다시 시도해주세요.");
+                tripDraftRepository.save(draft);
+                return;
+            }
+            draft.markReady(summaryJson(gathered, calls), DraftGenerator.toJson(result.draft().get()));
             tripDraftRepository.save(draft);
-            log.info("TripDraft {} 1일차 준비 완료: 영상 {}개, 장소 {}곳, 영업시간 조회 {}번",
-                    draftId, videos.size(), gathered.totalPlaces(), calls);
+            log.info("TripDraft {} 초안 완료: 영상 {}개, 장소 {}곳, 영업시간 조회 {}번, Gemini {}번",
+                    draftId, videos.size(), gathered.totalPlaces(), calls, draft.getGeminiCalls());
         } catch (Exception e) {
             log.error("TripDraft {} 처리 실패", draftId, e);
             // 앱에 내부 예외 문장을 보여주지 않는다(#95와 같은 원칙) — 원문은 로그에 있다.

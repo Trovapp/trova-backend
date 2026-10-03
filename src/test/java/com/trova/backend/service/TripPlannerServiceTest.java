@@ -6,6 +6,7 @@ import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.TripDraft;
 import com.trova.backend.entity.TripDraftStatus;
 import com.trova.backend.entity.User;
+import com.trova.backend.planner.DraftGenerator;
 import com.trova.backend.planner.OpeningHoursService;
 import com.trova.backend.planner.PlanRequestParser;
 import com.trova.backend.repository.ProcessingJobRepository;
@@ -31,7 +32,8 @@ class TripPlannerServiceTest {
     private final SavedPlaceRepository saved = mock(SavedPlaceRepository.class);
     private final PlanRequestParser parser = mock(PlanRequestParser.class);
     private final OpeningHoursService hours = mock(OpeningHoursService.class);
-    private final TripPlannerService service = new TripPlannerService(drafts, jobs, saved, parser, hours);
+    private final DraftGenerator generator = mock(DraftGenerator.class);
+    private final TripPlannerService service = new TripPlannerService(drafts, jobs, saved, parser, hours, generator);
     private final User user = userWithId(1L);
 
     // 저장 전 엔티티는 id가 없어 소유자 비교를 할 수 없다 — id만 돌려주는 가짜 사용자를 쓴다.
@@ -80,12 +82,33 @@ class TripPlannerServiceTest {
         ProcessingJob gimhae = job(1L);
         when(saved.findByProcessingJob(gimhae)).thenReturn(List.of(place(gimhae, 35.23, 128.88), place(gimhae, null, null)));
         when(hours.fillMissing(anyList())).thenReturn(1);
+        DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(new DraftGenerator.Day(1, null, List.of())),
+                List.of(), List.of(), List.of("이동 시간은 직선거리로 어림했어요."));
+        when(generator.generate(org.mockito.ArgumentMatchers.anyInt(), any(), anyList()))
+                .thenReturn(new DraftGenerator.Result(Optional.of(plan), 1, null));
 
         service.process(9L);
 
         assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
+        assertThat(draft.getDraftJson()).contains("\"day\":1");
+        assertThat(draft.getGeminiCalls()).isEqualTo(1); // 요청은 코드로 읽어 0번 + 초안 1번
         assertThat(draft.getSummaryJson()).contains("\"totalPlaces\":2").contains("\"placesWithCoords\":1")
                 .contains("\"hoursCallsThisRun\":1");
+    }
+
+    @Test
+    void 초안을_만들지_못하면_내부_사유_대신_안내_문구로_실패한다() {
+        TripDraft draft = draft(List.of(1L));
+        ProcessingJob gimhae = job(1L);
+        when(saved.findByProcessingJob(gimhae)).thenReturn(List.of(place(gimhae, 35.23, 128.88)));
+        when(generator.generate(org.mockito.ArgumentMatchers.anyInt(), any(), anyList()))
+                .thenReturn(new DraftGenerator.Result(Optional.empty(), 2, "형식 오류: 목록에 없는 placeId 99"));
+
+        service.process(9L);
+
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.FAILED);
+        assertThat(draft.getErrorMessage()).doesNotContain("placeId");
+        assertThat(draft.getGeminiCalls()).isEqualTo(2);
     }
 
     @Test

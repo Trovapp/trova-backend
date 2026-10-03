@@ -40,11 +40,11 @@ public class TripDraftController {
     // summaryJson은 서버가 만든 JSON 문자열 그대로 넘긴다(1일차: 모은 장소·영업시간 확인 요약).
     public record DraftResponse(Long id, String status, String message, List<Long> jobIds, Integer days,
                                 String startDate, String requestSource, String question, String summaryJson,
-                                String errorMessage) {
+                                String draftJson, Integer geminiCalls, String errorMessage) {
         static DraftResponse from(TripDraft d) {
             return new DraftResponse(d.getId(), d.getStatus().name(), d.getMessage(), d.getJobIds(), d.getDays(),
                     d.getStartDate() == null ? null : d.getStartDate().toString(), d.getRequestSource(),
-                    d.getQuestion(), d.getSummaryJson(), d.getErrorMessage());
+                    d.getQuestion(), d.getSummaryJson(), d.getDraftJson(), d.getGeminiCalls(), d.getErrorMessage());
         }
     }
 

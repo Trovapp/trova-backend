@@ -61,6 +61,14 @@ public class TripDraft {
     @Column(name = "summary_json", columnDefinition = "TEXT")
     private String summaryJson;
 
+    // 초안 일정(JSON: 일차별 장소·시각, 뺀 장소와 이유, 숙소 안내, 가정). 2일차부터.
+    @Column(name = "draft_json", columnDefinition = "TEXT")
+    private String draftJson;
+
+    // 이 초안을 만드는 데 쓴 Gemini 호출 수(요청 해석·초안·형식 재요청 합). eval에서 요청당 호출 수로 쓴다.
+    @Column(name = "gemini_calls")
+    private Integer geminiCalls;
+
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
 
@@ -99,9 +107,14 @@ public class TripDraft {
         touch(TripDraftStatus.NEEDS_INPUT);
     }
 
-    public void markReady(String summaryJson) {
+    public void markReady(String summaryJson, String draftJson) {
         this.summaryJson = summaryJson;
+        this.draftJson = draftJson;
         touch(TripDraftStatus.READY);
+    }
+
+    public void addGeminiCalls(int calls) {
+        this.geminiCalls = (geminiCalls == null ? 0 : geminiCalls) + calls;
     }
 
     public void markFailed(String errorMessage) {
@@ -125,6 +138,8 @@ public class TripDraft {
     public String getQuestion() { return question; }
     public String getSummaryJson() { return summaryJson; }
     public String getErrorMessage() { return errorMessage; }
+    public String getDraftJson() { return draftJson; }
+    public Integer getGeminiCalls() { return geminiCalls; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
