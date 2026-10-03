@@ -77,7 +77,11 @@ def judge(rec: dict) -> dict:
     # 이동 · 분량
     hop_viol, hop_unknown, load_viol = [], 0, []
     total_input = sum(len(v["input_place_ids"]) for v in videos)
-    for v in videos:
+    # 지금 기능은 영상마다 따로 일정을 만들어 영상별로 센다. 에이전트는 여러 영상 장소를 하루에 섞어 넣으므로 날짜별로 센다
+    # (영상별로 세면 "영상7 2일차 1곳"처럼 실제로는 5곳인 날이 위반이 됐다 — #108 재측정).
+    groups = [{"video_no": "+".join(str(v["video_no"]) for v in videos), "places": [p for v in videos for p in v["places"]]}] \
+        if rec.get("mode") == "agent" else videos
+    for v in groups:
         days = {}
         for p in v["places"]:
             days.setdefault(p["day"], []).append(p)

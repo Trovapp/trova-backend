@@ -154,6 +154,8 @@ def main():
                     "fixes": (plan or {}).get("fixes"), "problems": (plan or {}).get("problems"),
                     "draft": plan,
                 }
+            # 뺀 장소 판정(excluded_check.py)에 쓰려고 입력 장소 전체(좌표 포함)를 남긴다.
+            rec["inputs"] = all_inputs
             rec["start_date"] = str(start) if start else None
             rec["closed_day_note"] = closed_note
             rec["hours"] = {str(k): v for k, v in hours.items()}
