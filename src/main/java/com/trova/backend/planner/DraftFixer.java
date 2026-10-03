@@ -20,6 +20,10 @@ import java.util.Optional;
  *    좌표 없음, 공항·역 같은 지나가는 곳, 이미 넣은 곳과 150m 안(중복), 넣은 곳 모두와 30km 넘게 떨어짐, 그날 휴무 — 나머지는 하루 7곳 미만인 날 중
  *    연속 이동이 모두 30km 안이고 21시 안에 끝나며 영업시간 위반이 늘지 않는 자리에 넣는다. 앞 장소 시각은 그대로 두고
  *    넣은 자리부터 겹치는 만큼만 뒤로 민다(AI가 잡은 저녁 시간 같은 빈칸을 지키려고).
+ * 4) 식사 칸 맞추기(#110): 그날 식당이 있는데 점심(11~14시)·저녁(17~20시) 칸이 비어 있으면 그 식당을 칸에 맞게 옮긴다
+ *    (#108 재측정에서 식사 경고 13건 중 11건이 이 경우 — 예: 식당 3곳이 09:00·10:10·17:40에 몰려 점심이 빔).
+ *    아침(10시 반 전) 식당은 아침 식사로 보고 옮기지 않는다(사용자 결정). 옮긴 날도 연속 이동 30km 안·21시 안·영업시간 위반이
+ *    늘지 않을 때만 바꾸고, 다른 날 식당을 가져오지는 않는다(날 배정은 AI 몫).
  * 영업시간 밖·하루 과다·먼 이동은 날 배정 자체를 바꿔야 해서 AI 수정에 맡긴다.
  */
 public final class DraftFixer {
@@ -40,6 +44,10 @@ public final class DraftFixer {
             moveClosed(days, places, startDate, excluded, fixes);
         }
         restoreExcluded(days, places, startDate, excluded, fixes);
+        for (int i = 0; i < days.size(); i++) {
+            LocalDate date = startDate == null ? null : startDate.plusDays(i);
+            days.set(i, fitMeals(days.get(i), places, date, i + 1, fixes));
+        }
         for (int i = 0; i < days.size(); i++) {
             List<DraftGenerator.Item> reordered = reorder(days.get(i));
             if (!reordered.equals(days.get(i))) {
@@ -218,6 +226,106 @@ public final class DraftFixer {
             before = it;
         }
         return out;
+    }
+
+    static final LocalTime BREAKFAST_UNTIL = LocalTime.of(10, 30);
+
+    /** 검증기가 식사 경고를 낼 날(3곳 이상)에서 빈 식사 칸을 그날 식당으로 채운다. 점심 먼저, 그다음 저녁. */
+    static List<DraftGenerator.Item> fitMeals(List<DraftGenerator.Item> day, Map<Long, SavedPlace> places, LocalDate date,
+                                              int dayNo, List<String> fixes) {
+        if (day.size() < 3) {
+            return day;
+        }
+        List<DraftGenerator.Item> cur = day;
+        LocalTime[][] windows = {{DraftValidator.LUNCH_FROM, DraftValidator.LUNCH_TO},
+                {DraftValidator.DINNER_FROM, DraftValidator.DINNER_TO}};
+        String[] names = {"점심", "저녁"};
+        for (int w = 0; w < 2; w++) {
+            LocalTime from = windows[w][0];
+            LocalTime to = windows[w][1];
+            if (hasMealIn(cur, from, to)) {
+                continue;
+            }
+            // 저녁은 검증기와 같은 조건 — 그날 일정이 17시 넘어 이어질 때만 채운다.
+            if (w == 1 && !cur.get(cur.size() - 1).end().isAfter(DraftValidator.DINNER_FROM)) {
+                continue;
+            }
+            boolean lunchOk = hasMealIn(cur, DraftValidator.LUNCH_FROM, DraftValidator.LUNCH_TO);
+            List<DraftGenerator.Item> best = null;
+            DraftGenerator.Item moved = null;
+            for (DraftGenerator.Item r : cur) {
+                if (!movableMeal(r)) {
+                    continue;
+                }
+                List<DraftGenerator.Item> rest = new ArrayList<>(cur);
+                rest.remove(r);
+                for (int k = 0; k <= rest.size(); k++) {
+                    List<DraftGenerator.Item> trial = placeMeal(rest, k, r, from);
+                    DraftGenerator.Item placed = trial.get(k);
+                    if (!placed.start().isBefore(to) || !mealFits(trial, cur, places, date)
+                            || (lunchOk && !hasMealIn(trial, DraftValidator.LUNCH_FROM, DraftValidator.LUNCH_TO))) {
+                        continue;
+                    }
+                    if (best == null || pathKm(trial) < pathKm(best)) {
+                        best = trial;
+                        moved = placed;
+                    }
+                }
+            }
+            if (best != null) {
+                cur = best;
+                fixes.add(moved.name() + "을 " + dayNo + "일차 " + names[w] + " 시간(" + moved.start() + ")으로 옮겼어요.");
+            }
+        }
+        return cur;
+    }
+
+    /** 이미 점심·저녁 칸에 있는 식당과 아침 식당은 그대로 둔다. */
+    private static boolean movableMeal(DraftGenerator.Item it) {
+        return "restaurant".equals(it.category()) && !it.start().isBefore(BREAKFAST_UNTIL)
+                && !inWindow(it, DraftValidator.LUNCH_FROM, DraftValidator.LUNCH_TO)
+                && !inWindow(it, DraftValidator.DINNER_FROM, DraftValidator.DINNER_TO);
+    }
+
+    private static boolean inWindow(DraftGenerator.Item it, LocalTime from, LocalTime to) {
+        return !it.start().isBefore(from) && it.start().isBefore(to);
+    }
+
+    private static boolean hasMealIn(List<DraftGenerator.Item> items, LocalTime from, LocalTime to) {
+        return items.stream().anyMatch(it -> "restaurant".equals(it.category()) && inWindow(it, from, to));
+    }
+
+    /**
+     * 식당을 k 자리에 넣는다: 앞 장소들은 그대로, 식당은 (앞 장소 끝 + 이동)과 식사 칸 시작 중 늦은 시각에, 뒤 장소들은 겹치는 만큼만 민다.
+     */
+    static List<DraftGenerator.Item> placeMeal(List<DraftGenerator.Item> rest, int k, DraftGenerator.Item meal, LocalTime from) {
+        List<DraftGenerator.Item> out = new ArrayList<>(rest.subList(0, k));
+        long stay = java.time.Duration.between(meal.start(), meal.end()).toMinutes();
+        LocalTime start = from;
+        if (k > 0) {
+            LocalTime earliest = rest.get(k - 1).end().plusMinutes(travelMinutes(rest.get(k - 1), meal));
+            if (earliest.isAfter(start)) {
+                start = earliest;
+            }
+        }
+        LocalTime cursor = start.plusMinutes(stay);
+        out.add(with(meal, start, cursor));
+        DraftGenerator.Item before = meal;
+        for (int i = k; i < rest.size(); i++) {
+            DraftGenerator.Item it = rest.get(i);
+            LocalTime earliest = cursor.plusMinutes(travelMinutes(before, it));
+            LocalTime s = it.start().isBefore(earliest) ? earliest : it.start();
+            LocalTime e = s.plusMinutes(java.time.Duration.between(it.start(), it.end()).toMinutes());
+            out.add(with(it, s, e));
+            cursor = e;
+            before = it;
+        }
+        return out;
+    }
+
+    private static boolean mealFits(List<DraftGenerator.Item> trial, List<DraftGenerator.Item> original, Map<Long, SavedPlace> places,
+                                    LocalDate date) {
+        return fits(trial, original, places, date);
     }
 
     /** 그 장소가 확실히 여는 날 중 자리가 있고, 그날 장소들과 가장 가까운 날. */

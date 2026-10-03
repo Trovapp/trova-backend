@@ -172,4 +172,67 @@ class DraftFixerTest {
         assertThat(out.get(1).start()).isEqualTo(LocalTime.of(11, 10)); // 11:00 + 이동 10분
         assertThat(out.get(2).start()).isEqualTo(LocalTime.of(18, 0));  // 저녁 칸은 그대로
     }
+
+    // ---- 식사 칸 맞추기(#110) ----
+
+    private final SavedPlace s1 = place(200, "관광1", "attraction", 33.45, 126.50, null);
+    private final SavedPlace s2 = place(201, "관광2", "attraction", 33.46, 126.51, null);
+    private final SavedPlace s3 = place(202, "관광3", "attraction", 33.47, 126.52, null);
+
+    @Test
+    void 점심_칸이_비면_10시반_이후_식당을_점심으로_옮기고_아침_식당은_둔다() {
+        // #108 재측정 B4 1일차 모양: 식당이 09:00·10:40·17:40에 몰려 점심이 비었다.
+        SavedPlace haejang = place(210, "해장국", "restaurant", 33.45, 126.50, null);
+        SavedPlace noodle = place(211, "국수", "restaurant", 33.451, 126.501, null);
+        SavedPlace dinner = place(212, "저녁집", "restaurant", 33.47, 126.52, null);
+        List<DraftGenerator.Item> day = List.of(item(haejang, "09:00", "09:50"), item(noodle, "10:40", "11:30"),
+                item(s1, "11:40", "13:10"), item(s2, "13:30", "15:00"), item(s3, "15:30", "17:00"), item(dinner, "17:40", "18:40"));
+        List<String> fixes = new java.util.ArrayList<>();
+
+        List<DraftGenerator.Item> out = DraftFixer.fitMeals(day, byId(haejang, noodle, dinner, s1, s2, s3), null, 1, fixes);
+
+        DraftGenerator.Item moved = out.stream().filter(i -> i.name().equals("국수")).findFirst().orElseThrow();
+        assertThat(moved.start()).isAfterOrEqualTo(LocalTime.of(11, 0)).isBefore(LocalTime.of(14, 0));
+        assertThat(out.get(0).name()).isEqualTo("해장국");
+        assertThat(out.get(0).start()).isEqualTo(LocalTime.of(9, 0));
+        assertThat(out).hasSize(6);
+        for (int i = 0; i + 1 < out.size(); i++) {
+            assertThat(out.get(i + 1).start()).isAfterOrEqualTo(out.get(i).end());
+        }
+        assertThat(fixes).anyMatch(f -> f.contains("국수을 1일차 점심 시간"));
+        DraftGenerator.Draft fixed = draft(List.of(out));
+        assertThat(DraftValidator.validate(fixed, byId(haejang, noodle, dinner, s1, s2, s3), 1, null).violations())
+                .noneMatch(v -> v.type().equals("NO_LUNCH") || v.type().equals("NO_DINNER"));
+    }
+
+    @Test
+    void 남는_식당은_저녁_칸으로_옮기고_점심은_지킨다() {
+        SavedPlace lunch = place(220, "점심집", "restaurant", 33.45, 126.50, null);
+        SavedPlace extra = place(221, "또식당", "restaurant", 33.46, 126.51, null);
+        List<DraftGenerator.Item> day = List.of(item(s1, "10:00", "11:30"), item(lunch, "12:00", "13:00"),
+                item(extra, "14:00", "15:00"), item(s2, "15:30", "17:00"), item(s3, "17:30", "19:00"));
+
+        List<DraftGenerator.Item> out = DraftFixer.fitMeals(day, byId(lunch, extra, s1, s2, s3), null, 2, new java.util.ArrayList<>());
+
+        DraftGenerator.Item moved = out.stream().filter(i -> i.name().equals("또식당")).findFirst().orElseThrow();
+        assertThat(moved.start()).isAfterOrEqualTo(LocalTime.of(17, 0)).isBefore(LocalTime.of(20, 0));
+        assertThat(out.stream().filter(i -> i.name().equals("점심집")).findFirst().orElseThrow().start()).isEqualTo(LocalTime.of(12, 0));
+        assertThat(out.get(out.size() - 1).end()).isBeforeOrEqualTo(DraftFixer.DAY_END);
+    }
+
+    @Test
+    void 옮길_식당이_없거나_21시를_넘기면_그대로_둔다() {
+        SavedPlace onlyLunch = place(230, "점심만", "restaurant", 33.45, 126.50, null);
+        List<DraftGenerator.Item> day = List.of(item(s1, "10:00", "11:30"), item(onlyLunch, "12:00", "13:00"),
+                item(s2, "14:00", "16:00"), item(s3, "17:00", "19:00"));
+        assertThat(DraftFixer.fitMeals(day, byId(onlyLunch, s1, s2, s3), null, 1, new java.util.ArrayList<>())).isSameAs(day);
+
+        // 저녁 칸으로 옮기면 뒤 일정이 21시를 넘는다.
+        SavedPlace lunch = place(231, "점심집", "restaurant", 33.45, 126.50, null);
+        SavedPlace late = place(232, "늦은식당", "restaurant", 33.46, 126.51, null);
+        List<DraftGenerator.Item> tight = List.of(item(lunch, "12:00", "13:00"), item(late, "14:00", "15:00"),
+                item(s1, "17:00", "19:30"), item(s2, "19:40", "20:50"));
+        List<DraftGenerator.Item> out = DraftFixer.fitMeals(tight, byId(lunch, late, s1, s2), null, 1, new java.util.ArrayList<>());
+        assertThat(out.get(out.size() - 1).end()).isBeforeOrEqualTo(DraftFixer.DAY_END);
+    }
 }
