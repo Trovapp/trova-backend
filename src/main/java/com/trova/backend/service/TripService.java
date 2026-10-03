@@ -1,5 +1,8 @@
 package com.trova.backend.service;
 
+import com.trova.backend.replan.GeoUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.trova.backend.entity.*;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.recommendation.PlaceSearchService;
@@ -35,6 +38,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TripService {
+
+    private static final Logger log = LoggerFactory.getLogger(TripService.class);
 
     private static final Set<String> VALID_DIRECTIONS = Set.of("UP", "DOWN");
 
@@ -161,17 +166,51 @@ public class TripService {
                     if (tripPlace.getGooglePlaceId() != null) {
                         return placeRepository.findByGooglePlaceId(tripPlace.getGooglePlaceId());
                     }
-                    List<Place> candidates = placeSearchService.search(tripPlace.getPlaceName());
-                    if (candidates.isEmpty()) {
+                    // 이름만으로 찾으면 같은 이름의 다른 지역 장소가 1등일 수 있다 — 개발 DB에서 김해 "가야랜드"가 파주
+                    // 가야랜드(341km)로 연결됐다(#101). 검색어에 지역을 붙이고, 여행 장소 좌표가 있으면 그 근처 결과만 연결한다.
+                    List<Place> candidates = placeSearchService.search(detailsSearchQuery(tripPlace));
+                    Optional<Place> nearest = pickMatch(tripPlace, candidates);
+                    if (nearest.isEmpty()) {
+                        log.info("여행 장소 상세 연결 실패 — 근처 검색 결과 없음(tripPlaceId={}, name={}, 후보 {}곳)",
+                                tripPlace.getId(), tripPlace.getPlaceName(), candidates.size());
                         return Optional.empty();
                     }
-                    Place match = candidates.get(0);
+                    Place match = nearest.get();
                     tripPlace.applyGooglePlaceId(match.getGooglePlaceId());
                     tripPlaceRepository.save(tripPlace);
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, match, SignalType.VIDEO_PLACE_MATCHED));
                     placeEmbeddingService.ensureEmbeddings(List.of(match));
                     return Optional.of(match);
                 });
+    }
+
+    // 여행 장소와 검색 결과가 이보다 멀면 다른 장소로 본다. 주소·이름으로 잡은 좌표는 보통 수십 m 안이고, 큰 시설(테마파크 등)과
+    // 지역 중심으로 대신한 좌표까지 감안한 값이다. 같은 이름의 다른 지역(수십~수백 km)은 확실히 걸러진다.
+    static final double MAX_MATCH_DISTANCE_KM = 3.0;
+
+    static String detailsSearchQuery(TripPlace tripPlace) {
+        String region = tripPlace.getRegion();
+        return region == null || region.isBlank() || tripPlace.getPlaceName().contains(region)
+                ? tripPlace.getPlaceName()
+                : region + " " + tripPlace.getPlaceName();
+    }
+
+    /**
+     * 여행 장소 좌표가 있으면 검색 결과 중 MAX_MATCH_DISTANCE_KM 안의 첫 결과(검색 순위 우선), 없으면 비운다.
+     * 좌표가 없는 여행 장소는 확인할 방법이 없어 지역을 붙인 검색의 1등을 그대로 쓴다.
+     */
+    static Optional<Place> pickMatch(TripPlace tripPlace, List<Place> candidates) {
+        if (candidates.isEmpty()) {
+            return Optional.empty();
+        }
+        if (tripPlace.getLatitude() == null || tripPlace.getLongitude() == null) {
+            return Optional.of(candidates.get(0));
+        }
+        return candidates.stream()
+                .filter(c -> c.getLatitude() != null && c.getLongitude() != null)
+                .filter(c -> GeoUtils.haversineKm(tripPlace.getLatitude(), tripPlace.getLongitude(),
+                        c.getLatitude(), c.getLongitude()) <= MAX_MATCH_DISTANCE_KM)
+                .findFirst();
     }
 
     @Transactional
