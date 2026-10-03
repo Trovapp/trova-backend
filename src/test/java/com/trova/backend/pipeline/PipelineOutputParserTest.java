@@ -33,6 +33,26 @@ class PipelineOutputParserTest {
     }
 
     @Test
+    void 영상에서_말한_내용을_함께_파싱하고_없으면_빈_목록으로_둔다() {
+        // #104: 장소마다 영상이 말한 추천 메뉴·웨이팅 같은 정보를 함께 받는다.
+        String stdout = """
+                {
+                  "title": "해운대 맛집",
+                  "places": [
+                    {"name": "크림우동집", "region": "부산", "category": "restaurant", "confidence": 0.9,
+                     "videoNotes": ["추천 메뉴: 명란 크림우동", "웨이팅 30분"]},
+                    {"name": "해운대", "region": "부산", "category": "attraction", "confidence": 0.95}
+                  ]
+                }
+                """;
+
+        List<ExtractedPlace> places = PipelineOutputParser.parse(stdout).places();
+
+        assertThat(places.get(0).videoNotes()).containsExactly("추천 메뉴: 명란 크림우동", "웨이팅 30분");
+        assertThat(places.get(1).videoNotes()).isEmpty();
+    }
+
+    @Test
     void title이_null이어도_places는_정상_파싱된다() {
         String stdout = """
                 {

@@ -155,6 +155,23 @@ class ProcessingJobLifecycleServiceIntegrationTest {
     }
 
     @Test
+    void savePlace가_영상에서_말한_내용을_함께_저장하고_없으면_빈_목록을_돌려준다() {
+        ProcessingJob job = newJob();
+        ExtractedPlace withNotes = new ExtractedPlace("크림우동집", "부산", "restaurant", 0.9, null, null,
+                List.of("크림우동집"), null, List.of("추천 메뉴: 명란 크림우동", "웨이팅 30분"));
+        ExtractedPlace withoutNotes = new ExtractedPlace("해운대", "부산", "attraction", 0.95, null, null, List.of("해운대"));
+
+        lifecycleService.savePlace(job.getId(), withNotes, GeocodingResult.coordinatesOnly(35.16, 129.16));
+        lifecycleService.savePlace(job.getId(), withoutNotes, GeocodingResult.coordinatesOnly(35.15, 129.15));
+
+        List<SavedPlace> saved = savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(job.getUser());
+        SavedPlace udon = saved.stream().filter(p -> p.getPlaceName().equals("크림우동집")).findFirst().orElseThrow();
+        SavedPlace beach = saved.stream().filter(p -> p.getPlaceName().equals("해운대")).findFirst().orElseThrow();
+        assertThat(udon.getVideoNotes()).containsExactly("추천 메뉴: 명란 크림우동", "웨이팅 30분");
+        assertThat(beach.getVideoNotes()).isEmpty();
+    }
+
+    @Test
     void savePlace가_matchedName이_없으면_추출된_이름을_그대로_저장한다() {
         ProcessingJob job = newJob();
         ExtractedPlace extracted =
