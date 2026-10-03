@@ -7,7 +7,7 @@
   없는장소  입력에 없던 장소가 일정에 있으면 위반(개수 집계)
   기간      일정 일수(영상별 최대 일차)가 요청 일수와 다르면 위반
   지역      요청 영상들의 장소 중심점 어디에서도 50km 밖인 장소가 있으면 위반
-  반영불가  지금 API에 전달할 수 없는 조건(일수 지정, 여러 영상)을 따로 센다 — 통과/위반과 별개
+  반영불가  지금 API에 전달할 수 없는 조건(일수 지정, 여러 영상)을 따로 센다 — 통과/위반과 별개(에이전트 기록은 없음)
 
 사용: python eval/itinerary/score.py <결과 폴더>
 """
@@ -54,7 +54,8 @@ def judge(rec: dict) -> dict:
         return {"id": req["id"], "rules": res, "failed": rec.get("result") or [v["generate"] for v in videos],
                 "unsupported": [], "violations": 0}
 
-    unsupported = ["일수 지정"] + (["여러 영상"] if len(req["videos"]) > 1 else [])
+    # 에이전트(run_agent.py)는 일수·여러 영상을 실제로 받는다 — 반영 불가 조건이 없다.
+    unsupported = [] if rec.get("mode") == "agent" else ["일수 지정"] + (["여러 영상"] if len(req["videos"]) > 1 else [])
     start = dt.date.fromisoformat(rec["start_date"]) if rec.get("start_date") else None
     hours = rec.get("hours", {})
 

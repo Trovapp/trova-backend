@@ -77,19 +77,29 @@ def main() -> None:
     ap.add_argument("--only", help="영상 번호 몇 개만(쉼표)")
     ap.add_argument("--keep", action="store_true", help="측정 데이터를 지우지 않는다(Part B에 쓸 때)")
     ap.add_argument("--pause", type=float, default=5.0, help="영상 사이 대기(초) — Gemini 분당 한도 보호")
+    ap.add_argument("--resume", help="중단된 결과 폴더 — raw 파일이 이미 있는 (영상, 회차)는 건너뛰고 이어서 돈다")
     args = ap.parse_args()
 
     only = {int(x) for x in args.only.split(",")} if args.only else None
     videos = selected_videos(only)
-    out = common.new_result_dir("extraction")
-    (out / "raw").mkdir(exist_ok=True)
-    common.write_meta(out, {"part": "A", "repeat": args.repeat, "videos": [int(v["video_no"]) for v in videos],
-                            "kept_jobs": args.keep})
+    if args.resume:
+        out = Path(args.resume)
+        meta = json.loads((out / "meta.json").read_text())
+        meta.setdefault("resumed_at", []).append(time.strftime("%Y-%m-%dT%H:%M:%S"))
+        (out / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2))
+    else:
+        out = common.new_result_dir("extraction")
+        (out / "raw").mkdir(exist_ok=True)
+        common.write_meta(out, {"part": "A", "repeat": args.repeat, "videos": [int(v["video_no"]) for v in videos],
+                                "kept_jobs": args.keep})
     conn = common.db()
-    kept = []
+    kept_file = out / "kept_jobs.json"
+    kept = json.loads(kept_file.read_text()) if kept_file.exists() else []
     for rep in range(1, args.repeat + 1):
         for v in videos:
             no = int(v["video_no"])
+            if (out / "raw" / f"{no:02d}_r{rep}.json").exists():
+                continue
             t0 = time.time()
             status, body = common.api("POST", "/api/shares", {"url": v["url"], "reanalyze": True})
             record = {"video_no": no, "repeat": rep, "url": v["url"], "submit_status": status}
@@ -100,9 +110,15 @@ def main() -> None:
                 record["job_id"] = job_id
                 record["wait"] = wait_for_job(job_id)
                 record["wall_seconds"] = round(time.time() - t0, 1)
-                record.update(collect(conn, job_id))
+                # 측정이 30분 넘게 이어지면 pooler가 쉬던 연결을 끊는다(2026-10-03 실측) — 끊기면 다시 붙어 한 번 더 한다.
+                try:
+                    record.update(collect(conn, job_id))
+                except Exception:
+                    conn = common.db()
+                    record.update(collect(conn, job_id))
                 if args.keep:
                     kept.append({"video_no": no, "repeat": rep, "job_id": job_id})
+                    kept_file.write_text(json.dumps(kept, indent=2))
                 else:
                     cleanup(conn, job_id)
             (out / "raw" / f"{no:02d}_r{rep}.json").write_text(
@@ -110,8 +126,6 @@ def main() -> None:
             print(f"[{rep}/{args.repeat}] 영상 {no}: {record.get('wait', {}).get('status', record.get('result'))}, "
                   f"장소 {len(record.get('places', []))}곳, {record.get('wall_seconds')}초", flush=True)
             time.sleep(args.pause)
-    if kept:
-        (out / "kept_jobs.json").write_text(json.dumps(kept, indent=2))
     print("결과:", out)
 
 
