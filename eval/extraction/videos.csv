@@ -25,12 +25,12 @@ video_no,selected,platform,country,url,title,criteria_guess
 24,Y,instagram_reel,domestic,https://www.instagram.com/reel/DUX2qkMEQAQ/,합리적인 가격 맛집,적음
 25,Y,instagram_reel,domestic,https://www.instagram.com/reel/DUSQvwkATzB/,해운대 맛집,적음
 26,Y,instagram_reel,domestic,https://www.instagram.com/reel/DX-rrm8BHCr/,통나무 카페,적음
-27,Y,youtube_long,domestic,https://www.youtube.com/watch?v=0FXFnagUOZk,1박2일 부산 먹부림,많음
-28,Y,youtube_long,domestic,https://www.youtube.com/watch?v=voCmjcBmAbA,나홀로 경주 1박2일,"많음, 역 가능"
-29,Y,youtube_long,domestic,https://www.youtube.com/watch?v=FvnJG4GPSok,여수 2박3일 뚜벅이,"많음, 역·터미널 가능"
-30,Y,youtube_long,domestic,https://www.youtube.com/watch?v=AewhRo3otvs,나 혼자 부산 찐맛집,"많음, 체인점 가능"
-31,Y,youtube_long,overseas,https://www.youtube.com/watch?v=W55CGpMyEno,오사카 필수코스 top 7,보통
+27,,youtube_long,domestic,https://www.youtube.com/watch?v=0FXFnagUOZk,1박2일 부산 먹부림,많음
+28,,youtube_long,domestic,https://www.youtube.com/watch?v=voCmjcBmAbA,나홀로 경주 1박2일,"많음, 역 가능"
+29,,youtube_long,domestic,https://www.youtube.com/watch?v=FvnJG4GPSok,여수 2박3일 뚜벅이,"많음, 역·터미널 가능"
+30,,youtube_long,domestic,https://www.youtube.com/watch?v=AewhRo3otvs,나 혼자 부산 찐맛집,"많음, 체인점 가능"
+31,,youtube_long,overseas,https://www.youtube.com/watch?v=W55CGpMyEno,오사카 필수코스 top 7,보통
 32,,youtube_long,overseas,https://www.youtube.com/watch?v=EzuUX01VlWg,다낭 한식 맛집,적음
 33,,youtube_long,overseas,https://www.youtube.com/watch?v=qWyieeb1cnA,Bangkok Must-Go 15,"많음, 영어"
-34,Y,youtube_long,overseas,https://www.youtube.com/watch?v=aLx_FW6X6Ss,타이베이 3박4일 코스,많음
+34,,youtube_long,overseas,https://www.youtube.com/watch?v=aLx_FW6X6Ss,타이베이 3박4일 코스,많음
 35,,youtube_long,overseas,https://www.youtube.com/watch?v=5KFJP88bqJQ,후쿠오카 필수 맛집 7곳,보통
