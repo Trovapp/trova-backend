@@ -5,6 +5,7 @@ import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.TripDraft;
+import com.trova.backend.entity.TripDraftStatus;
 import com.trova.backend.entity.User;
 import com.trova.backend.planner.DraftGenerator;
 import com.trova.backend.planner.OpeningHoursService;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -34,6 +36,9 @@ public class TripPlannerService {
 
     private static final Logger log = LoggerFactory.getLogger(TripPlannerService.class);
     public static final int MAX_VIDEOS = 5;
+    public static final String ANSWER_SPLIT = "SPLIT";
+    public static final String ANSWER_ONLY = "ONLY";
+    static final String SPLIT_NOTE = "영상 지역이 서로 멀리 떨어져 있어요. 하루에는 한 지역의 장소만 넣고, 지역별로 날을 나누세요.";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final TripDraftRepository tripDraftRepository;
@@ -72,6 +77,35 @@ public class TripPlannerService {
         return Optional.of(tripDraftRepository.save(new TripDraft(user, distinct, message.trim())));
     }
 
+    public enum AnswerOutcome { OK, NOT_FOUND, NOT_WAITING, BAD_REQUEST }
+
+    /**
+     * 시작 전 질문(영상 지역이 멀다)에 답한다. SPLIT: 모든 영상으로 지역별로 날을 나눈다. ONLY: 고른 영상만 쓴다.
+     * 답하면 다시 대기열로 돌아가며, 호출한 쪽이 커밋 뒤 process를 부른다. 두 번 눌러도 한 번만 받게 행을 잠근다.
+     */
+    @Transactional
+    public AnswerOutcome answer(User user, Long draftId, String choice, List<Long> jobIds) {
+        TripDraft draft = tripDraftRepository.findByIdForUpdate(draftId)
+                .filter(d -> d.getUser().getId().equals(user.getId()))
+                .orElse(null);
+        if (draft == null) {
+            return AnswerOutcome.NOT_FOUND;
+        }
+        if (draft.getStatus() != TripDraftStatus.NEEDS_INPUT) {
+            return AnswerOutcome.NOT_WAITING;
+        }
+        if (ANSWER_SPLIT.equals(choice)) {
+            draft.answer(ANSWER_SPLIT, null);
+        } else if (ANSWER_ONLY.equals(choice) && jobIds != null && !jobIds.isEmpty()
+                && draft.getJobIds().containsAll(jobIds)) {
+            draft.answer(ANSWER_ONLY, jobIds.stream().distinct().toList());
+        } else {
+            return AnswerOutcome.BAD_REQUEST;
+        }
+        tripDraftRepository.save(draft);
+        return AnswerOutcome.OK;
+    }
+
     @Async("planTaskExecutor")
     public void process(Long draftId) {
         TripDraft draft = tripDraftRepository.findById(draftId).orElse(null);
@@ -82,9 +116,16 @@ public class TripPlannerService {
             draft.markProcessing();
             tripDraftRepository.save(draft);
 
-            PlanRequestParser.PlanRequest request = planRequestParser.parse(draft.getMessage());
-            draft.applyRequest(request.days(), request.startDate(), request.source());
-            draft.addGeminiCalls("AI".equals(request.source()) || "DEFAULT".equals(request.source()) ? 1 : 0);
+            // 질문에 답하고 다시 들어온 경우 요청은 이미 읽었다 — Gemini를 다시 부르지 않는다.
+            PlanRequestParser.PlanRequest request;
+            if (draft.getDays() != null) {
+                request = new PlanRequestParser.PlanRequest(draft.getDays(), draft.getStartDate(), draft.getRequestSource());
+            } else {
+                request = planRequestParser.parse(draft.getMessage());
+                draft.applyRequest(request.days(), request.startDate(), request.source());
+                draft.addGeminiCalls("AI".equals(request.source()) || "DEFAULT".equals(request.source()) ? 1 : 0);
+            }
+            boolean split = ANSWER_SPLIT.equals(draft.getAnswer());
 
             List<PlanPlaceGatherer.VideoPlaces> videos = new ArrayList<>();
             for (Long jobId : draft.getJobIds()) {
@@ -97,7 +138,7 @@ public class TripPlannerService {
                 tripDraftRepository.save(draft);
                 return;
             }
-            if (gathered.question().isPresent()) {
+            if (gathered.question().isPresent() && !split) {
                 // 영업시간은 질문에 답한 뒤 실제로 쓸 장소만 받는다(무료 한도 보호).
                 draft.markNeedsInput(gathered.question().get(), summaryJson(gathered, 0));
                 tripDraftRepository.save(draft);
@@ -113,7 +154,8 @@ public class TripPlannerService {
                 return;
             }
             int calls = openingHoursService.fillMissing(visits);
-            TripPlanGraph.Outcome outcome = tripPlanGraph.run(request.days(), request.startDate(), visits);
+            TripPlanGraph.Outcome outcome = tripPlanGraph.run(request.days(), request.startDate(), visits,
+                    split ? List.of(SPLIT_NOTE) : List.of());
             draft.addGeminiCalls(outcome.geminiCalls());
             if (outcome.draft().isEmpty()) {
                 log.warn("TripDraft {} 초안 생성 실패: {}", draftId, outcome.failure());

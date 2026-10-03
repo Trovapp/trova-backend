@@ -85,7 +85,7 @@ class TripPlannerServiceTest {
         when(hours.fillMissing(anyList())).thenReturn(1);
         DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(new DraftGenerator.Day(1, null, List.of())),
                 List.of(), List.of(), List.of("이동 시간은 직선거리로 어림했어요."));
-        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList()))
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList(), anyList()))
                 .thenReturn(new TripPlanGraph.Outcome(Optional.of(plan), 1, 0, 0, 0, List.of(), List.of(), null));
 
         service.process(9L);
@@ -102,7 +102,7 @@ class TripPlannerServiceTest {
         TripDraft draft = draft(List.of(1L));
         ProcessingJob gimhae = job(1L);
         when(saved.findByProcessingJob(gimhae)).thenReturn(List.of(place(gimhae, 35.23, 128.88)));
-        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList()))
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList(), anyList()))
                 .thenReturn(new TripPlanGraph.Outcome(Optional.empty(), 2, 0, -1, -1, List.of(), List.of(),
                         "형식 오류: 목록에 없는 placeId 99"));
 
@@ -124,13 +124,13 @@ class TripPlannerServiceTest {
                 java.time.LocalTime.of(10, 0), java.time.LocalTime.of(11, 0), 33.458, 126.942);
         DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(new DraftGenerator.Day(1, null, List.of(item)),
                 new DraftGenerator.Day(2, null, List.of())), List.of(), List.of(), List.of());
-        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList()))
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList(), anyList()))
                 .thenReturn(new TripPlanGraph.Outcome(Optional.of(plan), 1, 0, 0, 0, List.of(), List.of("2일차 0곳"), null));
 
         service.process(9L);
 
         verify(hours).fillMissing(List.of(sight));
-        verify(graph).run(2, null, List.of(sight));
+        verify(graph).run(2, null, List.of(sight), List.of());
         assertThat(draft.getDraftJson()).contains("1일차 숙소: 봄빛코티지(영상 속 숙소)").contains("\"problems\":[\"2일차 0곳\"]");
     }
 
@@ -155,5 +155,61 @@ class TripPlannerServiceTest {
         assertThat(service.create(user, List.of(), "1박 2일")).isEmpty();
         assertThat(service.create(user, List.of(1L, 2L, 3L, 4L, 5L, 6L), "1박 2일")).isEmpty();
         verify(drafts, never()).save(any());
+    }
+
+    private TripDraft waitingDraft(List<Long> jobIds) {
+        TripDraft draft = new TripDraft(user, jobIds, "1박 2일");
+        draft.applyRequest(2, null, "CODE");
+        draft.markNeedsInput("영상 속 지역이 서로 300km 넘게 떨어져 있어요.", "{}");
+        when(drafts.findByIdForUpdate(9L)).thenReturn(Optional.of(draft));
+        when(drafts.findById(9L)).thenReturn(Optional.of(draft));
+        return draft;
+    }
+
+    @Test
+    void 지역별로_나누겠다고_답하면_질문_없이_모든_영상으로_다시_만들고_요청은_다시_읽지_않는다() {
+        TripDraft draft = waitingDraft(List.of(1L, 2L));
+        ProcessingJob busan = job(1L);
+        ProcessingJob seoul = job(2L);
+        SavedPlace a = place(busan, 35.16, 129.16);
+        SavedPlace b = place(seoul, 37.57, 126.98);
+        when(saved.findByProcessingJob(busan)).thenReturn(List.of(a));
+        when(saved.findByProcessingJob(seoul)).thenReturn(List.of(b));
+        DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(new DraftGenerator.Day(1, null, List.of()),
+                new DraftGenerator.Day(2, null, List.of())), List.of(), List.of(), List.of());
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList(), anyList()))
+                .thenReturn(new TripPlanGraph.Outcome(Optional.of(plan), 1, 0, 0, 0, List.of(), List.of(), null));
+
+        assertThat(service.answer(user, 9L, "SPLIT", null)).isEqualTo(TripPlannerService.AnswerOutcome.OK);
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.PENDING);
+        service.process(9L);
+
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
+        verify(parser, never()).parse(any());
+        verify(graph).run(2, null, List.of(a, b), List.of(TripPlannerService.SPLIT_NOTE));
+    }
+
+    @Test
+    void 한_지역만_고르면_그_영상만_남긴다() {
+        TripDraft draft = waitingDraft(List.of(1L, 2L));
+
+        assertThat(service.answer(user, 9L, "ONLY", List.of(2L))).isEqualTo(TripPlannerService.AnswerOutcome.OK);
+
+        assertThat(draft.getJobIds()).containsExactly(2L);
+        assertThat(draft.getAnswer()).isEqualTo("ONLY");
+    }
+
+    @Test
+    void 처음_고른_영상이_아니거나_모르는_답이면_거절하고_답을_기다리는_중이_아니면_충돌() {
+        TripDraft draft = waitingDraft(List.of(1L, 2L));
+
+        assertThat(service.answer(user, 9L, "ONLY", List.of(3L))).isEqualTo(TripPlannerService.AnswerOutcome.BAD_REQUEST);
+        assertThat(service.answer(user, 9L, "ONLY", List.of())).isEqualTo(TripPlannerService.AnswerOutcome.BAD_REQUEST);
+        assertThat(service.answer(user, 9L, "MAYBE", null)).isEqualTo(TripPlannerService.AnswerOutcome.BAD_REQUEST);
+        assertThat(service.answer(userWithId(2L), 9L, "SPLIT", null)).isEqualTo(TripPlannerService.AnswerOutcome.NOT_FOUND);
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.NEEDS_INPUT);
+
+        service.answer(user, 9L, "SPLIT", null);
+        assertThat(service.answer(user, 9L, "SPLIT", null)).isEqualTo(TripPlannerService.AnswerOutcome.NOT_WAITING);
     }
 }

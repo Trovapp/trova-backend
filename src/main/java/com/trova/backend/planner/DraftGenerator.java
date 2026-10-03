@@ -54,8 +54,9 @@ public class DraftGenerator {
     public record Result(Optional<Draft> draft, int geminiCalls, String failure) {
     }
 
-    public Result generate(int days, LocalDate startDate, List<SavedPlace> places) {
-        String prompt = prompt(days, startDate, places);
+    /** notes: 이 요청에만 더할 원칙(예: 지역별로 날 나누기 — 시작 전 질문의 답). */
+    public Result generate(int days, LocalDate startDate, List<SavedPlace> places, List<String> notes) {
+        String prompt = prompt(days, startDate, places, notes);
         Optional<String> first = geminiJsonClient.generateJson(prompt, OPERATION);
         if (first.isEmpty()) {
             return new Result(Optional.empty(), 1, "Gemini 응답 없음");
@@ -80,8 +81,9 @@ public class DraftGenerator {
     /**
      * 규칙 위반을 알려 고친 초안 전체를 다시 받는다(호출 1번). 형식이 틀리거나 응답이 없으면 빈 값 — 호출한 쪽이 이전 초안을 유지한다.
      */
-    public Result repairRules(int days, LocalDate startDate, List<SavedPlace> places, Draft current, List<String> problems) {
-        String repairPrompt = prompt(days, startDate, places)
+    public Result repairRules(int days, LocalDate startDate, List<SavedPlace> places, List<String> notes, Draft current,
+                              List<String> problems) {
+        String repairPrompt = prompt(days, startDate, places, notes)
                 + "\n\n지금 초안:\n" + toPromptJson(current)
                 + "\n\n이 초안에는 다음 문제가 있습니다:\n- " + String.join("\n- ", problems)
                 + "\n문제를 고친 초안 전체를 같은 형식의 JSON으로만 다시 출력하세요. 문제가 없는 날은 되도록 그대로 두세요.";
@@ -114,7 +116,7 @@ public class DraftGenerator {
         }
     }
 
-    static String prompt(int days, LocalDate startDate, List<SavedPlace> places) {
+    static String prompt(int days, LocalDate startDate, List<SavedPlace> places, List<String> notes) {
         StringBuilder list = new StringBuilder();
         for (SavedPlace p : places) {
             list.append("- id=").append(p.getId())
@@ -143,14 +145,15 @@ public class DraftGenerator {
                 - 같은 날 연달아 가는 두 장소는 직선 30km 안이어야 합니다. 다른 장소들과 멀리 떨어진 곳은 excluded로 빼세요.
                 - 공항·기차역·터미널처럼 지나가는 곳은 일정에 넣지 말고 excluded로 빼세요.
                 - excluded의 reason은 사용자에게 그대로 보여줄 존댓말 한 문장입니다(예: "다른 장소들과 40km 넘게 떨어져 있어 이번 일정에서 뺐어요.").
-                - 모든 장소는 days나 excluded 중 정확히 한 곳에 한 번만 나와야 합니다.
+                %s- 모든 장소는 days나 excluded 중 정확히 한 곳에 한 번만 나와야 합니다.
 
                 장소 목록:
                 %s
                 JSON 객체 하나로만 답하세요:
                 {"days":[{"day":1,"items":[{"placeId":정수,"start":"HH:mm","end":"HH:mm"}]}],
                  "excluded":[{"placeId":정수,"reason":"문장"}]}
-                """.formatted(days, dates, days, list);
+                """.formatted(days, dates, days,
+                notes.stream().map(n -> "- " + n + "\n").collect(Collectors.joining()), list);
     }
 
     private static String closedDaysNote(SavedPlace p, int days, LocalDate startDate) {

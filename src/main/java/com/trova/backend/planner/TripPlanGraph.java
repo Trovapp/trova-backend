@@ -54,7 +54,8 @@ public class TripPlanGraph {
     private final CompiledGraph<AgentState> compiled;
     private final ThreadLocal<Context> context = new ThreadLocal<>();
 
-    private record Context(int days, LocalDate startDate, List<SavedPlace> places, Map<Long, SavedPlace> byId) {
+    private record Context(int days, LocalDate startDate, List<SavedPlace> places, List<String> notes,
+                           Map<Long, SavedPlace> byId) {
     }
 
     /**
@@ -74,10 +75,10 @@ public class TripPlanGraph {
         }
     }
 
-    public Outcome run(int days, LocalDate startDate, List<SavedPlace> places) {
+    public Outcome run(int days, LocalDate startDate, List<SavedPlace> places, List<String> notes) {
         Map<Long, SavedPlace> byId = new HashMap<>();
         places.forEach(p -> byId.put(p.getId(), p));
-        context.set(new Context(days, startDate, places, byId));
+        context.set(new Context(days, startDate, places, notes, byId));
         try {
             Map<String, Object> init = new HashMap<>();
             init.put(GEMINI_CALLS, 0);
@@ -122,7 +123,7 @@ public class TripPlanGraph {
 
     private Map<String, Object> generate(AgentState s) {
         Context c = context.get();
-        DraftGenerator.Result r = draftGenerator.generate(c.days(), c.startDate(), c.places());
+        DraftGenerator.Result r = draftGenerator.generate(c.days(), c.startDate(), c.places(), c.notes());
         Map<String, Object> out = new HashMap<>();
         out.put(GEMINI_CALLS, intOf(s, GEMINI_CALLS) + r.geminiCalls());
         if (r.draft().isEmpty()) {
@@ -164,7 +165,7 @@ public class TripPlanGraph {
         List<String> problems = report.violations().stream()
                 .map(v -> (v.severity() == DraftValidator.Severity.ERROR ? "[반드시] " : "[가능하면] ") + v.message())
                 .toList();
-        DraftGenerator.Result r = draftGenerator.repairRules(c.days(), c.startDate(), c.places(), current, problems);
+        DraftGenerator.Result r = draftGenerator.repairRules(c.days(), c.startDate(), c.places(), c.notes(), current, problems);
         int repairs = intOf(s, REPAIRS) + 1;
         Map<String, Object> out = new HashMap<>();
         out.put(REPAIRS, repairs);

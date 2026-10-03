@@ -49,7 +49,7 @@ class DraftGeneratorTest {
     void 형식이_맞으면_한_번에_초안을_만들고_시각순으로_정렬한다() {
         when(gemini.generateJson(anyString(), eq(DraftGenerator.OPERATION))).thenReturn(Optional.of(VALID));
 
-        DraftGenerator.Result r = generator.generate(2, null, places);
+        DraftGenerator.Result r = generator.generate(2, null, places, List.of());
 
         assertThat(r.geminiCalls()).isEqualTo(1);
         DraftGenerator.Draft d = r.draft().orElseThrow();
@@ -70,7 +70,7 @@ class DraftGeneratorTest {
         when(gemini.generateJson(contains("빠진 placeId [2, 3]"), eq(DraftGenerator.REPAIR_OPERATION)))
                 .thenReturn(Optional.of(VALID));
 
-        DraftGenerator.Result r = generator.generate(2, null, places);
+        DraftGenerator.Result r = generator.generate(2, null, places, List.of());
 
         assertThat(r.geminiCalls()).isEqualTo(2);
         assertThat(r.draft()).isPresent();
@@ -83,7 +83,7 @@ class DraftGeneratorTest {
                 """;
         when(gemini.generateJson(anyString(), anyString())).thenReturn(Optional.of(unknown));
 
-        DraftGenerator.Result r = generator.generate(2, null, places);
+        DraftGenerator.Result r = generator.generate(2, null, places, List.of());
 
         assertThat(r.draft()).isEmpty();
         assertThat(r.geminiCalls()).isEqualTo(2);
@@ -107,7 +107,8 @@ class DraftGeneratorTest {
                 .reduce((a, b) -> a + "," + b).orElse("") + "]";
         List<SavedPlace> withHours = List.of(place(2, "밀양돼지국밥", "restaurant", closedMonday));
 
-        String prompt = DraftGenerator.prompt(2, LocalDate.of(2026, 10, 4), withHours);
+        String prompt = DraftGenerator.prompt(2, LocalDate.of(2026, 10, 4), withHours, List.of("지역별로 날을 나누세요."));
+        assertThat(prompt).contains("- 지역별로 날을 나누세요.\n- 모든 장소는");
 
         assertThat(prompt).contains("1일차=2026-10-04(일)").contains("휴무: 2일차");
     }
@@ -115,7 +116,7 @@ class DraftGeneratorTest {
     @Test
     void 저장용_JSON은_날짜와_시각을_문자열로_쓴다() {
         when(gemini.generateJson(anyString(), anyString())).thenReturn(Optional.of(VALID));
-        DraftGenerator.Draft d = generator.generate(2, LocalDate.of(2026, 10, 10), places).draft().orElseThrow();
+        DraftGenerator.Draft d = generator.generate(2, LocalDate.of(2026, 10, 10), places, List.of()).draft().orElseThrow();
 
         String json = DraftGenerator.toJson(d);
 
@@ -125,7 +126,7 @@ class DraftGeneratorTest {
     @Test
     void 저장한_JSON을_다시_읽으면_같은_초안이다() {
         when(gemini.generateJson(anyString(), eq(DraftGenerator.OPERATION))).thenReturn(Optional.of(VALID));
-        DraftGenerator.Draft d = generator.generate(2, LocalDate.of(2026, 10, 5), places).draft().orElseThrow();
+        DraftGenerator.Draft d = generator.generate(2, LocalDate.of(2026, 10, 5), places, List.of()).draft().orElseThrow();
 
         assertThat(DraftGenerator.fromJson(DraftGenerator.toJson(d))).isEqualTo(d);
         assertThat(DraftGenerator.toJson(d, List.of("고침"), List.of("남음"))).contains("\"fixes\":[\"고침\"]")
@@ -135,11 +136,11 @@ class DraftGeneratorTest {
     @Test
     void 규칙_수정은_지금_초안과_문제를_알려_한_번_부른다() {
         when(gemini.generateJson(anyString(), eq(DraftGenerator.OPERATION))).thenReturn(Optional.of(VALID));
-        DraftGenerator.Draft d = generator.generate(2, null, places).draft().orElseThrow();
+        DraftGenerator.Draft d = generator.generate(2, null, places, List.of()).draft().orElseThrow();
         when(gemini.generateJson(contains("[반드시] 수로왕릉 휴무"), eq(DraftGenerator.RULE_REPAIR_OPERATION)))
                 .thenReturn(Optional.of(VALID));
 
-        DraftGenerator.Result r = generator.repairRules(2, null, places, d, List.of("[반드시] 수로왕릉 휴무"));
+        DraftGenerator.Result r = generator.repairRules(2, null, places, List.of(), d, List.of("[반드시] 수로왕릉 휴무"));
 
         assertThat(r.geminiCalls()).isEqualTo(1);
         assertThat(r.draft()).isPresent();

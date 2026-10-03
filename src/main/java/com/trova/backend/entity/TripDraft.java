@@ -69,6 +69,13 @@ public class TripDraft {
     @Column(name = "gemini_calls")
     private Integer geminiCalls;
 
+    // 시작 전 질문에 대한 답: SPLIT(지역별로 날 나누기) / ONLY(고른 영상만). 없으면 null.
+    private String answer;
+
+    // 승인해서 만든 여행 id. 승인 전에는 null.
+    @Column(name = "trip_id")
+    private Long tripId;
+
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
 
@@ -113,6 +120,20 @@ public class TripDraft {
         touch(TripDraftStatus.READY);
     }
 
+    /** 질문에 답하면 다시 대기열로 — ONLY면 고른 영상만 남긴다(호출한 쪽이 원래 영상의 부분집합인지 확인). */
+    public void answer(String answer, List<Long> keepJobIds) {
+        this.answer = answer;
+        if (keepJobIds != null && !keepJobIds.isEmpty()) {
+            this.jobIds = keepJobIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+        }
+        touch(TripDraftStatus.PENDING);
+    }
+
+    public void markApproved(Long tripId) {
+        this.tripId = tripId;
+        touch(TripDraftStatus.APPROVED);
+    }
+
     public void addGeminiCalls(int calls) {
         this.geminiCalls = (geminiCalls == null ? 0 : geminiCalls) + calls;
     }
@@ -138,6 +159,8 @@ public class TripDraft {
     public String getQuestion() { return question; }
     public String getSummaryJson() { return summaryJson; }
     public String getErrorMessage() { return errorMessage; }
+    public String getAnswer() { return answer; }
+    public Long getTripId() { return tripId; }
     public String getDraftJson() { return draftJson; }
     public Integer getGeminiCalls() { return geminiCalls; }
     public LocalDateTime getCreatedAt() { return createdAt; }
