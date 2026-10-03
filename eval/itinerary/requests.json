@@ -1,0 +1,191 @@
+{
+ "note": "videos = Part A videos.csv의 video_no. start: null=날짜 없음, weekend/weekday=다음 토요일/수요일, closed_day=영상 장소 중 하나가 쉬는 다음 날짜(실행 때 영업시간으로 고름)",
+ "requests": [
+  {
+   "id": "B1",
+   "videos": [
+    1
+   ],
+   "days": 1,
+   "start": null,
+   "purpose": "기본"
+  },
+  {
+   "id": "B2",
+   "videos": [
+    5
+   ],
+   "days": 1,
+   "start": null,
+   "purpose": "기본"
+  },
+  {
+   "id": "B3",
+   "videos": [
+    6
+   ],
+   "days": 2,
+   "start": null,
+   "purpose": "영상보다 짧게 요청"
+  },
+  {
+   "id": "B4",
+   "videos": [
+    8
+   ],
+   "days": 3,
+   "start": null,
+   "purpose": "기본"
+  },
+  {
+   "id": "B5",
+   "videos": [
+    11
+   ],
+   "days": 3,
+   "start": null,
+   "purpose": "기본"
+  },
+  {
+   "id": "B6",
+   "videos": [
+    2
+   ],
+   "days": 2,
+   "start": null,
+   "purpose": "영상보다 길게 요청"
+  },
+  {
+   "id": "B7",
+   "videos": [
+    1,
+    5
+   ],
+   "days": 2,
+   "start": null,
+   "purpose": "가까운 두 지역 합치기"
+  },
+  {
+   "id": "B8",
+   "videos": [
+    13,
+    14
+   ],
+   "days": 1,
+   "start": null,
+   "purpose": "같은 지역 합치기"
+  },
+  {
+   "id": "B9",
+   "videos": [
+    7,
+    9
+   ],
+   "days": 3,
+   "start": null,
+   "purpose": "같은 섬 합치기"
+  },
+  {
+   "id": "B10",
+   "videos": [
+    11,
+    12,
+    2
+   ],
+   "days": 3,
+   "start": null,
+   "purpose": "영상 3개"
+  },
+  {
+   "id": "B11",
+   "videos": [
+    4,
+    8
+   ],
+   "days": 2,
+   "start": null,
+   "purpose": "먼 두 지역"
+  },
+  {
+   "id": "B12",
+   "videos": [
+    13
+   ],
+   "days": 1,
+   "start": "weekend",
+   "purpose": "날짜 지정(주말)"
+  },
+  {
+   "id": "B13",
+   "videos": [
+    27
+   ],
+   "days": 2,
+   "start": "weekday",
+   "purpose": "날짜 지정(평일)"
+  },
+  {
+   "id": "B14",
+   "videos": [
+    28
+   ],
+   "days": 2,
+   "start": "closed_day",
+   "purpose": "휴무일"
+  },
+  {
+   "id": "B15",
+   "videos": [
+    30
+   ],
+   "days": 1,
+   "start": "closed_day",
+   "purpose": "휴무일"
+  },
+  {
+   "id": "B16",
+   "videos": [
+    10
+   ],
+   "days": 1,
+   "start": null,
+   "purpose": "장소 2곳 이하"
+  },
+  {
+   "id": "B17",
+   "videos": [
+    21
+   ],
+   "days": 2,
+   "start": null,
+   "purpose": "장소 1곳인데 긴 기간"
+  },
+  {
+   "id": "B18",
+   "videos": [
+    29
+   ],
+   "days": 3,
+   "start": null,
+   "purpose": "장소 12곳 이상"
+  },
+  {
+   "id": "B19",
+   "videos": [
+    7
+   ],
+   "days": 1,
+   "start": null,
+   "purpose": "장소 많은데 짧은 기간"
+  },
+  {
+   "id": "B20",
+   "videos": [
+    34
+   ],
+   "days": 3,
+   "start": null,
+   "purpose": "해외"
+  }
+ ]
+}
