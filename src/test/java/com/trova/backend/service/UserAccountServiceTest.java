@@ -65,6 +65,9 @@ class UserAccountServiceTest {
     private UserPreferenceSignalRepository userPreferenceSignalRepository;
 
     @Autowired
+    private TripDraftRepository tripDraftRepository;
+
+    @Autowired
     private EntityManager entityManager;
 
     @MockitoBean
@@ -144,5 +147,20 @@ class UserAccountServiceTest {
         assertThat(userPreferenceSignalRepository.findById(signal.getId())).isEmpty();
         // 여러 회원이 함께 쓰는 장소 마스터 데이터는 지우지 않는다.
         assertThat(placeRepository.findById(place.getId())).isPresent();
+    }
+
+    @Test
+    void 일정_초안이_있어도_탈퇴되고_초안도_삭제된다() {
+        // #119: trip_drafts가 회원을 외래키로 참조하는데 삭제 목록에 없어 탈퇴가 실패했다.
+        User me = userRepository.save(new User("google", "withdraw-draft", "초안있는유저", null));
+        TripDraft draft = tripDraftRepository.save(new TripDraft(me, java.util.List.of(1L), "2박 3일"));
+        Long userId = me.getId();
+        Long draftId = draft.getId();
+
+        userAccountService.withdraw(me);
+        entityManager.flush();
+
+        assertThat(userRepository.findById(userId)).isEmpty();
+        assertThat(tripDraftRepository.findById(draftId)).isEmpty();
     }
 }

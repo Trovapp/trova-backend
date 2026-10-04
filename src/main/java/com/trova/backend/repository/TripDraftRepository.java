@@ -2,6 +2,7 @@ package com.trova.backend.repository;
 
 import com.trova.backend.entity.TripDraft;
 import com.trova.backend.entity.TripDraftStatus;
+import com.trova.backend.entity.User;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -20,4 +21,6 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
     Optional<TripDraft> findByIdForUpdate(@Param("id") Long id);
 
     List<TripDraft> findByStatusInAndUpdatedAtBefore(List<TripDraftStatus> statuses, LocalDateTime threshold);
+
+    void deleteByUser(User user);
 }
