@@ -381,4 +381,31 @@ class DraftFixerTest {
         assertThat(DraftValidator.validate(d, byId(forest, lunch), 1, null).violations())
                 .anyMatch(v -> v.type().equals("OVERLAP") && v.severity() == DraftValidator.Severity.ERROR);
     }
+
+    @Test
+    void 폐쇄_표시된_장소는_일정에서_빼고_되살리지도_않는다() {
+        // #117: 카카오 이름 "황우지해안 (폐쇄)"가 일정에 들어갔다(eval #112 B9).
+        SavedPlace a = place(380, "천지연폭포", "attraction", 33.24, 126.55, null);
+        SavedPlace closed = place(381, "황우지해안 (폐쇄)", "attraction", 33.241, 126.551, null);
+        SavedPlace b = place(382, "정방폭포", "attraction", 33.245, 126.57, null);
+        SavedPlace closedShop = place(383, "카페 바다 (폐업)", "cafe", 33.242, 126.56, null);
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(a, "10:00", "11:30"), item(closed, "12:00", "13:00"),
+                item(b, "13:30", "15:00"))), closedShop);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(a, closed, b, closedShop), null);
+
+        assertThat(fixed.draft().days().get(0).items()).extracting(DraftGenerator.Item::name).containsExactly("천지연폭포", "정방폭포");
+        assertThat(fixed.draft().excluded()).extracting(DraftGenerator.Excluded::name)
+                .containsExactlyInAnyOrder("황우지해안 (폐쇄)", "카페 바다 (폐업)");
+        assertThat(fixed.draft().excluded()).filteredOn(e -> e.name().startsWith("황우지"))
+                .allMatch(e -> e.reason().contains("폐쇄"));
+    }
+
+    @Test
+    void 이름에_폐쇄라는_말이_있어도_표시가_아니면_그대로_둔다() {
+        assertThat(DraftFixer.markedClosed("황우지해안 (폐쇄)")).isTrue();
+        assertThat(DraftFixer.markedClosed("모텔 [휴업]")).isTrue();
+        assertThat(DraftFixer.markedClosed("구 폐쇄 터널 카페")).isFalse();
+        assertThat(DraftFixer.markedClosed(null)).isFalse();
+    }
 }
