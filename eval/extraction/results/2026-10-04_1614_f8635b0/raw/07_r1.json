@@ -1,0 +1,270 @@
+{
+  "video_no": 7,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/-yD__roX08g",
+  "submit_status": 202,
+  "job_id": 165,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 14.9,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 13.425974
+  },
+  "places": [
+    {
+      "name": "삼양해수욕장",
+      "region": "제주",
+      "category": "attraction",
+      "latitude": 33.5258670153237,
+      "longitude": 126.585537319057,
+      "address": "제주특별자치도 제주시 삼양이동 1960-4",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/7934984"
+    },
+    {
+      "name": "함덕해수욕장",
+      "region": "제주",
+      "category": "attraction",
+      "latitude": 33.5430615661113,
+      "longitude": 126.669238934013,
+      "address": "제주특별자치도 제주시 조천읍 함덕리 1004-10",
+      "road_address": "제주특별자치도 제주시 조천읍 조함해안로 525",
+      "kakao_place_url": "http://place.map.kakao.com/8148451"
+    },
+    {
+      "name": "김녕해수욕장",
+      "region": "제주",
+      "category": "attraction",
+      "latitude": 33.5574388587079,
+      "longitude": 126.759313988844,
+      "address": "제주특별자치도 제주시 구좌읍 김녕리 497-4",
+      "road_address": "제주특별자치도 제주시 구좌읍 해맞이해안로 7-6",
+      "kakao_place_url": "http://place.map.kakao.com/25023085"
+    },
+    {
+      "name": "세화해변",
+      "region": "제주",
+      "category": "attraction",
+      "latitude": 33.5251436596119,
+      "longitude": 126.86025618946,
+      "address": "제주특별자치도 제주시 구좌읍 세화리 1-1",
+      "road_address": "제주특별자치도 제주시 구좌읍 해녀박물관길 27",
+      "kakao_place_url": "http://place.map.kakao.com/7964223"
+    },
+    {
+      "name": "표선해수욕장",
+      "region": "제주",
+      "category": "attraction",
+      "latitude": 33.3275109235413,
+      "longitude": 126.837424825392,
+      "address": "제주특별자치도 서귀포시 표선면 표선리",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/8640631"
+    },
+    {
+      "name": "중문색달해수욕장",
+      "region": "제주",
+      "category": "attraction",
+      "latitude": 33.2450381505136,
+      "longitude": 126.411498674889,
+      "address": "제주특별자치도 서귀포시 색달동 3039",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/8069764"
+    },
+    {
+      "name": "화순금모래해수욕장",
+      "region": "제주",
+      "category": "attraction",
+      "latitude": 33.2400324295842,
+      "longitude": 126.333589345833,
+      "address": "제주특별자치도 서귀포시 안덕면 화순리 833-2",
+      "road_address": "제주특별자치도 서귀포시 안덕면 화순해안로 69",
+      "kakao_place_url": "http://place.map.kakao.com/8173573"
+    },
+    {
+      "name": "한포포구",
+      "region": "제주",
+      "category": "attraction",
+      "latitude": 33.2429625063113,
+      "longitude": 126.532541147121,
+      "address": null,
+      "road_address": null,
+      "kakao_place_url": null
+    },
+    {
+      "name": "협재해수욕장",
+      "region": "제주",
+      "category": "attraction",
+      "latitude": 33.3943144950162,
+      "longitude": 126.239652349668,
+      "address": "제주특별자치도 제주시 한림읍 협재리",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/8159415"
+    },
+    {
+      "name": "이호테우해수욕장",
+      "region": "제주",
+      "category": "attraction",
+      "latitude": 33.4973768007144,
+      "longitude": 126.452690819027,
+      "address": "제주특별자치도 제주시 이호일동 1665-13",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/8552559"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 3705,
+      "prompt_tokens": 5608,
+      "response_tokens": 121,
+      "total_tokens": 5729,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 5307,
+      "prompt_tokens": 6677,
+      "response_tokens": 1272,
+      "total_tokens": 7949,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 53,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 64,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 67,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 69,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 69,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 71,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 74,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 74,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 45,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 51,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 54,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1534,
+      "prompt_tokens": 4111,
+      "response_tokens": 210,
+      "total_tokens": 4321,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "verify_places",
+      "success": true,
+      "latency_ms": 1373,
+      "prompt_tokens": 307,
+      "response_tokens": 23,
+      "total_tokens": 330,
+      "error_message": null
+    }
+  ]
+}

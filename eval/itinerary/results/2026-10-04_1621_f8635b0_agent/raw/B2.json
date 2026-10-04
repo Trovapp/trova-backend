@@ -1,0 +1,18 @@
+{
+ "request": {
+  "id": "B2",
+  "videos": [
+   5
+  ],
+  "days": 1,
+  "start": null,
+  "purpose": "기본"
+ },
+ "mode": "agent",
+ "videos": [],
+ "result": "REQUEST_FAILED 400",
+ "inputs": [],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {}
+}

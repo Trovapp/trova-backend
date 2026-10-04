@@ -1,0 +1,40 @@
+{
+  "video_no": 5,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/NvdrCwcTnlE",
+  "submit_status": 202,
+  "job_id": 163,
+  "wait": {
+    "status": "FAILED",
+    "failureReason": "NO_PLACES"
+  },
+  "wall_seconds": 8.6,
+  "job": {
+    "status": "FAILED",
+    "error_message": "영상에서 장소를 찾지 못했어요",
+    "db_seconds": 7.855649
+  },
+  "places": [],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 3000,
+      "prompt_tokens": 4146,
+      "response_tokens": 9,
+      "total_tokens": 4155,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 4330,
+      "prompt_tokens": 5125,
+      "response_tokens": 1,
+      "total_tokens": 5126,
+      "error_message": null
+    }
+  ]
+}

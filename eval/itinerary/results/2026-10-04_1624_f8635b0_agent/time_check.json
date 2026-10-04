@@ -1,0 +1,169 @@
+{
+ "summary": {
+  "dinner_dup": 1,
+  "lunch_dup": 1,
+  "dark_attraction": 13,
+  "dark_restored": 2
+ },
+ "rows": [
+  {
+   "id": "B1",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B2",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B3",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B4",
+   "dinner_dup": [
+    "3일차 ['순천미향 제주산방산본점', '화순한가네식당']"
+   ],
+   "lunch_dup": [
+    "1일차 ['삼무국수 본점', '한림칼국수']"
+   ],
+   "dark_attraction": [
+    "1일차 신창풍차해안 ~19:30",
+    "2일차 제주곶자왈도립공원 ~19:30"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B5",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B6",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B7",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B8",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 연화정도서관 ~20:00"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B9",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 김녕해수욕장 ~18:10",
+    "1일차 세화해변 ~20:10",
+    "2일차 중문대포주상절리대 ~18:20",
+    "2일차 이호테우해수욕장 ~20:40",
+    "3일차 황우지해안 (폐쇄) ~18:25",
+    "3일차 표선해수욕장 ~20:05"
+   ],
+   "dark_restored": [
+    "2일차 중문대포주상절리대 ~18:20",
+    "3일차 황우지해안 (폐쇄) ~18:25"
+   ]
+  },
+  {
+   "id": "B10",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B11",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "2일차 제주곶자왈도립공원 ~19:20"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B12",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B13",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B14",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B15",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B16",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B17",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B18",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "3일차 용머리해안 ~18:10"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B19",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 김녕해수욕장 ~18:40",
+    "1일차 세화해변 ~20:40"
+   ],
+   "dark_restored": []
+  }
+ ]
+}

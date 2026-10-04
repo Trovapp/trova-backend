@@ -1,0 +1,320 @@
+{
+  "video_no": 6,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/tX7P33Gv0dU",
+  "submit_status": 202,
+  "job_id": 164,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 12.8,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 12.228973
+  },
+  "places": [
+    {
+      "name": "카츠키친 전포점",
+      "region": "부산",
+      "category": "restaurant",
+      "latitude": 35.1585232170784,
+      "longitude": 129.159854668484,
+      "address": null,
+      "road_address": null,
+      "kakao_place_url": null
+    },
+    {
+      "name": "이바비커피 전포점",
+      "region": "부산",
+      "category": "cafe",
+      "latitude": null,
+      "longitude": null,
+      "address": null,
+      "road_address": null,
+      "kakao_place_url": null
+    },
+    {
+      "name": "광안리어방축제",
+      "region": "부산",
+      "category": "attraction",
+      "latitude": 35.1528774702102,
+      "longitude": 129.118329318701,
+      "address": "부산 수영구 광안동 261-1",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/7915342"
+    },
+    {
+      "name": "썰스데이파티",
+      "region": "부산",
+      "category": "other",
+      "latitude": 35.1516495419692,
+      "longitude": 129.116763584835,
+      "address": "부산 수영구 광안동 197-18",
+      "road_address": "부산 수영구 광안해변로 193",
+      "kakao_place_url": "http://place.map.kakao.com/17379904"
+    },
+    {
+      "name": "타이거텐푸라&마초도 해리단길점",
+      "region": "부산",
+      "category": "restaurant",
+      "latitude": null,
+      "longitude": null,
+      "address": null,
+      "road_address": null,
+      "kakao_place_url": null
+    },
+    {
+      "name": "코오리마찌 해리단길점",
+      "region": "부산",
+      "category": "cafe",
+      "latitude": null,
+      "longitude": null,
+      "address": null,
+      "road_address": null,
+      "kakao_place_url": null
+    },
+    {
+      "name": "해운대 메인 거리",
+      "region": "부산",
+      "category": "attraction",
+      "latitude": null,
+      "longitude": null,
+      "address": null,
+      "road_address": null,
+      "kakao_place_url": null
+    },
+    {
+      "name": "해운대해수욕장",
+      "region": "부산",
+      "category": "attraction",
+      "latitude": 35.1585232170784,
+      "longitude": 129.159854668484,
+      "address": "부산 해운대구 우동",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/7913306"
+    },
+    {
+      "name": "개미집 해운대역점",
+      "region": "부산",
+      "category": "restaurant",
+      "latitude": null,
+      "longitude": null,
+      "address": null,
+      "road_address": null,
+      "kakao_place_url": null
+    },
+    {
+      "name": "T1베이스캠프 부산점",
+      "region": "부산",
+      "category": "attraction",
+      "latitude": 35.1610519563696,
+      "longitude": 129.161362328489,
+      "address": "부산 해운대구 중동 1392-166",
+      "road_address": "부산 해운대구 구남로 37",
+      "kakao_place_url": "http://place.map.kakao.com/1373700149"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 3322,
+      "prompt_tokens": 2614,
+      "response_tokens": 166,
+      "total_tokens": 2780,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 4727,
+      "prompt_tokens": 3722,
+      "response_tokens": 1172,
+      "total_tokens": 4894,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 67,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 67,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 62,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 65,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 73,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 78,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 92,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 87,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 40,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 45,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 76,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 48,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 47,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 47,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 42,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 40,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1315,
+      "prompt_tokens": 947,
+      "response_tokens": 49,
+      "total_tokens": 996,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "verify_places",
+      "success": true,
+      "latency_ms": 1163,
+      "prompt_tokens": 309,
+      "response_tokens": 23,
+      "total_tokens": 332,
+      "error_message": null
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "video_no": 4,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/uwPOCSjh3ZA",
+  "submit_status": 202,
+  "job_id": 162,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 12.8,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 11.856665
+  },
+  "places": [
+    {
+      "name": "임페리아푸드",
+      "region": "안산",
+      "category": "shopping",
+      "latitude": 37.3300100285267,
+      "longitude": 126.789974817826,
+      "address": "경기 안산시 단원구 원곡동 791-18",
+      "road_address": "경기 안산시 단원구 다문화2길 13",
+      "kakao_place_url": "http://place.map.kakao.com/1015094163"
+    },
+    {
+      "name": "후르세다사마르칸트",
+      "region": "안산",
+      "category": "restaurant",
+      "latitude": null,
+      "longitude": null,
+      "address": null,
+      "road_address": null,
+      "kakao_place_url": null
+    },
+    {
+      "name": "컴포즈커피 안산다문화거리점",
+      "region": "안산",
+      "category": "attraction",
+      "latitude": 37.3306878808,
+      "longitude": 126.792686616092,
+      "address": "경기 안산시 단원구 원곡동 747-8",
+      "road_address": "경기 안산시 단원구 원본로 25",
+      "kakao_place_url": "http://place.map.kakao.com/459017890"
+    },
+    {
+      "name": "미쉐 안산중앙점",
+      "region": "안산",
+      "category": "cafe",
+      "latitude": 37.317024010361,
+      "longitude": 126.837885024319,
+      "address": "경기 안산시 단원구 고잔동 541",
+      "road_address": "경기 안산시 단원구 중앙대로 907",
+      "kakao_place_url": "http://place.map.kakao.com/582224980"
+    },
+    {
+      "name": "마리나베이커리",
+      "region": "안산",
+      "category": "shopping",
+      "latitude": 37.339367731581,
+      "longitude": 126.794886997375,
+      "address": "경기 안산시 단원구 선부동 983-17",
+      "road_address": "경기 안산시 단원구 부부로8길 19",
+      "kakao_place_url": "http://place.map.kakao.com/1467557071"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 4092,
+      "prompt_tokens": 5514,
+      "response_tokens": 79,
+      "total_tokens": 5593,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3995,
+      "prompt_tokens": 6547,
+      "response_tokens": 670,
+      "total_tokens": 7217,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 55,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 55,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 68,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 69,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 71,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 35,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 55,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1336,
+      "prompt_tokens": 905,
+      "response_tokens": 49,
+      "total_tokens": 954,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "verify_places",
+      "success": true,
+      "latency_ms": 1226,
+      "prompt_tokens": 312,
+      "response_tokens": 23,
+      "total_tokens": 335,
+      "error_message": null
+    }
+  ]
+}

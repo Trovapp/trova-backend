@@ -1,0 +1,60 @@
+{
+  "video_no": 10,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/GYisCxtX7sc",
+  "submit_status": 202,
+  "job_id": 168,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 10.7,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 8.704537
+  },
+  "places": [
+    {
+      "name": "테라로사 본점",
+      "region": "강릉",
+      "category": "cafe",
+      "latitude": 37.6965112381046,
+      "longitude": 128.892533492139,
+      "address": "강원특별자치도 강릉시 구정면 어단리 1011-1",
+      "road_address": "강원특별자치도 강릉시 구정면 현천길 7",
+      "kakao_place_url": "http://place.map.kakao.com/1273418046"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 3684,
+      "prompt_tokens": 5507,
+      "response_tokens": 37,
+      "total_tokens": 5544,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 4183,
+      "prompt_tokens": 6510,
+      "response_tokens": 168,
+      "total_tokens": 6678,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 156,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    }
+  ]
+}

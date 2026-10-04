@@ -1,0 +1,747 @@
+{
+ "summary": {
+  "requests": 19,
+  "judged": 17,
+  "failed": [
+   "B2",
+   "B7"
+  ],
+  "all_rules_pass": {
+   "count": 0,
+   "ratio": 0.0,
+   "ids": []
+  },
+  "no_violation_with_unknowns": {
+   "count": 15,
+   "ids": [
+    "B1",
+    "B3",
+    "B4",
+    "B6",
+    "B8",
+    "B9",
+    "B10",
+    "B11",
+    "B12",
+    "B13",
+    "B14",
+    "B15",
+    "B16",
+    "B18",
+    "B19"
+   ]
+  },
+  "violations_by_rule": {
+   "영업": 0,
+   "이동": 0,
+   "분량": 1,
+   "없는장소": 0,
+   "기간": 1,
+   "지역": 0
+  },
+  "unknown_by_rule": {
+   "영업": 17,
+   "이동": 2,
+   "분량": 2,
+   "없는장소": 0,
+   "기간": 0,
+   "지역": 0
+  },
+  "unsupported_conditions": {},
+  "seconds_per_generation": {
+   "median": 4.4,
+   "max": 10.8,
+   "n": 17
+  },
+  "gemini": {
+   "prompt_tokens": 25946,
+   "response_tokens": 12069,
+   "actual_cost_krw": 0,
+   "paid_equivalent_usd": 0.038
+  }
+ },
+ "per_request": [
+  {
+   "id": "B1",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 6
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B2",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": []
+    },
+    "이동": {
+     "verdict": "판정 불가",
+     "detail": []
+    },
+    "분량": {
+     "verdict": "판정 불가",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "판정 불가",
+     "detail": []
+    },
+    "기간": {
+     "verdict": "판정 불가",
+     "detail": []
+    },
+    "지역": {
+     "verdict": "판정 불가",
+     "detail": []
+    }
+   },
+   "failed": "REQUEST_FAILED 400",
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B3",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 5
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 2일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B4",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 20
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 3일, 일정 3일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B5",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 7
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "위반",
+     "detail": [
+      "영상11 3일차 1곳"
+     ]
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 3일, 일정 3일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 1
+  },
+  {
+   "id": "B6",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 7
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 2일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B7",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": []
+    },
+    "이동": {
+     "verdict": "판정 불가",
+     "detail": []
+    },
+    "분량": {
+     "verdict": "판정 불가",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "판정 불가",
+     "detail": []
+    },
+    "기간": {
+     "verdict": "판정 불가",
+     "detail": []
+    },
+    "지역": {
+     "verdict": "판정 불가",
+     "detail": []
+    }
+   },
+   "failed": "REQUEST_FAILED 400",
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B8",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 5
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B9",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 15
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 3일, 일정 3일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B10",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 15
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 3일, 일정 3일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B11",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 12
+    },
+    "이동": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_pairs": 2
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 2일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B12",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 1
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B13",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 8
+    },
+    "이동": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_pairs": 7
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 2일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B14",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 7
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 2일, 일정 2일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B15",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 1
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B16",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 1
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "판정 불가",
+     "detail": [
+      "영상10 1일차 1곳"
+     ]
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B17",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 1
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "판정 불가",
+     "detail": [
+      "영상21 1일차 1곳"
+     ]
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "위반",
+     "detail": [
+      "요청 2일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 1
+  },
+  {
+   "id": "B18",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 18
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 3일, 일정 3일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  },
+  {
+   "id": "B19",
+   "rules": {
+    "영업": {
+     "verdict": "판정 불가",
+     "detail": [],
+     "unknown_places": 5
+    },
+    "이동": {
+     "verdict": "통과",
+     "detail": [],
+     "unknown_pairs": 0
+    },
+    "분량": {
+     "verdict": "통과",
+     "detail": []
+    },
+    "없는장소": {
+     "verdict": "통과",
+     "detail": [],
+     "count": 0
+    },
+    "기간": {
+     "verdict": "통과",
+     "detail": [
+      "요청 1일, 일정 1일"
+     ]
+    },
+    "지역": {
+     "verdict": "통과",
+     "detail": []
+    }
+   },
+   "unsupported": [],
+   "violations": 0
+  }
+ ]
+}

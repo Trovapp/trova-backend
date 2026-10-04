@@ -1,0 +1,70 @@
+{
+  "video_no": 14,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/m--pASyRfDE",
+  "submit_status": 202,
+  "job_id": 172,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 10.7,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 10.190913
+  },
+  "places": [
+    {
+      "name": "전주한옥마을",
+      "region": "전주",
+      "category": "attraction",
+      "latitude": 35.814777443298,
+      "longitude": 127.152557001422,
+      "address": "전북특별자치도 전주시 완산구 풍남동3가 63-1",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/10731896"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 5010,
+      "prompt_tokens": 3061,
+      "response_tokens": 13,
+      "total_tokens": 3074,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3060,
+      "prompt_tokens": 4044,
+      "response_tokens": 138,
+      "total_tokens": 4182,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "success": true,
+      "latency_ms": 78,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "success": true,
+      "latency_ms": 1292,
+      "prompt_tokens": 755,
+      "response_tokens": 26,
+      "total_tokens": 781,
+      "error_message": null
+    }
+  ]
+}

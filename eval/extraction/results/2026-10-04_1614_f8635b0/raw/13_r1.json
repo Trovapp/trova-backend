@@ -1,0 +1,160 @@
+{
+  "video_no": 13,
+  "repeat": 1,
+  "url": "https://www.youtube.com/shorts/LBRXg7Zxlr0",
+  "submit_status": 202,
+  "job_id": 171,
+  "wait": {
+    "status": "DONE_OR_GONE"
+  },
+  "wall_seconds": 8.6,
+  "job": {
+    "status": "DONE",
+    "error_message": null,
+    "db_seconds": 7.339023
+  },
+  "places": [
+    {
+      "name": "전주난장",
+      "region": "전주",
+      "category": "attraction",
+      "latitude": 35.8185302921246,
+      "longitude": 127.152556435027,
+      "address": "전북특별자치도 전주시 완산구 풍남동2가 32-5",
+      "road_address": "전북특별자치도 전주시 완산구 동문길 33-20",
+      "kakao_place_url": "http://place.map.kakao.com/411730436"
+    },
+    {
+      "name": "경기전",
+      "region": "전주",
+      "category": "attraction",
+      "latitude": 35.8153794432041,
+      "longitude": 127.149723250334,
+      "address": "전북특별자치도 전주시 완산구 풍남동3가 102",
+      "road_address": "전북특별자치도 전주시 완산구 태조로 44",
+      "kakao_place_url": "http://place.map.kakao.com/10170551"
+    },
+    {
+      "name": "청연루",
+      "region": "전주",
+      "category": "attraction",
+      "latitude": 35.8106731680088,
+      "longitude": 127.153213023533,
+      "address": "전북특별자치도 전주시 완산구 동서학동 940-2",
+      "road_address": "",
+      "kakao_place_url": "http://place.map.kakao.com/19711814"
+    },
+    {
+      "name": "연화정도서관",
+      "region": "전주",
+      "category": "attraction",
+      "latitude": 35.8491145652129,
+      "longitude": 127.123440322004,
+      "address": "전북특별자치도 전주시 덕진구 덕진동1가 1316-2",
+      "road_address": "전북특별자치도 전주시 덕진구 권삼득로 390-1",
+      "kakao_place_url": "http://place.map.kakao.com/392179500"
+    }
+  ],
+  "api_calls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "success": true,
+      "latency_ms": 2817,
+      "prompt_tokens": 4616,
+      "response_tokens": 151,
+      "total_tokens": 4767,
+      "error_message": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "success": true,
+      "latency_ms": 3534,
+      "prompt_tokens": 5714,
+      "response_tokens": 561,
+      "total_tokens": 6275,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 57,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 57,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 60,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "success": true,
+      "latency_ms": 61,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 39,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 43,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 56,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "success": true,
+      "latency_ms": 46,
+      "prompt_tokens": null,
+      "response_tokens": null,
+      "total_tokens": null,
+      "error_message": null
+    }
+  ]
+}
