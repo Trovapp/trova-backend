@@ -88,6 +88,7 @@ public final class DraftFixer {
         draft.days().forEach(d -> days.add(new ArrayList<>(d.items())));
         List<DraftGenerator.Excluded> excluded = new ArrayList<>(draft.excluded());
 
+        dropMarkedClosed(days, excluded, fixes);
         // AI가 겹쳐 놓은 시각을 먼저 바로잡는다 — 뒤 단계들은 장소가 시각 순으로 이어져 있다고 보고 자리를 판단한다.
         for (int i = 0; i < days.size(); i++) {
             days.set(i, resolveOverlaps(days.get(i), i + 1, fixes));
@@ -144,6 +145,29 @@ public final class DraftFixer {
                     excluded.add(new DraftGenerator.Excluded(it.placeId(), it.name(), "여행 날짜에 문을 여는 날이 없어 뺐어요."));
                     fixes.add(Josa.eunNeun(it.name()) + " 여는 날이 없어 뺐어요.");
                 }
+            }
+        }
+    }
+
+    private static final java.util.regex.Pattern CLOSED_MARK = java.util.regex.Pattern.compile(
+            "[(\\[]\\s*(폐쇄|폐업|휴업|임시\\s*휴업|영구\\s*폐업|영업\\s*종료|철거)\\s*[)\\]]");
+
+    /** 카카오 장소 이름에 붙은 폐쇄·폐업 표시인지(#117) — 괄호 안 표시만 본다("폐쇄 터널 카페" 같은 이름은 그대로). */
+    static boolean markedClosed(String name) {
+        return name != null && CLOSED_MARK.matcher(name).find();
+    }
+
+    /** 폐쇄·폐업 표시가 붙은 장소는 일정에서 빼고 이유를 적는다 — AI가 넣어도, AI 수정 뒤에도 이 단계를 다시 지난다. */
+    private static void dropMarkedClosed(List<List<DraftGenerator.Item>> days, List<DraftGenerator.Excluded> excluded,
+                                         List<String> fixes) {
+        for (int d = 0; d < days.size(); d++) {
+            for (DraftGenerator.Item it : new ArrayList<>(days.get(d))) {
+                if (!markedClosed(it.name())) {
+                    continue;
+                }
+                days.get(d).remove(it);
+                excluded.add(new DraftGenerator.Excluded(it.placeId(), it.name(), "지도에 폐쇄·폐업으로 표시된 곳이라 이번 일정에서 뺐어요."));
+                fixes.add(Josa.eunNeun(it.name()) + " 지도에 폐쇄·폐업으로 표시돼 " + (d + 1) + "일차에서 뺐어요.");
             }
         }
     }
@@ -361,7 +385,7 @@ public final class DraftFixer {
         if (p == null || p.getLatitude() == null || p.getLongitude() == null) {
             return false;
         }
-        if (p.getPlaceName() == null || TRANSIT.matcher(p.getPlaceName().replace(" ", "")).find()) {
+        if (p.getPlaceName() == null || TRANSIT.matcher(p.getPlaceName().replace(" ", "")).find() || markedClosed(p.getPlaceName())) {
             return false;
         }
         double nearest = nearestScheduledKm(days, p);
