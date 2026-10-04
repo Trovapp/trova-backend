@@ -21,6 +21,7 @@ import java.util.Optional;
  *    연속 이동이 모두 30km 안이고 21시 안에 끝나며 영업시간 위반이 늘지 않는 자리에 넣는다. 앞 장소 시각은 그대로 두고
  *    넣은 자리부터 겹치는 만큼만 뒤로 민다(AI가 잡은 저녁 시간 같은 빈칸을 지키려고).
  *    #112: 식당은 비어 있는 식사 칸에만, 관광지는 18시까지 끝나는 자리에만, 원래 채워진 식사 칸을 비우지 않을 때만 되살린다.
+ *    다 고친 뒤에도 되살린 장소가 18시를 넘기거나 다른 식당과 같은 식사 칸에 있으면 그 장소는 빼고 처음부터 다시 고친다.
  * 5) 해 진 뒤 관광지(#112): AI가 18시 넘어 끝나는 관광지를 넣으면 그날 앞쪽의 카페·쇼핑 자리와 바꾼다. 이름에 야경·야시장·전망대·
  *    타워·분수·야간 등이 들어간 곳은 밤에 가는 곳이라 예외(사용자 결정). 바꾼 날도 30km·21시·영업시간·식사 칸을 지킬 때만.
  * 4) 식사 칸 맞추기(#110): 그날 식당이 있는데 점심(11~14시)·저녁(17~20시) 칸이 비어 있으면 그 식당을 칸에 맞게 옮긴다
@@ -38,6 +39,50 @@ public final class DraftFixer {
     }
 
     public static Fixed fix(DraftGenerator.Draft draft, Map<Long, SavedPlace> places, LocalDate startDate) {
+        // 되살리기는 넣는 순간의 일정으로 빈 식사 칸·18시 전을 본다. 그런데 넣으면서 뒤 장소를 밀거나(아침 식당이 점심 칸으로),
+        // 뒤의 순서 바꾸기가 되살린 관광지를 저녁 칸으로 옮길 수 있다(eval #112 B4·B9). 다 고친 뒤 되살린 장소를 다시 보고,
+        // 규칙을 어기면 그 장소는 되살리지 않은 채 처음부터 다시 고친다 — 최악이어도 되살리기 전과 같은 결과다.
+        java.util.Set<Long> blocked = new java.util.HashSet<>();
+        while (true) {
+            java.util.Set<Long> restored = new java.util.HashSet<>();
+            Fixed fixed = fixOnce(draft, places, startDate, blocked, restored);
+            java.util.Set<Long> broken = brokenRestores(fixed.draft(), restored);
+            if (broken.isEmpty()) {
+                return fixed;
+            }
+            blocked.addAll(broken);
+        }
+    }
+
+    /** 되살린 장소 중 규칙을 어긴 것: 18시 넘어 끝나는 관광지(밤 명소 제외), 같은 식사 칸에 다른 식당과 겹친 식당. */
+    private static java.util.Set<Long> brokenRestores(DraftGenerator.Draft draft, java.util.Set<Long> restored) {
+        java.util.Set<Long> broken = new java.util.HashSet<>();
+        LocalTime[][] windows = {{DraftValidator.LUNCH_FROM, DraftValidator.LUNCH_TO},
+                {DraftValidator.DINNER_FROM, DraftValidator.DINNER_TO}};
+        for (DraftGenerator.Day d : draft.days()) {
+            for (DraftGenerator.Item it : d.items()) {
+                if (!restored.contains(it.placeId())) {
+                    continue;
+                }
+                if (isDark(it)) {
+                    broken.add(it.placeId());
+                }
+                if (!"restaurant".equals(it.category())) {
+                    continue;
+                }
+                for (LocalTime[] w : windows) {
+                    long meals = d.items().stream().filter(o -> "restaurant".equals(o.category()) && inWindow(o, w[0], w[1])).count();
+                    if (inWindow(it, w[0], w[1]) && meals > 1) {
+                        broken.add(it.placeId());
+                    }
+                }
+            }
+        }
+        return broken;
+    }
+
+    private static Fixed fixOnce(DraftGenerator.Draft draft, Map<Long, SavedPlace> places, LocalDate startDate,
+                                 java.util.Set<Long> blocked, java.util.Set<Long> restored) {
         List<String> fixes = new ArrayList<>();
         List<List<DraftGenerator.Item>> days = new ArrayList<>();
         draft.days().forEach(d -> days.add(new ArrayList<>(d.items())));
@@ -46,7 +91,7 @@ public final class DraftFixer {
         if (startDate != null) {
             moveClosed(days, places, startDate, excluded, fixes);
         }
-        restoreExcluded(days, places, startDate, excluded, fixes);
+        restoreExcluded(days, places, startDate, excluded, fixes, blocked, restored);
         for (int i = 0; i < days.size(); i++) {
             LocalDate date = startDate == null ? null : startDate.plusDays(i);
             days.set(i, fitMeals(days.get(i), places, date, i + 1, fixes));
@@ -101,13 +146,14 @@ public final class DraftFixer {
             java.util.regex.Pattern.compile("(공항|역|터미널|정류장|정류소|휴게소|IC)$");
 
     private static void restoreExcluded(List<List<DraftGenerator.Item>> days, Map<Long, SavedPlace> places, LocalDate startDate,
-                                        List<DraftGenerator.Excluded> excluded, List<String> fixes) {
+                                        List<DraftGenerator.Excluded> excluded, List<String> fixes,
+                                        java.util.Set<Long> blocked, java.util.Set<Long> restored) {
         // 이미 넣은 장소에서 가까운 것부터 — 먼저 넣은 장소가 뒤 장소의 자리를 막는 일을 줄인다.
         List<DraftGenerator.Excluded> candidates = new ArrayList<>(excluded);
         candidates.sort(java.util.Comparator.comparingDouble(e -> nearestScheduledKm(days, places.get(e.placeId()))));
         for (DraftGenerator.Excluded e : candidates) {
             SavedPlace p = places.get(e.placeId());
-            if (!restorable(days, p)) {
+            if (blocked.contains(e.placeId()) || !restorable(days, p)) {
                 continue;
             }
             DraftGenerator.Item item = newItem(p);
@@ -136,6 +182,7 @@ public final class DraftFixer {
             if (bestDay != null) {
                 days.set(bestDay, bestTrial);
                 excluded.remove(e);
+                restored.add(e.placeId());
                 fixes.add(Josa.eunNeun(p.getPlaceName()) + " " + (bestDay + 1) + "일차에 자리가 있어 다시 넣었어요.");
             }
         }
