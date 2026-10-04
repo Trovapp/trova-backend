@@ -11,6 +11,8 @@ import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,5 +100,45 @@ class OpeningHoursServiceTest {
         assertThat(OpeningHoursService.isOpenOn(null, LocalDate.of(2026, 10, 5))).isEmpty();
         String allDay = "[{\"open\":{\"day\":0,\"hour\":0,\"minute\":0}}]";
         assertThat(OpeningHoursService.isOpenOn(allDay, LocalDate.of(2026, 10, 5))).contains(true);
+    }
+
+    private static SavedPlace kakaoPlace(String name, String kakaoUrl) {
+        User user = new User("google", "g", "u", null);
+        ProcessingJob job = new ProcessingJob(user, "https://www.youtube.com/shorts/x", SourcePlatform.YOUTUBE);
+        return new SavedPlace(job, user, name, "제주", "restaurant", 33.45, 126.5, null, null, null, null, null, null, kakaoUrl);
+    }
+
+    @Test
+    void 같은_카카오_장소를_최근에_확인했으면_Google을_부르지_않고_복사한다() {
+        // #132: 같은 가게를 사용자마다·분석마다 다시 물었다(개발 DB 조회 466회, 확인된 장소 41곳).
+        SavedPlace donor = kakaoPlace("우진해장국", "http://place.map.kakao.com/1");
+        donor.applyOpeningHours("gp-1", "[{\"open\":{\"day\":1,\"hour\":9,\"minute\":0},\"close\":{\"day\":1,\"hour\":18,\"minute\":0}}]");
+        SavedPlace mine = kakaoPlace("우진해장국", "http://place.map.kakao.com/1");
+        when(repo.findFirstByKakaoPlaceUrlAndHoursCheckedAtAfterOrderByHoursCheckedAtDesc(
+                org.mockito.ArgumentMatchers.eq("http://place.map.kakao.com/1"), org.mockito.ArgumentMatchers.any()))
+                .thenReturn(Optional.of(donor));
+
+        int calls = service.fillMissing(List.of(mine));
+
+        assertThat(calls).isZero();
+        verify(google, never()).searchTextWithHours(anyString(), anyDouble(), anyDouble(), anyDouble());
+        assertThat(mine.getGooglePlaceId()).isEqualTo("gp-1");
+        assertThat(mine.getOpeningPeriods()).isEqualTo(donor.getOpeningPeriods());
+        // 복사한 결과는 원래 확인 시각을 그대로 둔다 — 복사가 이어져도 오래된 영업시간이 새것처럼 남지 않게.
+        assertThat(mine.getHoursCheckedAt()).isEqualTo(donor.getHoursCheckedAt());
+        verify(repo).save(mine);
+    }
+
+    @Test
+    void 확인한_지_오래됐거나_카카오_주소가_없으면_Google에_묻는다() {
+        SavedPlace noUrl = kakaoPlace("이름만", null);
+        when(google.searchTextWithHours(anyString(), anyDouble(), anyDouble(), anyDouble()))
+                .thenReturn(new GooglePlacesHoursResponse(List.of()));
+
+        int calls = service.fillMissing(List.of(noUrl));
+
+        assertThat(calls).isEqualTo(1);
+        verify(repo, never()).findFirstByKakaoPlaceUrlAndHoursCheckedAtAfterOrderByHoursCheckedAtDesc(anyString(),
+                org.mockito.ArgumentMatchers.any(LocalDateTime.class));
     }
 }

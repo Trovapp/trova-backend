@@ -15,6 +15,10 @@ public interface SavedPlaceRepository extends JpaRepository<SavedPlace, Long> {
     @EntityGraph(attributePaths = {"processingJob", "processingJob.user", "user"})
     List<SavedPlace> findByUserOrderByCreatedAtDescIdDesc(User user);
     Optional<SavedPlace> findByIdAndUser(Long id, User user);
+
+    // 같은 가게의 영업시간을 다시 묻지 않게(#132) — 같은 카카오 장소를 최근에 확인한 기록.
+    Optional<SavedPlace> findFirstByKakaoPlaceUrlAndHoursCheckedAtAfterOrderByHoursCheckedAtDesc(
+            String kakaoPlaceUrl, java.time.LocalDateTime checkedAfter);
     List<SavedPlace> findByProcessingJob(ProcessingJob processingJob);
     List<SavedPlace> findByProcessingJobAndDayNumberOrderByOrderInDayAsc(ProcessingJob processingJob, Integer dayNumber);
     void deleteByUser(User user);

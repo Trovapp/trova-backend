@@ -21,12 +21,16 @@ import java.util.Optional;
  * 일정 에이전트의 휴무 확인용 영업시간(#106). 영상 장소는 Google 장소와 연결돼 있지 않아서, 이름 + 좌표 근처(300m)로
  * Google Text Search를 한 번 불러 가장 가까운 결과의 regularOpeningHours를 장소에 저장한다(Enterprise SKU, 월 1,000건 무료).
  * 맞는 결과가 없거나 영업시간이 없어도 확인 시각을 남겨 같은 장소를 다시 묻지 않는다. 호출이 실패하면 남기지 않아 다음에 다시 시도한다.
+ * 같은 카카오 장소(같은 가게)를 SHARE_FRESH_DAYS 안에 확인한 기록이 있으면 Google 대신 그 결과를 복사한다(#132) —
+ * 사용자마다·분석마다 같은 가게를 다시 묻는 게 여행당 원가의 대부분이었다(개발 DB 조회 466회, 확인된 장소 41곳).
  */
 @Service
 public class OpeningHoursService {
 
     private static final Logger log = LoggerFactory.getLogger(OpeningHoursService.class);
     static final double MATCH_RADIUS_METERS = 300;
+    // 영업시간은 바뀔 수 있어 오래된 확인은 나눠 쓰지 않는다.
+    static final int SHARE_FRESH_DAYS = 90;
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final GooglePlacesApiClient googlePlacesApiClient;
@@ -46,6 +50,15 @@ public class OpeningHoursService {
         for (SavedPlace place : places) {
             if (place.getHoursCheckedAt() != null || place.getLatitude() == null || place.getLongitude() == null) {
                 continue;
+            }
+            if (place.getKakaoPlaceUrl() != null) {
+                Optional<SavedPlace> known = savedPlaceRepository.findFirstByKakaoPlaceUrlAndHoursCheckedAtAfterOrderByHoursCheckedAtDesc(
+                        place.getKakaoPlaceUrl(), java.time.LocalDateTime.now().minusDays(SHARE_FRESH_DAYS));
+                if (known.isPresent() && !known.get().equals(place)) {
+                    place.copyOpeningHoursFrom(known.get());
+                    savedPlaceRepository.save(place);
+                    continue;
+                }
             }
             calls++;
             long start = System.currentTimeMillis();
