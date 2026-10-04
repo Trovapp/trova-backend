@@ -9,6 +9,7 @@ import com.trova.backend.recommendation.PlaceSearchService;
 import com.trova.backend.recommendation.RecommendationService;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.PlanService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +59,7 @@ public class RecommendationController {
     }
 
     private final RecommendationService recommendationService;
+    private final PlanService planService;
     private final CurrentUserService currentUserService;
     private final DailyQuotaService dailyQuotaService;
     private final PlaceSearchService placeSearchService;
@@ -70,7 +72,8 @@ public class RecommendationController {
             PlaceSearchService placeSearchService,
             PlaceReviewService placeReviewService,
             PlaceRepository placeRepository,
-            DailyQuotaService dailyQuotaService
+            DailyQuotaService dailyQuotaService,
+            PlanService planService
     ) {
         this.recommendationService = recommendationService;
         this.currentUserService = currentUserService;
@@ -78,6 +81,7 @@ public class RecommendationController {
         this.placeSearchService = placeSearchService;
         this.placeReviewService = placeReviewService;
         this.placeRepository = placeRepository;
+        this.planService = planService;
     }
 
     @PostMapping("/api/recommendations")
@@ -93,6 +97,7 @@ public class RecommendationController {
         }
 
         User user = currentUserService.resolve(authentication);
+        planService.checkAndRecordAssist(user);
         dailyQuotaService.consumePlaceCall(user);
         List<Place> places = recommendationService.recommend(user, request.latitude(), request.longitude(), radius);
         return ResponseEntity.ok(places.stream().map(PlaceRecommendationResponse::from).toList());

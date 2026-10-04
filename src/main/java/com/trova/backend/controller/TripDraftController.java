@@ -4,6 +4,8 @@ import com.trova.backend.entity.TripDraft;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.PlanService;
+import com.trova.backend.entity.MeteredFeature;
 import com.trova.backend.service.TripDraftApprovalService;
 import com.trova.backend.service.TripPlannerService;
 import org.springframework.http.HttpStatus;
@@ -25,16 +27,20 @@ import java.util.List;
 public class TripDraftController {
 
     private final CurrentUserService currentUserService;
+    private final PlanService planService;
     private final TripPlannerService tripPlannerService;
     private final TripDraftRepository tripDraftRepository;
     private final TripDraftApprovalService tripDraftApprovalService;
 
     public TripDraftController(CurrentUserService currentUserService, TripPlannerService tripPlannerService,
-                               TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService) {
+                               TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService,
+            PlanService planService
+    ) {
         this.currentUserService = currentUserService;
         this.tripPlannerService = tripPlannerService;
         this.tripDraftRepository = tripDraftRepository;
         this.tripDraftApprovalService = tripDraftApprovalService;
+        this.planService = planService;
     }
 
     /** choice: SPLIT(모든 영상, 지역별로 날 나누기) / ONLY(jobIds의 영상만). */
@@ -68,6 +74,7 @@ public class TripDraftController {
     @PostMapping("/api/trip-drafts")
     public ResponseEntity<?> create(Authentication authentication, @RequestBody CreateDraftRequest request) {
         User user = currentUserService.resolve(authentication);
+        planService.check(user, MeteredFeature.DRAFT);
         return tripPlannerService.create(user, request == null ? null : request.jobIds(),
                         request == null ? null : request.message())
                 .<ResponseEntity<?>>map(draft -> {

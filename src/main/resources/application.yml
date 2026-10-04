@@ -72,6 +72,13 @@ app:
   quota:
     shares-per-day: ${QUOTA_SHARES_PER_DAY:20}
     place-calls-per-day: ${QUOTA_PLACE_CALLS_PER_DAY:100}
+  # 무료 + 여행 패스(#130). enforce를 켜기 전에는 막지 않고 사용량만 센다 — 결제가 열리기 전에 막으면 풀 방법이 없다.
+  # allow-xcode-transactions는 Xcode StoreKit 테스트 거래를 받는 개발용 스위치(운영에서는 절대 켜지 않는다).
+  billing:
+    enforce: ${BILLING_ENFORCE:false}
+    allow-xcode-transactions: ${BILLING_ALLOW_XCODE_TRANSACTIONS:false}
+    travel-pass-product-id: com.trovapp.trova.travelpass30
+    bundle-id: com.trovapp.trova
   # 관리자 API(/api/admin/*)를 쓸 수 있는 사용자 — "로그인제공자:제공자사용자ID"를 쉼표로 구분(예: google:1234).
   # 비워두면 아무도 쓸 수 없다.
   admin:

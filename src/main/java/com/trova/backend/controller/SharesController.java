@@ -9,6 +9,8 @@ import com.trova.backend.entity.User;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.PlanService;
+import com.trova.backend.entity.MeteredFeature;
 import com.trova.backend.service.PlaceExtractionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ import java.util.Optional;
 public class SharesController {
 
     private final CurrentUserService currentUserService;
+    private final PlanService planService;
     private final DailyQuotaService dailyQuotaService;
     private final ProcessingJobRepository processingJobRepository;
     private final PlaceExtractionService placeExtractionService;
@@ -34,13 +37,15 @@ public class SharesController {
             ProcessingJobRepository processingJobRepository,
             PlaceExtractionService placeExtractionService,
             DailyQuotaService dailyQuotaService,
-            SavedPlaceRepository savedPlaceRepository
+            SavedPlaceRepository savedPlaceRepository,
+            PlanService planService
     ) {
         this.savedPlaceRepository = savedPlaceRepository;
         this.currentUserService = currentUserService;
         this.dailyQuotaService = dailyQuotaService;
         this.processingJobRepository = processingJobRepository;
         this.placeExtractionService = placeExtractionService;
+        this.planService = planService;
     }
 
     // reanalyze: 이미 분석한 영상이라도 새로 분석한다(앱의 "다시 분석하기"). 없으면 false.
@@ -119,6 +124,7 @@ public class SharesController {
                     .body(new ShareResponse(existing.getId(), existing.getStatus().name()));
         }
 
+        planService.check(user, MeteredFeature.ANALYSIS);
         dailyQuotaService.checkShare(user);
         ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, url, platform));
         try {
