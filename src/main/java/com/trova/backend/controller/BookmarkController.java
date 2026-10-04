@@ -52,7 +52,7 @@ public class BookmarkController {
             return ResponseEntity.notFound().build();
         }
         if (match.get().place().isEmpty()) {
-            return ResponseEntity.unprocessableEntity().build();
+            return ResponseEntity.status(422).build();
         }
         return bookmarkService.addBookmark(user, match.get().place().get().getId(), request.folderId())
                 .map(b -> ResponseEntity.ok(BookmarkResponse.from(b)))
