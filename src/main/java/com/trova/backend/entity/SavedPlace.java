@@ -150,6 +150,13 @@ public class SavedPlace {
         this.hoursCheckedAt = LocalDateTime.now();
     }
 
+    /** 다른 기록에서 확인한 영업시간을 그대로 옮긴다(#132). 확인 시각도 원래 것을 둬, 복사가 이어져도 새것처럼 보이지 않게. */
+    public void copyOpeningHoursFrom(SavedPlace other) {
+        this.googlePlaceId = other.googlePlaceId;
+        this.openingPeriods = other.openingPeriods;
+        this.hoursCheckedAt = other.hoursCheckedAt;
+    }
+
     public List<String> getVideoNotes() {
         return videoNotes == null || videoNotes.isBlank() ? List.of() : List.of(videoNotes.split("\n"));
     }
