@@ -350,4 +350,35 @@ class DraftFixerTest {
                 .forEach(it -> assertThat(it.end()).isBeforeOrEqualTo(LocalTime.of(18, 0)));
         assertThat(fixed.fixes()).noneMatch(f -> f.startsWith("주상절리") && f.contains("다시 넣었어요"));
     }
+
+    @Test
+    void 시간이_겹친_장소는_앞_장소가_끝난_뒤로_미룬다() {
+        // 운영 제주 3일차(#115): AI 수정이 곶자왈 10:30~12:00과 식당 11:00~12:00을 겹쳐 놓았다.
+        SavedPlace forest = place(360, "곶자왈", "attraction", 33.30, 126.30, null);
+        SavedPlace lunch = place(361, "한가네식당", "restaurant", 33.25, 126.32, null);
+        SavedPlace pork = place(362, "돈어길", "restaurant", 33.26, 126.33, null);
+        SavedPlace tea = place(363, "티뮤지엄", "attraction", 33.30, 126.29, null);
+        DraftGenerator.Draft d = draft(List.of(List.of(item(forest, "10:30", "12:00"), item(lunch, "11:00", "12:00"),
+                item(pork, "12:30", "13:30"), item(tea, "14:00", "15:30"))));
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(forest, lunch, pork, tea), null);
+
+        List<DraftGenerator.Item> day = fixed.draft().days().get(0).items();
+        for (int i = 0; i + 1 < day.size(); i++) {
+            assertThat(day.get(i + 1).start()).isAfterOrEqualTo(day.get(i).end());
+        }
+        assertThat(fixed.fixes()).anyMatch(f -> f.contains("겹쳐"));
+        assertThat(DraftValidator.validate(fixed.draft(), byId(forest, lunch, pork, tea), 1, null).violations())
+                .noneMatch(v -> v.type().equals("OVERLAP"));
+    }
+
+    @Test
+    void 검증기는_시간이_겹친_장소를_오류로_알린다() {
+        SavedPlace forest = place(370, "곶자왈", "attraction", 33.30, 126.30, null);
+        SavedPlace lunch = place(371, "한가네식당", "restaurant", 33.25, 126.32, null);
+        DraftGenerator.Draft d = draft(List.of(List.of(item(forest, "10:30", "12:00"), item(lunch, "11:00", "12:00"))));
+
+        assertThat(DraftValidator.validate(d, byId(forest, lunch), 1, null).violations())
+                .anyMatch(v -> v.type().equals("OVERLAP") && v.severity() == DraftValidator.Severity.ERROR);
+    }
 }
