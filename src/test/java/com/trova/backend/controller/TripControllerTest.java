@@ -592,4 +592,25 @@ class TripControllerTest {
                 .andExpect(jsonPath("$.id").value(trip.getId()));
         assertThat(tripRepository.findByUserOrderByCreatedAtDesc(me)).hasSize((int) before);
     }
+
+    @Test
+    void 여행_목록에_장소_수와_많이_나온_지역을_준다() throws Exception {
+        // 이름이 같은 여행을 목록에서 구분할 수 없었다(#123) — "제주 · 4곳"처럼 보여줄 값을 함께 준다.
+        User me = userRepository.save(new User("google", "list-summary-1", "목록유저", null));
+        Trip filled = trip(me, 2);
+        List<Itinerary> days = itineraryRepository.findByTripOrderByDay(filled);
+        String[] regions = {"제주", "제주", "서울", "제주"};
+        for (int i = 0; i < regions.length; i++) {
+            tripPlaceRepository.save(new TripPlace(days.get(i % 2), "장소" + i, regions[i], "cafe", 33.4, 126.5,
+                    null, null, i, PlaceSource.NORMAL, null));
+        }
+        Trip empty = trip(me, 1);
+
+        mockMvc.perform(get("/api/trips").with(loginAs("list-summary-1", "목록유저")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id == %d)].placeCount".formatted(filled.getId())).value(4))
+                .andExpect(jsonPath("$[?(@.id == %d)].regions[0]".formatted(filled.getId())).value("제주"))
+                .andExpect(jsonPath("$[?(@.id == %d)].regions[1]".formatted(filled.getId())).value("서울"))
+                .andExpect(jsonPath("$[?(@.id == %d)].placeCount".formatted(empty.getId())).value(0));
+    }
 }
