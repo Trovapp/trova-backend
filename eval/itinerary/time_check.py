@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -21,7 +22,9 @@ def mins(t: str) -> int:
 def check(rec: dict) -> dict:
     a = rec.get("agent") or {}
     plan = a.get("draft") or {}
-    restored = {f.split("은 ")[0] for f in (a.get("fixes") or []) if "다시 넣었어요" in f}
+    # 서버 문장의 조사가 받침에 따라 은/는(한글이 아니면 "은(는)")으로 바뀌었다(#112 W3) — 셋 다 알아본다.
+    restored = {m.group(1) for f in (a.get("fixes") or [])
+                if (m := re.match(r"^(.*?)(?:은\(는\)|은|는) \d+일차에 자리가 있어 다시 넣었어요", f))}
     out = {"id": rec["request"]["id"], "dinner_dup": [], "lunch_dup": [], "dark_attraction": [], "dark_restored": []}
     for d in plan.get("days", []):
         items = d["items"]
