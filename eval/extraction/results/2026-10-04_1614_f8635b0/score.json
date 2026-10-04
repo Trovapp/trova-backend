@@ -1,0 +1,1569 @@
+{
+  "summary": {
+    "overall": {
+      "tp": 101,
+      "fp": 28,
+      "fn": 24,
+      "ambiguous": 0,
+      "precision": 0.783,
+      "recall": 0.808,
+      "f1": 0.795,
+      "coord_ok_ratio": 1.0,
+      "coord_checked": 12
+    },
+    "by_repeat": {
+      "1": {
+        "tp": 101,
+        "fp": 28,
+        "fn": 24,
+        "ambiguous": 0,
+        "precision": 0.783,
+        "recall": 0.808,
+        "f1": 0.795,
+        "coord_ok_ratio": 1.0,
+        "coord_checked": 12
+      }
+    },
+    "error_types": {
+      "정답에 없는 장소": 28,
+      "누락": 24
+    },
+    "runs": 24,
+    "failures": [
+      {
+        "video_no": 5,
+        "repeat": 1,
+        "reason": "영상에서 장소를 찾지 못했어요"
+      }
+    ],
+    "seconds_per_video": {
+      "median": 12.8,
+      "max": 21.2,
+      "n": 24
+    },
+    "gemini": {
+      "calls": 69,
+      "prompt_tokens": 364497,
+      "response_tokens": 19359,
+      "actual_cost_krw": 0,
+      "actual_cost_note": "Gemini 무료 티어 키 — 청구 없음",
+      "paid_equivalent_usd": 0.1577,
+      "paid_equivalent_krw": null,
+      "usd_krw": null,
+      "usd_krw_source": ""
+    }
+  },
+  "per_run": [
+    {
+      "video_no": 1,
+      "repeat": 1,
+      "tp": 5,
+      "fp": 1,
+      "fn": 1,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "가야랜드",
+          "verdict": "맞음",
+          "answer_place_name": "가야랜드",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "밀양돼지국밥",
+          "verdict": "맞음",
+          "answer_place_name": "밀양돼지국밥",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "수로왕릉",
+          "verdict": "맞음",
+          "answer_place_name": "수로왕릉",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "김해한옥체험관 복합문화공간 명월",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "만리향 만두",
+          "verdict": "맞음",
+          "answer_place_name": "만리향",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "연지공원",
+          "verdict": "맞음",
+          "answer_place_name": "연지공원",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "명월카페",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 2,
+      "repeat": 1,
+      "tp": 6,
+      "fp": 1,
+      "fn": 4,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "하평해변",
+          "verdict": "맞음",
+          "answer_place_name": "하평해변",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "동쪽바다중앙시장",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "어달삼거리",
+          "verdict": "맞음",
+          "answer_place_name": "어달삼거리",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "어달항",
+          "verdict": "맞음",
+          "answer_place_name": "어달항",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "카페어달",
+          "verdict": "맞음",
+          "answer_place_name": "카페어달",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "논골담길",
+          "verdict": "맞음",
+          "answer_place_name": "논골담길",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "비비소",
+          "verdict": "맞음",
+          "answer_place_name": "비비소",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "파닭김밥",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "등대쉼터",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "등대그집",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "해랑전망대",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 3,
+      "repeat": 1,
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "트로페오비토리아",
+          "verdict": "맞음",
+          "answer_place_name": "트로페오비토리아",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "작은피자집",
+          "verdict": "맞음",
+          "answer_place_name": "작은피자집",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "서울시립 남서울미술관",
+          "verdict": "맞음",
+          "answer_place_name": "서울시립남서울미술관",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "꿈꾸는크루아상",
+          "verdict": "맞음",
+          "answer_place_name": "꿈꾸는크루아상",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "도쿄빙수 본점",
+          "verdict": "맞음",
+          "answer_place_name": "도쿄빙수",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "아트나인",
+          "verdict": "맞음",
+          "answer_place_name": "아트나인&잇나인",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 4,
+      "repeat": 1,
+      "tp": 3,
+      "fp": 2,
+      "fn": 2,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "임페리아푸드",
+          "verdict": "맞음",
+          "answer_place_name": "임페리아",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "후르세다사마르칸트",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "컴포즈커피 안산다문화거리점",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "미쉐 안산중앙점",
+          "verdict": "맞음",
+          "answer_place_name": "미쉐",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "마리나베이커리",
+          "verdict": "맞음",
+          "answer_place_name": "마리나베이커리",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "후르셰다사마르칸트",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "안산다문화음식거리",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 5,
+      "repeat": 1,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": []
+    },
+    {
+      "video_no": 6,
+      "repeat": 1,
+      "tp": 6,
+      "fp": 4,
+      "fn": 5,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "카츠키친 전포점",
+          "verdict": "맞음",
+          "answer_place_name": "카츠키친 전포점",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "이바비커피 전포점",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "광안리어방축제",
+          "verdict": "맞음",
+          "answer_place_name": "광안리",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "썰스데이파티",
+          "verdict": "맞음",
+          "answer_place_name": "광안리 썰스데이파티",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "타이거텐푸라&마초도 해리단길점",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "코오리마찌 해리단길점",
+          "verdict": "맞음",
+          "answer_place_name": "코오리마찌 해리단길점",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "해운대 메인 거리",
+          "verdict": "맞음",
+          "answer_place_name": "해운대 메인거리 & 시장",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "해운대해수욕장",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "개미집 해운대역점",
+          "verdict": "맞음",
+          "answer_place_name": "개미집 해운대역점",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "T1베이스캠프 부산점",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "이바바커피",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "해운대역",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "해변포차",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "타이카텐푸라&마츠도 해리단길점",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "해운대 T1 베이스캠프",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 7,
+      "repeat": 1,
+      "tp": 8,
+      "fp": 2,
+      "fn": 2,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "삼양해수욕장",
+          "verdict": "맞음",
+          "answer_place_name": "삼양해수욕장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "함덕해수욕장",
+          "verdict": "맞음",
+          "answer_place_name": "함덕해수욕장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "김녕해수욕장",
+          "verdict": "맞음",
+          "answer_place_name": "김녕해수욕장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "세화해변",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "표선해수욕장",
+          "verdict": "맞음",
+          "answer_place_name": "표선해수욕장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "중문색달해수욕장",
+          "verdict": "맞음",
+          "answer_place_name": "색달해수욕장",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "화순금모래해수욕장",
+          "verdict": "맞음",
+          "answer_place_name": "화순금모래해수욕장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "한포포구",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "협재해수욕장",
+          "verdict": "맞음",
+          "answer_place_name": "협재해수욕장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "이호테우해수욕장",
+          "verdict": "맞음",
+          "answer_place_name": "이호테우해수욕장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "세화해수욕장",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "판포포구",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 8,
+      "repeat": 1,
+      "tp": 25,
+      "fp": 2,
+      "fn": 2,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "우진해장국",
+          "verdict": "맞음",
+          "answer_place_name": "우진해장국",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "삼무국수 본점",
+          "verdict": "맞음",
+          "answer_place_name": "삼무국수",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "제주당",
+          "verdict": "맞음",
+          "answer_place_name": "제주당",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "금오름",
+          "verdict": "맞음",
+          "answer_place_name": "금오름",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "성이시돌목장",
+          "verdict": "맞음",
+          "answer_place_name": "성이시돌목장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "봄빛코티지",
+          "verdict": "맞음",
+          "answer_place_name": "봄빛코티지",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "신창풍차해안",
+          "verdict": "맞음",
+          "answer_place_name": "신창풍차해안",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "돈어길",
+          "verdict": "맞음",
+          "answer_place_name": "돈어길",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "봄빛코티지",
+          "verdict": "맞음",
+          "answer_place_name": "봄빛코티지",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "봄빛코티지",
+          "verdict": "맞음",
+          "answer_place_name": "봄빛코티지",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "오설록 티뮤지엄",
+          "verdict": "맞음",
+          "answer_place_name": "오설록",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "제주곶자왈도립공원",
+          "verdict": "맞음",
+          "answer_place_name": "곶자왈도립공원",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "한라산아래첫마을 영농조합법인",
+          "verdict": "맞음",
+          "answer_place_name": "한라산아래첫마을",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "중문고등어쌈밥 제주점",
+          "verdict": "맞음",
+          "answer_place_name": "중문고등어쌈밥",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "화순한가네식당",
+          "verdict": "맞음",
+          "answer_place_name": "화순한가네식당",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "용머리해안",
+          "verdict": "맞음",
+          "answer_place_name": "용머리해안",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "송악산",
+          "verdict": "맞음",
+          "answer_place_name": "송악산",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "미영이네 본점",
+          "verdict": "맞음",
+          "answer_place_name": "미영이네",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "순천미향 제주산방산본점",
+          "verdict": "맞음",
+          "answer_place_name": "순천미향",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "봄빛코티지",
+          "verdict": "맞음",
+          "answer_place_name": "봄빛코티지",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "뚱보아저씨",
+          "verdict": "맞음",
+          "answer_place_name": "뚱보아저씨",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "협재해수욕장",
+          "verdict": "맞음",
+          "answer_place_name": "협재해수욕장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "호텔샌드",
+          "verdict": "맞음",
+          "answer_place_name": "호텔샌드",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "한림칼국수",
+          "verdict": "맞음",
+          "answer_place_name": "한림칼국수",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "제주동문시장",
+          "verdict": "맞음",
+          "answer_place_name": "동문시장",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "빽다방베이커리 제주사수점",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "제주국제공항",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "빽다방 제주사수점",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "제주공항",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 9,
+      "repeat": 1,
+      "tp": 9,
+      "fp": 1,
+      "fn": 1,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "중문대포주상절리대",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "쇠소깍",
+          "verdict": "맞음",
+          "answer_place_name": "쇠소깍",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "황우지해안 (폐쇄)",
+          "verdict": "맞음",
+          "answer_place_name": "황우지해안",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "정방폭포",
+          "verdict": "맞음",
+          "answer_place_name": "정방폭포",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "약천사",
+          "verdict": "맞음",
+          "answer_place_name": "약천사",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "천지연폭포",
+          "verdict": "맞음",
+          "answer_place_name": "천지연폭포",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "서귀포치유의숲",
+          "verdict": "맞음",
+          "answer_place_name": "서귀포치유의숲",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "엉또폭포",
+          "verdict": "맞음",
+          "answer_place_name": "엉또폭포",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "소천지",
+          "verdict": "맞음",
+          "answer_place_name": "소천지",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "중문색달해수욕장",
+          "verdict": "맞음",
+          "answer_place_name": "중문색달해수욕장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "대포해안주상절리대",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 10,
+      "repeat": 1,
+      "tp": 0,
+      "fp": 1,
+      "fn": 1,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "테라로사 본점",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "테라로사커피공장 강릉점",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 11,
+      "repeat": 1,
+      "tp": 7,
+      "fp": 4,
+      "fn": 4,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "서울역",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "강릉역",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "순두부젤라또 2호점",
+          "verdict": "맞음",
+          "answer_place_name": "순두부젤라또 2호점",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "강릉중앙시장",
+          "verdict": "맞음",
+          "answer_place_name": "강릉중앙시장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "여름의집 Casa de Verano",
+          "verdict": "맞음",
+          "answer_place_name": "여름의 집",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "초당모꼬지",
+          "verdict": "맞음",
+          "answer_place_name": "초당모꼬지",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "소돌해변",
+          "verdict": "맞음",
+          "answer_place_name": "소돌해변",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "소돌항",
+          "verdict": "맞음",
+          "answer_place_name": "소돌항",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "아들바위공원",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "레드망치",
+          "verdict": "맞음",
+          "answer_place_name": "레드망치",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "우브더모먼트",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "안목해변",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "소돌공원",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "교동장칼국수",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "오브더모먼트",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 12,
+      "repeat": 1,
+      "tp": 10,
+      "fp": 4,
+      "fn": 1,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "강릉역",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "초당명가짬뽕순두부",
+          "verdict": "맞음",
+          "answer_place_name": "초당명가짬뽕순두부",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "초당밀",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "강릉조개빵",
+          "verdict": "맞음",
+          "answer_place_name": "강릉조개빵",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "강릉감자닭강정",
+          "verdict": "맞음",
+          "answer_place_name": "강릉감자닭강정",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "사근진해변",
+          "verdict": "맞음",
+          "answer_place_name": "사근진해변",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "강문해변",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "안목해변",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "백야커피",
+          "verdict": "맞음",
+          "answer_place_name": "백야커피",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "강바다식당",
+          "verdict": "맞음",
+          "answer_place_name": "강바다식당",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "강릉중앙시장",
+          "verdict": "맞음",
+          "answer_place_name": "중앙시장",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "명성오징어순대 1호점",
+          "verdict": "맞음",
+          "answer_place_name": "명성오징어순대",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "강릉사임당오징어순대",
+          "verdict": "맞음",
+          "answer_place_name": "강릉사임당오징어순대",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "박종주반죽소 전국본점",
+          "verdict": "맞음",
+          "answer_place_name": "박종주반죽소",
+          "how": "수동",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "카페밀",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 13,
+      "repeat": 1,
+      "tp": 4,
+      "fp": 0,
+      "fn": 1,
+      "ambiguous": 0,
+      "coord_checked": 4,
+      "coord_ok": 4,
+      "rows": [
+        {
+          "result_name": "전주난장",
+          "verdict": "맞음",
+          "answer_place_name": "전주난장",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": 1
+        },
+        {
+          "result_name": "경기전",
+          "verdict": "맞음",
+          "answer_place_name": "경기전",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": 39
+        },
+        {
+          "result_name": "청연루",
+          "verdict": "맞음",
+          "answer_place_name": "청연루",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": 114
+        },
+        {
+          "result_name": "연화정도서관",
+          "verdict": "맞음",
+          "answer_place_name": "연화정도서관",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": 3
+        },
+        {
+          "result_name": "",
+          "verdict": "누락",
+          "answer_place_name": "언론중재위원회",
+          "how": "",
+          "error_type": "누락",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 14,
+      "repeat": 1,
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "전주한옥마을",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 15,
+      "repeat": 1,
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "부산역",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 16,
+      "repeat": 1,
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "부산역",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 19,
+      "repeat": 1,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "요미우돈교자",
+          "verdict": "맞음",
+          "answer_place_name": "요미우돈교자",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 20,
+      "repeat": 1,
+      "tp": 1,
+      "fp": 1,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "오륙도해맞이공원",
+          "verdict": "맞음",
+          "answer_place_name": "오륙도해맞이공원",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        },
+        {
+          "result_name": "오륙도스카이워크",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 21,
+      "repeat": 1,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "솔내음한정식",
+          "verdict": "맞음",
+          "answer_place_name": "솔내음한정식",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 22,
+      "repeat": 1,
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 4,
+      "coord_ok": 4,
+      "rows": [
+        {
+          "result_name": "키에키 로스팅 룸",
+          "verdict": "맞음",
+          "answer_place_name": "키에키 로스팅 룸",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": 1
+        },
+        {
+          "result_name": "푸아루",
+          "verdict": "맞음",
+          "answer_place_name": "푸아루",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": 0
+        },
+        {
+          "result_name": "소설과농담",
+          "verdict": "맞음",
+          "answer_place_name": "소설과농담",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": 132
+        },
+        {
+          "result_name": "시소카이막 동문시장점",
+          "verdict": "맞음",
+          "answer_place_name": "시소 카이막 동문시장점",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": 3
+        }
+      ]
+    },
+    {
+      "video_no": 23,
+      "repeat": 1,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 3,
+      "coord_ok": 3,
+      "rows": [
+        {
+          "result_name": "홍시궁 객리단길본점",
+          "verdict": "맞음",
+          "answer_place_name": "홍시궁",
+          "how": "이름 포함+좌표 200m",
+          "error_type": "",
+          "distance_m": 4
+        },
+        {
+          "result_name": "오원집 본점",
+          "verdict": "맞음",
+          "answer_place_name": "오원집",
+          "how": "이름 포함+좌표 200m",
+          "error_type": "",
+          "distance_m": 26
+        },
+        {
+          "result_name": "우미네등갈비찜 본점",
+          "verdict": "맞음",
+          "answer_place_name": "우미네등갈비찜",
+          "how": "이름 포함+좌표 200m",
+          "error_type": "",
+          "distance_m": 26
+        }
+      ]
+    },
+    {
+      "video_no": 24,
+      "repeat": 1,
+      "tp": 1,
+      "fp": 1,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "경포대",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        },
+        {
+          "result_name": "해연가",
+          "verdict": "맞음",
+          "answer_place_name": "해연가",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 25,
+      "repeat": 1,
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 0,
+      "coord_ok": 0,
+      "rows": [
+        {
+          "result_name": "해운대 바다김밥",
+          "verdict": "오탐",
+          "answer_place_name": "",
+          "how": "정답에 없음",
+          "error_type": "정답에 없는 장소",
+          "distance_m": null
+        }
+      ]
+    },
+    {
+      "video_no": 26,
+      "repeat": 1,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "ambiguous": 0,
+      "coord_checked": 1,
+      "coord_ok": 1,
+      "rows": [
+        {
+          "result_name": "쇠마실",
+          "verdict": "맞음",
+          "answer_place_name": "쇠마실",
+          "how": "이름 같음",
+          "error_type": "",
+          "distance_m": 24
+        }
+      ]
+    }
+  ]
+}

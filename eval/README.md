@@ -11,6 +11,10 @@
    Supabase pooler는 운영·개발이 같은 호스트라 사용자 이름까지 넣어야 구분된다(2026-10-03 실제로 걸림).
 3. `pip install -r eval/requirements.txt`
 4. 운영 서버의 `pipeline-test/*.py` 해시를 결과의 `meta.json`(`pipeline_sha256_16`)과 비교해 같은 설정인지 확인한다.
+   - 해시는 `EVAL_PIPELINE_DIR`(기본값: 이 eval 폴더의 `pipeline-test`)에서 읽는다. 서버는 **자기 실행 폴더**의 스크립트를 쓰므로,
+     로컬 서버를 다른 폴더(예: `.claude/worktrees/local-server`)에서 띄웠다면 `EVAL_PIPELINE_DIR=<그 폴더>/pipeline-test`를 줘야 한다.
+     2026-10-03~04 Part A 결과 4개는 기본값으로 돌려 해시가 모두 `338fb364`(#105 이전 파일)로 적혔지만, 실제 서버는
+     10/3 17:03은 178a68e(#105 이전), 10/4 00:21·00:45·16:14는 eeb790b·ef3c0ab·f7bf194(#105 이후, `89c88736`)였다(로컬 서버 폴더 git reflog로 확인).
 
 ## Part A — 장소 추출
 1. `extraction/videos.csv`에서 쓸 영상의 `selected`에 `Y`.
