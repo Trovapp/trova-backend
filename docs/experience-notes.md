@@ -924,3 +924,5 @@
 - `POST /api/bookmarks/saved-place` {savedPlaceId, folderId}: 영업시간 조회로 구글 id가 이미 있으면 검색 없이, 없으면 검색해 연결 후 찜. 본인 장소가 아니면 404, 지도에서 찾지 못하면 422.
 - `TripService.pickMatch`·`detailsSearchQuery`를 좌표·이름으로도 쓰게 나눴다(여행 장소 상세와 같은 규칙 공유).
 - 테스트 4개(`VideoPlaceActionsTest`, 구글 호출은 목): 담기, 남의 장소·여행 거절, 구글 id 있으면 검색 없이 찜, 못 찾으면 422. 고치기 전 3개 실패 확인(거절 테스트는 API가 없어 404로 우연히 통과하던 것). 전체 603개 통과.
+
+- 2026-10-04 #128: 찜 API의 422 응답을 deprecated `ResponseEntity.unprocessableEntity()` 대신 `status(422)`로 — 빌드 경고 제거, 동작 같음(422 테스트 통과).
