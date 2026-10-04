@@ -170,4 +170,16 @@ class BillingFlowTest {
                 .andExpect(status().isBadRequest());
         assertThat(travelPassRepository.findFirstByUserOrderByExpiresAtDesc(me)).isEmpty();
     }
+
+    @Test
+    void 자동으로_불리는_빈_시간_추천은_횟수를_다_써도_막지_않는다() throws Exception {
+        // 여행 상세를 열 때 일차마다 자동으로 불린다 — 보기만 해도 무료 횟수가 줄면 안 된다(#130 QA에서 발견).
+        User me = userRepository.save(new User("google", "bill-5", "결제유저", null));
+        for (int i = 0; i < 5; i++) {
+            usageRecordRepository.save(new UsageRecord(me, MeteredFeature.ASSIST, LocalDateTime.now()));
+        }
+        int code = mockMvc.perform(get("/api/trips/999999/days/1/gap-recommendations").with(loginAs("bill-5")))
+                .andReturn().getResponse().getStatus();
+        assertThat(code).isNotEqualTo(402);
+    }
 }

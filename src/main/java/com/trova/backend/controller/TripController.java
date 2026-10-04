@@ -461,7 +461,7 @@ public class TripController {
             Authentication authentication, @PathVariable Long tripId, @PathVariable int day
     ) {
         User user = currentUserService.resolve(authentication);
-        planService.checkAndRecordAssist(user);
+        // 빈 시간 추천은 여행 상세를 열 때 일차마다 자동으로 불린다 — 사용자가 누른 게 아니라 무료·패스 횟수로 세지 않는다(#130 QA).
         dailyQuotaService.consumePlaceCall(user);
         return gapRecommendationService.findGaps(user, tripId, day)
                 .map(gaps -> ResponseEntity.ok(gaps.stream().map(GapResponse::from).toList()))
