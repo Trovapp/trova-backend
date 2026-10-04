@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -103,9 +104,26 @@ public class TripController {
     ) {
     }
 
-    public record TripResponse(Long id, String title, LocalDate startDate, LocalDate endDate) {
+    public record TripResponse(Long id, String title, LocalDate startDate, LocalDate endDate,
+                               int placeCount, List<String> regions) {
         static TripResponse from(Trip trip) {
-            return new TripResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate());
+            return new TripResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(), 0, List.of());
+        }
+
+        static TripResponse from(Trip trip, List<TripPlace> places) {
+            // 많이 나온 지역 순, 같으면 먼저 나온 지역 — 최대 2개("제주", "김해·부산").
+            Map<String, Long> counts = places.stream()
+                    .map(TripPlace::getRegion)
+                    .filter(r -> r != null && !r.isBlank())
+                    .collect(java.util.stream.Collectors.groupingBy(r -> r, java.util.LinkedHashMap::new,
+                            java.util.stream.Collectors.counting()));
+            List<String> regions = counts.entrySet().stream()
+                    .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                    .limit(2)
+                    .map(Map.Entry::getKey)
+                    .toList();
+            return new TripResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(),
+                    places.size(), regions);
         }
     }
 
@@ -199,7 +217,14 @@ public class TripController {
     @GetMapping("/api/trips")
     public List<TripResponse> listTrips(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
-        return tripRepository.findByUserOrderByCreatedAtDesc(user).stream().map(TripResponse::from).toList();
+        List<Trip> trips = tripRepository.findByUserOrderByCreatedAtDesc(user);
+        // 이름이 같은 여행을 목록에서 구분할 수 없었다(#123) — 장소 수와 가장 많이 나온 지역(최대 2개)을 함께 준다.
+        Map<Long, List<TripPlace>> placesByTrip = trips.isEmpty() ? Map.of()
+                : tripPlaceRepository.findByItineraryTripIn(trips).stream()
+                        .collect(java.util.stream.Collectors.groupingBy(tp -> tp.getItinerary().getTrip().getId()));
+        return trips.stream()
+                .map(t -> TripResponse.from(t, placesByTrip.getOrDefault(t.getId(), List.of())))
+                .toList();
     }
 
     @GetMapping("/api/trips/{id}")
