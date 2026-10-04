@@ -138,6 +138,62 @@ public class TripService {
                 }));
     }
 
+    /**
+     * 영상에서 찾은 장소(SavedPlace)를 여행의 그 일차 맨 끝에 담는다(#126) — 영상 전체로 새 여행을 만들거나 여행 화면에서
+     * 다시 검색하지 않아도 되게. 영상 장소의 값(이름·좌표·주소·전화)을 그대로 복사하고 외부 호출은 하지 않는다.
+     * 영상 장소와 여행 모두 본인 것이어야 한다.
+     */
+    @Transactional
+    public Optional<TripPlace> addVideoPlaceToDay(User user, Long tripId, int day, Long savedPlaceId) {
+        Optional<SavedPlace> saved = savedPlaceRepository.findById(savedPlaceId)
+                .filter(p -> p.getUser().getId().equals(user.getId()));
+        if (saved.isEmpty()) {
+            return Optional.empty();
+        }
+        SavedPlace place = saved.get();
+        return tripRepository.findById(tripId)
+                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
+                .map(itinerary -> {
+                    int nextOrder = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary).size() + 1;
+                    return tripPlaceRepository.save(new TripPlace(
+                            itinerary, place.getPlaceName(), place.getRegion(), place.getCategory(),
+                            place.getLatitude(), place.getLongitude(), place.getPhone(), place.getAddress(),
+                            nextOrder, PlaceSource.VIDEO, place.getId()));
+                });
+    }
+
+    /**
+     * 영상 장소를 Place 카탈로그(구글 장소)에 연결한다(찜하기 #125 — 찜은 카탈로그 장소를 가리킨다).
+     * 영업시간 조회로 구글 id가 이미 있으면 그것을, 없으면 여행 장소 상세(#101)와 같은 규칙으로 지역을 붙여 검색해
+     * 영상 장소 좌표 3km 안의 결과만 쓴다. 본인 장소가 아니면 비우고, 연결하지 못하면 NOT_MATCHED.
+     */
+    @Transactional
+    public Optional<SavedPlaceMatch> resolveSavedPlace(User user, Long savedPlaceId) {
+        return savedPlaceRepository.findById(savedPlaceId)
+                .filter(p -> p.getUser().getId().equals(user.getId()))
+                .map(saved -> {
+                    if (saved.getGooglePlaceId() != null) {
+                        Optional<Place> known = placeRepository.findByGooglePlaceId(saved.getGooglePlaceId());
+                        if (known.isPresent()) {
+                            return new SavedPlaceMatch(known);
+                        }
+                    }
+                    List<Place> candidates = placeSearchService.search(detailsSearchQuery(saved.getPlaceName(), saved.getRegion()));
+                    Optional<Place> match = pickMatch(saved.getLatitude(), saved.getLongitude(), candidates);
+                    if (match.isEmpty()) {
+                        log.info("영상 장소 찜 연결 실패 — 근처 검색 결과 없음(savedPlaceId={}, name={}, 후보 {}곳)",
+                                saved.getId(), saved.getPlaceName(), candidates.size());
+                    }
+                    match.ifPresent(m -> userPreferenceSignalRepository.save(new UserPreferenceSignal(user, m, SignalType.VIDEO_PLACE_MATCHED)));
+                    return new SavedPlaceMatch(match);
+                });
+    }
+
+    /** 본인 영상 장소였을 때의 연결 결과 — place가 비면 지도에서 찾지 못한 것. */
+    public record SavedPlaceMatch(Optional<Place> place) {
+    }
+
     /** 보낸 필드만 부분적으로 갱신한다(null인 필드는 기존 값 유지 — TripPlace.applyDetails 참고). */
     public Optional<TripPlace> updateDetails(
             User user, Long tripPlaceId, LocalTime visitStartTime, LocalTime visitEndTime,
@@ -189,10 +245,11 @@ public class TripService {
     static final double MAX_MATCH_DISTANCE_KM = 3.0;
 
     static String detailsSearchQuery(TripPlace tripPlace) {
-        String region = tripPlace.getRegion();
-        return region == null || region.isBlank() || tripPlace.getPlaceName().contains(region)
-                ? tripPlace.getPlaceName()
-                : region + " " + tripPlace.getPlaceName();
+        return detailsSearchQuery(tripPlace.getPlaceName(), tripPlace.getRegion());
+    }
+
+    static String detailsSearchQuery(String name, String region) {
+        return region == null || region.isBlank() || name.contains(region) ? name : region + " " + name;
     }
 
     /**
@@ -200,16 +257,19 @@ public class TripService {
      * 좌표가 없는 여행 장소는 확인할 방법이 없어 지역을 붙인 검색의 1등을 그대로 쓴다.
      */
     static Optional<Place> pickMatch(TripPlace tripPlace, List<Place> candidates) {
+        return pickMatch(tripPlace.getLatitude(), tripPlace.getLongitude(), candidates);
+    }
+
+    static Optional<Place> pickMatch(Double latitude, Double longitude, List<Place> candidates) {
         if (candidates.isEmpty()) {
             return Optional.empty();
         }
-        if (tripPlace.getLatitude() == null || tripPlace.getLongitude() == null) {
+        if (latitude == null || longitude == null) {
             return Optional.of(candidates.get(0));
         }
         return candidates.stream()
                 .filter(c -> c.getLatitude() != null && c.getLongitude() != null)
-                .filter(c -> GeoUtils.haversineKm(tripPlace.getLatitude(), tripPlace.getLongitude(),
-                        c.getLatitude(), c.getLongitude()) <= MAX_MATCH_DISTANCE_KM)
+                .filter(c -> GeoUtils.haversineKm(latitude, longitude, c.getLatitude(), c.getLongitude()) <= MAX_MATCH_DISTANCE_KM)
                 .findFirst();
     }
 

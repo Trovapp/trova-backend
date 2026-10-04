@@ -269,6 +269,24 @@ public class TripController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    public record AddVideoPlaceRequest(Long savedPlaceId) {
+    }
+
+    /** 영상에서 찾은 장소 하나를 이 여행의 그 일차 끝에 담는다(#126). 영상 장소·여행이 본인 것이 아니면 404. */
+    @PostMapping("/api/trips/{tripId}/days/{day}/video-places")
+    public ResponseEntity<TripPlaceResponse> addVideoPlace(
+            Authentication authentication, @PathVariable Long tripId, @PathVariable int day,
+            @RequestBody AddVideoPlaceRequest request
+    ) {
+        if (request == null || request.savedPlaceId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        User user = currentUserService.resolve(authentication);
+        return tripService.addVideoPlaceToDay(user, tripId, day, request.savedPlaceId())
+                .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/api/trip-places/{id}/replace")
     public ResponseEntity<TripPlaceResponse> replacePlace(
             Authentication authentication, @PathVariable Long id, @RequestBody ReplaceRequest request

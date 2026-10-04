@@ -5,11 +5,13 @@ import com.trova.backend.entity.User;
 import com.trova.backend.repository.BookmarkRepository;
 import com.trova.backend.service.BookmarkService;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.TripService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bookmarks")
@@ -18,13 +20,43 @@ public class BookmarkController {
     private final CurrentUserService currentUserService;
     private final BookmarkService bookmarkService;
     private final BookmarkRepository bookmarkRepository;
+    private final TripService tripService;
 
     public BookmarkController(
-            CurrentUserService currentUserService, BookmarkService bookmarkService, BookmarkRepository bookmarkRepository
+            CurrentUserService currentUserService, BookmarkService bookmarkService, BookmarkRepository bookmarkRepository,
+            TripService tripService
     ) {
         this.currentUserService = currentUserService;
         this.bookmarkService = bookmarkService;
         this.bookmarkRepository = bookmarkRepository;
+        this.tripService = tripService;
+    }
+
+    public record CreateSavedPlaceBookmarkRequest(Long savedPlaceId, Long folderId) {
+    }
+
+    /**
+     * 영상에서 찾은 장소를 찜한다(#125). 찜은 구글 장소(카탈로그)를 가리키므로 먼저 연결한다.
+     * 본인 영상 장소가 아니면 404, 지도에서 찾지 못하면 422(앱이 "지도에서 찾지 못했다"고 알린다).
+     */
+    @PostMapping("/saved-place")
+    public ResponseEntity<BookmarkResponse> createFromSavedPlace(
+            Authentication authentication, @RequestBody CreateSavedPlaceBookmarkRequest request
+    ) {
+        if (request == null || request.savedPlaceId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        User user = currentUserService.resolve(authentication);
+        Optional<TripService.SavedPlaceMatch> match = tripService.resolveSavedPlace(user, request.savedPlaceId());
+        if (match.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        if (match.get().place().isEmpty()) {
+            return ResponseEntity.unprocessableEntity().build();
+        }
+        return bookmarkService.addBookmark(user, match.get().place().get().getId(), request.folderId())
+                .map(b -> ResponseEntity.ok(BookmarkResponse.from(b)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     public record CreateBookmarkRequest(Long placeId, Long folderId) {
