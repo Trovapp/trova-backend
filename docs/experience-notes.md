@@ -893,3 +893,9 @@
 ### 한 것
 - `TripDraftRepository.deleteByUser` 추가, `UserAccountService.withdraw`가 회원 삭제 전에 초안을 지운다.
 - 통합 테스트 1개(고치기 전 실패: 지워진 회원을 초안이 참조), 전체 598개 통과.
+
+## 2026-10-04 구글 로그인에서 쓰지 않는 이메일 범위 요청 제거 (#121)
+
+- 개인정보처리방침을 쓰며 확인: 구글 로그인이 `email, profile`을 요청해 이메일이 서버로 오지만, 코드는 `sub`·`name`·`picture`만 쓰고 저장하지 않는다.
+- 최소 수집 원칙에 맞게 `profile`만 요청한다(세 값 모두 profile 범위로 온다). `openid`는 여전히 넣지 않는다(넣으면 OIDC 경로로 빠져 사용자 저장이 건너뛰어짐).
+- 확인: 배포 후 운영의 구글 로그인 시작 주소(`/oauth2/authorization/google`)가 돌려주는 구글 주소의 scope가 `profile`인지 본다. 실제 구글 로그인은 운영 구글 콘솔 redirect 주소 미등록 상태(2026-09-30 사용자 결정으로 보류)라 끝까지 해 보지 못한다.
