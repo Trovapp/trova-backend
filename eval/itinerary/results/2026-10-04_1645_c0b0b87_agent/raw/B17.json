@@ -1,0 +1,238 @@
+{
+ "request": {
+  "id": "B17",
+  "videos": [
+   21
+  ],
+  "days": 2,
+  "start": null,
+  "purpose": "장소 1곳인데 긴 기간"
+ },
+ "mode": "agent",
+ "videos": [
+  {
+   "video_no": 21,
+   "job_id": 177,
+   "generate": {
+    "result": "DONE",
+    "seconds": 2.3
+   },
+   "input_place_ids": [
+    872
+   ],
+   "places": [
+    {
+     "id": 872,
+     "name": "솔내음한정식",
+     "region": "부산",
+     "latitude": 35.1586623388674,
+     "longitude": 129.175040428992,
+     "day": 1,
+     "order": 1
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "trip-plan.draft",
+     "success": true,
+     "latency_ms": 1345,
+     "prompt_tokens": 608,
+     "response_tokens": 102
+    }
+   ]
+  }
+ ],
+ "agent": {
+  "draft_id": 185,
+  "message": "1박 2일",
+  "status": "READY",
+  "question": null,
+  "answer": null,
+  "gemini_calls": 1,
+  "agent_google_hours_calls": 0,
+  "error": null,
+  "excluded": [],
+  "lodging": [
+   "1일차 숙소 미정 — 마지막 장소(솔내음한정식) 근처를 추천해요."
+  ],
+  "fixes": [],
+  "problems": [],
+  "draft": {
+   "days": [
+    {
+     "day": 1,
+     "date": null,
+     "items": [
+      {
+       "placeId": 872,
+       "name": "솔내음한정식",
+       "category": "restaurant",
+       "start": "12:00",
+       "end": "13:00",
+       "latitude": 35.1586623388674,
+       "longitude": 129.175040428992
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "date": null,
+     "items": []
+    }
+   ],
+   "excluded": [],
+   "lodging": [
+    "1일차 숙소 미정 — 마지막 장소(솔내음한정식) 근처를 추천해요."
+   ],
+   "assumptions": [
+    "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+    "이동 시간은 직선거리로 어림했어요."
+   ],
+   "fixes": [],
+   "problems": []
+  }
+ },
+ "inputs": [
+  {
+   "id": 872,
+   "name": "솔내음한정식",
+   "region": "부산",
+   "latitude": 35.1586623388674,
+   "longitude": 129.175040428992,
+   "day": null,
+   "order": null
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "872": {
+   "status": "OK",
+   "google_id": "ChIJfxVeymqNaDUR0xI9j_UEYuE",
+   "google_name": "솔내음한정식",
+   "distance_m": 7,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 0,
+      "hour": 21,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 1,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 21,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 2,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 21,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 4,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 21,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 5,
+      "hour": 15,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 17,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 21,
+      "minute": 30
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 11,
+      "minute": 30
+     },
+     "close": {
+      "day": 6,
+      "hour": 21,
+      "minute": 30
+     }
+    }
+   ]
+  }
+ }
+}

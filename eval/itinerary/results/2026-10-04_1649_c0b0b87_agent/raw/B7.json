@@ -1,0 +1,441 @@
+{
+ "request": {
+  "id": "B7",
+  "videos": [
+   1,
+   5
+  ],
+  "days": 2,
+  "start": null,
+  "purpose": "가까운 두 지역 합치기"
+ },
+ "mode": "agent",
+ "videos": [],
+ "result": "REQUEST_FAILED 400",
+ "inputs": [
+  {
+   "id": 755,
+   "name": "가야랜드",
+   "region": "김해",
+   "latitude": 35.2605105081932,
+   "longitude": 128.902009884799,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 756,
+   "name": "밀양돼지국밥",
+   "region": "김해",
+   "latitude": 35.2368511100353,
+   "longitude": 128.904176847368,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 757,
+   "name": "수로왕릉",
+   "region": "김해",
+   "latitude": 35.2353095896182,
+   "longitude": 128.878495722377,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 758,
+   "name": "김해한옥체험관 복합문화공간 명월",
+   "region": "김해",
+   "latitude": 35.234263994954,
+   "longitude": 128.877116215707,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 759,
+   "name": "만리향 만두",
+   "region": "김해",
+   "latitude": 35.2529902224833,
+   "longitude": 128.87522326819,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 760,
+   "name": "연지공원",
+   "region": "김해",
+   "latitude": 35.2463817870613,
+   "longitude": 128.868820366145,
+   "day": null,
+   "order": null
+  }
+ ],
+ "start_date": null,
+ "closed_day_note": null,
+ "hours": {
+  "755": {
+   "status": "OK",
+   "google_id": "ChIJT_XxnbW4aDURwRc8bYbhGCk",
+   "google_name": "가야랜드 엔젤파크",
+   "distance_m": 94,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 18,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "756": {
+   "status": "OK",
+   "google_id": "ChIJTSFkrazAaDUR8v2h0XH7MM8",
+   "google_name": "밀양돼지국밥",
+   "distance_m": 32,
+   "periods": [
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 22,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "757": {
+   "status": "OK",
+   "google_id": "ChIJf4acfGvHaDURa8ExgziCOF0",
+   "google_name": "수로왕릉",
+   "distance_m": 11,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 18,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "758": {
+   "status": "OK",
+   "google_id": "ChIJQ2mHcADHaDURy2Qn71gc5ms",
+   "google_name": "복합문화공간 명월",
+   "distance_m": 3,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 22,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 11,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 22,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "759": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJgfnb2HzHaDURKJZncrUXHNQ",
+   "google_name": "만리향",
+   "distance_m": 5,
+   "periods": null
+  },
+  "760": {
+   "status": "OK",
+   "google_id": "ChIJxZVPdXrHaDURBUF7ZtHMMg4",
+   "google_name": "연지공원",
+   "distance_m": 44,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  }
+ }
+}

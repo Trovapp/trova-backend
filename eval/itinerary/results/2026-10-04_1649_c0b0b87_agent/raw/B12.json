@@ -1,0 +1,390 @@
+{
+ "request": {
+  "id": "B12",
+  "videos": [
+   13
+  ],
+  "days": 1,
+  "start": "weekend",
+  "purpose": "날짜 지정(주말)"
+ },
+ "mode": "agent",
+ "videos": [
+  {
+   "video_no": 13,
+   "job_id": 171,
+   "generate": {
+    "result": "DONE",
+    "seconds": 3.3
+   },
+   "input_place_ids": [
+    862,
+    863,
+    864,
+    865
+   ],
+   "places": [
+    {
+     "id": 862,
+     "name": "전주난장",
+     "region": "전주",
+     "latitude": 35.8185302921246,
+     "longitude": 127.152556435027,
+     "day": 1,
+     "order": 3
+    },
+    {
+     "id": 863,
+     "name": "경기전",
+     "region": "전주",
+     "latitude": 35.8153794432041,
+     "longitude": 127.149723250334,
+     "day": 1,
+     "order": 2
+    },
+    {
+     "id": 864,
+     "name": "청연루",
+     "region": "전주",
+     "latitude": 35.8106731680088,
+     "longitude": 127.153213023533,
+     "day": 1,
+     "order": 4
+    },
+    {
+     "id": 865,
+     "name": "연화정도서관",
+     "region": "전주",
+     "latitude": 35.8491145652129,
+     "longitude": 127.123440322004,
+     "day": 1,
+     "order": 1
+    }
+   ],
+   "gemini": [
+    {
+     "operation": "trip-plan.draft",
+     "success": true,
+     "latency_ms": 1521,
+     "prompt_tokens": 811,
+     "response_tokens": 205
+    },
+    {
+     "operation": "trip-plan.draft.rule-repair",
+     "success": true,
+     "latency_ms": 1439,
+     "prompt_tokens": 988,
+     "response_tokens": 205
+    }
+   ]
+  }
+ ],
+ "agent": {
+  "draft_id": 197,
+  "message": "2026-10-10부터 당일치기",
+  "status": "READY",
+  "question": null,
+  "answer": null,
+  "gemini_calls": 2,
+  "agent_google_hours_calls": 0,
+  "error": null,
+  "excluded": [],
+  "lodging": [],
+  "fixes": [
+   "AI에게 규칙 위반 1건 수정을 맡겼어요(1번째)."
+  ],
+  "problems": [],
+  "draft": {
+   "days": [
+    {
+     "day": 1,
+     "date": "2026-10-10",
+     "items": [
+      {
+       "placeId": 865,
+       "name": "연화정도서관",
+       "category": "attraction",
+       "start": "10:00",
+       "end": "12:00",
+       "latitude": 35.8491145652129,
+       "longitude": 127.123440322004
+      },
+      {
+       "placeId": 863,
+       "name": "경기전",
+       "category": "attraction",
+       "start": "13:00",
+       "end": "15:00",
+       "latitude": 35.8153794432041,
+       "longitude": 127.149723250334
+      },
+      {
+       "placeId": 862,
+       "name": "전주난장",
+       "category": "attraction",
+       "start": "15:30",
+       "end": "17:30",
+       "latitude": 35.8185302921246,
+       "longitude": 127.152556435027
+      },
+      {
+       "placeId": 864,
+       "name": "청연루",
+       "category": "attraction",
+       "start": "17:40",
+       "end": "18:00",
+       "latitude": 35.8106731680088,
+       "longitude": 127.153213023533
+      }
+     ]
+    }
+   ],
+   "excluded": [],
+   "lodging": [],
+   "assumptions": [
+    "영업시간을 확인하지 못한 장소가 1곳 있어요.",
+    "이동 시간은 직선거리로 어림했어요."
+   ],
+   "fixes": [
+    "AI에게 규칙 위반 1건 수정을 맡겼어요(1번째)."
+   ],
+   "problems": []
+  }
+ },
+ "inputs": [
+  {
+   "id": 862,
+   "name": "전주난장",
+   "region": "전주",
+   "latitude": 35.8185302921246,
+   "longitude": 127.152556435027,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 863,
+   "name": "경기전",
+   "region": "전주",
+   "latitude": 35.8153794432041,
+   "longitude": 127.149723250334,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 864,
+   "name": "청연루",
+   "region": "전주",
+   "latitude": 35.8106731680088,
+   "longitude": 127.153213023533,
+   "day": null,
+   "order": null
+  },
+  {
+   "id": 865,
+   "name": "연화정도서관",
+   "region": "전주",
+   "latitude": 35.8491145652129,
+   "longitude": 127.123440322004,
+   "day": null,
+   "order": null
+  }
+ ],
+ "start_date": "2026-10-10",
+ "closed_day_note": null,
+ "hours": {
+  "862": {
+   "status": "NO_HOURS",
+   "google_id": "ChIJBeCtXWEjcDURh7CRoxB8Euo",
+   "google_name": "전주난장",
+   "distance_m": 2,
+   "periods": null
+  },
+  "863": {
+   "status": "OK",
+   "google_id": "ChIJ5WryHGAjcDURMUsEZ8rflR8",
+   "google_name": "전주 경기전",
+   "distance_m": 7,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 1,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 1,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 18,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 9,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 18,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "864": {
+   "status": "OK",
+   "google_id": "ChIJMVLQGpwkcDURyPF0APbrpVY",
+   "google_name": "전주천 남천교(청연루)",
+   "distance_m": 13,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 0,
+      "minute": 0
+     }
+    }
+   ]
+  },
+  "865": {
+   "status": "OK",
+   "google_id": "ChIJqWlvO5s9cDURHZQKyhF2C9c",
+   "google_name": "연화정 도서관",
+   "distance_m": 12,
+   "periods": [
+    {
+     "open": {
+      "day": 0,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 0,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 2,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 2,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 3,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 3,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 4,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 4,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 5,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 5,
+      "hour": 19,
+      "minute": 0
+     }
+    },
+    {
+     "open": {
+      "day": 6,
+      "hour": 10,
+      "minute": 0
+     },
+     "close": {
+      "day": 6,
+      "hour": 19,
+      "minute": 0
+     }
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,156 @@
+{
+ "summary": {
+  "dinner_dup": 1,
+  "lunch_dup": 0,
+  "dark_attraction": 6,
+  "dark_restored": 0
+ },
+ "rows": [
+  {
+   "id": "B1",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 수로왕릉 ~19:10"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B2",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B3",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B4",
+   "dinner_dup": [
+    "3일차 ['미영이네 본점', '화순한가네식당']"
+   ],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B5",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B6",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B7",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B8",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 연화정도서관 ~19:50"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B9",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B10",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B11",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B12",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B13",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "2일차 T1베이스캠프 부산점 ~21:00"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B14",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B15",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B16",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B17",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [],
+   "dark_restored": []
+  },
+  {
+   "id": "B18",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "3일차 송악산 ~19:10"
+   ],
+   "dark_restored": []
+  },
+  {
+   "id": "B19",
+   "dinner_dup": [],
+   "lunch_dup": [],
+   "dark_attraction": [
+    "1일차 삼양해수욕장 ~18:30",
+    "1일차 함덕해수욕장 ~20:10"
+   ],
+   "dark_restored": []
+  }
+ ]
+}
