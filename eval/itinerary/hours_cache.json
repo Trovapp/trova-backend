@@ -4713,5 +4713,110 @@
  },
  "사마르칸트|37.32902,126.78963": {
   "status": "NO_MATCH"
+ },
+ "한포포구|33.24296,126.53254": {
+  "status": "NO_MATCH"
+ },
+ "초당밀|37.78717,128.90730": {
+  "status": "OK",
+  "google_id": "ChIJgfU_kzXnYTURThHjJSF11AI",
+  "google_name": "초당밀",
+  "distance_m": 13,
+  "periods": [
+   {
+    "open": {
+     "day": 0,
+     "hour": 11,
+     "minute": 0
+    },
+    "close": {
+     "day": 0,
+     "hour": 20,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 2,
+     "hour": 11,
+     "minute": 0
+    },
+    "close": {
+     "day": 2,
+     "hour": 20,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 3,
+     "hour": 11,
+     "minute": 0
+    },
+    "close": {
+     "day": 3,
+     "hour": 20,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 4,
+     "hour": 11,
+     "minute": 0
+    },
+    "close": {
+     "day": 4,
+     "hour": 20,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 5,
+     "hour": 11,
+     "minute": 0
+    },
+    "close": {
+     "day": 5,
+     "hour": 20,
+     "minute": 0
+    }
+   },
+   {
+    "open": {
+     "day": 6,
+     "hour": 11,
+     "minute": 0
+    },
+    "close": {
+     "day": 6,
+     "hour": 20,
+     "minute": 0
+    }
+   }
+  ]
+ },
+ "강문해변|37.79482,128.91918": {
+  "status": "OK",
+  "google_id": "ChIJ70y4vL3mYTURsw4SBNF1HJY",
+  "google_name": "강문해변",
+  "distance_m": 18,
+  "periods": [
+   {
+    "open": {
+     "day": 0,
+     "hour": 0,
+     "minute": 0
+    }
+   }
+  ]
+ },
+ "미쉐 안산중앙점|37.31702,126.83789": {
+  "status": "NO_HOURS",
+  "google_id": "ChIJExnjfRxvezURpQGkKv5K25s",
+  "google_name": "중앙역",
+  "distance_m": 122,
+  "periods": null
  }
 }
