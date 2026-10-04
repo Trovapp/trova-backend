@@ -109,7 +109,7 @@ class DraftFixerTest {
             assertThat(day.get(i + 1).start()).isAfterOrEqualTo(day.get(i).end());
         }
         assertThat(day.get(day.size() - 1).end()).isBeforeOrEqualTo(DraftFixer.DAY_END);
-        assertThat(fixed.fixes()).anyMatch(f -> f.contains("만리향 만두은 1일차에 자리가 있어 다시 넣었어요"));
+        assertThat(fixed.fixes()).anyMatch(f -> f.contains("만리향 만두는 1일차에 자리가 있어 다시 넣었어요"));
     }
 
     @Test
@@ -199,7 +199,7 @@ class DraftFixerTest {
         for (int i = 0; i + 1 < out.size(); i++) {
             assertThat(out.get(i + 1).start()).isAfterOrEqualTo(out.get(i).end());
         }
-        assertThat(fixes).anyMatch(f -> f.contains("국수을 1일차 점심 시간"));
+        assertThat(fixes).anyMatch(f -> f.contains("국수를 1일차 점심 시간"));
         DraftGenerator.Draft fixed = draft(List.of(out));
         assertThat(DraftValidator.validate(fixed, byId(haejang, noodle, dinner, s1, s2, s3), 1, null).violations())
                 .noneMatch(v -> v.type().equals("NO_LUNCH") || v.type().equals("NO_DINNER"));

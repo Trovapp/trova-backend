@@ -86,10 +86,10 @@ public final class DraftFixer {
                     List<DraftGenerator.Item> target = days.get(to.get());
                     target.add(insertAt(target, it), it);
                     retime(target);
-                    fixes.add(it.name() + "은 " + (from + 1) + "일차 휴무라 " + (to.get() + 1) + "일차로 옮겼어요.");
+                    fixes.add(Josa.eunNeun(it.name()) + " " + (from + 1) + "일차 휴무라 " + (to.get() + 1) + "일차로 옮겼어요.");
                 } else {
                     excluded.add(new DraftGenerator.Excluded(it.placeId(), it.name(), "여행 날짜에 문을 여는 날이 없어 뺐어요."));
-                    fixes.add(it.name() + "은 여는 날이 없어 뺐어요.");
+                    fixes.add(Josa.eunNeun(it.name()) + " 여는 날이 없어 뺐어요.");
                 }
             }
         }
@@ -136,7 +136,7 @@ public final class DraftFixer {
             if (bestDay != null) {
                 days.set(bestDay, bestTrial);
                 excluded.remove(e);
-                fixes.add(p.getPlaceName() + "은 " + (bestDay + 1) + "일차에 자리가 있어 다시 넣었어요.");
+                fixes.add(Josa.eunNeun(p.getPlaceName()) + " " + (bestDay + 1) + "일차에 자리가 있어 다시 넣었어요.");
             }
         }
     }
@@ -230,7 +230,7 @@ public final class DraftFixer {
             }
             DraftGenerator.Item dark = cur.get(darkIdx);
             DraftGenerator.Item moved = best.stream().filter(it -> it.placeId().equals(dark.placeId())).findFirst().orElseThrow();
-            fixes.add(dark.name() + "은 해가 진 뒤라 " + dayNo + "일차 " + moved.start() + "로 앞당겼어요.");
+            fixes.add(Josa.eunNeun(dark.name()) + " 해가 진 뒤라 " + dayNo + "일차 " + moved.start() + "로 앞당겼어요.");
             cur = best;
         }
         return cur;
@@ -417,7 +417,7 @@ public final class DraftFixer {
             }
             if (best != null) {
                 cur = best;
-                fixes.add(moved.name() + "을 " + dayNo + "일차 " + names[w] + " 시간(" + moved.start() + ")으로 옮겼어요.");
+                fixes.add(Josa.eulReul(moved.name()) + " " + dayNo + "일차 " + names[w] + " 시간(" + moved.start() + ")으로 옮겼어요.");
             }
         }
         return cur;

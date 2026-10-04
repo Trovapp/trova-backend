@@ -58,7 +58,7 @@ public final class DraftValidator {
             for (DraftGenerator.Item it : items) {
                 SavedPlace p = places.get(it.placeId());
                 if (p == null) {
-                    out.add(new Violation("NOT_IN_VIDEO", Severity.ERROR, day.day(), it.placeId(), it.name() + "은 영상에 없는 장소"));
+                    out.add(new Violation("NOT_IN_VIDEO", Severity.ERROR, day.day(), it.placeId(), Josa.eunNeun(it.name()) + " 영상에 없는 장소"));
                     continue;
                 }
                 if (startDate == null || p.getOpeningPeriods() == null) {
@@ -102,7 +102,7 @@ public final class DraftValidator {
             for (DraftGenerator.Item it : items) {
                 if (DraftFixer.daylightOnly(it) && it.end().isAfter(DraftFixer.DAYLIGHT_END)) {
                     out.add(new Violation("AFTER_DARK", Severity.WARNING, day.day(), it.placeId(),
-                            day.day() + "일차 " + it.name() + "이 해 진 뒤(" + it.end() + "까지)"));
+                            day.day() + "일차 " + Josa.iGa(it.name()) + " 해 진 뒤(" + it.end() + "까지)"));
                 }
             }
                         // 식사 — 식당이 하나라도 있을 때만, 3곳 이상인 날에 점심·저녁 시간대 식당이 없으면 알린다.
