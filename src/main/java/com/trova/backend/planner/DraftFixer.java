@@ -20,6 +20,10 @@ import java.util.Optional;
  *    좌표 없음, 공항·역 같은 지나가는 곳, 이미 넣은 곳과 150m 안(중복), 넣은 곳 모두와 30km 넘게 떨어짐, 그날 휴무 — 나머지는 하루 7곳 미만인 날 중
  *    연속 이동이 모두 30km 안이고 21시 안에 끝나며 영업시간 위반이 늘지 않는 자리에 넣는다. 앞 장소 시각은 그대로 두고
  *    넣은 자리부터 겹치는 만큼만 뒤로 민다(AI가 잡은 저녁 시간 같은 빈칸을 지키려고).
+ *    #112: 식당은 비어 있는 식사 칸에만, 관광지는 18시까지 끝나는 자리에만, 원래 채워진 식사 칸을 비우지 않을 때만 되살린다.
+ *    다 고친 뒤에도 되살린 장소가 18시를 넘기거나 다른 식당과 같은 식사 칸에 있으면 그 장소는 빼고 처음부터 다시 고친다.
+ * 5) 해 진 뒤 관광지(#112): AI가 18시 넘어 끝나는 관광지를 넣으면 그날 앞쪽의 카페·쇼핑 자리와 바꾼다. 이름에 야경·야시장·전망대·
+ *    타워·분수·야간 등이 들어간 곳은 밤에 가는 곳이라 예외(사용자 결정). 바꾼 날도 30km·21시·영업시간·식사 칸을 지킬 때만.
  * 4) 식사 칸 맞추기(#110): 그날 식당이 있는데 점심(11~14시)·저녁(17~20시) 칸이 비어 있으면 그 식당을 칸에 맞게 옮긴다
  *    (#108 재측정에서 식사 경고 13건 중 11건이 이 경우 — 예: 식당 3곳이 09:00·10:10·17:40에 몰려 점심이 빔).
  *    아침(10시 반 전) 식당은 아침 식사로 보고 옮기지 않는다(사용자 결정). 옮긴 날도 연속 이동 30km 안·21시 안·영업시간 위반이
@@ -35,6 +39,50 @@ public final class DraftFixer {
     }
 
     public static Fixed fix(DraftGenerator.Draft draft, Map<Long, SavedPlace> places, LocalDate startDate) {
+        // 되살리기는 넣는 순간의 일정으로 빈 식사 칸·18시 전을 본다. 그런데 넣으면서 뒤 장소를 밀거나(아침 식당이 점심 칸으로),
+        // 뒤의 순서 바꾸기가 되살린 관광지를 저녁 칸으로 옮길 수 있다(eval #112 B4·B9). 다 고친 뒤 되살린 장소를 다시 보고,
+        // 규칙을 어기면 그 장소는 되살리지 않은 채 처음부터 다시 고친다 — 최악이어도 되살리기 전과 같은 결과다.
+        java.util.Set<Long> blocked = new java.util.HashSet<>();
+        while (true) {
+            java.util.Set<Long> restored = new java.util.HashSet<>();
+            Fixed fixed = fixOnce(draft, places, startDate, blocked, restored);
+            java.util.Set<Long> broken = brokenRestores(fixed.draft(), restored);
+            if (broken.isEmpty()) {
+                return fixed;
+            }
+            blocked.addAll(broken);
+        }
+    }
+
+    /** 되살린 장소 중 규칙을 어긴 것: 18시 넘어 끝나는 관광지(밤 명소 제외), 같은 식사 칸에 다른 식당과 겹친 식당. */
+    private static java.util.Set<Long> brokenRestores(DraftGenerator.Draft draft, java.util.Set<Long> restored) {
+        java.util.Set<Long> broken = new java.util.HashSet<>();
+        LocalTime[][] windows = {{DraftValidator.LUNCH_FROM, DraftValidator.LUNCH_TO},
+                {DraftValidator.DINNER_FROM, DraftValidator.DINNER_TO}};
+        for (DraftGenerator.Day d : draft.days()) {
+            for (DraftGenerator.Item it : d.items()) {
+                if (!restored.contains(it.placeId())) {
+                    continue;
+                }
+                if (isDark(it)) {
+                    broken.add(it.placeId());
+                }
+                if (!"restaurant".equals(it.category())) {
+                    continue;
+                }
+                for (LocalTime[] w : windows) {
+                    long meals = d.items().stream().filter(o -> "restaurant".equals(o.category()) && inWindow(o, w[0], w[1])).count();
+                    if (inWindow(it, w[0], w[1]) && meals > 1) {
+                        broken.add(it.placeId());
+                    }
+                }
+            }
+        }
+        return broken;
+    }
+
+    private static Fixed fixOnce(DraftGenerator.Draft draft, Map<Long, SavedPlace> places, LocalDate startDate,
+                                 java.util.Set<Long> blocked, java.util.Set<Long> restored) {
         List<String> fixes = new ArrayList<>();
         List<List<DraftGenerator.Item>> days = new ArrayList<>();
         draft.days().forEach(d -> days.add(new ArrayList<>(d.items())));
@@ -43,7 +91,7 @@ public final class DraftFixer {
         if (startDate != null) {
             moveClosed(days, places, startDate, excluded, fixes);
         }
-        restoreExcluded(days, places, startDate, excluded, fixes);
+        restoreExcluded(days, places, startDate, excluded, fixes, blocked, restored);
         for (int i = 0; i < days.size(); i++) {
             LocalDate date = startDate == null ? null : startDate.plusDays(i);
             days.set(i, fitMeals(days.get(i), places, date, i + 1, fixes));
@@ -55,6 +103,11 @@ public final class DraftFixer {
                         + "km → " + Math.round(pathKm(reordered)) + "km).");
                 days.set(i, reordered);
             }
+        }
+        // 순서 바꾸기 뒤에 둔다 — 가까운 곳 순으로 바꾸다 관광지가 저녁 칸으로 갈 수 있어서.
+        for (int i = 0; i < days.size(); i++) {
+            LocalDate date = startDate == null ? null : startDate.plusDays(i);
+            days.set(i, daylightSwap(days.get(i), places, date, i + 1, fixes));
         }
         List<DraftGenerator.Day> newDays = new ArrayList<>();
         for (int i = 0; i < days.size(); i++) {
@@ -78,10 +131,10 @@ public final class DraftFixer {
                     List<DraftGenerator.Item> target = days.get(to.get());
                     target.add(insertAt(target, it), it);
                     retime(target);
-                    fixes.add(it.name() + "은 " + (from + 1) + "일차 휴무라 " + (to.get() + 1) + "일차로 옮겼어요.");
+                    fixes.add(Josa.eunNeun(it.name()) + " " + (from + 1) + "일차 휴무라 " + (to.get() + 1) + "일차로 옮겼어요.");
                 } else {
                     excluded.add(new DraftGenerator.Excluded(it.placeId(), it.name(), "여행 날짜에 문을 여는 날이 없어 뺐어요."));
-                    fixes.add(it.name() + "은 여는 날이 없어 뺐어요.");
+                    fixes.add(Josa.eunNeun(it.name()) + " 여는 날이 없어 뺐어요.");
                 }
             }
         }
@@ -93,13 +146,14 @@ public final class DraftFixer {
             java.util.regex.Pattern.compile("(공항|역|터미널|정류장|정류소|휴게소|IC)$");
 
     private static void restoreExcluded(List<List<DraftGenerator.Item>> days, Map<Long, SavedPlace> places, LocalDate startDate,
-                                        List<DraftGenerator.Excluded> excluded, List<String> fixes) {
+                                        List<DraftGenerator.Excluded> excluded, List<String> fixes,
+                                        java.util.Set<Long> blocked, java.util.Set<Long> restored) {
         // 이미 넣은 장소에서 가까운 것부터 — 먼저 넣은 장소가 뒤 장소의 자리를 막는 일을 줄인다.
         List<DraftGenerator.Excluded> candidates = new ArrayList<>(excluded);
         candidates.sort(java.util.Comparator.comparingDouble(e -> nearestScheduledKm(days, places.get(e.placeId()))));
         for (DraftGenerator.Excluded e : candidates) {
             SavedPlace p = places.get(e.placeId());
-            if (!restorable(days, p)) {
+            if (blocked.contains(e.placeId()) || !restorable(days, p)) {
                 continue;
             }
             DraftGenerator.Item item = newItem(p);
@@ -113,24 +167,160 @@ public final class DraftFixer {
                         || (date != null && OpeningHoursService.isOpenOn(p.getOpeningPeriods(), date).equals(Optional.of(false)))) {
                     continue;
                 }
-                int at = insertAt(day, item);
-                List<DraftGenerator.Item> trial = insertAndShift(day, at, item);
-                if (!fits(trial, day, places, date)) {
-                    continue;
-                }
-                double added = pathKm(trial) - pathKm(day);
-                if (added < bestAdded) {
-                    bestAdded = added;
-                    bestDay = d;
-                    bestTrial = trial;
+                for (List<DraftGenerator.Item> trial : restoreTrials(day, item)) {
+                    if (!fits(trial, day, places, date) || !keepsMeals(trial, day) || !inDaylight(trial, item)) {
+                        continue;
+                    }
+                    double added = pathKm(trial) - pathKm(day);
+                    if (added < bestAdded) {
+                        bestAdded = added;
+                        bestDay = d;
+                        bestTrial = trial;
+                    }
                 }
             }
             if (bestDay != null) {
                 days.set(bestDay, bestTrial);
                 excluded.remove(e);
-                fixes.add(p.getPlaceName() + "은 " + (bestDay + 1) + "일차에 자리가 있어 다시 넣었어요.");
+                restored.add(e.placeId());
+                fixes.add(Josa.eunNeun(p.getPlaceName()) + " " + (bestDay + 1) + "일차에 자리가 있어 다시 넣었어요.");
             }
         }
+    }
+
+    static final LocalTime DAYLIGHT_END = LocalTime.of(18, 0);
+
+    /**
+     * 되살릴 자리 후보(#112). 식당은 그날 비어 있는 식사 칸(점심·저녁)에만 — 칸이 다 차 있으면 후보가 없다(저녁을 두 번 넣지 않으려고).
+     * 나머지는 모든 자리를 후보로 두고, 관광지는 inDaylight로 18시까지 끝나는 자리만 남긴다.
+     */
+    private static List<List<DraftGenerator.Item>> restoreTrials(List<DraftGenerator.Item> day, DraftGenerator.Item item) {
+        List<List<DraftGenerator.Item>> trials = new ArrayList<>();
+        if ("restaurant".equals(item.category())) {
+            LocalTime[][] windows = {{DraftValidator.LUNCH_FROM, DraftValidator.LUNCH_TO},
+                    {DraftValidator.DINNER_FROM, DraftValidator.DINNER_TO}};
+            for (LocalTime[] w : windows) {
+                if (hasMealIn(day, w[0], w[1])) {
+                    continue;
+                }
+                for (int k = 0; k <= day.size(); k++) {
+                    List<DraftGenerator.Item> trial = placeMeal(day, k, item, w[0]);
+                    if (trial.get(k).start().isBefore(w[1])) {
+                        trials.add(trial);
+                    }
+                }
+            }
+            return trials;
+        }
+        for (int k = 0; k <= day.size(); k++) {
+            trials.add(insertAndShift(day, k, item));
+        }
+        return trials;
+    }
+
+    /** 되살린 장소 때문에 원래 채워져 있던 점심·저녁 칸이 비면 안 된다. */
+    private static boolean keepsMeals(List<DraftGenerator.Item> trial, List<DraftGenerator.Item> original) {
+        return mealsCovered(trial) >= mealsCovered(original);
+    }
+
+    private static int mealsCovered(List<DraftGenerator.Item> items) {
+        return (hasMealIn(items, DraftValidator.LUNCH_FROM, DraftValidator.LUNCH_TO) ? 1 : 0)
+                + (hasMealIn(items, DraftValidator.DINNER_FROM, DraftValidator.DINNER_TO) ? 1 : 0);
+    }
+
+    private static final java.util.regex.Pattern NIGHT_SPOT =
+            java.util.regex.Pattern.compile("야경|야시장|전망대|타워|분수|야간|불꽃|야행|루프탑|night", java.util.regex.Pattern.CASE_INSENSITIVE);
+
+    /** 18시 전에 끝나야 하는 관광지인지 — 이름으로 알 수 있는 밤 명소는 빼고. */
+    static boolean daylightOnly(DraftGenerator.Item it) {
+        return "attraction".equals(it.category()) && (it.name() == null || !NIGHT_SPOT.matcher(it.name()).find());
+    }
+
+    private static boolean isDark(DraftGenerator.Item it) {
+        return daylightOnly(it) && it.end().isAfter(DAYLIGHT_END);
+    }
+
+    /**
+     * 18시 넘어 끝나는 관광지를 그날 앞쪽의 카페·쇼핑(·기타) 자리와 바꾼다. 자리를 바꾼 뒤 바뀐 자리부터 시각을 다시 맞춘다
+     * (각 자리의 원래 시작 시각과 앞 장소 끝 + 이동 중 늦은 쪽). 해 진 뒤 관광지가 줄고 다른 규칙이 깨지지 않을 때만 바꾼다.
+     */
+    static List<DraftGenerator.Item> daylightSwap(List<DraftGenerator.Item> day, Map<Long, SavedPlace> places, LocalDate date,
+                                                  int dayNo, List<String> fixes) {
+        List<DraftGenerator.Item> cur = day;
+        for (int guard = 0; guard < day.size(); guard++) {
+            int darkIdx = -1;
+            for (int i = 0; i < cur.size(); i++) {
+                if (isDark(cur.get(i))) {
+                    darkIdx = i;
+                    break;
+                }
+            }
+            if (darkIdx < 0) {
+                break;
+            }
+            List<DraftGenerator.Item> best = null;
+            for (int j = 0; j < darkIdx; j++) {
+                DraftGenerator.Item partner = cur.get(j);
+                if ("attraction".equals(partner.category()) || "restaurant".equals(partner.category())) {
+                    continue;
+                }
+                List<DraftGenerator.Item> trial = swapAndReflow(cur, j, darkIdx);
+                if (darkCount(trial) >= darkCount(cur) || !fits(trial, cur, places, date) || !keepsMeals(trial, cur)) {
+                    continue;
+                }
+                if (best == null || pathKm(trial) < pathKm(best)) {
+                    best = trial;
+                }
+            }
+            if (best == null) {
+                break;
+            }
+            DraftGenerator.Item dark = cur.get(darkIdx);
+            DraftGenerator.Item moved = best.stream().filter(it -> it.placeId().equals(dark.placeId())).findFirst().orElseThrow();
+            fixes.add(Josa.eunNeun(dark.name()) + " 해가 진 뒤라 " + dayNo + "일차 " + moved.start() + "로 앞당겼어요.");
+            cur = best;
+        }
+        return cur;
+    }
+
+    private static long darkCount(List<DraftGenerator.Item> items) {
+        return items.stream().filter(DraftFixer::isDark).count();
+    }
+
+    /** i와 j 자리를 바꾸고, i부터 시각을 다시 맞춘다. 각 자리는 원래 그 자리의 시작 시각보다 앞당기지 않는다. */
+    static List<DraftGenerator.Item> swapAndReflow(List<DraftGenerator.Item> day, int i, int j) {
+        List<DraftGenerator.Item> order = new ArrayList<>(day);
+        DraftGenerator.Item a = order.get(i);
+        order.set(i, order.get(j));
+        order.set(j, a);
+        List<DraftGenerator.Item> out = new ArrayList<>(day.subList(0, i));
+        LocalTime cursor = i == 0 ? null : out.get(i - 1).end();
+        DraftGenerator.Item before = i == 0 ? null : out.get(i - 1);
+        for (int k = i; k < order.size(); k++) {
+            DraftGenerator.Item it = order.get(k);
+            LocalTime slot = day.get(k).start();
+            LocalTime s = slot;
+            if (before != null) {
+                LocalTime earliest = cursor.plusMinutes(travelMinutes(before, it));
+                if (earliest.isAfter(s)) {
+                    s = earliest;
+                }
+            }
+            LocalTime e = s.plusMinutes(java.time.Duration.between(it.start(), it.end()).toMinutes());
+            out.add(with(it, s, e));
+            cursor = e;
+            before = it;
+        }
+        return out;
+    }
+
+    /** 관광지는 해가 지기 전(18시)에 끝나는 자리에만 되살린다 — 저녁 뒤 오름·해변 방문을 막으려고(#112). */
+    private static boolean inDaylight(List<DraftGenerator.Item> trial, DraftGenerator.Item item) {
+        if (!daylightOnly(item)) {
+            return true;
+        }
+        return trial.stream().filter(it -> it.placeId().equals(item.placeId())).findFirst()
+                .map(it -> !it.end().isAfter(DAYLIGHT_END)).orElse(false);
     }
 
     /** 사실로 확인되는 제외 이유가 없는지 — 좌표·교통시설·중복만 본다(휴무는 날마다 따로). */
@@ -274,7 +464,7 @@ public final class DraftFixer {
             }
             if (best != null) {
                 cur = best;
-                fixes.add(moved.name() + "을 " + dayNo + "일차 " + names[w] + " 시간(" + moved.start() + ")으로 옮겼어요.");
+                fixes.add(Josa.eulReul(moved.name()) + " " + dayNo + "일차 " + names[w] + " 시간(" + moved.start() + ")으로 옮겼어요.");
             }
         }
         return cur;

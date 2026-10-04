@@ -109,7 +109,7 @@ class DraftFixerTest {
             assertThat(day.get(i + 1).start()).isAfterOrEqualTo(day.get(i).end());
         }
         assertThat(day.get(day.size() - 1).end()).isBeforeOrEqualTo(DraftFixer.DAY_END);
-        assertThat(fixed.fixes()).anyMatch(f -> f.contains("만리향 만두은 1일차에 자리가 있어 다시 넣었어요"));
+        assertThat(fixed.fixes()).anyMatch(f -> f.contains("만리향 만두는 1일차에 자리가 있어 다시 넣었어요"));
     }
 
     @Test
@@ -199,7 +199,7 @@ class DraftFixerTest {
         for (int i = 0; i + 1 < out.size(); i++) {
             assertThat(out.get(i + 1).start()).isAfterOrEqualTo(out.get(i).end());
         }
-        assertThat(fixes).anyMatch(f -> f.contains("국수을 1일차 점심 시간"));
+        assertThat(fixes).anyMatch(f -> f.contains("국수를 1일차 점심 시간"));
         DraftGenerator.Draft fixed = draft(List.of(out));
         assertThat(DraftValidator.validate(fixed, byId(haejang, noodle, dinner, s1, s2, s3), 1, null).violations())
                 .noneMatch(v -> v.type().equals("NO_LUNCH") || v.type().equals("NO_DINNER"));
@@ -234,5 +234,120 @@ class DraftFixerTest {
                 item(s1, "17:00", "19:30"), item(s2, "19:40", "20:50"));
         List<DraftGenerator.Item> out = DraftFixer.fitMeals(tight, byId(lunch, late, s1, s2), null, 1, new java.util.ArrayList<>());
         assertThat(out.get(out.size() - 1).end()).isBeforeOrEqualTo(DraftFixer.DAY_END);
+    }
+
+    // ---- 되살리기 시간 조건(#112) ----
+
+    @Test
+    void 점심_저녁이_다_차_있으면_식당은_되살리지_않는다() {
+        // 운영 제주 1일차 모양: 저녁 17:30이 이미 있는데 식당을 19:20에 또 넣었다.
+        SavedPlace lunch = place(300, "점심집", "restaurant", 33.50, 126.53, null);
+        SavedPlace dinner = place(301, "저녁집", "restaurant", 33.41, 126.27, null);
+        SavedPlace extra = place(302, "또식당", "restaurant", 33.24, 126.31, null);
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(s1, "10:00", "11:30"), item(lunch, "12:00", "13:00"),
+                item(s2, "14:00", "15:30"), item(dinner, "17:30", "18:30"))), extra);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(lunch, dinner, extra, s1, s2), null);
+
+        assertThat(fixed.draft().excluded()).extracting(DraftGenerator.Excluded::name).containsExactly("또식당");
+    }
+
+    @Test
+    void 저녁_칸이_비어_있으면_식당을_저녁_시간에_되살린다() {
+        SavedPlace lunch = place(310, "점심집", "restaurant", 33.45, 126.50, null);
+        SavedPlace extra = place(311, "저녁될집", "restaurant", 33.465, 126.515, null);
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(s1, "10:00", "11:30"), item(lunch, "12:00", "13:00"),
+                item(s2, "14:00", "15:30"))), extra);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(lunch, extra, s1, s2), null);
+
+        DraftGenerator.Item restored = fixed.draft().days().get(0).items().stream()
+                .filter(i -> i.name().equals("저녁될집")).findFirst().orElseThrow();
+        assertThat(restored.start()).isAfterOrEqualTo(LocalTime.of(17, 0)).isBefore(LocalTime.of(20, 0));
+    }
+
+    @Test
+    void 관광지는_18시_넘어_끝나는_자리에는_되살리지_않는다() {
+        // 운영 제주 2일차 모양: 저녁 뒤 송악산 19:10.
+        SavedPlace dinner = place(320, "저녁집", "restaurant", 33.46, 126.51, null);
+        SavedPlace mountain = place(321, "오름", "attraction", 33.47, 126.52, null);
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(s1, "09:00", "11:00"), item(s2, "11:10", "13:30"),
+                item(s3, "13:40", "17:20"), item(dinner, "17:30", "18:30"))), mountain);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(dinner, mountain, s1, s2, s3), null);
+
+        assertThat(fixed.draft().excluded()).extracting(DraftGenerator.Excluded::name).containsExactly("오름");
+    }
+
+    @Test
+    void 해_진_뒤_관광지는_앞쪽_카페_자리와_바꾸고_야경_명소는_둔다() {
+        SavedPlace cafe = place(330, "카페", "cafe", 33.45, 126.50, null);
+        SavedPlace lunch = place(331, "점심집", "restaurant", 33.451, 126.501, null);
+        SavedPlace beach = place(332, "해변", "attraction", 33.46, 126.51, null);
+        SavedPlace dinner = place(333, "저녁집", "restaurant", 33.461, 126.511, null);
+        SavedPlace night = place(334, "야경 전망대", "attraction", 33.47, 126.52, null);
+        List<DraftGenerator.Item> day = List.of(item(cafe, "10:00", "11:00"), item(lunch, "12:00", "13:00"),
+                item(s1, "13:30", "16:00"), item(dinner, "17:00", "18:00"), item(beach, "18:30", "20:00"), item(night, "20:10", "20:50"));
+        List<String> fixes = new java.util.ArrayList<>();
+
+        List<DraftGenerator.Item> out = DraftFixer.daylightSwap(day, byId(cafe, lunch, beach, dinner, night, s1), null, 1, fixes);
+
+        DraftGenerator.Item b = out.stream().filter(i -> i.name().equals("해변")).findFirst().orElseThrow();
+        assertThat(b.end()).isBeforeOrEqualTo(LocalTime.of(18, 0));
+        assertThat(out.stream().filter(i -> i.name().equals("야경 전망대")).findFirst().orElseThrow().start())
+                .isAfterOrEqualTo(LocalTime.of(20, 0));
+        assertThat(out.stream().filter(i -> i.name().equals("점심집")).findFirst().orElseThrow().start()).isEqualTo(LocalTime.of(12, 0));
+        for (int i = 0; i + 1 < out.size(); i++) {
+            assertThat(out.get(i + 1).start()).isAfterOrEqualTo(out.get(i).end());
+        }
+        assertThat(fixes).anyMatch(f -> f.contains("해변은 해가 진 뒤라 1일차"));
+    }
+
+    @Test
+    void 바꿀_카페_쇼핑이_없으면_그대로_두고_검증기가_알린다() {
+        SavedPlace lunch = place(340, "점심집", "restaurant", 33.45, 126.50, null);
+        SavedPlace oreum = place(341, "오름", "attraction", 33.46, 126.51, null);
+        List<DraftGenerator.Item> day = List.of(item(s1, "10:00", "11:30"), item(lunch, "12:00", "13:00"),
+                item(s2, "14:00", "17:00"), item(oreum, "17:30", "19:00"));
+
+        assertThat(DraftFixer.daylightSwap(day, byId(lunch, oreum, s1, s2), null, 1, new java.util.ArrayList<>())).isSameAs(day);
+        assertThat(DraftValidator.validate(draft(List.of(day)), byId(lunch, oreum, s1, s2), 1, null).violations())
+                .anyMatch(v -> v.type().equals("AFTER_DARK") && v.severity() == DraftValidator.Severity.WARNING);
+    }
+
+    @Test
+    void 식당을_되살리다_아침_식당이_점심_칸으로_밀리면_되살리지_않는다() {
+        // eval #112 B4 1일차 모양: 아침 식당(10:00) 앞에 식당을 11:00에 넣자 아침 식당이 뒤로 밀려 점심이 두 번이 됐다.
+        SavedPlace breakfast = place(340, "아침집", "restaurant", 33.450, 126.500, null);
+        SavedPlace beach = place(341, "해변", "attraction", 33.450, 126.520, null);
+        SavedPlace forest = place(342, "숲", "attraction", 33.450, 126.540, null);
+        SavedPlace dinner = place(343, "저녁집", "restaurant", 33.450, 126.550, null);
+        SavedPlace noodle = place(344, "국수집", "restaurant", 33.450, 126.495, null);
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(breakfast, "10:00", "10:50"), item(beach, "11:20", "12:50"),
+                item(forest, "13:20", "15:00"), item(dinner, "18:00", "19:00"))), noodle);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(breakfast, beach, forest, dinner, noodle), null);
+
+        List<DraftGenerator.Item> day = fixed.draft().days().get(0).items();
+        assertThat(day.stream().filter(it -> it.category().equals("restaurant")
+                && !it.start().isBefore(LocalTime.of(11, 0)) && it.start().isBefore(LocalTime.of(14, 0)))).hasSizeLessThanOrEqualTo(1);
+    }
+
+    @Test
+    void 되살린_관광지가_순서_바꾸기로_18시를_넘기면_되살리지_않는다() {
+        // eval #112 B9 모양: 관광지만 있는 날, 되살릴 때는 11시대였는데 가까운 곳 순으로 바꾸며 마지막(18시 넘는) 칸으로 갔다.
+        SavedPlace a = place(350, "해변A", "attraction", 33.45, 126.50, null);
+        SavedPlace far = place(351, "폭포", "attraction", 33.45, 126.60, null);
+        SavedPlace b = place(352, "해변B", "attraction", 33.45, 126.52, null);
+        SavedPlace c = place(353, "해변C", "attraction", 33.45, 126.54, null);
+        SavedPlace farther = place(354, "주상절리", "attraction", 33.45, 126.62, null);
+        DraftGenerator.Draft d = withExcluded(List.of(List.of(item(a, "09:00", "10:30"), item(far, "11:00", "12:30"),
+                item(b, "13:00", "14:30"), item(c, "18:10", "20:00"))), farther);
+
+        DraftFixer.Fixed fixed = DraftFixer.fix(d, byId(a, far, b, c, farther), null);
+
+        fixed.draft().days().get(0).items().stream().filter(it -> it.name().equals("주상절리"))
+                .forEach(it -> assertThat(it.end()).isBeforeOrEqualTo(LocalTime.of(18, 0)));
+        assertThat(fixed.fixes()).noneMatch(f -> f.startsWith("주상절리") && f.contains("다시 넣었어요"));
     }
 }
