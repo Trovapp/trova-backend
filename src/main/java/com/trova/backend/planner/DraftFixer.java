@@ -88,6 +88,10 @@ public final class DraftFixer {
         draft.days().forEach(d -> days.add(new ArrayList<>(d.items())));
         List<DraftGenerator.Excluded> excluded = new ArrayList<>(draft.excluded());
 
+        // AI가 겹쳐 놓은 시각을 먼저 바로잡는다 — 뒤 단계들은 장소가 시각 순으로 이어져 있다고 보고 자리를 판단한다.
+        for (int i = 0; i < days.size(); i++) {
+            days.set(i, resolveOverlaps(days.get(i), i + 1, fixes));
+        }
         if (startDate != null) {
             moveClosed(days, places, startDate, excluded, fixes);
         }
@@ -108,6 +112,10 @@ public final class DraftFixer {
         for (int i = 0; i < days.size(); i++) {
             LocalDate date = startDate == null ? null : startDate.plusDays(i);
             days.set(i, daylightSwap(days.get(i), places, date, i + 1, fixes));
+        }
+        // 안전장치: 위 단계들은 뒤 장소를 미는 방식이라 겹침을 만들지 않지만, 혹시 생기면 여기서 바로잡는다.
+        for (int i = 0; i < days.size(); i++) {
+            days.set(i, resolveOverlaps(days.get(i), i + 1, fixes));
         }
         List<DraftGenerator.Day> newDays = new ArrayList<>();
         for (int i = 0; i < days.size(); i++) {
@@ -138,6 +146,31 @@ public final class DraftFixer {
                 }
             }
         }
+    }
+
+    /**
+     * 앞 장소가 끝나기 전에 시작하는 장소를 앞 장소 끝 + 이동 시간으로 미룬다(머무는 시간은 그대로, #115).
+     * 운영 제주 3일차에 AI 수정이 곶자왈 10:30~12:00과 식당 11:00~12:00을 겹쳐 놓았다. 밀린 장소 때문에 뒤가 겹치면 뒤도 민다.
+     * 21시를 넘기는 등 다른 규칙이 깨지면 검증기가 알린다.
+     */
+    static List<DraftGenerator.Item> resolveOverlaps(List<DraftGenerator.Item> day, int dayNo, List<String> fixes) {
+        List<DraftGenerator.Item> out = new ArrayList<>();
+        for (DraftGenerator.Item it : day) {
+            DraftGenerator.Item prev = out.isEmpty() ? null : out.get(out.size() - 1);
+            if (prev != null && it.start().isBefore(prev.end())) {
+                LocalTime s = prev.end().plusMinutes(travelMinutes(prev, it));
+                LocalTime e = s.plusMinutes(java.time.Duration.between(it.start(), it.end()).toMinutes());
+                if (e.isBefore(s)) { // 자정을 넘기면 더 밀지 않는다 — 검증기가 알린다
+                    out.add(it);
+                    continue;
+                }
+                fixes.add(dayNo + "일차 " + Josa.gwaWa(prev.name()) + " " + Josa.eunNeun(it.name()) + " 시간이 겹쳐 "
+                        + s + " 시작으로 미뤘어요.");
+                it = with(it, s, e);
+            }
+            out.add(it);
+        }
+        return out;
     }
 
     static final double DUPLICATE_METERS = 150;

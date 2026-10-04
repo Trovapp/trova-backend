@@ -13,6 +13,8 @@ class JosaTest {
         assertThat(Josa.eulReul("국수")).isEqualTo("국수를");
         assertThat(Josa.iGa("카페")).isEqualTo("카페가");
         assertThat(Josa.iGa("송악산")).isEqualTo("송악산이");
+        assertThat(Josa.gwaWa("곶자왈")).isEqualTo("곶자왈과");
+        assertThat(Josa.gwaWa("카페")).isEqualTo("카페와");
         assertThat(Josa.eunNeun("Cafe B")).isEqualTo("Cafe B은(는)");
     }
 }

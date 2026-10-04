@@ -80,6 +80,11 @@ public final class DraftValidator {
             for (int i = 0; i + 1 < items.size(); i++) {
                 DraftGenerator.Item a = items.get(i);
                 DraftGenerator.Item b = items.get(i + 1);
+                // 시간 겹침(#115) — 코드가 먼저 미루므로 보통은 없고, 남으면 고쳐야 한다.
+                if (b.start().isBefore(a.end())) {
+                    out.add(new Violation("OVERLAP", Severity.ERROR, day.day(), b.placeId(),
+                            a.name() + "(~" + a.end() + ") " + b.name() + "(" + b.start() + "~) 시간이 겹침"));
+                }
                 if (a.latitude() != null && b.latitude() != null) {
                     double km = GeoUtils.haversineKm(a.latitude(), a.longitude(), b.latitude(), b.longitude());
                     if (km > MAX_HOP_KM) {

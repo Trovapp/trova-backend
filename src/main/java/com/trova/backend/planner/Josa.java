@@ -39,4 +39,9 @@ public final class Josa {
     public static String iGa(String word) {
         return pick(word, "이", "가");
     }
+
+    /** 카페와 / 곶자왈과 */
+    public static String gwaWa(String word) {
+        return pick(word, "과", "와");
+    }
 }
