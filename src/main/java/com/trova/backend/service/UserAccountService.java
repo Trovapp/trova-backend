@@ -7,7 +7,6 @@ import com.trova.backend.repository.BookmarkRepository;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
-import com.trova.backend.repository.TravelPassRepository;
 import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.repository.UsageRecordRepository;
 import com.trova.backend.repository.TripReplanJobRepository;
@@ -34,7 +33,7 @@ public class UserAccountService {
     private final UserPreferenceSignalRepository userPreferenceSignalRepository;
     private final TripDraftRepository tripDraftRepository;
     private final UsageRecordRepository usageRecordRepository;
-    private final TravelPassRepository travelPassRepository;
+    private final PurchaseRetentionService purchaseRetentionService;
 
     public UserAccountService(
             UserRepository userRepository,
@@ -50,7 +49,7 @@ public class UserAccountService {
             UserPreferenceSignalRepository userPreferenceSignalRepository,
             TripDraftRepository tripDraftRepository,
             UsageRecordRepository usageRecordRepository,
-            TravelPassRepository travelPassRepository
+            PurchaseRetentionService purchaseRetentionService
     ) {
         this.userRepository = userRepository;
         this.savedPlaceRepository = savedPlaceRepository;
@@ -65,7 +64,7 @@ public class UserAccountService {
         this.userPreferenceSignalRepository = userPreferenceSignalRepository;
         this.tripDraftRepository = tripDraftRepository;
         this.usageRecordRepository = usageRecordRepository;
-        this.travelPassRepository = travelPassRepository;
+        this.purchaseRetentionService = purchaseRetentionService;
     }
 
     // 회원을 참조하는 데이터를 전부 지운 뒤 회원을 지운다(탈퇴 시 지체 없이 파기).
@@ -91,9 +90,9 @@ public class UserAccountService {
         processingJobRepository.deleteByUser(user);
         // 일정 초안(#107)도 회원을 참조한다 — 빠져 있어 초안이 있는 회원은 탈퇴가 실패했다(#119).
         tripDraftRepository.deleteByUser(user);
-        // 무료·여행 패스 사용 기록과 패스(#130)도 회원을 참조한다.
+        // 무료·여행 패스 사용 기록(#130)은 지우고, 구매 기록은 전자상거래법상 5년 보관이라 회원과 끊어 분리 보관한다.
         usageRecordRepository.deleteByUser(user);
-        travelPassRepository.deleteByUser(user);
+        purchaseRetentionService.retainAndRemove(user);
         userRepository.delete(user);
     }
 }

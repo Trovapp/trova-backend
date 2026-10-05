@@ -11,5 +11,7 @@ public interface TravelPassRepository extends JpaRepository<TravelPass, Long> {
 
     Optional<TravelPass> findFirstByUserOrderByExpiresAtDesc(User user);
 
+    java.util.List<TravelPass> findByUser(User user);
+
     void deleteByUser(User user);
 }
