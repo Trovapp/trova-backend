@@ -154,6 +154,15 @@ public class SavedPlace {
         return videoNotes == null || videoNotes.isBlank() ? List.of() : List.of(videoNotes.split("\n"));
     }
 
+    /**
+     * 영상에서 말한 내용을 여행 장소 메모로 옮길 때의 모양(#134) — "· 내용" 줄들. 없으면 null.
+     * 영상을 다시 보지 않아도 일정의 장소마다 영상 속 설명이 남게 하려는 것(사용자 방향, 2026-10-07).
+     */
+    public String videoNotesAsMemo() {
+        List<String> notes = getVideoNotes();
+        return notes.isEmpty() ? null : String.join("\n", notes.stream().map(n -> "· " + n).toList());
+    }
+
     public void applyVideoNotes(List<String> notes) {
         List<String> lines = notes == null ? List.of() : notes.stream()
                 .filter(n -> n != null && !n.isBlank())

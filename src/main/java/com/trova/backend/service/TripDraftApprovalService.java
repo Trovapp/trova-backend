@@ -94,7 +94,8 @@ public class TripDraftApprovalService {
                 TripPlace place = new TripPlace(itinerary, item.name(), p == null ? null : p.getRegion(), item.category(),
                         item.latitude(), item.longitude(), p == null ? null : p.getPhone(), p == null ? null : p.getAddress(),
                         order++, PlaceSource.VIDEO, p == null ? null : p.getId());
-                place.applyDetails(item.start(), item.end(), null, null);
+                // 영상에서 말한 내용을 장소 메모로 옮긴다(#134) — 사용자가 고치거나 지울 수 있게 일반 메모 칸에.
+                place.applyDetails(item.start(), item.end(), null, p == null ? null : p.videoNotesAsMemo());
                 if (p != null && p.getGooglePlaceId() != null) {
                     place.applyGooglePlaceId(p.getGooglePlaceId());
                 }

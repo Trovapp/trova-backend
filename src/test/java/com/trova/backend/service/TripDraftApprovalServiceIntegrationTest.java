@@ -69,7 +69,9 @@ class TripDraftApprovalServiceIntegrationTest {
         ProcessingJob job = processingJobRepository.save(
                 new ProcessingJob(user, "https://youtu.be/approve-" + System.nanoTime(), SourcePlatform.YOUTUBE));
         SavedPlace beach = savedPlaceRepository.save(new SavedPlace(job, user, "해수욕장", "부산 해운대구", "attraction", 35.15, 129.16));
-        SavedPlace food = savedPlaceRepository.save(new SavedPlace(job, user, "국밥집", "부산 수영구", "restaurant", 35.16, 129.11));
+        SavedPlace food = new SavedPlace(job, user, "국밥집", "부산 수영구", "restaurant", 35.16, 129.11);
+        food.applyVideoNotes(List.of("돼지국밥이 진하고 부추를 많이 넣어 먹는다", "오전 11시 전에 가면 줄이 짧다"));
+        food = savedPlaceRepository.save(food);
         SavedPlace market = savedPlaceRepository.save(new SavedPlace(job, user, "시장", "부산 중구", "shopping", 35.10, 129.03));
         DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(
                 new DraftGenerator.Day(1, LocalDate.of(2026, 11, 1), List.of(item(beach, "10:00", "11:30"), item(food, "12:00", "13:00"))),
@@ -101,6 +103,9 @@ class TripDraftApprovalServiceIntegrationTest {
         assertThat(day1.get(1).getVisitStartTime()).isEqualTo(LocalTime.of(12, 0));
         assertThat(day1.get(0).getSavedPlaceId()).isNotNull();
         assertThat(day1.get(0).getSource()).isEqualTo(PlaceSource.VIDEO);
+        // 영상에서 말한 내용이 장소 메모로 옮겨진다(#134). 영상 메모가 없는 장소는 메모가 비어 있다.
+        assertThat(day1.get(1).getMemo()).isEqualTo("· 돼지국밥이 진하고 부추를 많이 넣어 먹는다\n· 오전 11시 전에 가면 줄이 짧다");
+        assertThat(day1.get(0).getMemo()).isNull();
 
         TripDraft approved = tripDraftRepository.findById(draft.getId()).orElseThrow();
         assertThat(approved.getStatus()).isEqualTo(TripDraftStatus.APPROVED);

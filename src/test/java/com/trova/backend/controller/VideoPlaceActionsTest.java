@@ -99,6 +99,8 @@ class VideoPlaceActionsTest {
     void 영상_장소를_여행의_일차_끝에_담는다() throws Exception {
         User me = userRepository.save(new User("google", "vp-trip-1", "영상유저", null));
         SavedPlace cafe = videoPlace(me, "바다카페");
+        cafe.applyVideoNotes(List.of("창가 자리에서 바다가 보인다"));
+        savedPlaceRepository.save(cafe);
         Trip trip = trip(me);
 
         mockMvc.perform(post("/api/trips/" + trip.getId() + "/days/2/video-places").with(loginAs("vp-trip-1"))
@@ -110,6 +112,7 @@ class VideoPlaceActionsTest {
         List<TripPlace> places = tripPlaceRepository.findByItineraryOrderByVisitOrder(day2);
         assertThat(places).extracting(TripPlace::getPlaceName).containsExactly("바다카페");
         assertThat(places.get(0).getSource()).isEqualTo(PlaceSource.VIDEO);
+        assertThat(places.get(0).getMemo()).isEqualTo("· 창가 자리에서 바다가 보인다");
         verify(googlePlacesApiClient, never()).searchText(anyString());
     }
 

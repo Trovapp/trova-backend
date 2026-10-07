@@ -156,10 +156,12 @@ public class TripService {
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .map(itinerary -> {
                     int nextOrder = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary).size() + 1;
-                    return tripPlaceRepository.save(new TripPlace(
+                    TripPlace tripPlace = new TripPlace(
                             itinerary, place.getPlaceName(), place.getRegion(), place.getCategory(),
                             place.getLatitude(), place.getLongitude(), place.getPhone(), place.getAddress(),
-                            nextOrder, PlaceSource.VIDEO, place.getId()));
+                            nextOrder, PlaceSource.VIDEO, place.getId());
+                    tripPlace.applyDetails(null, null, null, place.videoNotesAsMemo()); // 영상에서 말한 내용(#134)
+                    return tripPlaceRepository.save(tripPlace);
                 });
     }
 
@@ -440,11 +442,13 @@ public class TripService {
                     .toList();
 
             for (SavedPlace place : dayPlaces) {
-                tripPlaceRepository.save(new TripPlace(
+                TripPlace tripPlace = new TripPlace(
                         itinerary, place.getPlaceName(), place.getRegion(), place.getCategory(),
                         place.getLatitude(), place.getLongitude(), place.getPhone(), place.getAddress(),
                         place.getOrderInDay() != null ? place.getOrderInDay() : 0,
-                        PlaceSource.VIDEO, place.getId()));
+                        PlaceSource.VIDEO, place.getId());
+                tripPlace.applyDetails(null, null, null, place.videoNotesAsMemo()); // 영상에서 말한 내용(#134)
+                tripPlaceRepository.save(tripPlace);
             }
         }
 
