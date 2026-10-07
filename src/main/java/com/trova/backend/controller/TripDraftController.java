@@ -1,7 +1,10 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.TripDraft;
+import com.trova.backend.entity.TripDraftStatus;
 import com.trova.backend.entity.User;
+import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.TripDraftApprovalService;
@@ -9,6 +12,7 @@ import com.trova.backend.service.TripPlannerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,13 +32,16 @@ public class TripDraftController {
     private final TripPlannerService tripPlannerService;
     private final TripDraftRepository tripDraftRepository;
     private final TripDraftApprovalService tripDraftApprovalService;
+    private final ProcessingJobRepository processingJobRepository;
 
     public TripDraftController(CurrentUserService currentUserService, TripPlannerService tripPlannerService,
-                               TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService) {
+                               TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService,
+                               ProcessingJobRepository processingJobRepository) {
         this.currentUserService = currentUserService;
         this.tripPlannerService = tripPlannerService;
         this.tripDraftRepository = tripDraftRepository;
         this.tripDraftApprovalService = tripDraftApprovalService;
+        this.processingJobRepository = processingJobRepository;
     }
 
     /** choice: SPLIT(모든 영상, 지역별로 날 나누기) / ONLY(jobIds의 영상만). */
@@ -116,5 +123,37 @@ public class TripDraftController {
                 .filter(d -> d.getUser().getId().equals(user.getId()))
                 .map(d -> ResponseEntity.ok(DraftResponse.from(d)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // 홈 화면 카드용 자동 생성 초안 목록(#136).
+    public record AutoDraftResponse(Long draftId, String status, Long jobId, String videoTitle, Integer days, String createdAt) {
+    }
+
+    private static final List<TripDraftStatus> AUTO_VISIBLE =
+            List.of(TripDraftStatus.PENDING, TripDraftStatus.PROCESSING, TripDraftStatus.READY);
+
+    @GetMapping("/api/trip-drafts/auto")
+    public List<AutoDraftResponse> autoDrafts(Authentication authentication) {
+        User user = currentUserService.resolve(authentication);
+        return tripDraftRepository
+                .findByUserAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(user, AUTO_VISIBLE)
+                .stream().limit(10)
+                .map(d -> {
+                    Long jobId = d.getJobIds().get(0);
+                    String title = processingJobRepository.findById(jobId).map(ProcessingJob::getTitle).orElse(null);
+                    return new AutoDraftResponse(d.getId(), d.getStatus().name(), jobId, title, d.getDays(), d.getCreatedAt().toString());
+                }).toList();
+    }
+
+    @PostMapping("/api/trip-drafts/{id}/dismiss")
+    @Transactional
+    public ResponseEntity<Void> dismiss(Authentication authentication, @PathVariable Long id) {
+        User user = currentUserService.resolve(authentication);
+        TripDraft draft = tripDraftRepository.findById(id).filter(d -> d.getUser().getId().equals(user.getId())).orElse(null);
+        if (draft == null) return ResponseEntity.notFound().build();
+        if (draft.getStatus() == TripDraftStatus.APPROVED) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        draft.dismiss();
+        tripDraftRepository.save(draft);
+        return ResponseEntity.noContent().build();
     }
 }
