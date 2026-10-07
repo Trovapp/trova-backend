@@ -56,7 +56,7 @@ public class PlanRequestParser {
         return parseWithAi(text, startDate).orElse(new PlanRequest(1, startDate, "DEFAULT"));
     }
 
-    static Optional<Integer> parseDays(String text) {
+    public static Optional<Integer> parseDays(String text) {
         Matcher m = NIGHTS_DAYS.matcher(text);
         if (m.find()) {
             return clampDays(Integer.parseInt(m.group(2)));
