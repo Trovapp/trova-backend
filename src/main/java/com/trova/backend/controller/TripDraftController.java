@@ -141,12 +141,17 @@ public class TripDraftController {
     @GetMapping("/api/trip-drafts/auto")
     public List<AutoDraftResponse> autoDrafts(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
-        return tripDraftRepository
-                .findByUserAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(user, AUTO_VISIBLE)
-                .stream()
-                .map(d -> new DraftWithJob(d, processingJobRepository.findById(d.getJobIds().get(0)).orElse(null)))
+        List<TripDraft> drafts = tripDraftRepository
+                .findByUserAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(user, AUTO_VISIBLE);
+        // 영상과 "이미 여행이 된 영상"을 한 번에 읽는다 — 초안마다 조회하면 홈을 열 때마다 초안 수만큼 영상 전체를 다시 읽었다(#139).
+        java.util.Map<Long, ProcessingJob> jobs = processingJobRepository
+                .findAllById(drafts.stream().map(d -> d.getJobIds().get(0)).distinct().toList()).stream()
+                .collect(java.util.stream.Collectors.toMap(ProcessingJob::getId, j -> j));
+        java.util.Set<Long> tripped = tripService.jobIdsWithExistingTrip(user, jobs.values());
+        return drafts.stream()
+                .map(d -> new DraftWithJob(d, jobs.get(d.getJobIds().get(0))))
                 // 같은 영상으로 이미 여행이 만들어졌으면(다른 초안을 승인하는 등) 카드가 중복으로 남는다 — 빼고 보여준다.
-                .filter(dj -> dj.job() == null || tripService.findExistingTripForVideo(user, dj.job()).isEmpty())
+                .filter(dj -> dj.job() == null || !tripped.contains(dj.job().getId()))
                 .limit(10)
                 .map(dj -> new AutoDraftResponse(dj.draft().getId(), dj.draft().getStatus().name(), dj.draft().getJobIds().get(0),
                         dj.job() == null ? null : dj.job().getTitle(), dj.draft().getDays(), dj.draft().getCreatedAt().toString()))

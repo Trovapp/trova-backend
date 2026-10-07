@@ -408,6 +408,32 @@ public class TripService {
                 .filter(trip -> trip.getUser().getId().equals(user.getId()));
     }
 
+    /**
+     * 주어진 영상 중 같은 영상(주소 모양 무관)으로 이미 여행을 만든 것의 id를 고른다(#139).
+     * 초안마다 {@link #findExistingTripForVideo}를 부르면 사용자의 영상 전체를 초안 수만큼 다시 읽었다 —
+     * 영상·영상 장소·여행 장소를 한 번씩만 읽어 요청당 쿼리 수를 고정한다.
+     */
+    public java.util.Set<Long> jobIdsWithExistingTrip(User user, java.util.Collection<ProcessingJob> jobs) {
+        if (jobs.isEmpty()) {
+            return java.util.Set.of();
+        }
+        List<ProcessingJob> userJobs = processingJobRepository.findByUserOrderByCreatedAtDescIdDesc(user);
+        List<SavedPlace> places = savedPlaceRepository.findByProcessingJobIn(userJobs);
+        if (places.isEmpty()) {
+            return java.util.Set.of();
+        }
+        java.util.Set<Long> inTrips = new java.util.HashSet<>(tripPlaceRepository.findSavedPlaceIdsInTripsOf(
+                places.stream().map(SavedPlace::getId).toList(), user));
+        java.util.Set<String> trippedKeys = places.stream()
+                .filter(p -> inTrips.contains(p.getId()))
+                .map(p -> VideoKey.of(p.getProcessingJob().getSourceUrl()))
+                .collect(java.util.stream.Collectors.toSet());
+        return jobs.stream()
+                .filter(job -> trippedKeys.contains(VideoKey.of(job.getSourceUrl())))
+                .map(ProcessingJob::getId)
+                .collect(java.util.stream.Collectors.toSet());
+    }
+
     public Optional<Trip> findExistingTripForSavedPlaces(List<SavedPlace> places) {
         List<Long> savedPlaceIds = places.stream().map(SavedPlace::getId).toList();
         if (savedPlaceIds.isEmpty()) {
