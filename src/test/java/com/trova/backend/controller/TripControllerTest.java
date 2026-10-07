@@ -613,4 +613,28 @@ class TripControllerTest {
                 .andExpect(jsonPath("$[?(@.id == %d)].regions[1]".formatted(filled.getId())).value("서울"))
                 .andExpect(jsonPath("$[?(@.id == %d)].placeCount".formatted(empty.getId())).value(0));
     }
+
+    @Test
+    void 영상으로_여행을_만들면_영상에서_말한_내용이_장소_메모로_들어간다() throws Exception {
+        // #134: 영상을 다시 보지 않아도 일정의 장소마다 영상 속 설명이 남아야 한다.
+        User me = userRepository.save(new User("google", "trip-notes", "메모유저", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(me, "https://youtu.be/NotesMemo1", SourcePlatform.YOUTUBE));
+        SavedPlace place = new SavedPlace(job, me, "해장국집", "제주", "restaurant", 33.5, 126.5, 1, 1);
+        place.applyVideoNotes(List.of("아침 7시부터 연다", "선지 해장국이 대표 메뉴"));
+        savedPlaceRepository.save(place);
+
+        String body = mockMvc.perform(post("/api/places/videos/" + job.getId() + "/confirm-trip")
+                        .with(loginAs("trip-notes", "메모유저"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"제주\",\"startDate\":\"2026-11-01\"}"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        Long tripId = new com.fasterxml.jackson.databind.ObjectMapper().readTree(body).get("id").asLong();
+
+        Trip trip = tripRepository.findById(tripId).orElseThrow();
+        Itinerary day1 = itineraryRepository.findByTripOrderByDay(trip).get(0);
+        assertThat(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1))
+                .extracting(TripPlace::getMemo)
+                .containsExactly("· 아침 7시부터 연다\n· 선지 해장국이 대표 메뉴");
+    }
 }
