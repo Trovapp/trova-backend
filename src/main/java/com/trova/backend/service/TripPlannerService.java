@@ -166,6 +166,9 @@ public class TripPlannerService {
                 return;
             }
             DraftGenerator.Draft plan = withLodging(outcome.draft().get(), lodging);
+            if (draft.isAutoCreated()) {
+                plan = withAutoDraftNotes(plan);
+            }
             draft.markReady(summaryJson(gathered, calls),
                     DraftGenerator.toJson(plan, outcome.fixes(), outcome.problems()));
             tripDraftRepository.save(draft);
@@ -178,6 +181,19 @@ public class TripPlannerService {
             draft.markFailed("일정 초안을 만들지 못했어요. 잠시 후 다시 시도해주세요.");
             tripDraftRepository.save(draft);
         }
+    }
+
+    static final String AUTO_HOURS_NOTE = "자동으로 짠 초안이라 영업시간은 아직 확인하지 않았어요. '조건 바꿔 다시 짜기'로 다시 짜면 확인해요.";
+
+    /**
+     * 자동 초안은 영업시간을 일부러 조회하지 않아(#136) "영업시간을 확인하지 못한 장소가 N곳" 안내가 거의 항상 붙어
+     * 실패한 것처럼 보였다(#139) — 이유와 확인하는 방법을 알려주는 문장으로 바꾼다.
+     */
+    static DraftGenerator.Draft withAutoDraftNotes(DraftGenerator.Draft plan) {
+        List<String> notes = plan.assumptions().stream()
+                .map(note -> note.startsWith(DraftGenerator.NO_HOURS_NOTE_PREFIX) ? AUTO_HOURS_NOTE : note)
+                .toList();
+        return new DraftGenerator.Draft(plan.days(), plan.excluded(), plan.lodging(), notes);
     }
 
     private static boolean isLodging(SavedPlace p) {

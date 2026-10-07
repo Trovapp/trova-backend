@@ -369,6 +369,8 @@ public class DraftGenerator {
                 : com.trova.backend.replan.GeoUtils.haversineKm(last.latitude(), last.longitude(), p.getLatitude(), p.getLongitude())));
     }
 
+    public static final String NO_HOURS_NOTE_PREFIX = "영업시간을 확인하지 못한 장소가 ";
+
     static List<String> assumptions(LocalDate startDate, List<SavedPlace> places) {
         List<String> notes = new ArrayList<>();
         if (startDate == null) {
@@ -376,7 +378,7 @@ public class DraftGenerator {
         }
         long noHours = places.stream().filter(p -> p.getOpeningPeriods() == null).count();
         if (noHours > 0) {
-            notes.add("영업시간을 확인하지 못한 장소가 " + noHours + "곳 있어요.");
+            notes.add(NO_HOURS_NOTE_PREFIX + noHours + "곳 있어요.");
         }
         long noCoords = places.stream().filter(p -> p.getLatitude() == null).count();
         if (noCoords > 0) {

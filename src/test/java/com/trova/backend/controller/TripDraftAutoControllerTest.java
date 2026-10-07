@@ -174,6 +174,35 @@ class TripDraftAutoControllerTest {
     }
 
     @Test
+    void 다른_주소_모양으로_여행이_된_영상의_초안만_빠지고_나머지는_남는다() throws Exception {
+        User me = userRepository.save(new User("google", "auto6", "자동유저6", null));
+        // 예전에 쇼츠 주소로 분석해 여행을 만든 영상 — 새 초안은 youtu.be 주소로 다시 분석한 같은 영상이다(#139).
+        ProcessingJob oldJob = videoJob(me, "https://www.youtube.com/shorts/Auto030", "교토 여행 영상");
+        SavedPlace oldPlace = savedPlaceRepository.save(new SavedPlace(oldJob, me, "기요미즈데라", "교토", "attraction", 34.99, 135.78));
+        Trip trip = tripRepository.save(new Trip(me, "교토 여행", LocalDate.of(2026, 5, 1), LocalDate.of(2026, 5, 1)));
+        Itinerary itinerary = itineraryRepository.save(new Itinerary(trip, 1, LocalDate.of(2026, 5, 1)));
+        tripPlaceRepository.save(new TripPlace(itinerary, oldPlace.getPlaceName(), oldPlace.getRegion(), oldPlace.getCategory(),
+                oldPlace.getLatitude(), oldPlace.getLongitude(), null, null, 1, PlaceSource.VIDEO, oldPlace.getId()));
+
+        ProcessingJob sameVideo = videoJob(me, "https://youtu.be/Auto030?si=x", "교토 여행 영상");
+        savedPlaceRepository.save(new SavedPlace(sameVideo, me, "기요미즈데라", "교토", "attraction", 34.99, 135.78));
+        TripDraft tripped = TripDraft.auto(me, List.of(sameVideo.getId()), "당일치기");
+        tripped.markReady("{}", "{}");
+        tripDraftRepository.save(tripped);
+
+        ProcessingJob otherVideo = videoJob(me, "https://youtu.be/Auto031", "나라 여행 영상");
+        savedPlaceRepository.save(new SavedPlace(otherVideo, me, "도다이지", "나라", "attraction", 34.69, 135.84));
+        TripDraft other = TripDraft.auto(me, List.of(otherVideo.getId()), "당일치기");
+        other.markReady("{}", "{}");
+        other = tripDraftRepository.save(other);
+
+        mockMvc.perform(get("/api/trip-drafts/auto").with(loginAs("auto6", "자동유저6")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].draftId").value(other.getId()));
+    }
+
+    @Test
     void 자동초안_닫기에_성공하면_204이고_목록에서_빠진다() throws Exception {
         User me = userRepository.save(new User("google", "auto2", "자동유저2", null));
         ProcessingJob job = videoJob(me, "https://youtu.be/Auto010", "영상");

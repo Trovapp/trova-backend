@@ -252,4 +252,19 @@ class TripPlannerServiceTest {
         service.answer(user, 9L, "SPLIT", null);
         assertThat(service.answer(user, 9L, "SPLIT", null)).isEqualTo(TripPlannerService.AnswerOutcome.NOT_WAITING);
     }
+
+    @Test
+    void 자동_초안은_영업시간_미확인_안내를_이유와_확인_방법으로_바꾼다() {
+        DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(), List.of(), List.of(), List.of(
+                "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+                DraftGenerator.NO_HOURS_NOTE_PREFIX + "3곳 있어요.",
+                "이동 시간은 직선거리로 어림했어요."));
+
+        DraftGenerator.Draft auto = TripPlannerService.withAutoDraftNotes(plan);
+
+        assertThat(auto.assumptions()).containsExactly(
+                "날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.",
+                TripPlannerService.AUTO_HOURS_NOTE,
+                "이동 시간은 직선거리로 어림했어요.");
+    }
 }
