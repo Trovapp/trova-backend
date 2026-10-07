@@ -1,14 +1,19 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.TripDraft;
+import com.trova.backend.entity.TripDraftStatus;
 import com.trova.backend.entity.User;
+import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.TripDraftApprovalService;
 import com.trova.backend.service.TripPlannerService;
+import com.trova.backend.service.TripService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,13 +33,18 @@ public class TripDraftController {
     private final TripPlannerService tripPlannerService;
     private final TripDraftRepository tripDraftRepository;
     private final TripDraftApprovalService tripDraftApprovalService;
+    private final ProcessingJobRepository processingJobRepository;
+    private final TripService tripService;
 
     public TripDraftController(CurrentUserService currentUserService, TripPlannerService tripPlannerService,
-                               TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService) {
+                               TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService,
+                               ProcessingJobRepository processingJobRepository, TripService tripService) {
         this.currentUserService = currentUserService;
         this.tripPlannerService = tripPlannerService;
         this.tripDraftRepository = tripDraftRepository;
         this.tripDraftApprovalService = tripDraftApprovalService;
+        this.processingJobRepository = processingJobRepository;
+        this.tripService = tripService;
     }
 
     /** choice: SPLIT(모든 영상, 지역별로 날 나누기) / ONLY(jobIds의 영상만). */
@@ -116,5 +126,42 @@ public class TripDraftController {
                 .filter(d -> d.getUser().getId().equals(user.getId()))
                 .map(d -> ResponseEntity.ok(DraftResponse.from(d)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // 홈 화면 카드용 자동 생성 초안 목록(#136).
+    public record AutoDraftResponse(Long draftId, String status, Long jobId, String videoTitle, Integer days, String createdAt) {
+    }
+
+    private static final List<TripDraftStatus> AUTO_VISIBLE =
+            List.of(TripDraftStatus.PENDING, TripDraftStatus.PROCESSING, TripDraftStatus.READY);
+
+    private record DraftWithJob(TripDraft draft, ProcessingJob job) {
+    }
+
+    @GetMapping("/api/trip-drafts/auto")
+    public List<AutoDraftResponse> autoDrafts(Authentication authentication) {
+        User user = currentUserService.resolve(authentication);
+        return tripDraftRepository
+                .findByUserAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(user, AUTO_VISIBLE)
+                .stream()
+                .map(d -> new DraftWithJob(d, processingJobRepository.findById(d.getJobIds().get(0)).orElse(null)))
+                // 같은 영상으로 이미 여행이 만들어졌으면(다른 초안을 승인하는 등) 카드가 중복으로 남는다 — 빼고 보여준다.
+                .filter(dj -> dj.job() == null || tripService.findExistingTripForVideo(user, dj.job()).isEmpty())
+                .limit(10)
+                .map(dj -> new AutoDraftResponse(dj.draft().getId(), dj.draft().getStatus().name(), dj.draft().getJobIds().get(0),
+                        dj.job() == null ? null : dj.job().getTitle(), dj.draft().getDays(), dj.draft().getCreatedAt().toString()))
+                .toList();
+    }
+
+    @PostMapping("/api/trip-drafts/{id}/dismiss")
+    @Transactional
+    public ResponseEntity<Void> dismiss(Authentication authentication, @PathVariable Long id) {
+        User user = currentUserService.resolve(authentication);
+        TripDraft draft = tripDraftRepository.findById(id).filter(d -> d.getUser().getId().equals(user.getId())).orElse(null);
+        if (draft == null) return ResponseEntity.notFound().build();
+        if (draft.getStatus() == TripDraftStatus.APPROVED) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        draft.dismiss();
+        tripDraftRepository.save(draft);
+        return ResponseEntity.noContent().build();
     }
 }

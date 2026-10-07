@@ -23,4 +23,11 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
     List<TripDraft> findByStatusInAndUpdatedAtBefore(List<TripDraftStatus> statuses, LocalDateTime threshold);
 
     void deleteByUser(User user);
+
+    // 자동 생성 초안 중 같은 영상으로 또 만들지 않았는지 확인할 때 쓴다(#136).
+    List<TripDraft> findByUserAndAutoCreatedTrue(User user);
+
+    // 홈 화면에 보여줄 자동 초안 — 닫지 않았고 아직 끝나지 않은 것만, 최신순.
+    List<TripDraft> findByUserAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(
+            User user, List<TripDraftStatus> statuses);
 }

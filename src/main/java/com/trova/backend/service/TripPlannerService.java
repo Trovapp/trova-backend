@@ -153,7 +153,9 @@ public class TripPlannerService {
                 tripDraftRepository.save(draft);
                 return;
             }
-            int calls = openingHoursService.fillMissing(visits);
+            // 자동 초안은 공유마다 돌아서 유료 구간이 있는 영업시간 조회를 하지 않는다(#136, 비용 0원 원칙)
+            // — 사용자가 '조건 바꿔 다시 짜기'로 만든 초안은 그대로 조회
+            int calls = draft.isAutoCreated() ? 0 : openingHoursService.fillMissing(visits);
             TripPlanGraph.Outcome outcome = tripPlanGraph.run(request.days(), request.startDate(), visits,
                     split ? List.of(SPLIT_NOTE) : List.of());
             draft.addGeminiCalls(outcome.geminiCalls());

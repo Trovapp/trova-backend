@@ -85,6 +85,13 @@ public class TripDraft {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    // 공유한 영상 분석이 끝나 자동으로 만든 초안(#136). 닫은 초안은 행을 남겨 같은 영상의 중복 생성을 막는다.
+    @Column(name = "auto_created", nullable = false, columnDefinition = "boolean default false")
+    private boolean autoCreated = false;
+
+    @Column(name = "dismissed_at")
+    private LocalDateTime dismissedAt;
+
     protected TripDraft() {
     }
 
@@ -95,6 +102,16 @@ public class TripDraft {
         this.status = TripDraftStatus.PENDING;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
+    }
+
+    public static TripDraft auto(User user, List<Long> jobIds, String message) {
+        TripDraft draft = new TripDraft(user, jobIds, message);
+        draft.autoCreated = true;
+        return draft;
+    }
+
+    public void dismiss() {
+        this.dismissedAt = LocalDateTime.now();
     }
 
     public void markProcessing() {
@@ -165,4 +182,6 @@ public class TripDraft {
     public Integer getGeminiCalls() { return geminiCalls; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public boolean isAutoCreated() { return autoCreated; }
+    public LocalDateTime getDismissedAt() { return dismissedAt; }
 }

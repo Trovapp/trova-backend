@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -51,6 +52,8 @@ class PlaceExtractionServiceTest {
     private PlaceSelectionRunner placeSelectionRunner;
     @Mock
     private PlaceVerificationRunner placeVerificationRunner;
+    @Mock
+    private AutoDraftService autoDraftService;
     @Spy
     private FoundPlaceNameStore foundPlaceNameStore = new FoundPlaceNameStore();
 
@@ -64,7 +67,7 @@ class PlaceExtractionServiceTest {
 
     private PlaceExtractionService serviceWith(Executor geocodingTaskExecutor) {
         return new PlaceExtractionService(lifecycleService, pipelineRunner, kakaoGeocodingService,
-                placeSelectionRunner, placeVerificationRunner, foundPlaceNameStore, geocodingTaskExecutor);
+                placeSelectionRunner, placeVerificationRunner, foundPlaceNameStore, autoDraftService, geocodingTaskExecutor);
     }
 
     @Test
@@ -91,6 +94,7 @@ class PlaceExtractionServiceTest {
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.SAVING);
         order.verify(lifecycleService).savePlace(any(), any(), any());
         order.verify(lifecycleService).markDone(jobId);
+        verify(autoDraftService).startFor(jobId);
     }
 
     @Test
@@ -224,5 +228,22 @@ class PlaceExtractionServiceTest {
 
         assertThat(keysAtFallback).containsExactly(hanok.coordinateKey());
         verify(kakaoGeocodingService, never()).resolveRegionFallback(eq(List.of("전주한옥마을")), any(), any(), anyLong());
+    }
+
+    @Test
+    void 자동_초안이_실패해도_분석은_완료로_남는다() {
+        Long jobId = 9L;
+        ExtractedPlace extracted = new ExtractedPlace("해운대", "부산", "attraction", 0.95, null, null, List.of("해운대"));
+        when(lifecycleService.markProcessing(jobId)).thenReturn("https://youtu.be/x");
+        when(pipelineRunner.run(eq("https://youtu.be/x"), eq(jobId), any()))
+                .thenReturn(new PipelineOutput("부산 여행", List.of(extracted)));
+        when(kakaoGeocodingService.searchCandidates(any(), any(), any(), anyLong()))
+                .thenReturn(GeocodingResult.coordinatesOnly(35.16, 129.16));
+        doThrow(new RuntimeException("x")).when(autoDraftService).startFor(any());
+
+        placeExtractionService.process(jobId);
+
+        verify(lifecycleService).markDone(jobId);
+        verify(lifecycleService, never()).markFailed(any(), any());
     }
 }
