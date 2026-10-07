@@ -439,7 +439,7 @@ public class TripController {
             @RequestParam(required = false) String transportMode
     ) {
         User user = currentUserService.resolve(authentication);
-        planService.checkAndRecordAssist(user);
+        planService.check(user, MeteredFeature.ASSIST);
         dailyQuotaService.consumePlaceCall(user);
         TransportMode mode = null;
         if (transportMode != null) {
@@ -451,8 +451,12 @@ public class TripController {
         }
         var filter = new com.trova.backend.recommendation.AlternativeFilter(
                 category, indoor, maxDistanceKm, maxTravelMinutes, mode);
+        // 횟수는 찾기에 성공했을 때만 센다(남의·없는 장소 404는 세지 않음, #130 QA).
         return alternativeFinderService.findAlternatives(user, id, filter)
-                .map(candidates -> ResponseEntity.ok(candidates.stream().map(AlternativeCandidateResponse::from).toList()))
+                .map(candidates -> {
+                    planService.recordAssist(user);
+                    return ResponseEntity.ok(candidates.stream().map(AlternativeCandidateResponse::from).toList());
+                })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 

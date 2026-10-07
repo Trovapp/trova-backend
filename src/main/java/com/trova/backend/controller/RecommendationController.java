@@ -10,6 +10,7 @@ import com.trova.backend.recommendation.RecommendationService;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.PlanService;
+import com.trova.backend.entity.MeteredFeature;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -97,9 +98,10 @@ public class RecommendationController {
         }
 
         User user = currentUserService.resolve(authentication);
-        planService.checkAndRecordAssist(user);
+        planService.check(user, MeteredFeature.ASSIST);
         dailyQuotaService.consumePlaceCall(user);
         List<Place> places = recommendationService.recommend(user, request.latitude(), request.longitude(), radius);
+        planService.recordAssist(user);
         return ResponseEntity.ok(places.stream().map(PlaceRecommendationResponse::from).toList());
     }
 

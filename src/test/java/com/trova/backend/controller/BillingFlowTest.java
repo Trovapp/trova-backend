@@ -182,4 +182,17 @@ class BillingFlowTest {
                 .andReturn().getResponse().getStatus();
         assertThat(code).isNotEqualTo(402);
     }
+
+    @Test
+    void 실패한_요청은_무료_횟수를_깎지_않는다() throws Exception {
+        // QA(2026-10-07): 없는 여행에 보낸 재구성 요청(404)도 비서·대안 횟수로 세였다.
+        User me = userRepository.save(new User("google", "bill-6", "결제유저", null));
+        mockMvc.perform(post("/api/trips/999999/replan").with(loginAs("bill-6"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"indoorOnly\":true}"))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/trip-places/999999/alternatives").with(loginAs("bill-6")))
+                .andExpect(status().isNotFound());
+        assertThat(usageRecordRepository.countByUserAndFeatureAndCreatedAtGreaterThanEqual(
+                me, MeteredFeature.ASSIST, LocalDateTime.now().minusDays(1))).isZero();
+    }
 }
