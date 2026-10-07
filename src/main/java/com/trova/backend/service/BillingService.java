@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trova.backend.entity.TravelPass;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.TravelPassRepository;
+import com.trova.backend.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ public class BillingService {
     static final Duration PASS_LENGTH = Duration.ofDays(30);
 
     private final TravelPassRepository travelPassRepository;
+    private final UserRepository userRepository;
     private final PlanService planService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final String productId;
@@ -45,16 +47,17 @@ public class BillingService {
     private final Clock clock;
 
     @Autowired
-    public BillingService(TravelPassRepository travelPassRepository, PlanService planService,
+    public BillingService(TravelPassRepository travelPassRepository, UserRepository userRepository, PlanService planService,
                           @Value("${app.billing.travel-pass-product-id:com.trovapp.trova.travelpass30}") String productId,
                           @Value("${app.billing.bundle-id:com.trovapp.trova}") String bundleId,
                           @Value("${app.billing.allow-xcode-transactions:false}") boolean allowXcodeTransactions) {
-        this(travelPassRepository, planService, productId, bundleId, allowXcodeTransactions, Clock.systemDefaultZone());
+        this(travelPassRepository, userRepository, planService, productId, bundleId, allowXcodeTransactions, Clock.systemDefaultZone());
     }
 
-    BillingService(TravelPassRepository travelPassRepository, PlanService planService, String productId, String bundleId,
-                   boolean allowXcodeTransactions, Clock clock) {
+    BillingService(TravelPassRepository travelPassRepository, UserRepository userRepository, PlanService planService,
+                   String productId, String bundleId, boolean allowXcodeTransactions, Clock clock) {
         this.travelPassRepository = travelPassRepository;
+        this.userRepository = userRepository;
         this.planService = planService;
         this.productId = productId;
         this.bundleId = bundleId;
@@ -91,6 +94,9 @@ public class BillingService {
         if (transactionId == null || transactionId.isBlank()) {
             throw new BillingException(Reason.INVALID, "결제 정보를 읽지 못했어요.");
         }
+        // 같은 회원의 기록은 한 줄로 처리한다(QA 2026-10-07): 잠그지 않으면 동시에 온 다른 거래 둘이 같은 "끝나는 날"을 보고
+        // 기간이 겹쳤고(두 번 결제에 30일), 같은 거래가 동시에 오면 유일 제약에 걸려 500이 났다.
+        userRepository.findByIdForUpdate(user.getId());
         Optional<TravelPass> existing = travelPassRepository.findByTransactionId(transactionId);
         if (existing.isPresent()) {
             if (!existing.get().getUser().getId().equals(user.getId())) {
