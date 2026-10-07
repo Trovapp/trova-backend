@@ -12,6 +12,7 @@ import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.PlanService;
 import com.trova.backend.service.TripService;
 import com.trova.backend.service.WeatherRecoveryService;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class TripController {
     private static final Set<String> VALID_DIRECTIONS = Set.of("UP", "DOWN");
 
     private final CurrentUserService currentUserService;
+    private final PlanService planService;
     private final DailyQuotaService dailyQuotaService;
     private final ProcessingJobRepository processingJobRepository;
     private final SavedPlaceRepository savedPlaceRepository;
@@ -55,7 +57,8 @@ public class TripController {
             PlaceReviewService placeReviewService,
             AlternativeFinderService alternativeFinderService,
             GapRecommendationService gapRecommendationService,
-            DailyQuotaService dailyQuotaService
+            DailyQuotaService dailyQuotaService,
+            PlanService planService
     ) {
         this.currentUserService = currentUserService;
         this.dailyQuotaService = dailyQuotaService;
@@ -69,6 +72,7 @@ public class TripController {
         this.placeReviewService = placeReviewService;
         this.alternativeFinderService = alternativeFinderService;
         this.gapRecommendationService = gapRecommendationService;
+        this.planService = planService;
     }
 
     // 앱(trova-app TRIP_TITLE_MAX_LENGTH)과 같은 제한. 서버가 막지 않으면 DB varchar(255)를 넘는 요청이
@@ -435,6 +439,7 @@ public class TripController {
             @RequestParam(required = false) String transportMode
     ) {
         User user = currentUserService.resolve(authentication);
+        planService.check(user, MeteredFeature.ASSIST);
         dailyQuotaService.consumePlaceCall(user);
         TransportMode mode = null;
         if (transportMode != null) {
@@ -446,8 +451,12 @@ public class TripController {
         }
         var filter = new com.trova.backend.recommendation.AlternativeFilter(
                 category, indoor, maxDistanceKm, maxTravelMinutes, mode);
+        // 횟수는 찾기에 성공했을 때만 센다(남의·없는 장소 404는 세지 않음, #130 QA).
         return alternativeFinderService.findAlternatives(user, id, filter)
-                .map(candidates -> ResponseEntity.ok(candidates.stream().map(AlternativeCandidateResponse::from).toList()))
+                .map(candidates -> {
+                    planService.recordAssist(user);
+                    return ResponseEntity.ok(candidates.stream().map(AlternativeCandidateResponse::from).toList());
+                })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -456,6 +465,7 @@ public class TripController {
             Authentication authentication, @PathVariable Long tripId, @PathVariable int day
     ) {
         User user = currentUserService.resolve(authentication);
+        // 빈 시간 추천은 여행 상세를 열 때 일차마다 자동으로 불린다 — 사용자가 누른 게 아니라 무료·패스 횟수로 세지 않는다(#130 QA).
         dailyQuotaService.consumePlaceCall(user);
         return gapRecommendationService.findGaps(user, tripId, day)
                 .map(gaps -> ResponseEntity.ok(gaps.stream().map(GapResponse::from).toList()))

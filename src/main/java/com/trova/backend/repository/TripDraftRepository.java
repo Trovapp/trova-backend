@@ -23,4 +23,7 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
     List<TripDraft> findByStatusInAndUpdatedAtBefore(List<TripDraftStatus> statuses, LocalDateTime threshold);
 
     void deleteByUser(User user);
+
+    // 무료·여행 패스 한도(#130)
+    long countByUserAndCreatedAtGreaterThanEqual(User user, LocalDateTime from);
 }

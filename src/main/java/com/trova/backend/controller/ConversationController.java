@@ -9,6 +9,8 @@ import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.PlanService;
+import com.trova.backend.entity.MeteredFeature;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,7 @@ public class ConversationController {
     private static final int MAX_MESSAGE_LENGTH = 300;
 
     private final CurrentUserService currentUserService;
+    private final PlanService planService;
     private final ConversationSessionStore sessionStore;
     private final ConversationService conversationService;
     private final TripPlaceRepository tripPlaceRepository;
@@ -33,7 +36,8 @@ public class ConversationController {
             ConversationService conversationService,
             TripPlaceRepository tripPlaceRepository,
             TripRepository tripRepository,
-            ItineraryRepository itineraryRepository
+            ItineraryRepository itineraryRepository,
+            PlanService planService
     ) {
         this.currentUserService = currentUserService;
         this.sessionStore = sessionStore;
@@ -41,6 +45,7 @@ public class ConversationController {
         this.tripPlaceRepository = tripPlaceRepository;
         this.tripRepository = tripRepository;
         this.itineraryRepository = itineraryRepository;
+        this.planService = planService;
     }
 
     public record ConversationMessageRequest(
@@ -93,12 +98,15 @@ public class ConversationController {
                 // 스펙 "이미 확정된 것" 절. tripId는 두 컨텍스트 모두에 필요하다.
                 return ResponseEntity.badRequest().build();
             }
+            // 비서는 대화창 하나를 1회로 센다(#130) — 메시지마다 세면 무료 5회가 금방 끝난다.
+            planService.check(user, MeteredFeature.ASSIST);
             state = hasPlaceContext
                     ? createPlaceSession(user, sessionId, request)
                     : createGapSession(user, sessionId, request);
             if (state == null) {
                 return ResponseEntity.notFound().build();
             }
+            planService.recordAssist(user);
         }
 
         ConversationService.TurnResult result = conversationService.sendMessage(user, state, request.message());

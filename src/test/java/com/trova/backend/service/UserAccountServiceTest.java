@@ -12,6 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,6 +67,15 @@ class UserAccountServiceTest {
 
     @Autowired
     private TripDraftRepository tripDraftRepository;
+
+    @Autowired
+    private TravelPassRepository travelPassRepository;
+
+    @Autowired
+    private RetainedPurchaseRepository retainedPurchaseRepository;
+
+    @Autowired
+    private PurchaseRetentionService purchaseRetentionService;
 
     @Autowired
     private EntityManager entityManager;
@@ -162,5 +172,33 @@ class UserAccountServiceTest {
 
         assertThat(userRepository.findById(userId)).isEmpty();
         assertThat(tripDraftRepository.findById(draftId)).isEmpty();
+    }
+
+    @Test
+    void 탈퇴하면_구매_기록은_회원과_끊어_5년_분리_보관하고_기간이_지나면_파기한다() {
+        // 개인정보처리방침: 구매 기록은 전자상거래법상 5년 보관(탈퇴해도 분리 보관), 그 밖의 회원 데이터는 지체 없이 파기.
+        User me = userRepository.save(new User("google", "withdraw-pass", "패스유저", null));
+        LocalDateTime bought = LocalDateTime.of(2026, 10, 5, 12, 0);
+        travelPassRepository.save(new TravelPass(me, "tx-retain-1", "com.trovapp.trova.travelpass30", "Xcode",
+                bought, bought.plusDays(30), bought));
+        Long userId = me.getId();
+
+        userAccountService.withdraw(me);
+        entityManager.flush();
+
+        assertThat(userRepository.findById(userId)).isEmpty();
+        assertThat(travelPassRepository.findByTransactionId("tx-retain-1")).isEmpty();
+        RetainedPurchase kept = retainedPurchaseRepository.findByTransactionId("tx-retain-1").orElseThrow();
+        assertThat(kept.getRetainUntil()).isEqualTo(bought.plusYears(5));
+        assertThat(kept.getPurchasedAt()).isEqualTo(bought);
+
+        // 5년이 지나면 지운다 — 보관 기간이 끝난 기록 하나와 아직 남은 기록 하나로 확인.
+        retainedPurchaseRepository.save(new RetainedPurchase(
+                new TravelPass(me, "tx-old", "com.trovapp.trova.travelpass30", "Xcode",
+                        bought.minusYears(6), bought.minusYears(6).plusDays(30), bought.minusYears(6)),
+                bought, bought.minusYears(1)));
+        purchaseRetentionService.purgeExpired();
+        assertThat(retainedPurchaseRepository.findByTransactionId("tx-old")).isEmpty();
+        assertThat(retainedPurchaseRepository.findByTransactionId("tx-retain-1")).isPresent();
     }
 }

@@ -12,6 +12,8 @@ import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.TripReplanJobRepository;
 import com.trova.backend.service.OrphanedJobRecoveryService;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.PlanService;
+import com.trova.backend.entity.MeteredFeature;
 import com.trova.backend.service.TripReplanJobService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,7 @@ public class TripReplanController {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final CurrentUserService currentUserService;
+    private final PlanService planService;
     private final TripRepository tripRepository;
     private final TripReplanJobRepository tripReplanJobRepository;
     private final TripReplanJobService tripReplanJobService;
@@ -39,12 +42,14 @@ public class TripReplanController {
             CurrentUserService currentUserService,
             TripRepository tripRepository,
             TripReplanJobRepository tripReplanJobRepository,
-            TripReplanJobService tripReplanJobService
+            TripReplanJobService tripReplanJobService,
+            PlanService planService
     ) {
         this.currentUserService = currentUserService;
         this.tripRepository = tripRepository;
         this.tripReplanJobRepository = tripReplanJobRepository;
         this.tripReplanJobService = tripReplanJobService;
+        this.planService = planService;
     }
 
     // allPlaces=true면 카테고리 매칭 기반 전체 재추천(여행의 모든 장소가 대상),
@@ -93,6 +98,9 @@ public class TripReplanController {
         if (!indoorOnly && !allPlaces) {
             return ResponseEntity.badRequest().build();
         }
+        // 한도는 먼저 확인하고, 횟수는 새 작업을 만들었을 때만 센다 — 없는 여행(404)이나 이미 진행 중인 같은 작업을
+        // 다시 돌려줄 때 무료 횟수가 깎이면 안 된다(#130 QA).
+        planService.check(user, MeteredFeature.ASSIST);
         return tripRepository.findById(tripId)
                 .filter(t -> t.getUser().getId().equals(user.getId()))
                 .map(trip -> ResponseEntity.status(HttpStatus.ACCEPTED)
@@ -127,6 +135,7 @@ public class TripReplanController {
             return inFlight.get(0).getId();
         }
         TripReplanJob job = tripReplanJobRepository.save(new TripReplanJob(user, trip, indoorOnly, allPlaces));
+        planService.recordAssist(user);
         try {
             tripReplanJobService.process(job.getId());
         } catch (TaskRejectedException e) {
