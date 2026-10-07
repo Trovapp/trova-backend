@@ -61,6 +61,13 @@ class TripPlannerServiceTest {
         return draft;
     }
 
+    private TripDraft autoDraft(List<Long> jobIds) {
+        TripDraft draft = TripDraft.auto(user, jobIds, "이 영상들로 1박 2일");
+        when(drafts.findById(9L)).thenReturn(Optional.of(draft));
+        when(parser.parse(any())).thenReturn(new PlanRequestParser.PlanRequest(2, null, "CODE"));
+        return draft;
+    }
+
     @Test
     void 영상_지역이_멀면_영업시간을_받지_않고_질문하고_멈춘다() {
         TripDraft draft = draft(List.of(1L, 2L));
@@ -95,6 +102,39 @@ class TripPlannerServiceTest {
         assertThat(draft.getGeminiCalls()).isEqualTo(1); // 요청은 코드로 읽어 0번 + 초안 1번
         assertThat(draft.getSummaryJson()).contains("\"totalPlaces\":2").contains("\"placesWithCoords\":1")
                 .contains("\"hoursCallsThisRun\":1");
+    }
+
+    @Test
+    void 자동_초안은_유료_영업시간_조회를_하지_않는다() {
+        TripDraft draft = autoDraft(List.of(1L));
+        ProcessingJob gimhae = job(1L);
+        when(saved.findByProcessingJob(gimhae)).thenReturn(List.of(place(gimhae, 35.23, 128.88)));
+        DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(new DraftGenerator.Day(1, null, List.of())),
+                List.of(), List.of(), List.of());
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList(), anyList()))
+                .thenReturn(new TripPlanGraph.Outcome(Optional.of(plan), 1, 0, 0, 0, List.of(), List.of(), null));
+
+        service.process(9L);
+
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
+        verify(hours, never()).fillMissing(anyList());
+    }
+
+    @Test
+    void 사용자가_직접_만든_초안은_영업시간을_조회한다() {
+        TripDraft draft = draft(List.of(1L));
+        ProcessingJob gimhae = job(1L);
+        when(saved.findByProcessingJob(gimhae)).thenReturn(List.of(place(gimhae, 35.23, 128.88)));
+        when(hours.fillMissing(anyList())).thenReturn(1);
+        DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(new DraftGenerator.Day(1, null, List.of())),
+                List.of(), List.of(), List.of());
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList(), anyList()))
+                .thenReturn(new TripPlanGraph.Outcome(Optional.of(plan), 1, 0, 0, 0, List.of(), List.of(), null));
+
+        service.process(9L);
+
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
+        verify(hours).fillMissing(anyList());
     }
 
     @Test

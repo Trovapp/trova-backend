@@ -33,4 +33,14 @@ class AutoDraftServiceTest {
     void 둘_다_없으면_당일치기() {
         assertThat(AutoDraftService.autoMessage(List.of(place(1)), null)).isEqualTo("당일치기");
     }
+
+    @Test
+    void 일차_구분이_파서_최대치를_넘으면_최대치로_자른다() {
+        assertThat(AutoDraftService.autoMessage(List.of(place(1), place(9), place(5)), "제주 여행")).isEqualTo("6박 7일");
+    }
+
+    @Test
+    void 제목의_박일이_파서_최대치를_넘으면_최대치로_자른다() {
+        assertThat(AutoDraftService.autoMessage(List.of(place(null)), "8박 9일 유럽")).isEqualTo("6박 7일");
+    }
 }

@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 @Component
 public class PlanRequestParser {
 
-    static final int MAX_DAYS = 7;
+    public static final int MAX_DAYS = 7;
     private static final Pattern NIGHTS_DAYS = Pattern.compile("(\\d+)\\s*박\\s*(\\d+)\\s*일");
     private static final Pattern DAYS_ONLY = Pattern.compile("(\\d+)\\s*일\\s*(?:짜리|동안|일정|여행|코스)");
     private static final Pattern SAME_DAY = Pattern.compile("당일|하루\\s*(?:코스|일정|여행)?");
@@ -57,13 +57,21 @@ public class PlanRequestParser {
     }
 
     public static Optional<Integer> parseDays(String text) {
+        return parseRawDays(text).flatMap(PlanRequestParser::clampDays);
+    }
+
+    /**
+     * 범위 제한(1~MAX_DAYS) 없이 표현만 읽는다 — parseDays는 범위를 벗어나면 Gemini로 넘기려고 빈 값을
+     * 돌려주지만, 자동 초안 메시지(AutoDraftService)처럼 그 자리에서 MAX_DAYS로 잘라 써야 할 때 쓴다.
+     */
+    public static Optional<Integer> parseRawDays(String text) {
         Matcher m = NIGHTS_DAYS.matcher(text);
         if (m.find()) {
-            return clampDays(Integer.parseInt(m.group(2)));
+            return Optional.of(Integer.parseInt(m.group(2)));
         }
         m = DAYS_ONLY.matcher(text);
         if (m.find()) {
-            return clampDays(Integer.parseInt(m.group(1)));
+            return Optional.of(Integer.parseInt(m.group(1)));
         }
         if (SAME_DAY.matcher(text).find()) {
             return Optional.of(1);

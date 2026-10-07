@@ -9,6 +9,7 @@ import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.TripDraftApprovalService;
 import com.trova.backend.service.TripPlannerService;
+import com.trova.backend.service.TripService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,15 +34,17 @@ public class TripDraftController {
     private final TripDraftRepository tripDraftRepository;
     private final TripDraftApprovalService tripDraftApprovalService;
     private final ProcessingJobRepository processingJobRepository;
+    private final TripService tripService;
 
     public TripDraftController(CurrentUserService currentUserService, TripPlannerService tripPlannerService,
                                TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService,
-                               ProcessingJobRepository processingJobRepository) {
+                               ProcessingJobRepository processingJobRepository, TripService tripService) {
         this.currentUserService = currentUserService;
         this.tripPlannerService = tripPlannerService;
         this.tripDraftRepository = tripDraftRepository;
         this.tripDraftApprovalService = tripDraftApprovalService;
         this.processingJobRepository = processingJobRepository;
+        this.tripService = tripService;
     }
 
     /** choice: SPLIT(모든 영상, 지역별로 날 나누기) / ONLY(jobIds의 영상만). */
@@ -132,17 +135,22 @@ public class TripDraftController {
     private static final List<TripDraftStatus> AUTO_VISIBLE =
             List.of(TripDraftStatus.PENDING, TripDraftStatus.PROCESSING, TripDraftStatus.READY);
 
+    private record DraftWithJob(TripDraft draft, ProcessingJob job) {
+    }
+
     @GetMapping("/api/trip-drafts/auto")
     public List<AutoDraftResponse> autoDrafts(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
         return tripDraftRepository
                 .findByUserAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(user, AUTO_VISIBLE)
-                .stream().limit(10)
-                .map(d -> {
-                    Long jobId = d.getJobIds().get(0);
-                    String title = processingJobRepository.findById(jobId).map(ProcessingJob::getTitle).orElse(null);
-                    return new AutoDraftResponse(d.getId(), d.getStatus().name(), jobId, title, d.getDays(), d.getCreatedAt().toString());
-                }).toList();
+                .stream()
+                .map(d -> new DraftWithJob(d, processingJobRepository.findById(d.getJobIds().get(0)).orElse(null)))
+                // 같은 영상으로 이미 여행이 만들어졌으면(다른 초안을 승인하는 등) 카드가 중복으로 남는다 — 빼고 보여준다.
+                .filter(dj -> dj.job() == null || tripService.findExistingTripForVideo(user, dj.job()).isEmpty())
+                .limit(10)
+                .map(dj -> new AutoDraftResponse(dj.draft().getId(), dj.draft().getStatus().name(), dj.draft().getJobIds().get(0),
+                        dj.job() == null ? null : dj.job().getTitle(), dj.draft().getDays(), dj.draft().getCreatedAt().toString()))
+                .toList();
     }
 
     @PostMapping("/api/trip-drafts/{id}/dismiss")

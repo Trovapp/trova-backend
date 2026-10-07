@@ -1,11 +1,20 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.entity.Itinerary;
+import com.trova.backend.entity.PlaceSource;
 import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.SourcePlatform;
+import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripDraft;
+import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
+import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
+import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripDraftRepository;
+import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +52,18 @@ class TripDraftAutoControllerTest {
 
     @Autowired
     private TripDraftRepository tripDraftRepository;
+
+    @Autowired
+    private SavedPlaceRepository savedPlaceRepository;
+
+    @Autowired
+    private TripRepository tripRepository;
+
+    @Autowired
+    private ItineraryRepository itineraryRepository;
+
+    @Autowired
+    private TripPlaceRepository tripPlaceRepository;
 
     private ClientRegistration googleRegistration() {
         return ClientRegistration.withRegistrationId("google")
@@ -129,6 +150,27 @@ class TripDraftAutoControllerTest {
                 .andExpect(jsonPath("$[1].jobId").value(job1.getId()))
                 .andExpect(jsonPath("$[1].videoTitle").value("제주 여행 영상"))
                 .andExpect(jsonPath("$[1].days").value(2));
+    }
+
+    @Test
+    void 영상이_이미_여행이_됐으면_READY_자동초안이어도_목록에서_빠진다() throws Exception {
+        User me = userRepository.save(new User("google", "auto5", "자동유저5", null));
+        ProcessingJob job = videoJob(me, "https://youtu.be/Auto020", "오사카 여행 영상");
+        SavedPlace place = savedPlaceRepository.save(new SavedPlace(job, me, "도톤보리", "오사카", "attraction", 34.66, 135.5));
+
+        TripDraft ready = TripDraft.auto(me, List.of(job.getId()), "오사카 영상 공유");
+        ready.applyRequest(2, LocalDate.of(2026, 4, 1), "CODE");
+        ready.markReady("{}", "{}");
+        tripDraftRepository.save(ready);
+
+        Trip trip = tripRepository.save(new Trip(me, "오사카 여행", LocalDate.of(2026, 4, 1), LocalDate.of(2026, 4, 2)));
+        Itinerary itinerary = itineraryRepository.save(new Itinerary(trip, 1, LocalDate.of(2026, 4, 1)));
+        tripPlaceRepository.save(new TripPlace(itinerary, place.getPlaceName(), place.getRegion(), place.getCategory(),
+                place.getLatitude(), place.getLongitude(), null, null, 1, PlaceSource.VIDEO, place.getId()));
+
+        mockMvc.perform(get("/api/trip-drafts/auto").with(loginAs("auto5", "자동유저5")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
     }
 
     @Test

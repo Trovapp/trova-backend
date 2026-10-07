@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * 공유한 영상 분석이 끝나면 사용자가 따로 요청하지 않아도 일정 초안을 자동으로 만든다(#136).
@@ -84,9 +83,10 @@ public class AutoDraftService {
             return null;
         }
         String key = VideoKey.of(job.getSourceUrl());
-        boolean exists = tripDraftRepository.findByUserAndAutoCreatedTrue(user).stream()
+        List<Long> autoDraftJobIds = tripDraftRepository.findByUserAndAutoCreatedTrue(user).stream()
                 .flatMap(d -> d.getJobIds().stream())
-                .map(processingJobRepository::findById).flatMap(Optional::stream)
+                .toList();
+        boolean exists = processingJobRepository.findAllById(autoDraftJobIds).stream()
                 .anyMatch(j -> VideoKey.of(j.getSourceUrl()).equals(key));
         if (exists) {
             return null;
@@ -96,7 +96,10 @@ public class AutoDraftService {
 
     static String autoMessage(List<SavedPlace> places, String title) {
         int maxDay = places.stream().map(SavedPlace::getDayNumber).filter(Objects::nonNull).max(Integer::compare).orElse(0);
-        int days = maxDay >= 2 ? maxDay : (title == null ? 1 : PlanRequestParser.parseDays(title).orElse(1));
+        int rawDays = maxDay >= 2 ? maxDay : (title == null ? 1 : PlanRequestParser.parseRawDays(title).orElse(1));
+        // 일차 구분이나 제목의 날수가 파서 최대치를 넘으면 그대로 메시지에 적지 않는다 — 넘는 메시지를
+        // 다시 읽을 때 parseDays가 범위를 벗어났다며 빈 값을 돌려줘 Gemini를 부르고도 결국 1일로 깎인다(#136).
+        int days = Math.min(rawDays, PlanRequestParser.MAX_DAYS);
         return days <= 1 ? "당일치기" : (days - 1) + "박 " + days + "일";
     }
 }
