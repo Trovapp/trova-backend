@@ -41,6 +41,7 @@ public class PlaceExtractionService {
     private final PlaceSelectionRunner placeSelectionRunner;
     private final PlaceVerificationRunner placeVerificationRunner;
     private final FoundPlaceNameStore foundPlaceNameStore;
+    private final AutoDraftService autoDraftService;
     private final Executor geocodingTaskExecutor;
 
     public PlaceExtractionService(
@@ -50,6 +51,7 @@ public class PlaceExtractionService {
             PlaceSelectionRunner placeSelectionRunner,
             PlaceVerificationRunner placeVerificationRunner,
             FoundPlaceNameStore foundPlaceNameStore,
+            AutoDraftService autoDraftService,
             @Qualifier("geocodingTaskExecutor") Executor geocodingTaskExecutor
     ) {
         this.lifecycleService = lifecycleService;
@@ -58,6 +60,7 @@ public class PlaceExtractionService {
         this.placeSelectionRunner = placeSelectionRunner;
         this.placeVerificationRunner = placeVerificationRunner;
         this.foundPlaceNameStore = foundPlaceNameStore;
+        this.autoDraftService = autoDraftService;
         this.geocodingTaskExecutor = geocodingTaskExecutor;
     }
 
@@ -131,6 +134,13 @@ public class PlaceExtractionService {
 
             lifecycleService.markDone(jobId);
             log.info("ProcessingJob {} DONE", jobId);
+
+            // 공유만 해 두면 일정까지 짜 두게(#136). 실패해도 분석 결과는 이미 완료다.
+            try {
+                autoDraftService.startFor(jobId);
+            } catch (RuntimeException e) {
+                log.warn("ProcessingJob {} 자동 초안 시작 실패", jobId, e);
+            }
         } catch (Exception e) {
             log.error("ProcessingJob {} 처리 실패", jobId, e);
             // 하루 한도 소진은 앱이 원인과 다시 가능한 시점을 알려줄 수 있게 정해진 문구로 남긴다(#63).
