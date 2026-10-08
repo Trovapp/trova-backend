@@ -44,3 +44,4 @@
 | [0008](0008-auto-draft-needs-approval.md) | 공유하면 일정 초안까지만 자동, 여행은 승인 후 | 확정 | 2026-10-07 |
 | [0009](0009-code-style-as-is.md) | 코드 스타일은 지금 쓰는 방식 유지, 포맷 전환 보류 | 확정 | 2026-10-08 |
 | [0010](0010-api-docs-springdoc-local-only.md) | API 문서는 springdoc으로 자동 생성, 운영 서버에서는 끈다 | 확정 | 2026-10-08 |
+| [0011](0011-context7-mcp.md) | 라이브러리 문서는 Context7 MCP로 조회, 코드 탐색 MCP는 보류 | 확정 | 2026-10-08 |
