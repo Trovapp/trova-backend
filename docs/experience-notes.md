@@ -1021,3 +1021,24 @@
 ### 확인하지 않은 것
 - 운영 서버에는 배포하지 않았다(배포해도 기본 꺼짐이라 바뀌는 것 없음).
 - 엔드포인트별 설명(`@Operation`)은 붙이지 않았다 — 필요해지면 자주 쓰는 흐름부터 붙인다.
+
+## 2026-10-08 Context7 MCP로 최신 라이브러리 문서 조회 (#151)
+
+### 문제와 조건
+- SDD 정리의 MCP 3개(CodeGraph·Serena·Context7)를 이 프로젝트에 넣을지 검토. 사용자가 Context7부터 진행하기로 함.
+- Spring Boot 4.1·Expo 57은 AI 학습 시점 이후 버전이라, #149에서 springdoc 호환 버전을 Maven Central에서 손으로 확인했다.
+- 조건: 비용 0원, 시크릿을 레포에 두지 않기, 오르카 워크트리에서도 같은 설정.
+
+### 선택한 방법과 이유
+- 레포 `.mcp.json`에 원격 MCP `https://mcp.context7.com/mcp/oauth` 등록(ADR 0011). OAuth 로그인이라 API 키가 필요 없다.
+- 비교: 사용자 범위 등록(워크트리·사람마다 설정이 갈림), API 키 방식(키를 `.env`로 복사해야 함). Serena·CodeGraph는 보류 — 레포 규모(Java 280개 파일, 약 2.8만 줄)에서 grep으로 충분하고 도구 설명이 매 세션 컨텍스트를 차지.
+- CLAUDE.md에 "버전에 따라 API가 바뀌는 라이브러리를 쓸 때만 조회" 규칙 — 무료 월 1,000회 한도를 아끼려고.
+
+### 확인한 것
+- 무료 한도: 월 1,000회, 넘으면 과금 없이 차단(이후 하루 20회), Pro 좌석당 월 $10 — context7.com/plans(2026-10-08).
+- `/mcp/oauth`에 인증 없이 initialize를 보내면 401 + `WWW-Authenticate`(보호 리소스 메타데이터, 인증 서버 clerk.context7.com) — MCP OAuth 표준대로 응답.
+- `claude mcp get context7` → "Project config (shared via .mcp.json)", 상태 "Pending approval".
+
+### 확인하지 않은 것
+- 승인과 OAuth 로그인은 대화형이라 실행하지 않았다 → 실제 문서 조회는 사용자가 `/mcp`에서 로그인한 뒤 확인.
+- 오르카 워크트리에서 로그인 상태가 이어지는지.
