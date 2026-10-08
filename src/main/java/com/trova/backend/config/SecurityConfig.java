@@ -38,6 +38,10 @@ public class SecurityConfig {
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
+    // API 문서(#149)를 켰을 때만 문서 경로를 로그인 없이 연다. 꺼져 있으면 다른 경로와 똑같이 로그인이 필요하다.
+    @Value("${springdoc.api-docs.enabled:false}")
+    private boolean apiDocsEnabled;
+
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
                            OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
                            OAuth2LoginFailureHandler oAuth2LoginFailureHandler,
@@ -73,14 +77,17 @@ public class SecurityConfig {
                 // 만들어 메모리에 쌓이던 문제(#45). 로그인 성공 후엔 항상 프론트로 보내므로 "돌아갈 요청" 저장도 필요 없다.
                 .securityContext(context -> context.securityContextRepository(new JwtSkippingSecurityContextRepository()))
                 .requestCache(cache -> cache.requestCache(new NullRequestCache()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
-                        // 인증 없이 열어두되, 실제로 노출되는 엔드포인트는 application.yml의
-                        // management.endpoints.web.exposure.include가 정한다 — 기본은 health만이고
-                        // prometheus는 로컬에서 ACTUATOR_EXPOSE로 켤 때만 노출된다(#27).
-                        .requestMatchers("/actuator/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/oauth2/**", "/login/**").permitAll()
+                            // 인증 없이 열어두되, 실제로 노출되는 엔드포인트는 application.yml의
+                            // management.endpoints.web.exposure.include가 정한다 — 기본은 health만이고
+                            // prometheus는 로컬에서 ACTUATOR_EXPOSE로 켤 때만 노출된다(#27).
+                            .requestMatchers("/actuator/**").permitAll();
+                    if (apiDocsEnabled) {
+                        auth.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
+                    }
+                    auth.anyRequest().authenticated();
+                })
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oAuth2LoginSuccessHandler)

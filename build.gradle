@@ -26,6 +26,8 @@ dependencies {
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'org.bsc.langgraph4j:langgraph4j-core:1.8.13'
+	// API 문서 자동 생성(#149) — 기본은 꺼져 있고 API_DOCS_ENABLED=true일 때만 열린다.
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
