@@ -62,6 +62,18 @@ STT 방식 결정 배경(Whisper 셀프호스팅 대신 Gemini 오디오 직접 
 - `docs/superpowers/specs`, `plans` — 기능 하나의 설계와 구현 순서(만들기 전).
 - 이 파일 — 지켜야 할 규칙 요약만. 결정의 배경은 ADR에 두고 여기서는 링크한다.
 
+## 워크트리에서 작업할 때 (오르카 포함)
+
+작업 하나 = 이슈 하나 = 워크트리 하나. 오르카는 `~/orca/workspaces/<프로젝트>/<이름>`에 워크트리를 만든다.
+- 시작할 때: `git branch --show-current`로 브랜치를 보고, 규칙(`타입/#이슈번호-내용`)과 다르면 이슈를 만들고
+  `git branch -m`으로 이름을 바꾼 뒤 시작한다. 새 세션이면 메모리의 인계 메모와 `docs/adr/`부터 본다.
+- `.env`, `pipeline-test/.env`는 `.worktreeinclude`로 복사된다. 없으면 메인 체크아웃에서 복사한다(외부로 보내지 않음).
+- devflow `ship.sh start`·`merge`는 쓰지 않는다(워크트리를 직접 만들고 지워서 오르카 작업이 깨진다).
+  PR은 `ship.sh pr` 또는 `gh pr create`, 머지는 `gh pr merge --squash`, 워크트리 정리는 오르카에서 작업을 닫아서 한다.
+- 하나뿐인 자원은 한 작업에서만 쓴다: 로컬 서버(8080, `.claude/worktrees/local-server`에서만 실행), QA 시뮬레이터(QA SE),
+  개발 DB의 테스트 계정, Gemini 하루 한도. QA·측정·배포는 동시에 돌리지 않는다(qaflow가 테스트 데이터를 지우고 되돌림).
+- 메인 체크아웃(`pipeline-test` 작업 중)에서는 직접 작업하지 않는다.
+
 ## 하지 말 것
 
 - 유료 API를 기본 옵션으로 코드에 하드코딩하지 말 것
