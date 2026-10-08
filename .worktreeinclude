@@ -1,0 +1,4 @@
+# 새 워크트리(오르카·Claude Code)에 메인 체크아웃에서 복사할 git 무시 파일. 값은 커밋하지 않는다.
+.env
+pipeline-test/.env
+.claude/settings.local.json
