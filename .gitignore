@@ -42,7 +42,7 @@ __pycache__/
 *.pyc
 
 ### 내부 문서 (비공개, 커밋 안 함) ###
-CLAUDE.md
+# CLAUDE.md는 2026-10-08부터 커밋한다 — worktree·다른 도구(오르카 등)에서도 같은 규칙을 읽게(#143)
 PROGRESS.md
 TODO.md
 
