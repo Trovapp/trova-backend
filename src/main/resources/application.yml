@@ -54,6 +54,16 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
+springdoc:
+  # API 문서(#149). 운영 서버에서 API 구조가 로그인 없이 공개되지 않게 기본은 끈다(#27 actuator와 같은 방식).
+  # 로컬에서 API_DOCS_ENABLED=true로 켜면 /swagger-ui.html, /v3/api-docs가 열린다.
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:false}
+  swagger-ui:
+    enabled: ${API_DOCS_ENABLED:false}
+  # 문서에는 앱·웹이 부르는 /api/**만 담는다(로그인·actuator 경로 제외).
+  paths-to-match: /api/**
+
 management:
   endpoints:
     web:

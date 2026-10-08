@@ -36,6 +36,7 @@ STT 방식 결정 배경(Whisper 셀프호스팅 대신 Gemini 오디오 직접 
 - 외부 API 호출(Gemini, 카카오, yt-dlp 등)이 포함된 처리는 반드시 비동기(`@Async`)로 처리
 - 엔드포인트 목록은 코드(`controller` 패키지)가 기준이다 — 여기에 따로 적지 않는다.
   시작할 때의 핵심 흐름: `POST /api/shares`(URL 제출, 비동기 시작) → `GET /api/places/pending`(폴링) → `GET /api/places`
+- API 문서는 springdoc이 컨트롤러에서 자동으로 만든다. 로컬에서 `API_DOCS_ENABLED=true`로 켜고 `/swagger-ui.html`, 운영 서버는 꺼 둔다(docs/adr/0010)
 
 ## Entity
 

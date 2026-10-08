@@ -54,3 +54,11 @@ app:
     seoul-opendata-api-key: test-seoul-opendata-api-key
   jwt-secret: test-jwt-secret-please-do-not-use-in-production-environment
   mobile-redirect-scheme: trova
+
+# 메인 application.yml과 같은 기본값(#149) — 이 파일이 메인 설정을 덮어쓰므로 여기에도 둔다.
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:false}
+  swagger-ui:
+    enabled: ${API_DOCS_ENABLED:false}
+  paths-to-match: /api/**
