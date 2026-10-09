@@ -110,10 +110,9 @@ public class TripController {
             return new TripResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(), 0, List.of());
         }
 
-        static TripResponse from(Trip trip, List<TripPlace> places) {
-            // 많이 나온 지역 순, 같으면 먼저 나온 지역 — 최대 2개("제주", "김해·부산").
-            Map<String, Long> counts = places.stream()
-                    .map(TripPlace::getRegion)
+        static TripResponse from(Trip trip, List<String> placeRegions) {
+            // 많이 나온 지역 순, 같으면 먼저 나온 지역(일차·방문 순서) — 최대 2개("제주", "김해·부산").
+            Map<String, Long> counts = placeRegions.stream()
                     .filter(r -> r != null && !r.isBlank())
                     .collect(java.util.stream.Collectors.groupingBy(r -> r, java.util.LinkedHashMap::new,
                             java.util.stream.Collectors.counting()));
@@ -123,7 +122,7 @@ public class TripController {
                     .map(Map.Entry::getKey)
                     .toList();
             return new TripResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(),
-                    places.size(), regions);
+                    placeRegions.size(), regions);
         }
     }
 
@@ -217,13 +216,9 @@ public class TripController {
     @GetMapping("/api/trips")
     public List<TripResponse> listTrips(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
-        List<Trip> trips = tripRepository.findByUserOrderByCreatedAtDesc(user);
         // 이름이 같은 여행을 목록에서 구분할 수 없었다(#123) — 장소 수와 가장 많이 나온 지역(최대 2개)을 함께 준다.
-        Map<Long, List<TripPlace>> placesByTrip = trips.isEmpty() ? Map.of()
-                : tripPlaceRepository.findByItineraryTripIn(trips).stream()
-                        .collect(java.util.stream.Collectors.groupingBy(tp -> tp.getItinerary().getTrip().getId()));
-        return trips.stream()
-                .map(t -> TripResponse.from(t, placesByTrip.getOrDefault(t.getId(), List.of())))
+        return tripService.listTripSummaries(user).stream()
+                .map(s -> TripResponse.from(s.trip(), s.regions()))
                 .toList();
     }
 
