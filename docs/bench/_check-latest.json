@@ -1,0 +1,59 @@
+{
+ "at": "2026-10-10 01:24:04",
+ "commit": "35e635b",
+ "tag": "qa",
+ "results": [
+  {
+   "name": "home-auto-drafts",
+   "description": "홈 자동 일정 카드 목록 API(`GET /api/trip-drafts/auto`) 응답 시간 — 테스트 계정 user 1",
+   "unit": "ms",
+   "better": "lower",
+   "tolerance": "10%",
+   "entry": "GET /api/trip-drafts/auto",
+   "current": {
+    "at": "2026-10-10 01:24:01",
+    "commit": "35e635b",
+    "env": "로컬 서버(Mac, main) + 개발 DB(Supabase 서울)",
+    "median": 36.3,
+    "p90": 37.6,
+    "n": 30
+   },
+   "baseline": {
+    "at": "2026-10-10 01:00:21",
+    "commit": "5a9c9b5",
+    "env": "로컬 서버(Mac, main) + 개발 DB(Supabase 서울)",
+    "median": 41.0,
+    "p90": 84.2,
+    "n": 30
+   },
+   "deltaPct": -11.5,
+   "verdict": "좋아짐"
+  },
+  {
+   "name": "home-trips",
+   "description": "내 여행 목록 API(`GET /api/trips`) 응답 시간 — 테스트 계정 user 1",
+   "unit": "ms",
+   "better": "lower",
+   "tolerance": "10%",
+   "entry": "GET /api/trips (TripController)",
+   "current": {
+    "at": "2026-10-10 01:24:04",
+    "commit": "35e635b",
+    "env": "로컬 서버(Mac, main) + 개발 DB(Supabase 서울)",
+    "median": 71.7,
+    "p90": 74.8,
+    "n": 30
+   },
+   "baseline": {
+    "at": "2026-10-10 01:00:30",
+    "commit": "5a9c9b5",
+    "env": "로컬 서버(Mac, main) + 개발 DB(Supabase 서울)",
+    "median": 239.2,
+    "p90": 291.0,
+    "n": 30
+   },
+   "deltaPct": -70.0,
+   "verdict": "좋아짐"
+  }
+ ]
+}

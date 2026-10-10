@@ -615,6 +615,23 @@ class TripControllerTest {
     }
 
     @Test
+    void 여행_목록의_지역_수가_같으면_앞_일차에_먼저_나온_지역이_앞에_온다() throws Exception {
+        // #153: 목록을 프로젝션 쿼리로 바꾸면서 "먼저 나온"의 기준을 저장 순서가 아니라 일차·방문 순서로 고정한다.
+        User me = userRepository.save(new User("google", "list-summary-2", "목록유저2", null));
+        Trip trip = trip(me, 2);
+        List<Itinerary> days = itineraryRepository.findByTripOrderByDay(trip);
+        tripPlaceRepository.save(new TripPlace(days.get(1), "부산 장소", "부산", "cafe", 35.1, 129.0,
+                null, null, 0, PlaceSource.NORMAL, null));
+        tripPlaceRepository.save(new TripPlace(days.get(0), "강릉 장소", "강릉", "cafe", 37.7, 128.9,
+                null, null, 0, PlaceSource.NORMAL, null));
+
+        mockMvc.perform(get("/api/trips").with(loginAs("list-summary-2", "목록유저2")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id == %d)].regions[0]".formatted(trip.getId())).value("강릉"))
+                .andExpect(jsonPath("$[?(@.id == %d)].regions[1]".formatted(trip.getId())).value("부산"));
+    }
+
+    @Test
     void 영상으로_여행을_만들면_영상에서_말한_내용이_장소_메모로_들어간다() throws Exception {
         // #134: 영상을 다시 보지 않아도 일정의 장소마다 영상 속 설명이 남아야 한다.
         User me = userRepository.save(new User("google", "trip-notes", "메모유저", null));

@@ -12,6 +12,7 @@ import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.repository.TripRegion;
 import com.trova.backend.repository.TripReplanJobRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
@@ -103,6 +104,28 @@ public class TripService {
                     return true;
                 })
                 .orElse(false);
+    }
+
+    /** 여행 목록 한 줄 — 여행과 그 여행 장소들의 지역(일차·방문 순서, 장소 수만큼). */
+    public record TripSummary(Trip trip, List<String> regions) {
+    }
+
+    /**
+     * 내 여행 목록과 여행별 지역(#153). 읽기 전용 트랜잭션 하나로 묶어 커넥션·영속성 컨텍스트를 한 번만 쓰고,
+     * 여행 장소는 엔티티 대신 (여행 id, 지역)만 읽어 일차 수와 상관없이 쿼리 수가 같다.
+     */
+    @Transactional(readOnly = true)
+    public List<TripSummary> listTripSummaries(User user) {
+        List<Trip> trips = tripRepository.findByUserOrderByCreatedAtDesc(user);
+        if (trips.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, List<String>> regionsByTrip = tripPlaceRepository.findRegionsByTripIn(trips).stream()
+                .collect(Collectors.groupingBy(TripRegion::tripId,
+                        Collectors.mapping(TripRegion::region, Collectors.toList())));
+        return trips.stream()
+                .map(t -> new TripSummary(t, regionsByTrip.getOrDefault(t.getId(), List.of())))
+                .toList();
     }
 
     /** 사용자가 직접 새 Trip을 만든다 — 기간(startDate~endDate) 기준으로 일차를 자동 생성한다. */
