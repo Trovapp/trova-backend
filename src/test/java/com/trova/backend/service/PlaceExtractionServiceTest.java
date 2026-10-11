@@ -93,7 +93,7 @@ class PlaceExtractionServiceTest {
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.VERIFYING);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.SAVING);
         order.verify(lifecycleService).savePlace(any(), any(), any());
-        order.verify(lifecycleService).markDone(jobId);
+        order.verify(lifecycleService).markAnalysisDone(jobId);
         verify(autoDraftService).startFor(jobId);
     }
 
@@ -108,7 +108,7 @@ class PlaceExtractionServiceTest {
         InOrder order = inOrder(lifecycleService);
         order.verify(lifecycleService).markProcessing(jobId);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.EXTRACTING);
-        order.verify(lifecycleService).markFailed(jobId, "파이프라인 오류");
+        order.verify(lifecycleService).markAnalysisFailed(jobId, "파이프라인 오류");
     }
 
     @Test
@@ -144,8 +144,8 @@ class PlaceExtractionServiceTest {
         placeExtractionService.process(jobId);
 
         verify(lifecycleService).setTitle(jobId, "그냥 일상 브이로그");
-        verify(lifecycleService).markFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
-        verify(lifecycleService, never()).markDone(any());
+        verify(lifecycleService).markAnalysisFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
+        verify(lifecycleService, never()).markAnalysisDone(any());
         verify(lifecycleService, never()).savePlace(any(), any(), any());
         verify(kakaoGeocodingService, never()).searchCandidates(any(), any(), any(), anyLong());
     }
@@ -160,7 +160,7 @@ class PlaceExtractionServiceTest {
 
         placeExtractionService.process(jobId);
 
-        verify(lifecycleService).markFailed(jobId, ProcessingJob.AI_QUOTA_MESSAGE);
+        verify(lifecycleService).markAnalysisFailed(jobId, ProcessingJob.AI_QUOTA_MESSAGE);
     }
 
     @Test
@@ -172,7 +172,7 @@ class PlaceExtractionServiceTest {
 
         placeExtractionService.process(jobId);
 
-        verify(lifecycleService).markFailed(jobId, ProcessingJob.SOURCE_RATE_LIMIT_MESSAGE);
+        verify(lifecycleService).markAnalysisFailed(jobId, ProcessingJob.SOURCE_RATE_LIMIT_MESSAGE);
     }
 
     @Test
@@ -243,7 +243,7 @@ class PlaceExtractionServiceTest {
 
         placeExtractionService.process(jobId);
 
-        verify(lifecycleService).markDone(jobId);
-        verify(lifecycleService, never()).markFailed(any(), any());
+        verify(lifecycleService).markAnalysisDone(jobId);
+        verify(lifecycleService, never()).markAnalysisFailed(any(), any());
     }
 }

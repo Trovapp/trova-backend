@@ -40,4 +40,27 @@ class RequestTimingFilterTest {
 
         assertThat(filter.drain()).extracting(RequestTimingFilter.Sample::status).containsExactly(404);
     }
+
+    @Test
+    void api가_아닌_요청은_세지_않는다() throws Exception {
+        // 헬스체크·정적 요청이 섞이면 요청 수와 p50·p90이 실제보다 좋아 보인다.
+        RequestTimingFilter filter = new RequestTimingFilter();
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/actuator/health");
+
+        filter.doFilter(request, new MockHttpServletResponse(), (req, res) -> { });
+
+        assertThat(filter.drain()).isEmpty();
+    }
+
+    @Test
+    void 되돌린_표본은_다음_스냅샷_때_다시_가져간다() {
+        RequestTimingFilter filter = new RequestTimingFilter();
+        filter.add(new RequestTimingFilter.Sample(10, 200));
+        List<RequestTimingFilter.Sample> drained = filter.drain();
+        filter.add(new RequestTimingFilter.Sample(20, 200));
+
+        filter.restore(drained);
+
+        assertThat(filter.drain()).extracting(RequestTimingFilter.Sample::durationMs).containsExactlyInAnyOrder(10L, 20L);
+    }
 }

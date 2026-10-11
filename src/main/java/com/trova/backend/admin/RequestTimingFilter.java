@@ -52,6 +52,16 @@ public class RequestTimingFilter extends OncePerRequestFilter {
         }
     }
 
+    /** 스냅샷 저장이 실패했을 때 가져간 표본을 되돌린다 — 다음 스냅샷에 합쳐 장애 구간 지표가 빠지지 않게(#161). */
+    public synchronized void restore(List<Sample> drained) {
+        for (Sample sample : drained) {
+            if (samples.size() >= MAX_SAMPLES) {
+                break;
+            }
+            samples.add(sample);
+        }
+    }
+
     public synchronized List<Sample> drain() {
         List<Sample> drained = List.copyOf(samples);
         samples.clear();

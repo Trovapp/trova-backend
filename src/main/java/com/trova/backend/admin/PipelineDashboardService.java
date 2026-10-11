@@ -35,7 +35,17 @@ public class PipelineDashboardService {
                                     Long durationP90Seconds, List<ReasonCount> failureReasons, List<StuckJob> stuckJobs) {
     }
 
-    public record JobRow(LocalDateTime createdAt, LocalDateTime updatedAt, JobStatus status, String errorMessage) {
+    public record JobRow(LocalDateTime createdAt, LocalDateTime updatedAt, JobStatus status, String errorMessage,
+                         JobStatus analysisStatus, LocalDateTime analysisFinishedAt) {
+
+        /** 분석이 처음 끝난 결과. 분석 뒤 일정 생성이 status를 다시 바꾸므로 있으면 이 값을 쓰고, 열이 생기기 전 작업은 status. */
+        JobStatus outcome() {
+            return analysisStatus != null ? analysisStatus : status;
+        }
+
+        LocalDateTime finishedAt() {
+            return analysisFinishedAt != null ? analysisFinishedAt : updatedAt;
+        }
     }
 
     private final EntityManager entityManager;
@@ -51,7 +61,8 @@ public class PipelineDashboardService {
     public PipelineDashboard pipeline(int days) {
         DashboardPeriod period = DashboardPeriod.of(days);
         List<JobRow> rows = entityManager.createQuery(
-                        "select new com.trova.backend.admin.PipelineDashboardService$JobRow(j.createdAt, j.updatedAt, j.status, j.errorMessage) "
+                        "select new com.trova.backend.admin.PipelineDashboardService$JobRow(j.createdAt, j.updatedAt, j.status, j.errorMessage, "
+                                + "j.analysisStatus, j.analysisFinishedAt) "
                                 + "from ProcessingJob j where j.createdAt >= :since", JobRow.class)
                 .setParameter("since", period.since())
                 .getResultList();
@@ -61,17 +72,17 @@ public class PipelineDashboardService {
         for (LocalDate d = period.from(); !d.isAfter(period.to()); d = d.plusDays(1)) {
             List<JobRow> dayRows = byDate.getOrDefault(d, List.of());
             daily.add(new DailyJobStats(d, dayRows.size(),
-                    dayRows.stream().filter(r -> r.status() == JobStatus.DONE).count(),
-                    dayRows.stream().filter(r -> r.status() == JobStatus.FAILED).count()));
+                    dayRows.stream().filter(r -> r.outcome() == JobStatus.DONE).count(),
+                    dayRows.stream().filter(r -> r.outcome() == JobStatus.FAILED).count()));
         }
 
         List<Long> durations = rows.stream()
-                .filter(r -> r.status() == JobStatus.DONE)
-                .map(r -> Duration.between(r.createdAt(), r.updatedAt()).toSeconds())
+                .filter(r -> r.outcome() == JobStatus.DONE)
+                .map(r -> Duration.between(r.createdAt(), r.finishedAt()).toSeconds())
                 .toList();
 
         Map<FailureReason, Long> reasons = rows.stream()
-                .filter(r -> r.status() == JobStatus.FAILED)
+                .filter(r -> r.outcome() == JobStatus.FAILED)
                 .collect(Collectors.groupingBy(r -> FailureReason.classify(r.errorMessage()), Collectors.counting()));
         List<ReasonCount> failureReasons = Arrays.stream(FailureReason.values())
                 .filter(reasons::containsKey)

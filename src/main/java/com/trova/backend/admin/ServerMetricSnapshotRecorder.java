@@ -31,8 +31,8 @@ public class ServerMetricSnapshotRecorder {
         this.instanceName = instanceName;
     }
 
+    // 메서드 트랜잭션을 두지 않는다 — save가 자기 트랜잭션에서 커밋돼야 실패를 여기서 잡아 표본을 되돌릴 수 있다.
     @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.MINUTES)
-    @Transactional
     public void record() {
         List<RequestTimingFilter.Sample> samples = timingFilter.drain();
         List<Long> durations = samples.stream().map(RequestTimingFilter.Sample::durationMs).toList();
@@ -41,8 +41,13 @@ public class ServerMetricSnapshotRecorder {
         int errors = (int) samples.stream().filter(s -> s.status() >= 500).count();
         Runtime rt = Runtime.getRuntime();
         int heapMb = (int) ((rt.totalMemory() - rt.freeMemory()) / (1024 * 1024));
-        repository.save(new ServerMetricSnapshot(instanceName, LocalDateTime.now(), samples.size(),
-                p50 == null ? null : p50.intValue(), p90 == null ? null : p90.intValue(), errors, heapMb, activeConnections()));
+        try {
+            repository.save(new ServerMetricSnapshot(instanceName, LocalDateTime.now(), samples.size(),
+                    p50 == null ? null : p50.intValue(), p90 == null ? null : p90.intValue(), errors, heapMb, activeConnections()));
+        } catch (RuntimeException e) {
+            timingFilter.restore(samples);
+            throw e;
+        }
     }
 
     @Scheduled(cron = "0 30 4 * * *")

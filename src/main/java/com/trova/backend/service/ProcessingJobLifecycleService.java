@@ -99,6 +99,18 @@ public class ProcessingJobLifecycleService {
         getJob(jobId).markFailed(truncate(rawMessage));
     }
 
+    /** 영상 분석이 끝났을 때 — 분석 결과와 시각도 남긴다(관리자 대시보드 처리 시간, #161). 일정 생성은 markDone. */
+    @Transactional
+    public void markAnalysisDone(Long jobId) {
+        getJob(jobId).markAnalysisDone();
+    }
+
+    /** 영상 분석이 실패했을 때 — 분석 결과와 시각도 남긴다(#161). 일정 생성 실패는 markFailed. */
+    @Transactional
+    public void markAnalysisFailed(Long jobId, String rawMessage) {
+        getJob(jobId).markAnalysisFailed(truncate(rawMessage));
+    }
+
     private ProcessingJob getJob(Long jobId) {
         return processingJobRepository.findById(jobId)
                 .orElseThrow(() -> new IllegalStateException("ProcessingJob을 찾을 수 없습니다: " + jobId));

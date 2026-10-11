@@ -56,7 +56,9 @@ public class DashboardSummaryService {
                 .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
         long gemini = aiDashboardService.geminiCallsSince(geminiDayStart);
         long failures = entityManager.createQuery(
-                        "select count(j) from ProcessingJob j where j.status = :failed and j.updatedAt >= :since", Long.class)
+                        // 분석 실패만 — 분석 뒤 일정 생성 실패는 status만 바꾸므로 분석 결과(analysisStatus)가 있으면 그것으로 센다(#161).
+                        "select count(j) from ProcessingJob j where coalesce(j.analysisStatus, j.status) = :failed "
+                                + "and coalesce(j.analysisFinishedAt, j.updatedAt) >= :since", Long.class)
                 .setParameter("failed", JobStatus.FAILED)
                 .setParameter("since", now.minusHours(24))
                 .getSingleResult();

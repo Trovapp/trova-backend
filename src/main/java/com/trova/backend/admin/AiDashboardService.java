@@ -64,9 +64,15 @@ public class AiDashboardService {
                 .sorted(Comparator.comparingLong(OperationCount::calls).reversed())
                 .toList();
 
-        List<CallRow> withJob = rows.stream().filter(r -> r.jobId() != null).toList();
-        long jobs = withJob.stream().map(CallRow::jobId).distinct().count();
-        Double callsPerJob = jobs == 0 ? null : (double) withJob.size() / jobs;
+        // 영상 분석 작업(processing_jobs)에 붙은 호출만 — 추천 태깅·리뷰 요약은 job_id 자리에 System.nanoTime()을 넣어
+        // 기록하므로 jobId가 있다고 모두 작업은 아니다(리뷰 지적, #161).
+        Object[] jobCalls = entityManager.createQuery(
+                        "select count(c), count(distinct c.jobId) from ApiCallLog c where c.createdAt >= :since "
+                                + "and c.jobId in (select j.id from ProcessingJob j)", Object[].class)
+                .setParameter("since", period.since())
+                .getSingleResult();
+        long jobs = (Long) jobCalls[1];
+        Double callsPerJob = jobs == 0 ? null : (double) (Long) jobCalls[0] / jobs;
 
         return new AiDashboard(days, daily, byOperation, callsPerJob);
     }

@@ -26,7 +26,7 @@
 | 탭 | 그래프 | 출처 |
 |---|---|---|
 | AI 한도·호출 | 일별 호출 수(성공·실패), 토큰 합, 작업(영상) 1개당 호출 수, 기능(operation)별 호출 수 | `api_call_logs` |
-| 분석 파이프라인 | 일별 요청 수·성공률, 처리 시간 중앙값·p90(DONE 작업의 updatedAt − createdAt), 실패 이유별 건수, 지금 멈춘 작업 목록(최대 20개) | `processing_jobs` (일정 초안 `trip_drafts`의 멈춤·실패는 PR①에 넣지 않음 — PR③ 화면 작업 때 추가) |
+| 분석 파이프라인 | 일별 요청 수·성공률, 처리 시간 중앙값·p90(분석이 처음 끝난 시각 `analysisFinishedAt` − createdAt — 분석 뒤 일정 생성이 같은 작업의 status·updatedAt을 다시 바꾸므로. 이 열이 생기기 전 작업은 updatedAt), 실패 이유별 건수, 지금 멈춘 작업 목록(최대 20개) | `processing_jobs` (일정 초안 `trip_drafts`의 멈춤·실패는 PR①에 넣지 않음 — PR③ 화면 작업 때 추가) |
 | 서버 상태 | 5분 단위 응답 시간 p50·p90, 요청 수, 5xx 수, 힙 사용량, DB 커넥션 사용 수 | `server_metric_snapshots`(새로) |
 | 사용 데이터 | 일별 가입자·저장 장소·여행·자동 초안 수, 누적 사용자 수 | `users`, `saved_places`, `trips`, `trip_drafts` |
 

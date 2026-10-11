@@ -74,7 +74,8 @@ public class OrphanedJobRecoveryService {
         // updatedAt은 엔티티가 서버 기본 시간대의 LocalDateTime.now()로 기록하므로 같은 기준으로 비교한다.
         LocalDateTime threshold = LocalDateTime.now().minus(STALE_AFTER);
         List<ProcessingJob> processingJobs = processingJobRepository.findByStatusInAndUpdatedAtBefore(IN_FLIGHT, threshold);
-        processingJobs.forEach(job -> job.markFailed(STALE_MESSAGE));
+        // 분석 중 멈춘 작업은 분석 실패로 남기고, 일정 생성 중 멈춘 작업은 이미 있는 분석 결과를 그대로 둔다(#161).
+        processingJobs.forEach(job -> job.markAnalysisFailed(STALE_MESSAGE));
         List<TripReplanJob> replanJobs = tripReplanJobRepository.findByStatusInAndUpdatedAtBefore(IN_FLIGHT, threshold);
         replanJobs.forEach(job -> job.markFailed(STALE_MESSAGE));
         List<TripDraft> drafts = tripDraftRepository.findByStatusInAndUpdatedAtBefore(DRAFT_IN_FLIGHT, threshold);
