@@ -1,6 +1,7 @@
 package com.trova.backend.admin;
 
 import com.trova.backend.entity.JobStatus;
+import com.trova.backend.entity.TripDraftStatus;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,8 +32,16 @@ public class PipelineDashboardService {
     public record StuckJob(Long id, String status, String stage, long minutesSinceUpdate) {
     }
 
+    public record StuckDraft(Long id, String status, boolean autoCreated, long minutesSinceUpdate) {
+    }
+
+    /** 일정 초안(trip_drafts) — 기간 안에 만든 수·그중 실패, 지금 멈춘 초안. 사용자 문구·실패 메시지는 넣지 않는다. */
+    public record DraftStats(long total, long failed, List<StuckDraft> stuck) {
+    }
+
     public record PipelineDashboard(int days, List<DailyJobStats> daily, Long durationP50Seconds,
-                                    Long durationP90Seconds, List<ReasonCount> failureReasons, List<StuckJob> stuckJobs) {
+                                    Long durationP90Seconds, List<ReasonCount> failureReasons, List<StuckJob> stuckJobs,
+                                    DraftStats drafts) {
     }
 
     public record JobRow(LocalDateTime createdAt, LocalDateTime updatedAt, JobStatus status, String errorMessage,
@@ -90,7 +99,36 @@ public class PipelineDashboardService {
                 .toList();
 
         return new PipelineDashboard(days, daily, Percentiles.of(durations, 0.5), Percentiles.of(durations, 0.9),
-                failureReasons, stuckJobs());
+                failureReasons, stuckJobs(), draftStats(period));
+    }
+
+    private DraftStats draftStats(DashboardPeriod period) {
+        Object[] counts = entityManager.createQuery(
+                        "select count(d), sum(case when d.status = :failed then 1 else 0 end) from TripDraft d where d.createdAt >= :since",
+                        Object[].class)
+                .setParameter("failed", TripDraftStatus.FAILED)
+                .setParameter("since", period.since())
+                .getSingleResult();
+        long total = (Long) counts[0];
+        long failed = counts[1] == null ? 0 : ((Number) counts[1]).longValue();
+        return new DraftStats(total, failed, stuckDrafts());
+    }
+
+    /** 진행 중인데 stuck-after-minutes 넘게 갱신이 없는 일정 초안(최대 20개). 15분이 지나면 OrphanedJobRecoveryService가 FAILED로 바꾼다. */
+    @Transactional(readOnly = true)
+    public List<StuckDraft> stuckDrafts() {
+        LocalDateTime now = LocalDateTime.now();
+        return entityManager.createQuery(
+                        "select d.id, d.status, d.autoCreated, d.updatedAt from TripDraft d "
+                                + "where d.status in :inFlight and d.updatedAt < :threshold order by d.updatedAt", Object[].class)
+                .setParameter("inFlight", List.of(TripDraftStatus.PENDING, TripDraftStatus.PROCESSING))
+                .setParameter("threshold", now.minusMinutes(stuckAfterMinutes))
+                .setMaxResults(20)
+                .getResultList()
+                .stream()
+                .map(r -> new StuckDraft((Long) r[0], String.valueOf(r[1]), (Boolean) r[2],
+                        Duration.between((LocalDateTime) r[3], now).toMinutes()))
+                .toList();
     }
 
     /** 진행 중인데 stuck-after-minutes 넘게 갱신이 없는 작업(최대 20개, 오래된 순). 15분이 지나면 OrphanedJobRecoveryService가 FAILED로 바꾼다. */

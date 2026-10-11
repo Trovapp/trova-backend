@@ -339,4 +339,37 @@ class AdminDashboardControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.callsPerJob").value(nullValue()));
     }
+
+    private TripDraft draft(User user, boolean auto, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        TripDraft draft = tripDraftRepository.save(auto ? TripDraft.auto(user, List.of(1L), "초안") : new TripDraft(user, List.of(1L), "초안"));
+        jdbcTemplate.update("update trip_drafts set status = ?, created_at = ?, updated_at = ? where id = ?",
+                status, createdAt, updatedAt, draft.getId());
+        return draft;
+    }
+
+    @Test
+    void 파이프라인은_일정_초안의_실패_수와_멈춘_초안을_준다() throws Exception {
+        // 설계에서 PR③(화면)과 함께 넣기로 한 일정 초안(trip_drafts)의 멈춤·실패(#161·#5 리뷰 지적).
+        User admin = admin();
+        LocalDateTime today = LocalDate.now().atTime(0, 10);
+        LocalDateTime old = LocalDateTime.now().minusMinutes(9);
+        draft(admin, true, "READY", today, today);
+        draft(admin, true, "FAILED", today, today);
+        TripDraft stuck = draft(admin, true, "PROCESSING", old, old);
+        draft(admin, false, "PENDING", LocalDateTime.now(), LocalDateTime.now());
+        // 오래됐어도 끝난 초안은 멈춘 것이 아니다. 기간(7일) 하루 앞 초안은 세지 않는다.
+        draft(admin, false, "FAILED", LocalDate.now().minusDays(7).atTime(12, 0), old);
+
+        mockMvc.perform(get("/api/admin/dashboard/pipeline?days=7").with(loginAs("dash-admin")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.drafts.total").value(4))
+                .andExpect(jsonPath("$.drafts.failed").value(1))
+                .andExpect(jsonPath("$.drafts.stuck.length()").value(1))
+                .andExpect(jsonPath("$.drafts.stuck[0].id").value(stuck.getId()))
+                .andExpect(jsonPath("$.drafts.stuck[0].status").value("PROCESSING"))
+                .andExpect(jsonPath("$.drafts.stuck[0].autoCreated").value(true))
+                .andExpect(jsonPath("$.drafts.stuck[0].message").doesNotExist());
+        mockMvc.perform(get("/api/admin/dashboard/summary").with(loginAs("dash-admin")))
+                .andExpect(jsonPath("$.cards[?(@.key == 'stuckJobs')].value").value(1));
+    }
 }
