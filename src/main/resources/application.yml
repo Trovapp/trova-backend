@@ -89,6 +89,13 @@ app:
   # 비워두면 아무도 쓸 수 없다.
   admin:
     users: ${ADMIN_USERS:}
+    # 요청 횟수 제한(#163) — 감으로 정함, 실측 아님. 교환은 IP당, 관리자 API는 관리자당 분당.
+    rate-limit:
+      exchange-per-minute: ${ADMIN_EXCHANGE_PER_MINUTE:10}
+      admin-api-per-minute: ${ADMIN_API_PER_MINUTE:120}
+  # 관리자 웹 주소(Cloudflare Pages, 예: https://trova-admin.pages.dev) — 로그인 뒤 돌아갈 주소·CORS에 이 하나만 허용(#163).
+  # 비워두면 관리자 웹 로그인은 꺼진다.
+  admin-web-url: ${APP_ADMIN_WEB_URL:}
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
   # 서버 이름 — 서버 상태 스냅샷(server_metric_snapshots)을 서버별로 나눈다(#161). 운영은 APP_INSTANCE_NAME=prod.
   # 운영·로컬이 같은 DB를 쓸 때 이 값이 같으면 대시보드 서버 탭에 두 서버 값이 섞인다.

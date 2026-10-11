@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -37,6 +38,10 @@ public class SecurityConfig {
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
+
+    // 관리자 웹(Cloudflare Pages, #163). 비어 있으면 CORS에 더하지 않는다.
+    @Value("${app.admin-web-url:}")
+    private String adminWebUrl;
 
     // API 문서(#149)를 켰을 때만 문서 경로를 로그인 없이 연다. 꺼져 있으면 다른 경로와 똑같이 로그인이 필요하다.
     @Value("${springdoc.api-docs.enabled:false}")
@@ -79,6 +84,8 @@ public class SecurityConfig {
                 .requestCache(cache -> cache.requestCache(new NullRequestCache()))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/oauth2/**", "/login/**").permitAll()
+                            // 관리자 웹 1회용 코드 교환 — 코드 자체가 인증이다(AdminWebLoginService, #163).
+                            .requestMatchers(HttpMethod.POST, "/api/auth/exchange").permitAll()
                             // 인증 없이 열어두되, 실제로 노출되는 엔드포인트는 application.yml의
                             // management.endpoints.web.exposure.include가 정한다 — 기본은 health만이고
                             // prometheus는 로컬에서 ACTUATOR_EXPOSE로 켤 때만 노출된다(#27).
@@ -135,7 +142,11 @@ public class SecurityConfig {
 
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(frontendUrl));
+        List<String> origins = new ArrayList<>(List.of(frontendUrl));
+        if (adminWebUrl != null && !adminWebUrl.isBlank()) {
+            origins.add(adminWebUrl.trim());
+        }
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(List.of("*"));
