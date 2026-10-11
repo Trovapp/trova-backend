@@ -1,5 +1,7 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.repository.ApiCallLogRepository;
+import com.trova.backend.entity.ApiCallLog;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.User;
@@ -43,6 +45,9 @@ class AdminDashboardControllerTest {
 
     @Autowired
     private ProcessingJobRepository processingJobRepository;
+
+    @Autowired
+    private ApiCallLogRepository apiCallLogRepository;
 
     private RequestPostProcessor loginAs(String sub) {
         ClientRegistration google = ClientRegistration.withRegistrationId("google")
@@ -154,5 +159,24 @@ class AdminDashboardControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.daily.length()").value(7))
                 .andExpect(jsonPath("$.durationP90Seconds").doesNotExist());
+    }
+
+    @Test
+    void AI_탭은_일별_호출_실패_토큰과_작업당_호출_수를_준다() throws Exception {
+        admin();
+        apiCallLogRepository.save(new ApiCallLog("gemini", "extract_places", 101L, 900L, true, null, 100, 50, 150));
+        apiCallLogRepository.save(new ApiCallLog("gemini", "extract_places", 101L, 800L, false, "429", null, null, null));
+        apiCallLogRepository.save(new ApiCallLog("kakao", "address_search", 102L, 60L, true, null, null, null, null));
+        apiCallLogRepository.save(new ApiCallLog("gemini", "conversation-turn", null, 500L, true, null, 10, 5, 15));
+
+        mockMvc.perform(get("/api/admin/dashboard/ai?days=7").with(loginAs("dash-admin")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.daily.length()").value(7))
+                .andExpect(jsonPath("$.daily[6].calls").value(4))
+                .andExpect(jsonPath("$.daily[6].failures").value(1))
+                .andExpect(jsonPath("$.daily[6].tokens").value(165))
+                .andExpect(jsonPath("$.callsPerJob").value(1.5))
+                .andExpect(jsonPath("$.byOperation[0].operation").value("extract_places"))
+                .andExpect(jsonPath("$.byOperation[0].calls").value(2));
     }
 }

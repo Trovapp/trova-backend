@@ -1,6 +1,7 @@
 package com.trova.backend.controller;
 
 import com.trova.backend.admin.AdminGuard;
+import com.trova.backend.admin.AiDashboardService;
 import com.trova.backend.admin.PipelineDashboardService;
 import com.trova.backend.admin.UsageDashboardService;
 import org.springframework.security.core.Authentication;
@@ -15,12 +16,14 @@ public class AdminDashboardController {
     private final AdminGuard adminGuard;
     private final UsageDashboardService usageDashboardService;
     private final PipelineDashboardService pipelineDashboardService;
+    private final AiDashboardService aiDashboardService;
 
     public AdminDashboardController(AdminGuard adminGuard, UsageDashboardService usageDashboardService,
-                                    PipelineDashboardService pipelineDashboardService) {
+                                    PipelineDashboardService pipelineDashboardService, AiDashboardService aiDashboardService) {
         this.adminGuard = adminGuard;
         this.usageDashboardService = usageDashboardService;
         this.pipelineDashboardService = pipelineDashboardService;
+        this.aiDashboardService = aiDashboardService;
     }
 
     @GetMapping("/api/admin/dashboard/usage")
@@ -35,5 +38,11 @@ public class AdminDashboardController {
                                                                @RequestParam(defaultValue = "14") int days) {
         adminGuard.requireAdmin(authentication);
         return pipelineDashboardService.pipeline(days);
+    }
+
+    @GetMapping("/api/admin/dashboard/ai")
+    public AiDashboardService.AiDashboard ai(Authentication authentication, @RequestParam(defaultValue = "14") int days) {
+        adminGuard.requireAdmin(authentication);
+        return aiDashboardService.ai(days);
     }
 }
