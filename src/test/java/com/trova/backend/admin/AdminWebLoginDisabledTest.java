@@ -12,4 +12,12 @@ class AdminWebLoginDisabledTest {
 
         assertThat(service.enabled()).isFalse();
     }
+
+    @Test
+    void 관리자_웹_주소_끝의_슬래시는_한_번만_붙는다() {
+        // 정적 사이트(trailingSlash)라 콜백은 /auth/callback/ — 리다이렉트로 ?code=가 떨어질 걱정을 없앤다(#5 리뷰).
+        AdminWebLoginService service = new AdminWebLoginService(null, null, null, null, null, null, "https://admin.example.dev/");
+
+        assertThat(service.failureRedirect()).isEqualTo("https://admin.example.dev/auth/callback/?error=oauth_failed");
+    }
 }

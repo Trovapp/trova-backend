@@ -22,7 +22,8 @@ public class AdminWebLoginService {
     public record AdminWebToken(String token, long expiresInSeconds) {
     }
 
-    private static final String CALLBACK_PATH = "/auth/callback";
+    // 관리자 웹은 정적 사이트(trailingSlash)라 끝에 /를 붙인다 — 붙이지 않으면 호스팅이 /로 다시 보내며 ?code=를 잃을 수 있다(웹 #5 리뷰).
+    private static final String CALLBACK_PATH = "/auth/callback/";
 
     private final AdminAccessService adminAccessService;
     private final AdminExchangeCodeStore codeStore;
@@ -42,7 +43,8 @@ public class AdminWebLoginService {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.rateLimiter = rateLimiter;
-        this.adminWebUrl = adminWebUrl == null ? "" : adminWebUrl.trim();
+        String url = adminWebUrl == null ? "" : adminWebUrl.trim();
+        this.adminWebUrl = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
     /** 관리자 웹 주소(APP_ADMIN_WEB_URL)가 없으면 관리자 웹 로그인은 꺼진다. */

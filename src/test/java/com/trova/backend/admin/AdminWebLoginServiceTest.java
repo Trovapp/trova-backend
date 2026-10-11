@@ -45,7 +45,7 @@ class AdminWebLoginServiceTest {
 
         String redirect = service.loginRedirect(admin);
 
-        assertThat(redirect).startsWith("https://admin.example.dev/auth/callback?code=");
+        assertThat(redirect).startsWith("https://admin.example.dev/auth/callback/?code=");
         assertThat(logsOf(admin)).extracting(AdminActionLog::getAction).containsExactly("ADMIN_WEB_LOGIN");
     }
 
@@ -55,14 +55,14 @@ class AdminWebLoginServiceTest {
 
         String redirect = service.loginRedirect(normal);
 
-        assertThat(redirect).isEqualTo("https://admin.example.dev/auth/callback?error=forbidden");
+        assertThat(redirect).isEqualTo("https://admin.example.dev/auth/callback/?error=forbidden");
         assertThat(logsOf(normal)).extracting(AdminActionLog::getAction).containsExactly("ADMIN_WEB_LOGIN_DENIED");
     }
 
     @Test
     void 교환_코드로_1시간짜리_관리자_웹_토큰을_받고_같은_코드는_다시_못_쓴다() {
         User admin = userRepository.save(new User("google", "web-admin", "관리자", null));
-        String code = service.loginRedirect(admin).substring("https://admin.example.dev/auth/callback?code=".length());
+        String code = service.loginRedirect(admin).substring("https://admin.example.dev/auth/callback/?code=".length());
 
         AdminWebLoginService.AdminWebToken token = service.exchange(code);
 
@@ -82,7 +82,7 @@ class AdminWebLoginServiceTest {
 
     @Test
     void 실패한_로그인은_관리자_웹의_오류_화면으로_보낸다() {
-        assertThat(service.failureRedirect()).isEqualTo("https://admin.example.dev/auth/callback?error=oauth_failed");
+        assertThat(service.failureRedirect()).isEqualTo("https://admin.example.dev/auth/callback/?error=oauth_failed");
         assertThat(service.enabled()).isTrue();
     }
 

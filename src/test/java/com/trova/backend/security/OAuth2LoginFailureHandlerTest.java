@@ -62,12 +62,12 @@ class OAuth2LoginFailureHandlerTest {
         when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
         when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
         when(adminWebLoginService.enabled()).thenReturn(true);
-        when(adminWebLoginService.failureRedirect()).thenReturn("https://admin.example.dev/auth/callback?error=oauth_failed");
+        when(adminWebLoginService.failureRedirect()).thenReturn("https://admin.example.dev/auth/callback/?error=oauth_failed");
 
         handler.onAuthenticationFailure(request, response, new BadCredentialsException("x"));
 
         verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
-        verify(response).sendRedirect("https://admin.example.dev/auth/callback?error=oauth_failed");
+        verify(response).sendRedirect("https://admin.example.dev/auth/callback/?error=oauth_failed");
     }
 
     @Test

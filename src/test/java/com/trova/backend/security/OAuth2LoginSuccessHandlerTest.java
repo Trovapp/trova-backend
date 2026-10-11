@@ -93,12 +93,12 @@ class OAuth2LoginSuccessHandlerTest {
         when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
         when(adminWebLoginService.enabled()).thenReturn(true);
         when(currentUserService.resolve(authentication)).thenReturn(user);
-        when(adminWebLoginService.loginRedirect(user)).thenReturn("https://admin.example.dev/auth/callback?code=abc");
+        when(adminWebLoginService.loginRedirect(user)).thenReturn("https://admin.example.dev/auth/callback/?code=abc");
 
         handler.onAuthenticationSuccess(request, response, authentication);
 
         verify(session).invalidate();
-        verify(response).sendRedirect("https://admin.example.dev/auth/callback?code=abc");
+        verify(response).sendRedirect("https://admin.example.dev/auth/callback/?code=abc");
         verify(jwtService, never()).issue(any());
     }
 
