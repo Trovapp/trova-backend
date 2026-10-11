@@ -19,6 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -112,5 +113,22 @@ class OAuth2LoginSuccessHandlerTest {
 
         verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
         verify(response).sendRedirect("http://localhost:3000");
+    }
+
+    @Test
+    void 로그인_기록_저장이_실패해도_세션은_지운다() throws Exception {
+        User user = new User("google", "42", "테스트", null);
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
+        when(adminWebLoginService.enabled()).thenReturn(true);
+        when(currentUserService.resolve(authentication)).thenReturn(user);
+        when(adminWebLoginService.loginRedirect(user)).thenThrow(new IllegalStateException("DB 연결 끊김"));
+
+        assertThatThrownBy(() -> handler.onAuthenticationSuccess(request, response, authentication))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(session).invalidate();
     }
 }

@@ -25,7 +25,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -146,16 +145,23 @@ public class SecurityConfig {
 
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        List<String> origins = new ArrayList<>(List.of(frontendUrl));
-        if (adminWebUrl != null && !adminWebUrl.isBlank()) {
-            origins.add(adminWebUrl.trim());
-        }
-        configuration.setAllowedOrigins(origins);
+        configuration.setAllowedOrigins(List.of(frontendUrl));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // 관리자 웹(#163)은 Bearer 토큰만 쓰므로 쿠키 없이, 관리자 API와 교환에만 연다 — 쿠키를 싣는 일반 API는 위 frontendUrl
+        // 하나만이라는 CSRF 판단 전제를 지킨다. 먼저 맞는 패턴 하나를 쓰므로 "/**"보다 먼저 등록해야 한다.
+        if (adminWebUrl != null && !adminWebUrl.isBlank()) {
+            CorsConfiguration adminWeb = new CorsConfiguration();
+            adminWeb.setAllowedOrigins(List.of(adminWebUrl.trim()));
+            adminWeb.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+            adminWeb.setAllowedHeaders(List.of("*"));
+            adminWeb.setAllowCredentials(false);
+            source.registerCorsConfiguration("/api/admin/**", adminWeb);
+            source.registerCorsConfiguration("/api/auth/exchange", adminWeb);
+        }
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

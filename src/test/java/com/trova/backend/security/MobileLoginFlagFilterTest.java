@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -118,6 +119,20 @@ class MobileLoginFlagFilterTest {
         filter.doFilterInternal(request, response, chain);
 
         verify(session).removeAttribute("MOBILE_LOGIN");
+        verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
+    }
+
+    @Test
+    void mobile과_client_admin_web이_같이_오면_앱_로그인_표시만_남긴다() throws Exception {
+        when(request.getRequestURI()).thenReturn("/oauth2/authorization/google");
+        when(request.getParameter("mobile")).thenReturn("true");
+        lenient().when(request.getParameter("client")).thenReturn("admin-web");
+        when(request.getSession(true)).thenReturn(session);
+
+        filter.doFilterInternal(request, response, chain);
+
+        verify(session).setAttribute("MOBILE_LOGIN", Boolean.TRUE);
+        verify(session, never()).setAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN, Boolean.TRUE);
         verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
     }
 }

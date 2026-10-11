@@ -49,9 +49,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             session.removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
             if (adminWebLoginService.enabled()) {
                 // 관리자 웹은 1회용 코드 → 1시간 토큰만 쓴다. 세션을 지워 세션 쿠키 인증이 남지 않게 한다(#163).
-                User user = currentUserService.resolve(authentication);
-                String redirect = adminWebLoginService.loginRedirect(user);
-                session.invalidate();
+                // 같은 브라우저에서 일반 웹에 세션으로 로그인돼 있었다면 그것도 함께 로그아웃된다 — 이 로그인으로 세션 인증이
+                // 어차피 관리자 계정으로 바뀌므로 지우는 쪽이 안전하다. 기록 저장 등에서 예외가 나도 세션은 지운다.
+                String redirect;
+                try {
+                    User user = currentUserService.resolve(authentication);
+                    redirect = adminWebLoginService.loginRedirect(user);
+                } finally {
+                    session.invalidate();
+                }
                 response.sendRedirect(redirect);
                 return;
             }

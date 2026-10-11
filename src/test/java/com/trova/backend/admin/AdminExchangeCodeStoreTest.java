@@ -44,4 +44,16 @@ class AdminExchangeCodeStoreTest {
         assertThat(store.consume("nope")).isEmpty();
         assertThat(store.consume(null)).isEmpty();
     }
+
+    @Test
+    void 코드는_59초에는_바꿀_수_있고_60초가_되면_바꿀_수_없다() {
+        String early = store.issue(7L);
+        String late = store.issue(8L);
+
+        clock.advance(Duration.ofSeconds(59));
+        assertThat(store.consume(early)).contains(7L);
+
+        clock.advance(Duration.ofSeconds(1));
+        assertThat(store.consume(late)).isEmpty();
+    }
 }

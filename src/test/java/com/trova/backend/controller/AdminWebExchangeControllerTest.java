@@ -5,6 +5,7 @@ import com.trova.backend.entity.User;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
 import com.trova.backend.support.AdminWebAuth;
+import com.trova.backend.support.RateLimitWindow;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -84,6 +85,7 @@ class AdminWebExchangeControllerTest {
 
     @Test
     void 교환은_IP당_분당_10번까지만_받는다() throws Exception {
+        RateLimitWindow.awaitFreshMinute();
         for (int i = 0; i < 10; i++) {
             mockMvc.perform(post("/api/auth/exchange").with(fromIp("10.0.0.3"))
                             .contentType(MediaType.APPLICATION_JSON).content(body("guess-" + i)))
@@ -99,6 +101,7 @@ class AdminWebExchangeControllerTest {
 
     @Test
     void 관리자_API는_관리자당_분당_한도를_넘으면_429다() throws Exception {
+        RateLimitWindow.awaitFreshMinute();
         userRepository.save(new User("google", "ex-admin", "관리자", null));
         RequestPostProcessor admin = AdminWebAuth.adminWebToken(jwtService, userRepository, "ex-admin");
         for (int i = 0; i < 3; i++) {
@@ -117,6 +120,21 @@ class AdminWebExchangeControllerTest {
         mockMvc.perform(options("/api/auth/exchange")
                         .header(HttpHeaders.ORIGIN, "https://evil.example.com")
                         .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void 관리자_웹_주소는_쿠키_없이_관리자_API와_교환에만_허용한다() throws Exception {
+        // 관리자 웹은 Bearer 토큰만 쓴다 — 쿠키를 싣는 일반 API CORS(frontendUrl 하나)에 섞지 않는다(리뷰 지적, #163).
+        mockMvc.perform(options("/api/admin/dashboard/summary")
+                        .header(HttpHeaders.ORIGIN, ADMIN_WEB)
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, ADMIN_WEB))
+                .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS));
+        mockMvc.perform(options("/api/trips")
+                        .header(HttpHeaders.ORIGIN, ADMIN_WEB)
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
                 .andExpect(status().isForbidden());
     }
 }

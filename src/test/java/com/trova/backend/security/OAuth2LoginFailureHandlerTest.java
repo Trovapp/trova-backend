@@ -69,4 +69,17 @@ class OAuth2LoginFailureHandlerTest {
         verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
         verify(response).sendRedirect("https://admin.example.dev/auth/callback?error=oauth_failed");
     }
+
+    @Test
+    void 관리자_웹_주소가_없으면_관리자_웹_로그인_실패도_일반_웹_오류_화면으로_보낸다() throws Exception {
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
+        when(adminWebLoginService.enabled()).thenReturn(false);
+
+        handler.onAuthenticationFailure(request, response, new BadCredentialsException("x"));
+
+        verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
+        verify(response).sendRedirect("http://localhost:3000/login?error=oauth_failed");
+    }
 }

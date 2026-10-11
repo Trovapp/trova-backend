@@ -29,16 +29,19 @@ public class AdminWebLoginService {
     private final AdminActionLogRepository actionLogRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final RequestRateLimiter rateLimiter;
     private final String adminWebUrl;
 
     public AdminWebLoginService(AdminAccessService adminAccessService, AdminExchangeCodeStore codeStore,
                                 AdminActionLogRepository actionLogRepository, UserRepository userRepository,
-                                JwtService jwtService, @Value("${app.admin-web-url:}") String adminWebUrl) {
+                                JwtService jwtService, RequestRateLimiter rateLimiter,
+                                @Value("${app.admin-web-url:}") String adminWebUrl) {
         this.adminAccessService = adminAccessService;
         this.codeStore = codeStore;
         this.actionLogRepository = actionLogRepository;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.rateLimiter = rateLimiter;
         this.adminWebUrl = adminWebUrl == null ? "" : adminWebUrl.trim();
     }
 
@@ -50,7 +53,10 @@ public class AdminWebLoginService {
     @Transactional
     public String loginRedirect(User user) {
         if (!adminAccessService.isAdmin(user)) {
-            actionLogRepository.save(new AdminActionLog(user.getId(), AdminActionLog.ADMIN_WEB_LOGIN_DENIED, null, null, null));
+            // 거부는 사용자당 1분에 한 번만 남긴다 — 되풀이해도 지우지 않는 감사 기록이 끝없이 쌓이지 않게(리뷰 지적, #163).
+            if (rateLimiter.tryAcquire("admin-web-denied-log:" + user.getId(), 1)) {
+                actionLogRepository.save(new AdminActionLog(user.getId(), AdminActionLog.ADMIN_WEB_LOGIN_DENIED, null, null, null));
+            }
             return adminWebUrl + CALLBACK_PATH + "?error=forbidden";
         }
         actionLogRepository.save(new AdminActionLog(user.getId(), AdminActionLog.ADMIN_WEB_LOGIN, null, null, null));

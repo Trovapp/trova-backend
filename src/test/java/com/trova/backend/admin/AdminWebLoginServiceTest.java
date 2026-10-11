@@ -85,4 +85,28 @@ class AdminWebLoginServiceTest {
         assertThat(service.failureRedirect()).isEqualTo("https://admin.example.dev/auth/callback?error=oauth_failed");
         assertThat(service.enabled()).isTrue();
     }
+
+    @Autowired
+    private AdminExchangeCodeStore codeStore;
+
+    @Test
+    void 코드를_받은_뒤_관리자에서_빠지면_교환은_403이다() {
+        User removed = userRepository.save(new User("google", "web-removed", "빠진 관리자", null));
+        String code = codeStore.issue(removed.getId());
+
+        assertThatThrownBy(() -> service.exchange(code))
+                .isInstanceOfSatisfying(ResponseStatusException.class, e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN));
+    }
+
+    @Test
+    void 관리자가_아닌_사용자의_거부는_1분에_한_번만_기록한다() {
+        // 관리자가 아닌 사용자가 로그인을 되풀이해도 지우지 않는 감사 기록이 끝없이 쌓이지 않게(리뷰 지적, #163).
+        User normal = userRepository.save(new User("google", "web-repeat", "일반", null));
+
+        service.loginRedirect(normal);
+        service.loginRedirect(normal);
+        service.loginRedirect(normal);
+
+        assertThat(logsOf(normal)).hasSize(1);
+    }
 }

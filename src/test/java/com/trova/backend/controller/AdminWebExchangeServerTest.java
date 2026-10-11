@@ -1,5 +1,6 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.support.RateLimitWindow;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -36,6 +37,7 @@ class AdminWebExchangeServerTest {
 
     @Test
     void 로그인_없이_부른_교환의_오류는_400과_429로_그대로_나간다() throws Exception {
+        RateLimitWindow.awaitFreshMinute();
         List<Integer> statuses = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             statuses.add(exchange("wrong-" + i));
