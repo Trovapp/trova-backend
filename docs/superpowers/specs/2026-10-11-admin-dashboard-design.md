@@ -41,6 +41,7 @@
 ### 서버 상태 기록 (새 테이블)
 - `server_metric_snapshots`: 5분마다 한 줄 — 측정 시각, 요청 수, 응답 시간 p50·p90(ms), 5xx 수, 힙 사용(MB), DB 커넥션 사용 수.
 - 값은 이미 있는 Micrometer 지표(`http.server.requests`, `jvm.memory.used`, `hikaricp.connections.active`)에서 5분 사이 증가분으로 계산한다. Prometheus·Grafana는 운영 서버에 띄우지 않는다(E2.1.Micro 남은 메모리 약 300MB).
+- 저장이 실패한 구간의 표본은 버리지 않고 다음 줄에 합친다 — 그래프에서 빈 칸 바로 뒤 줄은 두 구간 값이라 요청 수·5xx가 평소보다 크게 보인다.
 - 30일 지난 줄은 하루 한 번 지운다. 하루 288줄이라 Supabase 무료 용량(500MB)에 부담 없음.
 - 로컬 서버와 운영 서버가 같은 DB를 쓰는 환경이 있으므로 `source`(설정 `app.instance-name`, 예: prod/local) 칸을 두고 대시보드는 prod만 보여준다.
 

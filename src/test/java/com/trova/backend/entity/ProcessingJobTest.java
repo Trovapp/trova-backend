@@ -59,4 +59,17 @@ class ProcessingJobTest {
         assertThat(job.getAnalysisStatus()).isEqualTo(JobStatus.FAILED);
         assertThat(job.getErrorMessage()).isEqualTo(ProcessingJob.NO_PLACES_MESSAGE);
     }
+
+    @Test
+    void 멈춘_작업으로_실패_처리된_분석이_나중에_끝나면_완료로_바뀐다() {
+        // 외부 호출이 15분 넘게 걸리면 멈춘 작업 정리가 먼저 실패로 남긴다 — 그 뒤 분석이 실제로 끝나면 완료가 맞다(재리뷰 지적, #161).
+        ProcessingJob job = newJob();
+        job.markProcessing();
+        job.markAnalysisFailed("멈춘 작업");
+
+        job.markAnalysisDone();
+
+        assertThat(job.getAnalysisStatus()).isEqualTo(JobStatus.DONE);
+        assertThat(job.getAnalysisFinishedAt()).isEqualTo(job.getUpdatedAt());
+    }
 }

@@ -45,6 +45,7 @@ public class ServerMetricSnapshotRecorder {
             repository.save(new ServerMetricSnapshot(instanceName, LocalDateTime.now(), samples.size(),
                     p50 == null ? null : p50.intValue(), p90 == null ? null : p90.intValue(), errors, heapMb, activeConnections()));
         } catch (RuntimeException e) {
+            // 되돌린 표본은 다음 줄에 합쳐진다 — 그 줄의 요청 수·5xx는 실패한 구간까지 포함해 평소보다 크게 보인다(앞 칸이 비어 있으면 합쳐진 줄).
             timingFilter.restore(samples);
             throw e;
         }

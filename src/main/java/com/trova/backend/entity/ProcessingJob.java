@@ -103,10 +103,14 @@ public class ProcessingJob {
         this.updatedAt = LocalDateTime.now();
     }
 
-    /** 영상 분석(PlaceExtractionService)이 끝났을 때. 일정 생성은 {@link #markDone()}을 쓴다. */
+    /**
+     * 영상 분석(PlaceExtractionService)이 끝났을 때. 일정 생성은 {@link #markDone()}을 쓴다.
+     * 멈춘 작업 정리가 먼저 실패로 남겼어도 분석이 실제로 끝났으면 완료로 덮어쓴다(일정 생성은 분석 완료 뒤에만 시작하므로 덮을 일이 없다).
+     */
     public void markAnalysisDone() {
         markDone();
-        recordAnalysisResult();
+        this.analysisStatus = JobStatus.DONE;
+        this.analysisFinishedAt = this.updatedAt;
     }
 
     /** 영상 분석이 실패했거나 분석 중 멈췄을 때. 분석 결과가 이미 있으면(일정 생성 중 멈춤) 그 결과는 그대로 둔다. */

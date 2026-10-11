@@ -329,4 +329,14 @@ class AdminDashboardControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cards[?(@.key == 'geminiToday')].value").value(1));
     }
+
+    @Test
+    void 영상_분석_작업_호출이_없으면_작업당_호출_수는_비어_있다() throws Exception {
+        admin();
+        apiCallLogRepository.save(new ApiCallLog("gemini", "place_tagging", System.nanoTime(), 100L, true, null, null, null, null));
+
+        mockMvc.perform(get("/api/admin/dashboard/ai?days=7").with(loginAs("dash-admin")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.callsPerJob").value(nullValue()));
+    }
 }

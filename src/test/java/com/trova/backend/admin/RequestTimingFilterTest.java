@@ -63,4 +63,16 @@ class RequestTimingFilterTest {
 
         assertThat(filter.drain()).extracting(RequestTimingFilter.Sample::durationMs).containsExactlyInAnyOrder(10L, 20L);
     }
+
+    @Test
+    void 되돌릴_때도_표본_상한을_넘기지_않는다() {
+        RequestTimingFilter filter = new RequestTimingFilter();
+        for (int i = 0; i < 49_999; i++) {
+            filter.add(new RequestTimingFilter.Sample(1, 200));
+        }
+
+        filter.restore(List.of(new RequestTimingFilter.Sample(2, 200), new RequestTimingFilter.Sample(3, 200)));
+
+        assertThat(filter.drain()).hasSize(50_000);
+    }
 }
