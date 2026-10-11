@@ -3,6 +3,7 @@ package com.trova.backend.controller;
 import com.trova.backend.admin.AdminGuard;
 import com.trova.backend.admin.AiDashboardService;
 import com.trova.backend.admin.PipelineDashboardService;
+import com.trova.backend.admin.ServerDashboardService;
 import com.trova.backend.admin.UsageDashboardService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,13 +18,16 @@ public class AdminDashboardController {
     private final UsageDashboardService usageDashboardService;
     private final PipelineDashboardService pipelineDashboardService;
     private final AiDashboardService aiDashboardService;
+    private final ServerDashboardService serverDashboardService;
 
     public AdminDashboardController(AdminGuard adminGuard, UsageDashboardService usageDashboardService,
-                                    PipelineDashboardService pipelineDashboardService, AiDashboardService aiDashboardService) {
+                                    PipelineDashboardService pipelineDashboardService, AiDashboardService aiDashboardService,
+                                    ServerDashboardService serverDashboardService) {
         this.adminGuard = adminGuard;
         this.usageDashboardService = usageDashboardService;
         this.pipelineDashboardService = pipelineDashboardService;
         this.aiDashboardService = aiDashboardService;
+        this.serverDashboardService = serverDashboardService;
     }
 
     @GetMapping("/api/admin/dashboard/usage")
@@ -44,5 +48,12 @@ public class AdminDashboardController {
     public AiDashboardService.AiDashboard ai(Authentication authentication, @RequestParam(defaultValue = "14") int days) {
         adminGuard.requireAdmin(authentication);
         return aiDashboardService.ai(days);
+    }
+
+    @GetMapping("/api/admin/dashboard/server")
+    public ServerDashboardService.ServerDashboard server(Authentication authentication,
+                                                         @RequestParam(defaultValue = "14") int days) {
+        adminGuard.requireAdmin(authentication);
+        return serverDashboardService.server(days);
     }
 }

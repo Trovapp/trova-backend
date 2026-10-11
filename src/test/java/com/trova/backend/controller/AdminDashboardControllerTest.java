@@ -1,5 +1,7 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.repository.ServerMetricSnapshotRepository;
+import com.trova.backend.entity.ServerMetricSnapshot;
 import com.trova.backend.repository.ApiCallLogRepository;
 import com.trova.backend.entity.ApiCallLog;
 import com.trova.backend.entity.ProcessingJob;
@@ -48,6 +50,9 @@ class AdminDashboardControllerTest {
 
     @Autowired
     private ApiCallLogRepository apiCallLogRepository;
+
+    @Autowired
+    private ServerMetricSnapshotRepository snapshotRepository;
 
     private RequestPostProcessor loginAs(String sub) {
         ClientRegistration google = ClientRegistration.withRegistrationId("google")
@@ -178,5 +183,19 @@ class AdminDashboardControllerTest {
                 .andExpect(jsonPath("$.callsPerJob").value(1.5))
                 .andExpect(jsonPath("$.byOperation[0].operation").value("extract_places"))
                 .andExpect(jsonPath("$.byOperation[0].calls").value(2));
+    }
+
+    @Test
+    void 서버_탭은_이_서버_이름의_스냅샷만_준다() throws Exception {
+        admin();
+        snapshotRepository.save(new ServerMetricSnapshot("test-a", LocalDateTime.now().minusMinutes(10), 12, 30, 80, 0, 200, 2));
+        snapshotRepository.save(new ServerMetricSnapshot("other-local", LocalDateTime.now().minusMinutes(10), 99, 1, 1, 0, 1, 1));
+
+        mockMvc.perform(get("/api/admin/dashboard/server?days=7").with(loginAs("dash-admin")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.instanceName").value("test-a"))
+                .andExpect(jsonPath("$.snapshots.length()").value(1))
+                .andExpect(jsonPath("$.snapshots[0].requestCount").value(12))
+                .andExpect(jsonPath("$.snapshots[0].p90Ms").value(80));
     }
 }
