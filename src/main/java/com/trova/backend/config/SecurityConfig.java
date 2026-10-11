@@ -6,6 +6,7 @@ import com.trova.backend.security.JwtSkippingSecurityContextRepository;
 import com.trova.backend.security.MobileLoginFlagFilter;
 import com.trova.backend.security.OAuth2LoginFailureHandler;
 import com.trova.backend.security.OAuth2LoginSuccessHandler;
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -83,6 +84,9 @@ public class SecurityConfig {
                 .securityContext(context -> context.securityContextRepository(new JwtSkippingSecurityContextRepository()))
                 .requestCache(cache -> cache.requestCache(new NullRequestCache()))
                 .authorizeHttpRequests(auth -> {
+                    // 오류 응답 만들기(/error로 다시 넘김)는 인증을 다시 보지 않는다 — 막으면 로그인 없이 부르는 교환 API의
+                    // 400·429가 모두 401로 바뀐다(#163). 원래 요청의 권한 확인은 이미 끝난 뒤라 데이터가 새지 않는다.
+                    auth.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll();
                     auth.requestMatchers("/oauth2/**", "/login/**").permitAll()
                             // 관리자 웹 1회용 코드 교환 — 코드 자체가 인증이다(AdminWebLoginService, #163).
                             .requestMatchers(HttpMethod.POST, "/api/auth/exchange").permitAll()
