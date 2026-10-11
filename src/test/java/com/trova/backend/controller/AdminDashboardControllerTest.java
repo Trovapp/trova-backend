@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -212,6 +214,8 @@ class AdminDashboardControllerTest {
                 .andExpect(jsonPath("$.cards.length()").value(4))
                 .andExpect(jsonPath("$.cards[?(@.key == 'failures24h')].value").value(6))
                 .andExpect(jsonPath("$.cards[?(@.key == 'failures24h')].alert").value(true))
-                .andExpect(jsonPath("$.cards[?(@.key == 'p90LastHour')].alert").value(false));
+                .andExpect(jsonPath("$.cards[?(@.key == 'p90LastHour')].alert").value(false))
+                // 같은 Gemini 키를 다른 DB의 서버(로컬)도 쓰므로 "이 DB에 기록된 호출만"임을 분명히 한다(2026-10-04 한도 소진).
+                .andExpect(jsonPath("$.cards[?(@.key == 'geminiToday')].note").value(hasItem(containsString("이 DB에 기록된 호출만"))));
     }
 }

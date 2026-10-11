@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/** AI·외부 API 호출 탭(api_call_logs). 이 서버가 남긴 호출만 — 로컬 서버가 다른 DB에 쓴 호출은 세지 않는다. */
+/** AI·외부 API 호출 탭(api_call_logs). 이 DB에 기록된 호출만 — 같은 Gemini 키를 쓰더라도 다른 DB를 쓰는 서버(로컬)의 호출은 빠진다. */
 @Service
 public class AiDashboardService {
 

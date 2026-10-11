@@ -34,10 +34,15 @@ public class RequestTimingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         long start = System.nanoTime();
+        // 처리되지 않은 예외는 여기를 지날 때 응답 상태가 아직 200이고 500은 그 뒤 오류 처리에서 붙는다 — 예외면 500으로 센다.
+        boolean failed = false;
         try {
             chain.doFilter(request, response);
+        } catch (IOException | ServletException | RuntimeException e) {
+            failed = true;
+            throw e;
         } finally {
-            add(new Sample((System.nanoTime() - start) / 1_000_000, response.getStatus()));
+            add(new Sample((System.nanoTime() - start) / 1_000_000, failed ? 500 : response.getStatus()));
         }
     }
 

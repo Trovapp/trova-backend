@@ -26,7 +26,7 @@
 | 탭 | 그래프 | 출처 |
 |---|---|---|
 | AI 한도·호출 | 일별 호출 수(성공·실패), 토큰 합, 작업(영상) 1개당 호출 수, 기능(operation)별 호출 수 | `api_call_logs` |
-| 분석 파이프라인 | 일별 요청 수·성공률, 처리 시간 중앙값·p90(DONE 작업의 updatedAt − createdAt), 실패 이유별 건수, 지금 멈춘 작업 목록(최대 20개) | `processing_jobs`, `trip_drafts` |
+| 분석 파이프라인 | 일별 요청 수·성공률, 처리 시간 중앙값·p90(DONE 작업의 updatedAt − createdAt), 실패 이유별 건수, 지금 멈춘 작업 목록(최대 20개) | `processing_jobs` (일정 초안 `trip_drafts`의 멈춤·실패는 PR①에 넣지 않음 — PR③ 화면 작업 때 추가) |
 | 서버 상태 | 5분 단위 응답 시간 p50·p90, 요청 수, 5xx 수, 힙 사용량, DB 커넥션 사용 수 | `server_metric_snapshots`(새로) |
 | 사용 데이터 | 일별 가입자·저장 장소·여행·자동 초안 수, 누적 사용자 수 | `users`, `saved_places`, `trips`, `trip_drafts` |
 
@@ -34,7 +34,7 @@
 - `GET /api/admin/dashboard/summary` — 위 카드 4개.
 - `GET /api/admin/dashboard/{ai|pipeline|server|usage}?days=7|14|30` — 탭별. 탭을 나눈 이유: 한 탭 집계가 실패해도 나머지는 보이게.
 - 권한: 기존 `AdminAccessService`(설정 `ADMIN_USERS`) — 관리자가 아니면 403. 로그인 안 했으면 401.
-- 집계는 DB에서 날짜별 `group by`로 하고 일별 숫자만 응답한다(사용자가 늘어도 응답 크기 일정). 날짜는 한국 시간 기준(`DailyQuotaService`와 같은 변환).
+- 집계는 DB에서 날짜별 `group by`로 하고 일별 숫자만 응답한다(사용자가 늘어도 응답 크기 일정). 날짜는 서버 기본 시간대 기준 — 엔티티가 `LocalDateTime.now()`(서버 기본 시간대)로 저장하므로 같은 기준으로 묶는다. 운영은 `TZ=Asia/Seoul`이라 한국 시간과 같다(TZ가 빠지면 UTC로 9시간 밀림 — 배포 확인 항목).
 - 실패 이유 분류: `errorMessage`에 이미 쓰는 코드(`SOURCE_RATE_LIMITED`, `GEMINI_DAILY_QUOTA_EXCEEDED` 등)로 묶고, 없으면 "기타". 분류 규칙은 한 클래스(`FailureReason`)에 모은다.
 - 새 코드는 `admin` 기능 패키지(`controller`·`service`는 기존 규칙대로, 집계는 `admin` 패키지 안 Service로 분리 — 외부 연동 없음).
 

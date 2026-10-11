@@ -64,7 +64,7 @@ public class DashboardSummaryService {
         Long p90 = serverDashboardService.maxP90Since(now.minusHours(1));
 
         return new DashboardSummary(List.of(
-                card("geminiToday", gemini, geminiAlert, "이 서버 호출만 · 하루 한도 " + geminiDailyLimit + "회(태평양 자정 기준)"),
+                card("geminiToday", gemini, geminiAlert, "이 DB에 기록된 호출만(같은 키를 쓰는 다른 DB의 서버 호출은 빠짐) · 하루 한도 " + geminiDailyLimit + "회(태평양 자정 기준)"),
                 card("failures24h", failures, failuresAlert, "최근 24시간 분석 실패"),
                 card("stuckJobs", stuck, 1, "진행 중인데 오래 갱신이 없는 작업"),
                 card("p90LastHour", p90, p90AlertMs, "최근 1시간 응답 시간 p90(ms), 스냅샷 기준")));
