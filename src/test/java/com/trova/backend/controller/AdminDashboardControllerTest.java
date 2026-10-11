@@ -198,4 +198,20 @@ class AdminDashboardControllerTest {
                 .andExpect(jsonPath("$.snapshots[0].requestCount").value(12))
                 .andExpect(jsonPath("$.snapshots[0].p90Ms").value(80));
     }
+
+    @Test
+    void 요약은_카드_4개를_주고_기준을_넘으면_경고한다() throws Exception {
+        User admin = admin();
+        LocalDateTime now = LocalDateTime.now();
+        for (int i = 0; i < 6; i++) {
+            job(admin, "https://youtu.be/dashF" + i, "FAILED", null, now.minusHours(1), now.minusHours(1));
+        }
+
+        mockMvc.perform(get("/api/admin/dashboard/summary").with(loginAs("dash-admin")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cards.length()").value(4))
+                .andExpect(jsonPath("$.cards[?(@.key == 'failures24h')].value").value(6))
+                .andExpect(jsonPath("$.cards[?(@.key == 'failures24h')].alert").value(true))
+                .andExpect(jsonPath("$.cards[?(@.key == 'p90LastHour')].alert").value(false));
+    }
 }

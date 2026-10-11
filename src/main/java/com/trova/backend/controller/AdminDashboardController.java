@@ -2,6 +2,7 @@ package com.trova.backend.controller;
 
 import com.trova.backend.admin.AdminGuard;
 import com.trova.backend.admin.AiDashboardService;
+import com.trova.backend.admin.DashboardSummaryService;
 import com.trova.backend.admin.PipelineDashboardService;
 import com.trova.backend.admin.ServerDashboardService;
 import com.trova.backend.admin.UsageDashboardService;
@@ -19,15 +20,17 @@ public class AdminDashboardController {
     private final PipelineDashboardService pipelineDashboardService;
     private final AiDashboardService aiDashboardService;
     private final ServerDashboardService serverDashboardService;
+    private final DashboardSummaryService dashboardSummaryService;
 
     public AdminDashboardController(AdminGuard adminGuard, UsageDashboardService usageDashboardService,
                                     PipelineDashboardService pipelineDashboardService, AiDashboardService aiDashboardService,
-                                    ServerDashboardService serverDashboardService) {
+                                    ServerDashboardService serverDashboardService, DashboardSummaryService dashboardSummaryService) {
         this.adminGuard = adminGuard;
         this.usageDashboardService = usageDashboardService;
         this.pipelineDashboardService = pipelineDashboardService;
         this.aiDashboardService = aiDashboardService;
         this.serverDashboardService = serverDashboardService;
+        this.dashboardSummaryService = dashboardSummaryService;
     }
 
     @GetMapping("/api/admin/dashboard/usage")
@@ -55,5 +58,11 @@ public class AdminDashboardController {
                                                          @RequestParam(defaultValue = "14") int days) {
         adminGuard.requireAdmin(authentication);
         return serverDashboardService.server(days);
+    }
+
+    @GetMapping("/api/admin/dashboard/summary")
+    public DashboardSummaryService.DashboardSummary summary(Authentication authentication) {
+        adminGuard.requireAdmin(authentication);
+        return dashboardSummaryService.summary();
     }
 }
