@@ -1,5 +1,6 @@
 package com.trova.backend.security;
 
+import com.trova.backend.admin.AdminWebLoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +19,8 @@ import static org.mockito.Mockito.when;
 class OAuth2LoginFailureHandlerTest {
 
     @Mock
+    private AdminWebLoginService adminWebLoginService;
+    @Mock
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;
@@ -28,7 +31,7 @@ class OAuth2LoginFailureHandlerTest {
 
     @BeforeEach
     void setUp() {
-        handler = new OAuth2LoginFailureHandler();
+        handler = new OAuth2LoginFailureHandler(adminWebLoginService);
         ReflectionTestUtils.setField(handler, "frontendUrl", "http://localhost:3000");
         ReflectionTestUtils.setField(handler, "mobileRedirectScheme", "trova");
     }
@@ -51,5 +54,19 @@ class OAuth2LoginFailureHandlerTest {
         handler.onAuthenticationFailure(request, response, new BadCredentialsException("test"));
 
         verify(response).sendRedirect("http://localhost:3000/login?error=oauth_failed");
+    }
+
+    @Test
+    void 관리자_웹_로그인_실패면_관리자_웹의_오류_화면으로_보낸다() throws Exception {
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
+        when(adminWebLoginService.enabled()).thenReturn(true);
+        when(adminWebLoginService.failureRedirect()).thenReturn("https://admin.example.dev/auth/callback?error=oauth_failed");
+
+        handler.onAuthenticationFailure(request, response, new BadCredentialsException("x"));
+
+        verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
+        verify(response).sendRedirect("https://admin.example.dev/auth/callback?error=oauth_failed");
     }
 }

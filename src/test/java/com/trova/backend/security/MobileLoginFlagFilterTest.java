@@ -80,4 +80,44 @@ class MobileLoginFlagFilterTest {
         verify(session).removeAttribute("MOBILE_LOGIN");
         verify(chain).doFilter(request, response);
     }
+
+    @Test
+    void client가_admin_web이면_관리자_웹_로그인_표시를_남기고_모바일_표시는_지운다() throws Exception {
+        when(request.getRequestURI()).thenReturn("/oauth2/authorization/kakao");
+        when(request.getParameter("mobile")).thenReturn(null);
+        when(request.getParameter("client")).thenReturn("admin-web");
+        when(request.getSession(true)).thenReturn(session);
+
+        filter.doFilterInternal(request, response, chain);
+
+        verify(session).setAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN, Boolean.TRUE);
+        verify(session).removeAttribute("MOBILE_LOGIN");
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    void 모바일_로그인이면_남아_있던_관리자_웹_표시를_지운다() throws Exception {
+        // 관리자 웹 로그인을 시작했다 그만둔 세션으로 앱 로그인을 하면 앱 토큰 대신 관리자 웹으로 가면 안 된다.
+        when(request.getRequestURI()).thenReturn("/oauth2/authorization/google");
+        when(request.getParameter("mobile")).thenReturn("true");
+        when(request.getSession(true)).thenReturn(session);
+
+        filter.doFilterInternal(request, response, chain);
+
+        verify(session).setAttribute("MOBILE_LOGIN", Boolean.TRUE);
+        verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
+    }
+
+    @Test
+    void 표시_없이_로그인을_시작하면_관리자_웹_표시도_지운다() throws Exception {
+        when(request.getRequestURI()).thenReturn("/oauth2/authorization/google");
+        when(request.getParameter("mobile")).thenReturn(null);
+        when(request.getParameter("client")).thenReturn(null);
+        when(request.getSession(false)).thenReturn(session);
+
+        filter.doFilterInternal(request, response, chain);
+
+        verify(session).removeAttribute("MOBILE_LOGIN");
+        verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
+    }
 }

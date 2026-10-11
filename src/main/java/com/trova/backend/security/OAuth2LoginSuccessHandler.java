@@ -1,5 +1,6 @@
 package com.trova.backend.security;
 
+import com.trova.backend.admin.AdminWebLoginService;
 import com.trova.backend.entity.User;
 import com.trova.backend.service.CurrentUserService;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final CurrentUserService currentUserService;
     private final JwtService jwtService;
+    private final AdminWebLoginService adminWebLoginService;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -25,9 +27,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Value("${app.mobile-redirect-scheme}")
     private String mobileRedirectScheme;
 
-    public OAuth2LoginSuccessHandler(CurrentUserService currentUserService, JwtService jwtService) {
+    public OAuth2LoginSuccessHandler(CurrentUserService currentUserService, JwtService jwtService,
+                                     AdminWebLoginService adminWebLoginService) {
         this.currentUserService = currentUserService;
         this.jwtService = jwtService;
+        this.adminWebLoginService = adminWebLoginService;
     }
 
     @Override
@@ -40,6 +44,17 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             String token = jwtService.issue(user);
             response.sendRedirect(mobileRedirectScheme + "://auth?token=" + token);
             return;
+        }
+        if (session != null && Boolean.TRUE.equals(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN))) {
+            session.removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
+            if (adminWebLoginService.enabled()) {
+                // 관리자 웹은 1회용 코드 → 1시간 토큰만 쓴다. 세션을 지워 세션 쿠키 인증이 남지 않게 한다(#163).
+                User user = currentUserService.resolve(authentication);
+                String redirect = adminWebLoginService.loginRedirect(user);
+                session.invalidate();
+                response.sendRedirect(redirect);
+                return;
+            }
         }
         response.sendRedirect(frontendUrl);
     }
