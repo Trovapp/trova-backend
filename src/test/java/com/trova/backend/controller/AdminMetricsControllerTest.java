@@ -3,12 +3,12 @@ package com.trova.backend.controller;
 import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.repository.UserRepository;
+import com.trova.backend.security.JwtService;
+import com.trova.backend.support.AdminWebAuth;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,21 +38,11 @@ class AdminMetricsControllerTest {
     @MockitoBean
     private PlaceEmbeddingService placeEmbeddingService;
 
+    @Autowired
+    private JwtService jwtService;
+
     private RequestPostProcessor loginAs(String sub) {
-        ClientRegistration google = ClientRegistration.withRegistrationId("google")
-                .clientId("test-client-id")
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
-                .authorizationUri("https://accounts.google.com/o/oauth2/v2/auth")
-                .tokenUri("https://oauth2.googleapis.com/token")
-                .userInfoUri("https://openidconnect.googleapis.com/v1/userinfo")
-                .userNameAttributeName("sub")
-                .build();
-        return oauth2Login().clientRegistration(google).attributes(attrs -> {
-            attrs.put("sub", sub);
-            attrs.put("name", sub);
-            attrs.put("picture", "https://example.com/p.jpg");
-        });
+        return AdminWebAuth.adminWebToken(jwtService, userRepository, sub);
     }
 
     @Test
