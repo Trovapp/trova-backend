@@ -222,6 +222,24 @@ class AdminUsersControllerTest {
     }
 
     @Test
+    void 같은_링크로_더_최근_작업이_있으면_예전_실패_작업은_다시_실행할_수_없다고_보여준다() throws Exception {
+        User user = newUser("재실행끝");
+        String url = "https://www.youtube.com/watch?v=" + UUID.randomUUID().toString().substring(0, 11);
+        ProcessingJob old = new ProcessingJob(user, url, SourcePlatform.YOUTUBE);
+        old.markFailed(ProcessingJob.AI_QUOTA_MESSAGE);
+        jobRepository.save(old);
+        ProcessingJob newer = new ProcessingJob(user, url, SourcePlatform.YOUTUBE);
+        newer.markDone();
+        jobRepository.save(newer);
+
+        mockMvc.perform(get("/api/admin/users/" + user.getId()).with(admin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recentJobs[1].id").value(old.getId()))
+                .andExpect(jsonPath("$.recentJobs[1].failureReason").value("AI_QUOTA"))
+                .andExpect(jsonPath("$.recentJobs[1].retryable").value(false));
+    }
+
+    @Test
     void 없는_번호면_404이고_열람_기록을_남기지_않는다() throws Exception {
         long missing = Long.MAX_VALUE - 7;
         mockMvc.perform(get("/api/admin/users/" + missing).with(admin()))

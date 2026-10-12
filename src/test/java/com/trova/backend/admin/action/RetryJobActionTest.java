@@ -125,6 +125,36 @@ class RetryJobActionTest {
     }
 
     @Test
+    void 다시_돌린_새_작업이_끝나면_예전_실패_작업은_다시_돌리지_않는다() {
+        ProcessingJob job = failedJob("retry-9", ProcessingJob.AI_QUOTA_MESSAGE);
+        String result = retry.execute(job.getId(), 1L);
+        ProcessingJob newJob = jobRepository.findById(Long.valueOf(result.substring("새 작업 #".length()))).orElseThrow();
+        newJob.markDone();
+        jobRepository.save(newJob);
+
+        assertThatThrownBy(() -> retry.preview(job.getId(), 1L))
+                .satisfies(e -> assertConflict(e, "이 영상은 더 최근 작업이 있어 다시 실행하지 않아요."));
+        assertThatThrownBy(() -> retry.execute(job.getId(), 1L))
+                .satisfies(e -> assertConflict(e, "이 영상은 더 최근 작업이 있어 다시 실행하지 않아요."));
+        assertThat(retry.isRetryable(jobRepository.findById(job.getId()).orElseThrow())).isFalse();
+        verify(placeExtractionService).process(newJob.getId());
+    }
+
+    @Test
+    void 같은_링크의_더_최근_작업도_실패했으면_가장_최근_것만_다시_돌릴_수_있다() {
+        ProcessingJob old = failedJob("retry-10", ProcessingJob.AI_QUOTA_MESSAGE);
+        ProcessingJob newer = new ProcessingJob(old.getUser(), old.getSourceUrl(), SourcePlatform.YOUTUBE);
+        newer.markFailed(ProcessingJob.AI_QUOTA_MESSAGE);
+        jobRepository.save(newer);
+
+        assertThat(retry.isRetryable(old)).isFalse();
+        assertThat(retry.isRetryable(newer)).isTrue();
+        assertThatThrownBy(() -> retry.preview(old.getId(), 1L))
+                .satisfies(e -> assertConflict(e, "이 영상은 더 최근 작업이 있어 다시 실행하지 않아요."));
+        assertThat(retry.preview(newer.getId(), 1L).targetId()).isEqualTo(newer.getId());
+    }
+
+    @Test
     void 정지된_계정의_작업은_다시_돌리지_않는다() {
         ProcessingJob job = failedJob("retry-7", ProcessingJob.AI_QUOTA_MESSAGE);
         Long userId = job.getUser().getId();

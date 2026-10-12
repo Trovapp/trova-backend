@@ -60,12 +60,14 @@ public class AdminUserService {
     private final EntityManager entityManager;
     private final UserImpact userImpact;
     private final AdminAccessService adminAccessService;
+    private final RetryJobAction retryJobAction;
 
     public AdminUserService(EntityManager entityManager, UserImpact userImpact,
-                            AdminAccessService adminAccessService) {
+                            AdminAccessService adminAccessService, RetryJobAction retryJobAction) {
         this.entityManager = entityManager;
         this.userImpact = userImpact;
         this.adminAccessService = adminAccessService;
+        this.retryJobAction = retryJobAction;
     }
 
     /** 숫자만 → 내부 번호, http로 시작 → 그 링크를 제출한 사용자, 그 밖 → 닉네임·여행 이름 일부. 비면 최근 가입 20명. */
@@ -100,7 +102,7 @@ public class AdminUserService {
                 .setParameter("u", user).setMaxResults(RECENT_JOBS).getResultList().stream()
                 .map(j -> new JobItem(j.getId(), j.getStatus(),
                         j.getStatus() == JobStatus.FAILED ? FailureReason.classify(j.getErrorMessage()) : null,
-                        j.getCreatedAt(), RetryJobAction.isRetryableFailure(j)))
+                        j.getCreatedAt(), retryJobAction.isRetryable(j)))
                 .toList();
         List<TripItem> trips = entityManager.createQuery(
                         "select t from Trip t where t.user = :u order by t.id desc", Trip.class)
