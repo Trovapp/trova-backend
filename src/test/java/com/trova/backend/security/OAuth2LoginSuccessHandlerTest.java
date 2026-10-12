@@ -140,6 +140,38 @@ class OAuth2LoginSuccessHandlerTest {
     }
 
     @Test
+    void 관리자_웹_로그인에서_사용자_확인이_실패해도_세션은_지운다() throws Exception {
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
+        when(adminWebLoginService.enabled()).thenReturn(true);
+        when(currentUserService.resolve(authentication)).thenThrow(new IllegalStateException("DB 연결 끊김"));
+
+        assertThatThrownBy(() -> handler.onAuthenticationSuccess(request, response, authentication))
+                .isInstanceOf(IllegalStateException.class).hasMessage("DB 연결 끊김");
+
+        verify(session).invalidate();
+        verify(response, never()).sendRedirect(any());
+    }
+
+    @Test
+    void 웹앱_로그인에서_사용자_확인이_실패해도_세션은_지운다() throws Exception {
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN)).thenReturn(Boolean.TRUE);
+        when(webAppLoginService.enabled()).thenReturn(true);
+        when(currentUserService.resolve(authentication)).thenThrow(new IllegalStateException("DB 연결 끊김"));
+
+        assertThatThrownBy(() -> handler.onAuthenticationSuccess(request, response, authentication))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(session).invalidate();
+    }
+
+    @Test
     void 웹앱_로그인이면_교환_코드_주소로_보내고_세션을_지운다() throws Exception {
         User user = new User("google", "42", "테스트", null);
         OAuth2AuthenticationToken authentication = tokenFor("42");
@@ -180,6 +212,7 @@ class OAuth2LoginSuccessHandlerTest {
         OAuth2AuthenticationToken authentication = tokenFor("42");
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(null);
         when(session.getAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN)).thenReturn(Boolean.TRUE);
         when(webAppLoginService.enabled()).thenReturn(true);
         when(webAppLoginService.suspendedRedirect()).thenReturn("https://trova.example.dev/auth/callback/?error=suspended");
