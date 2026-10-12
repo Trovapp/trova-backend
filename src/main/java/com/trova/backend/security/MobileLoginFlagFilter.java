@@ -28,6 +28,9 @@ public class MobileLoginFlagFilter extends OncePerRequestFilter {
     // 관리자 웹 로그인(?client=admin-web) 표시(#163). 앱 표시와 같은 방식으로 세션에 남기고, 둘 중 하나만 남긴다.
     public static final String ADMIN_WEB_LOGIN = "ADMIN_WEB_LOGIN";
     private static final String ADMIN_WEB_CLIENT = "admin-web";
+    // PWA(웹앱) 로그인(?client=web) 표시(#165). 셋 중 하나만 남긴다.
+    public static final String WEB_APP_LOGIN = "WEB_APP_LOGIN";
+    private static final String WEB_APP_CLIENT = "web";
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
     @Override
@@ -41,10 +44,17 @@ public class MobileLoginFlagFilter extends OncePerRequestFilter {
                 HttpSession session = request.getSession(true);
                 session.setAttribute("MOBILE_LOGIN", Boolean.TRUE);
                 session.removeAttribute(ADMIN_WEB_LOGIN);
+                session.removeAttribute(WEB_APP_LOGIN);
             } else if (ADMIN_WEB_CLIENT.equals(request.getParameter("client"))) {
                 HttpSession session = request.getSession(true);
                 session.setAttribute(ADMIN_WEB_LOGIN, Boolean.TRUE);
                 session.removeAttribute("MOBILE_LOGIN");
+                session.removeAttribute(WEB_APP_LOGIN);
+            } else if (WEB_APP_CLIENT.equals(request.getParameter("client"))) {
+                HttpSession session = request.getSession(true);
+                session.setAttribute(WEB_APP_LOGIN, Boolean.TRUE);
+                session.removeAttribute("MOBILE_LOGIN");
+                session.removeAttribute(ADMIN_WEB_LOGIN);
             } else {
                 // mobile=true 없이 재진입한 요청(웹 로그인 포함)에서는 이전에 모바일 로그인을
                 // 시도했다가 중단한 세션에 남아있을 수 있는 플래그를 반드시 지운다. 그렇지
@@ -54,6 +64,7 @@ public class MobileLoginFlagFilter extends OncePerRequestFilter {
                 if (existingSession != null) {
                     existingSession.removeAttribute("MOBILE_LOGIN");
                     existingSession.removeAttribute(ADMIN_WEB_LOGIN);
+                    existingSession.removeAttribute(WEB_APP_LOGIN);
                 }
             }
         }

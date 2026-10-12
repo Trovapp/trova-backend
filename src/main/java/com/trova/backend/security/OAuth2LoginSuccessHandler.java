@@ -3,6 +3,7 @@ package com.trova.backend.security;
 import com.trova.backend.admin.AdminWebLoginService;
 import com.trova.backend.entity.User;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.WebAppLoginService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final CurrentUserService currentUserService;
     private final JwtService jwtService;
     private final AdminWebLoginService adminWebLoginService;
+    private final WebAppLoginService webAppLoginService;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -28,10 +30,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private String mobileRedirectScheme;
 
     public OAuth2LoginSuccessHandler(CurrentUserService currentUserService, JwtService jwtService,
-                                     AdminWebLoginService adminWebLoginService) {
+                                     AdminWebLoginService adminWebLoginService, WebAppLoginService webAppLoginService) {
         this.currentUserService = currentUserService;
         this.jwtService = jwtService;
         this.adminWebLoginService = adminWebLoginService;
+        this.webAppLoginService = webAppLoginService;
     }
 
     @Override
@@ -55,6 +58,20 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 try {
                     User user = currentUserService.resolve(authentication);
                     redirect = adminWebLoginService.loginRedirect(user);
+                } finally {
+                    session.invalidate();
+                }
+                response.sendRedirect(redirect);
+                return;
+            }
+        }
+        if (session != null && Boolean.TRUE.equals(session.getAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN))) {
+            session.removeAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN);
+            if (webAppLoginService.enabled()) {
+                // PWA도 1회용 코드 → 토큰만 쓴다. 관리자 웹과 같은 이유로 세션을 지운다(#165).
+                String redirect;
+                try {
+                    redirect = webAppLoginService.loginRedirect(currentUserService.resolve(authentication));
                 } finally {
                     session.invalidate();
                 }

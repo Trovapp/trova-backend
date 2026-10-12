@@ -46,3 +46,4 @@
 | [0010](0010-api-docs-springdoc-local-only.md) | API 문서는 springdoc으로 자동 생성, 운영 서버에서는 끈다 | 확정 | 2026-10-08 |
 | [0011](0011-context7-mcp.md) | 라이브러리 문서는 Context7 MCP로 조회, 코드 탐색 MCP는 보류 | 확정 | 2026-10-08 |
 | [0012](0012-admin-dashboard-web.md) | 관리자 운영 대시보드는 웹으로, 조치는 감사 기록과 함께, AI는 무료 한도와 로컬 플러그인으로 | 확정 | 2026-10-11 |
+| [0013](0013-pwa-before-app-store.md) | 앱스토어 전에는 앱(Expo) 웹 버전을 PWA로, 아이폰 링크 넣기는 단축어로 | 확정 | 2026-10-12 |

@@ -4,6 +4,7 @@ import com.trova.backend.admin.AdminWebLoginService;
 import com.trova.backend.admin.RequestRateLimiter;
 import com.trova.backend.entity.User;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.WebAppLoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -22,14 +23,17 @@ public class AuthController {
     private final AdminWebLoginService adminWebLoginService;
     private final RequestRateLimiter rateLimiter;
     private final int exchangePerMinute;
+    private final WebAppLoginService webAppLoginService;
 
     public AuthController(CurrentUserService currentUserService, AdminWebLoginService adminWebLoginService,
                           RequestRateLimiter rateLimiter,
-                          @Value("${app.admin.rate-limit.exchange-per-minute:10}") int exchangePerMinute) {
+                          @Value("${app.admin.rate-limit.exchange-per-minute:10}") int exchangePerMinute,
+                          WebAppLoginService webAppLoginService) {
         this.currentUserService = currentUserService;
         this.adminWebLoginService = adminWebLoginService;
         this.rateLimiter = rateLimiter;
         this.exchangePerMinute = exchangePerMinute;
+        this.webAppLoginService = webAppLoginService;
     }
 
     @GetMapping("/api/auth/me")
@@ -55,5 +59,14 @@ public class AuthController {
     }
 
     public record ExchangeRequest(String code) {
+    }
+
+    /** PWA(웹앱) 로그인의 1회용 코드를 앱 토큰으로 바꾼다(#165). 관리자 교환과 같은 IP 횟수 제한을 함께 센다. */
+    @PostMapping("/api/auth/web-exchange")
+    public WebAppLoginService.WebAppToken webExchange(@RequestBody ExchangeRequest request, HttpServletRequest http) {
+        if (!rateLimiter.tryAcquire("exchange:" + http.getRemoteAddr(), exchangePerMinute)) {
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS);
+        }
+        return webAppLoginService.exchange(request.code());
     }
 }

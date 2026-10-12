@@ -2,6 +2,7 @@ package com.trova.backend.security;
 
 import com.trova.backend.admin.AdminWebLoginService;
 import com.trova.backend.entity.User;
+import com.trova.backend.service.WebAppLoginService;
 import com.trova.backend.service.CurrentUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,12 +41,14 @@ class OAuth2LoginSuccessHandlerTest {
     private HttpSession session;
     @Mock
     private AdminWebLoginService adminWebLoginService;
+    @Mock
+    private WebAppLoginService webAppLoginService;
 
     private OAuth2LoginSuccessHandler handler;
 
     @BeforeEach
     void setUp() {
-        handler = new OAuth2LoginSuccessHandler(currentUserService, jwtService, adminWebLoginService);
+        handler = new OAuth2LoginSuccessHandler(currentUserService, jwtService, adminWebLoginService, webAppLoginService);
         ReflectionTestUtils.setField(handler, "frontendUrl", "http://localhost:3000");
         ReflectionTestUtils.setField(handler, "mobileRedirectScheme", "trova");
     }
@@ -130,5 +133,23 @@ class OAuth2LoginSuccessHandlerTest {
                 .isInstanceOf(IllegalStateException.class);
 
         verify(session).invalidate();
+    }
+
+    @Test
+    void 웹앱_로그인이면_교환_코드_주소로_보내고_세션을_지운다() throws Exception {
+        User user = new User("google", "42", "테스트", null);
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN)).thenReturn(Boolean.TRUE);
+        when(webAppLoginService.enabled()).thenReturn(true);
+        when(currentUserService.resolve(authentication)).thenReturn(user);
+        when(webAppLoginService.loginRedirect(user)).thenReturn("https://trova.example.dev/auth/callback/?code=abc");
+
+        handler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(session).invalidate();
+        verify(response).sendRedirect("https://trova.example.dev/auth/callback/?code=abc");
     }
 }
