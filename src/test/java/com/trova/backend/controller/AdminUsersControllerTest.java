@@ -119,6 +119,38 @@ class AdminUsersControllerTest {
                 .andExpect(jsonPath("$.users[0].jobs").value(2));
     }
 
+    private void assertFoundByLink(String query, User expected) throws Exception {
+        mockMvc.perform(get("/api/admin/users").param("q", query).with(admin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.users.length()").value(1))
+                .andExpect(jsonPath("$.users[0].id").value(expected.getId()));
+    }
+
+    private static String videoId() {
+        return UUID.randomUUID().toString().replace("-", "").substring(0, 11);
+    }
+
+    @Test
+    void 공유_링크_변형으로도_정식_주소로_저장된_작업을_찾는다() throws Exception {
+        User watcher = newUser("유튜브주인");
+        String watchId = videoId();
+        jobRepository.save(new ProcessingJob(watcher, "https://www.youtube.com/watch?v=" + watchId, SourcePlatform.YOUTUBE));
+        User shortsOwner = newUser("쇼츠주인");
+        String shortsId = videoId();
+        jobRepository.save(new ProcessingJob(shortsOwner, "https://www.youtube.com/shorts/" + shortsId,
+                SourcePlatform.YOUTUBE));
+        User reelOwner = newUser("릴스주인");
+        String reelId = videoId();
+        jobRepository.save(new ProcessingJob(reelOwner, "https://www.instagram.com/reel/" + reelId + "/",
+                SourcePlatform.INSTAGRAM));
+
+        assertFoundByLink("https://youtu.be/" + watchId + "?si=abcDEF123", watcher);
+        assertFoundByLink("HTTPS://m.youtube.com/watch?v=" + watchId + "&t=10s", watcher);
+        assertFoundByLink("https://youtube.com/shorts/" + shortsId + "?feature=share", shortsOwner);
+        assertFoundByLink("https://www.instagram.com/reel/" + reelId + "/?igsh=xyz", reelOwner);
+        assertFoundByLink("https://m.instagram.com/reels/" + reelId, reelOwner);
+    }
+
     @Test
     void 닉네임이나_여행_이름_일부로_찾고_대소문자를_가리지_않는다() throws Exception {
         String token = UUID.randomUUID().toString().substring(0, 8);

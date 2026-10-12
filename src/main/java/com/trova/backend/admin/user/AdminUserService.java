@@ -4,6 +4,7 @@ import com.trova.backend.admin.FailureReason;
 import com.trova.backend.admin.action.AdminActionException;
 import com.trova.backend.admin.action.RetryJobAction;
 import com.trova.backend.admin.action.UserImpact;
+import com.trova.backend.controller.ShareUrl;
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.Trip;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -70,7 +72,10 @@ public class AdminUserService {
         this.retryJobAction = retryJobAction;
     }
 
-    /** 숫자만 → 내부 번호, http로 시작 → 그 링크를 제출한 사용자, 그 밖 → 닉네임·여행 이름 일부. 비면 최근 가입 20명. */
+    /**
+     * 숫자만 → 내부 번호, 영상 링크 → 그 영상을 제출한 사용자, 그 밖 → 닉네임·여행 이름 일부. 비면 최근 가입 20명.
+     * 작업은 정식 주소로 저장되므로(#49) 링크는 ShareUrl로 정식 주소로 바꿔 찾는다(?si=·?igsh= 꼬리, youtu.be 등).
+     */
     @Transactional(readOnly = true)
     public List<UserSummary> search(String q) {
         String query = q == null ? "" : q.strip();
@@ -80,13 +85,9 @@ public class AdminUserService {
                     .setMaxResults(SEARCH_LIMIT).getResultList();
         } else if (query.chars().allMatch(c -> c >= '0' && c <= '9')) {
             users = byId(query);
-        } else if (query.startsWith("http")) {
-            users = entityManager.createQuery(
-                            "select distinct u from ProcessingJob j join j.user u where j.sourceUrl = :q order by u.id",
-                            User.class)
-                    .setParameter("q", query).setMaxResults(SEARCH_LIMIT).getResultList();
         } else {
-            users = byNicknameOrTripTitle(query);
+            Optional<ShareUrl> link = ShareUrl.parse(query);
+            users = link.isPresent() ? byLink(link.get().canonicalUrl(), query) : byNicknameOrTripTitle(query);
         }
         return summaries(users);
     }
@@ -129,6 +130,14 @@ public class AdminUserService {
         }
         User user = entityManager.find(User.class, id);
         return user == null ? List.of() : List.of(user);
+    }
+
+    /** 정식 주소로 찾고, 정식 주소로 저장하기(#49) 전의 예전 작업을 위해 받은 주소 그대로도 함께 찾는다. */
+    private List<User> byLink(String canonicalUrl, String raw) {
+        return entityManager.createQuery(
+                        "select distinct u from ProcessingJob j join j.user u where j.sourceUrl in :urls order by u.id",
+                        User.class)
+                .setParameter("urls", List.of(canonicalUrl, raw)).setMaxResults(SEARCH_LIMIT).getResultList();
     }
 
     private List<User> byNicknameOrTripTitle(String query) {
