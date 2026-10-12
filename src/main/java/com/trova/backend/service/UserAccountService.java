@@ -7,6 +7,7 @@ import com.trova.backend.repository.BookmarkRepository;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
+import com.trova.backend.repository.ShareKeyRepository;
 import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.repository.TripReplanJobRepository;
 import com.trova.backend.repository.TripRepository;
@@ -31,6 +32,7 @@ public class UserAccountService {
     private final UserPreferenceRepository userPreferenceRepository;
     private final UserPreferenceSignalRepository userPreferenceSignalRepository;
     private final TripDraftRepository tripDraftRepository;
+    private final ShareKeyRepository shareKeyRepository;
 
     public UserAccountService(
             UserRepository userRepository,
@@ -44,7 +46,8 @@ public class UserAccountService {
             BookmarkFolderRepository bookmarkFolderRepository,
             UserPreferenceRepository userPreferenceRepository,
             UserPreferenceSignalRepository userPreferenceSignalRepository,
-            TripDraftRepository tripDraftRepository
+            TripDraftRepository tripDraftRepository,
+            ShareKeyRepository shareKeyRepository
     ) {
         this.userRepository = userRepository;
         this.savedPlaceRepository = savedPlaceRepository;
@@ -58,6 +61,7 @@ public class UserAccountService {
         this.userPreferenceRepository = userPreferenceRepository;
         this.userPreferenceSignalRepository = userPreferenceSignalRepository;
         this.tripDraftRepository = tripDraftRepository;
+        this.shareKeyRepository = shareKeyRepository;
     }
 
     // 회원을 참조하는 데이터를 전부 지운 뒤 회원을 지운다(탈퇴 시 지체 없이 파기).
@@ -83,6 +87,9 @@ public class UserAccountService {
         processingJobRepository.deleteByUser(user);
         // 일정 초안(#107)도 회원을 참조한다 — 빠져 있어 초안이 있는 회원은 탈퇴가 실패했다(#119).
         tripDraftRepository.deleteByUser(user);
+        // 단축어 키(#165)는 user_id만 들고 FK가 없어 남아도 탈퇴가 실패하지 않는다 — 그래서 빠져 있었다.
+        // 남으면 지운 회원 번호로 인증되고 개인정보 보관도 되므로 함께 지운다.
+        shareKeyRepository.deleteByUserId(user.getId());
         userRepository.delete(user);
     }
 }
