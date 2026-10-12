@@ -2,27 +2,28 @@ package com.trova.backend.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trova.backend.admin.action.ActionPreview;
-import com.trova.backend.admin.action.AdminAction;
-import com.trova.backend.admin.action.AdminActionHandler;
+import com.trova.backend.entity.User;
 import com.trova.backend.repository.AdminActionLogRepository;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
+import com.trova.backend.security.SuspendedUsers;
 import com.trova.backend.support.AdminWebAuth;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,37 +31,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/** 미리보기·실행 흐름을 실제 조치(정지 풀기·계정 삭제)로 확인한다. */
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(properties = "app.admin.users=google:act-admin,google:act-admin2")
 class AdminActionsControllerTest {
-
-    static final AtomicInteger EXECUTED = new AtomicInteger();
-
-    /** 실제 조치(Task 6~8) 전에 흐름만 확인하는 가짜 해제 조치. 실제 UNSUSPEND_USER가 생기면 이 설정을 지운다. */
-    @TestConfiguration
-    static class FakeHandlerConfig {
-        @Bean
-        AdminActionHandler fakeUnsuspend() {
-            return new AdminActionHandler() {
-                @Override
-                public AdminAction action() {
-                    return AdminAction.UNSUSPEND_USER;
-                }
-
-                @Override
-                public ActionPreview preview(Long targetId, Long adminUserId) {
-                    return new ActionPreview(AdminAction.UNSUSPEND_USER, targetId, targetId, "계정 1", "확인");
-                }
-
-                @Override
-                public String execute(Long targetId, Long adminUserId) {
-                    EXECUTED.incrementAndGet();
-                    return "풀었음";
-                }
-            };
-        }
-    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -72,105 +47,179 @@ class AdminActionsControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private SuspendedUsers suspendedUsers;
+
+    @Autowired
     private AdminActionLogRepository logRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final List<Long> createdUserIds = new ArrayList<>();
+
+    @AfterEach
+    void cleanUp() {
+        for (Long id : createdUserIds) {
+            suspendedUsers.remove(id);
+            if (userRepository.existsById(id)) {
+                userRepository.deleteById(id);
+            }
+        }
+    }
 
     private RequestPostProcessor admin() {
         return AdminWebAuth.adminWebToken(jwtService, userRepository, "act-admin");
     }
 
-    private String preview(RequestPostProcessor who) throws Exception {
-        String body = mockMvc.perform(post("/api/admin/actions/unsuspend-user/preview").with(who)
-                        .contentType("application/json").content("{\"targetId\":77}"))
+    private User newUser() {
+        User user = userRepository.save(new User("google", "act-" + UUID.randomUUID(), "대상", null));
+        createdUserIds.add(user.getId());
+        return user;
+    }
+
+    private User suspendedUser() {
+        User user = newUser();
+        suspend(user.getId());
+        return user;
+    }
+
+    private void suspend(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        user.suspend();
+        userRepository.save(user);
+        suspendedUsers.add(userId);
+    }
+
+    private void assertStillSuspended(Long userId) {
+        assertThat(userRepository.findById(userId).orElseThrow().isSuspended()).isTrue();
+        assertThat(suspendedUsers.isSuspended(userId)).isTrue();
+    }
+
+    private String previewAt(String action, RequestPostProcessor who, Long targetId, String impact) throws Exception {
+        String body = mockMvc.perform(post("/api/admin/actions/" + action + "/preview").with(who)
+                        .contentType("application/json").content("{\"targetId\":" + targetId + "}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.impact").value("계정 1"))
+                .andExpect(jsonPath("$.impact").value(impact))
                 .andExpect(jsonPath("$.expiresInSeconds").value(300))
                 .andReturn().getResponse().getContentAsString();
         JsonNode node = objectMapper.readTree(body);
         return node.get("confirmToken").asText();
     }
 
-    private ResultActions execute(RequestPostProcessor who, String token, String reason, String confirmText)
-            throws Exception {
-        return executeAt("unsuspend-user", who, token, reason, confirmText);
+    private String preview(RequestPostProcessor who, Long targetId) throws Exception {
+        return previewAt("unsuspend-user", who, targetId, "계정 1");
+    }
+
+    private ResultActions execute(RequestPostProcessor who, String token, String reason) throws Exception {
+        return executeAt("unsuspend-user", who, token, reason, null);
     }
 
     private ResultActions executeAt(String action, RequestPostProcessor who, String token, String reason,
                                     String confirmText) throws Exception {
-        String json = objectMapper.writeValueAsString(Map.of(
-                "confirmToken", token, "reason", reason, "confirmText", confirmText));
+        Map<String, String> body = new HashMap<>();
+        body.put("confirmToken", token);
+        body.put("reason", reason);
+        body.put("confirmText", confirmText);
         return mockMvc.perform(post("/api/admin/actions/" + action + "/execute").with(who)
-                .contentType("application/json").content(json));
+                .contentType("application/json").content(objectMapper.writeValueAsString(body)));
     }
 
     @Test
-    void 미리보기_뒤_사유와_확인_글자로_실행하고_기록한다() throws Exception {
-        int before = EXECUTED.get();
-        String token = preview(admin());
+    void 미리보기_뒤_사유로_실행하고_기록한다() throws Exception {
+        User user = suspendedUser();
+        String token = preview(admin(), user.getId());
 
-        execute(admin(), token, "사용자 요청", " 확인 ").andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("풀었음"));
+        execute(admin(), token, " 사용자 요청 ").andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").value("정지 풀기"));
 
-        assertThat(EXECUTED.get()).isEqualTo(before + 1);
-        assertThat(logRepository.findTop50ByTargetUserIdOrderByIdDesc(77L))
+        assertThat(userRepository.findById(user.getId()).orElseThrow().isSuspended()).isFalse();
+        assertThat(suspendedUsers.isSuspended(user.getId())).isFalse();
+        assertThat(logRepository.findTop50ByTargetUserIdOrderByIdDesc(user.getId()))
                 .anySatisfy(log -> {
                     assertThat(log.getAction()).isEqualTo("UNSUSPEND_USER");
                     assertThat(log.getReason()).isEqualTo("사용자 요청");
-                    assertThat(log.getResult()).isEqualTo("풀었음");
+                    assertThat(log.getResult()).isEqualTo("정지 풀기");
                 });
     }
 
     @Test
     void 같은_확인_토큰을_두_번_쓰면_409() throws Exception {
-        String token = preview(admin());
-        execute(admin(), token, "사유", "확인").andExpect(status().isOk());
-        int after = EXECUTED.get();
+        User user = suspendedUser();
+        String token = preview(admin(), user.getId());
+        execute(admin(), token, "사유").andExpect(status().isOk());
+        suspend(user.getId());
 
-        execute(admin(), token, "사유", "확인").andExpect(status().isConflict());
+        execute(admin(), token, "사유").andExpect(status().isConflict());
 
-        assertThat(EXECUTED.get()).isEqualTo(after);
+        assertStillSuspended(user.getId());
     }
 
     @Test
     void 다른_관리자의_확인_토큰은_409() throws Exception {
-        String token = preview(admin());
-        execute(AdminWebAuth.adminWebToken(jwtService, userRepository, "act-admin2"), token, "사유", "확인")
+        User user = suspendedUser();
+        String token = preview(admin(), user.getId());
+
+        execute(AdminWebAuth.adminWebToken(jwtService, userRepository, "act-admin2"), token, "사유")
                 .andExpect(status().isConflict());
+
+        assertStillSuspended(user.getId());
     }
 
     @Test
     void 다른_조치에_쓴_확인_토큰은_409이고_실행하지_않는다() throws Exception {
-        int before = EXECUTED.get();
-        String token = preview(admin());
+        User user = suspendedUser();
+        String token = preview(admin(), user.getId());
 
-        executeAt("suspend-user", admin(), token, "사유", "확인")
+        executeAt("suspend-user", admin(), token, "사유", null)
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error").value("확인이 만료됐어요. 미리보기부터 다시 해 주세요."));
 
-        assertThat(EXECUTED.get()).isEqualTo(before);
+        assertStillSuspended(user.getId());
     }
 
     @Test
     void 사유가_비거나_너무_길면_400() throws Exception {
-        execute(admin(), preview(admin()), "   ", "확인").andExpect(status().isBadRequest());
-        execute(admin(), preview(admin()), "가".repeat(301), "확인").andExpect(status().isBadRequest());
+        User user = suspendedUser();
+
+        execute(admin(), preview(admin(), user.getId()), "   ").andExpect(status().isBadRequest());
+        execute(admin(), preview(admin(), user.getId()), "가".repeat(301)).andExpect(status().isBadRequest());
+
+        assertStillSuspended(user.getId());
     }
 
     @Test
     void 확인_글자가_다르면_400이고_실행하지_않는다() throws Exception {
-        int before = EXECUTED.get();
-        execute(admin(), preview(admin()), "사유", "확 인").andExpect(status().isBadRequest());
-        assertThat(EXECUTED.get()).isEqualTo(before);
+        User user = newUser();
+        String impact = "계정 1·영상 0·장소 0·여행 0·초안 0";
+
+        executeAt("delete-account", admin(), previewAt("delete-account", admin(), user.getId(), impact),
+                "사유", "계정삭제").andExpect(status().isBadRequest());
+        executeAt("delete-account", admin(), previewAt("delete-account", admin(), user.getId(), impact),
+                "사유", null).andExpect(status().isBadRequest());
+
+        assertThat(userRepository.existsById(user.getId())).isTrue();
+    }
+
+    @Test
+    void 확인_글자는_앞뒤_공백만_다르면_통과한다() throws Exception {
+        User user = newUser();
+        String token = previewAt("delete-account", admin(), user.getId(), "계정 1·영상 0·장소 0·여행 0·초안 0");
+
+        executeAt("delete-account", admin(), token, "사용자 요청", " 계정 삭제 ").andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").value("계정 1·영상 0·장소 0·여행 0·초안 0"));
+
+        assertThat(userRepository.existsById(user.getId())).isFalse();
     }
 
     @Test
     void 로그인_10분이_지난_관리자_토큰은_REAUTH_REQUIRED() throws Exception {
-        String token = preview(admin());
+        User user = suspendedUser();
+        String token = preview(admin(), user.getId());
         RequestPostProcessor old = AdminWebAuth.adminWebTokenIssuedAt(jwtService, userRepository, "act-admin",
                 Instant.now().minusSeconds(700));
-        execute(old, token, "사유", "확인").andExpect(status().isForbidden())
+
+        execute(old, token, "사유").andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error").value("REAUTH_REQUIRED"));
+
+        assertStillSuspended(user.getId());
     }
 
     @Test
@@ -189,8 +238,10 @@ class AdminActionsControllerTest {
 
     @Test
     void 감사_기록_목록을_최근순으로_준다() throws Exception {
-        execute(admin(), preview(admin()), "목록 확인", "확인").andExpect(status().isOk());
-        mockMvc.perform(get("/api/admin/actions").param("targetUserId", "77").with(admin()))
+        User user = suspendedUser();
+        execute(admin(), preview(admin(), user.getId()), "목록 확인").andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/admin/actions").param("targetUserId", String.valueOf(user.getId())).with(admin()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.logs[0].action").value("UNSUSPEND_USER"))
                 .andExpect(jsonPath("$.logs[0].reason").value("목록 확인"));
