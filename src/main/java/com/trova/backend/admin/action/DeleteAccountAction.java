@@ -48,7 +48,8 @@ public class DeleteAccountAction implements AdminActionHandler {
         User user = check(targetId);
         String impact = impact(user);
         userAccountService.withdraw(user);
-        suspendedUsers.remove(user.getId());
+        // 삭제 커밋이 실패하면(참조 데이터 FK 등) 계정은 정지로 남으므로 커밋 뒤에만 정지 목록에서 뺀다.
+        suspendedUsers.removeAfterCommit(user.getId());
         return impact;
     }
 

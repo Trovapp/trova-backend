@@ -35,7 +35,8 @@ public class UnsuspendUserAction implements AdminActionHandler {
     public String execute(Long targetId, Long adminUserId) {
         User user = check(targetId);
         user.unsuspend();
-        suspendedUsers.remove(user.getId());
+        // 커밋이 실패하면 계속 정지여야 하므로 커밋 뒤에 뺀다(정지의 add는 반대로 먼저 넣는 쪽이 안전).
+        suspendedUsers.removeAfterCommit(user.getId());
         return "정지 풀기";
     }
 
