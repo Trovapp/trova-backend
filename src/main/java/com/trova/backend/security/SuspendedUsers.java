@@ -1,8 +1,7 @@
 package com.trova.backend.security;
 
 import com.trova.backend.repository.UserRepository;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -13,21 +12,29 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 정지된 계정 번호(ADR 0014). 요청마다 DB를 읽지 않으려고 메모리에 둔다 — 운영 서버가 1대라 충분하다.
  * 서버가 뜰 때 DB에서 채우고, 정지·풀기 조치가 바로 고친다.
+ * 빈 초기화 단계(afterSingletonsInstantiated)에서 채운다 — 웹 서버는 그 뒤에 요청을 받기 시작하므로, 정지 계정이
+ * 빈 목록을 틈타 통과하는 순간이 없다(ApplicationReadyEvent는 요청을 받기 시작한 뒤라 짧은 틈이 있었다).
  */
 @Component
-public class SuspendedUsers {
+public class SuspendedUsers implements SmartInitializingSingleton {
 
     private final UserRepository userRepository;
-    private final Set<Long> ids = ConcurrentHashMap.newKeySet();
+    private volatile Set<Long> ids = ConcurrentHashMap.newKeySet();
 
     public SuspendedUsers(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    @EventListener(ApplicationReadyEvent.class)
+    @Override
+    public void afterSingletonsInstantiated() {
+        reload();
+    }
+
+    /** 새 목록을 다 만든 뒤 한 번에 바꾼다 — 비웠다가 채우는 사이에 정지 계정이 통과하지 않게. */
     public void reload() {
-        ids.clear();
-        ids.addAll(userRepository.findSuspendedIds());
+        Set<Long> loaded = ConcurrentHashMap.newKeySet();
+        loaded.addAll(userRepository.findSuspendedIds());
+        ids = loaded;
     }
 
     public boolean isSuspended(Long userId) {
