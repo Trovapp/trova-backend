@@ -206,4 +206,28 @@ class ProcessingJobLifecycleServiceIntegrationTest {
         assertThat(updatedFirst.getOrderInDay()).isEqualTo(1);
         assertThat(updatedSecond.getOrderInDay()).isEqualTo(2);
     }
+
+    @Test
+    void 분석_실패도_뒤쪽_2000자로_잘리고_분석_결과가_DB에_남는다() {
+        ProcessingJob job = newJob();
+        String message = "머리".repeat(500) + "t".repeat(2500);
+
+        assertThatCode(() -> lifecycleService.markAnalysisFailed(job.getId(), message)).doesNotThrowAnyException();
+
+        ProcessingJob reloaded = processingJobRepository.findById(job.getId()).orElseThrow();
+        assertThat(reloaded.getErrorMessage()).hasSize(2000).isEqualTo(message.substring(message.length() - 2000));
+        assertThat(reloaded.getAnalysisStatus()).isEqualTo(JobStatus.FAILED);
+        assertThat(reloaded.getAnalysisFinishedAt()).isNotNull();
+    }
+
+    @Test
+    void 분석_완료는_분석_결과와_시각이_DB에_남는다() {
+        ProcessingJob job = newJob();
+
+        lifecycleService.markAnalysisDone(job.getId());
+
+        ProcessingJob reloaded = processingJobRepository.findById(job.getId()).orElseThrow();
+        assertThat(reloaded.getAnalysisStatus()).isEqualTo(JobStatus.DONE);
+        assertThat(reloaded.getAnalysisFinishedAt()).isNotNull();
+    }
 }

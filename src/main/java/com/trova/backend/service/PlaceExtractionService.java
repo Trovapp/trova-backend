@@ -88,7 +88,7 @@ public class PlaceExtractionService {
             // 남지 않아 사용자가 무슨 일이 있었는지 알 수 없었다(#55). 실패로 남겨 처리 중 목록에서 이유를 보여준다.
             if (output.places().isEmpty()) {
                 log.info("ProcessingJob {} 장소 0곳 — 장소 없음으로 실패 처리", jobId);
-                lifecycleService.markFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
+                lifecycleService.markAnalysisFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
                 return;
             }
 
@@ -132,7 +132,7 @@ public class PlaceExtractionService {
                 lifecycleService.savePlace(jobId, extractedList.get(i), geocodedList.get(i));
             }
 
-            lifecycleService.markDone(jobId);
+            lifecycleService.markAnalysisDone(jobId);
             log.info("ProcessingJob {} DONE", jobId);
 
             // 공유만 해 두면 일정까지 짜 두게(#136). 실패해도 분석 결과는 이미 완료다.
@@ -146,12 +146,12 @@ public class PlaceExtractionService {
             // 하루 한도 소진은 앱이 원인과 다시 가능한 시점을 알려줄 수 있게 정해진 문구로 남긴다(#63).
             String message = e.getMessage() == null ? "" : e.getMessage();
             if (message.contains(PipelineRunner.DAILY_QUOTA_MARKER)) {
-                lifecycleService.markFailed(jobId, ProcessingJob.AI_QUOTA_MESSAGE);
+                lifecycleService.markAnalysisFailed(jobId, ProcessingJob.AI_QUOTA_MESSAGE);
             } else if (message.contains(PipelineRunner.SOURCE_RATE_LIMIT_MARKER)) {
                 // 인스타 속도 제한도 원인을 알려야 사용자가 무작정 다시 누르지 않는다(#65).
-                lifecycleService.markFailed(jobId, ProcessingJob.SOURCE_RATE_LIMIT_MESSAGE);
+                lifecycleService.markAnalysisFailed(jobId, ProcessingJob.SOURCE_RATE_LIMIT_MESSAGE);
             } else {
-                lifecycleService.markFailed(jobId, e.getMessage());
+                lifecycleService.markAnalysisFailed(jobId, e.getMessage());
             }
         } finally {
             foundPlaceNameStore.clear(jobId);

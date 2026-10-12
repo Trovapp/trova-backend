@@ -26,7 +26,7 @@
 | 탭 | 그래프 | 출처 |
 |---|---|---|
 | AI 한도·호출 | 일별 호출 수(성공·실패), 토큰 합, 작업(영상) 1개당 호출 수, 기능(operation)별 호출 수 | `api_call_logs` |
-| 분석 파이프라인 | 일별 요청 수·성공률, 처리 시간 중앙값·p90(DONE 작업의 updatedAt − createdAt), 실패 이유별 건수, 지금 멈춘 작업 목록(최대 20개) | `processing_jobs`, `trip_drafts` |
+| 분석 파이프라인 | 일별 요청 수·성공률, 처리 시간 중앙값·p90(분석이 처음 끝난 시각 `analysisFinishedAt` − createdAt — 분석 뒤 일정 생성이 같은 작업의 status·updatedAt을 다시 바꾸므로. 이 열이 생기기 전 작업은 updatedAt), 실패 이유별 건수, 지금 멈춘 작업 목록(최대 20개) | `processing_jobs`, 일정 초안 `trip_drafts`(기간 안 만든 수·실패 수·멈춘 초안 — PR③ 화면과 함께 추가, 요약 카드 "멈춘 작업"에도 합침) |
 | 서버 상태 | 5분 단위 응답 시간 p50·p90, 요청 수, 5xx 수, 힙 사용량, DB 커넥션 사용 수 | `server_metric_snapshots`(새로) |
 | 사용 데이터 | 일별 가입자·저장 장소·여행·자동 초안 수, 누적 사용자 수 | `users`, `saved_places`, `trips`, `trip_drafts` |
 
@@ -34,13 +34,14 @@
 - `GET /api/admin/dashboard/summary` — 위 카드 4개.
 - `GET /api/admin/dashboard/{ai|pipeline|server|usage}?days=7|14|30` — 탭별. 탭을 나눈 이유: 한 탭 집계가 실패해도 나머지는 보이게.
 - 권한: 기존 `AdminAccessService`(설정 `ADMIN_USERS`) — 관리자가 아니면 403. 로그인 안 했으면 401.
-- 집계는 DB에서 날짜별 `group by`로 하고 일별 숫자만 응답한다(사용자가 늘어도 응답 크기 일정). 날짜는 한국 시간 기준(`DailyQuotaService`와 같은 변환).
+- 집계는 DB에서 날짜별 `group by`로 하고 일별 숫자만 응답한다(사용자가 늘어도 응답 크기 일정). 날짜는 서버 기본 시간대 기준 — 엔티티가 `LocalDateTime.now()`(서버 기본 시간대)로 저장하므로 같은 기준으로 묶는다. 운영은 `TZ=Asia/Seoul`이라 한국 시간과 같다(TZ가 빠지면 UTC로 9시간 밀림 — 배포 확인 항목).
 - 실패 이유 분류: `errorMessage`에 이미 쓰는 코드(`SOURCE_RATE_LIMITED`, `GEMINI_DAILY_QUOTA_EXCEEDED` 등)로 묶고, 없으면 "기타". 분류 규칙은 한 클래스(`FailureReason`)에 모은다.
 - 새 코드는 `admin` 기능 패키지(`controller`·`service`는 기존 규칙대로, 집계는 `admin` 패키지 안 Service로 분리 — 외부 연동 없음).
 
 ### 서버 상태 기록 (새 테이블)
 - `server_metric_snapshots`: 5분마다 한 줄 — 측정 시각, 요청 수, 응답 시간 p50·p90(ms), 5xx 수, 힙 사용(MB), DB 커넥션 사용 수.
 - 값은 이미 있는 Micrometer 지표(`http.server.requests`, `jvm.memory.used`, `hikaricp.connections.active`)에서 5분 사이 증가분으로 계산한다. Prometheus·Grafana는 운영 서버에 띄우지 않는다(E2.1.Micro 남은 메모리 약 300MB).
+- 저장이 실패한 구간의 표본은 버리지 않고 다음 줄에 합친다 — 그래프에서 빈 칸 바로 뒤 줄은 두 구간 값이라 요청 수·5xx가 평소보다 크게 보인다.
 - 30일 지난 줄은 하루 한 번 지운다. 하루 288줄이라 Supabase 무료 용량(500MB)에 부담 없음.
 - 로컬 서버와 운영 서버가 같은 DB를 쓰는 환경이 있으므로 `source`(설정 `app.instance-name`, 예: prod/local) 칸을 두고 대시보드는 prod만 보여준다.
 

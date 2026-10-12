@@ -54,6 +54,15 @@ public class ProcessingJob {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    // 영상 분석이 처음 끝난 결과와 시각(#161). 분석이 끝난 뒤 일정 생성(ItineraryGenerationService)이 같은 작업의
+    // status·updatedAt을 다시 바꾸므로, 관리자 대시보드의 처리 시간·분석 실패는 이 값으로 센다. 이 열이 생기기 전 작업은 null.
+    @Enumerated(EnumType.STRING)
+    @Column(name = "analysis_status")
+    private JobStatus analysisStatus;
+
+    @Column(name = "analysis_finished_at")
+    private LocalDateTime analysisFinishedAt;
+
     protected ProcessingJob() {
     }
 
@@ -94,6 +103,29 @@ public class ProcessingJob {
         this.updatedAt = LocalDateTime.now();
     }
 
+    /**
+     * 영상 분석(PlaceExtractionService)이 끝났을 때. 일정 생성은 {@link #markDone()}을 쓴다.
+     * 멈춘 작업 정리가 먼저 실패로 남겼어도 분석이 실제로 끝났으면 완료로 덮어쓴다(일정 생성은 분석 완료 뒤에만 시작하므로 덮을 일이 없다).
+     */
+    public void markAnalysisDone() {
+        markDone();
+        this.analysisStatus = JobStatus.DONE;
+        this.analysisFinishedAt = this.updatedAt;
+    }
+
+    /** 영상 분석이 실패했거나 분석 중 멈췄을 때. 분석 결과가 이미 있으면(일정 생성 중 멈춤) 그 결과는 그대로 둔다. */
+    public void markAnalysisFailed(String errorMessage) {
+        markFailed(errorMessage);
+        recordAnalysisResult();
+    }
+
+    private void recordAnalysisResult() {
+        if (analysisFinishedAt == null) {
+            this.analysisStatus = this.status;
+            this.analysisFinishedAt = this.updatedAt;
+        }
+    }
+
     public Long getId() { return id; }
     public User getUser() { return user; }
     public String getSourceUrl() { return sourceUrl; }
@@ -108,4 +140,6 @@ public class ProcessingJob {
     public int getRetryCount() { return retryCount; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public JobStatus getAnalysisStatus() { return analysisStatus; }
+    public LocalDateTime getAnalysisFinishedAt() { return analysisFinishedAt; }
 }
