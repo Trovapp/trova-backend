@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 /** 대시보드 맨 위 "지금 확인할 것" 카드 4개(#161). 기준값은 설정, 처음 값은 감으로 정함(실측 아님). */
@@ -20,9 +18,6 @@ public class DashboardSummaryService {
 
     public record DashboardSummary(List<Card> cards) {
     }
-
-    // Gemini 무료 한도는 태평양 시간 자정에 초기화된다(qaflow 사용량 확인과 같은 기준).
-    private static final ZoneId GEMINI_RESET_ZONE = ZoneId.of("America/Los_Angeles");
 
     private final AiDashboardService aiDashboardService;
     private final PipelineDashboardService pipelineDashboardService;
@@ -52,9 +47,7 @@ public class DashboardSummaryService {
     @Transactional(readOnly = true)
     public DashboardSummary summary() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime geminiDayStart = LocalDate.now(GEMINI_RESET_ZONE).atStartOfDay(GEMINI_RESET_ZONE)
-                .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-        long gemini = aiDashboardService.geminiCallsSince(geminiDayStart);
+        long gemini = aiDashboardService.geminiCallsSince(AiDashboardService.geminiDayStart());
         long failures = entityManager.createQuery(
                         // 분석 실패만 — 분석 뒤 일정 생성 실패는 status만 바꾸므로 분석 결과(analysisStatus)가 있으면 그것으로 센다(#161).
                         "select count(j) from ProcessingJob j where coalesce(j.analysisStatus, j.status) = :failed "
