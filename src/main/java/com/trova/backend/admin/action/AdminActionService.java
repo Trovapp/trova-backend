@@ -14,6 +14,8 @@ public class AdminActionService {
 
     public static final int REASON_MAX = 300;
     static final String TOKEN_EXPIRED = "확인이 만료됐어요. 미리보기부터 다시 해 주세요.";
+    /** 확인 토큰은 이미 쓰였으므로 400에도 미리보기부터 다시 하라고 알린다. */
+    private static final String RETRY_FROM_PREVIEW = " 미리보기부터 다시 해 주세요.";
 
     public record Previewed(ActionPreview preview, String confirmToken, long expiresInSeconds) { }
 
@@ -57,11 +59,11 @@ public class AdminActionService {
                 .orElseThrow(() -> AdminActionException.conflict(TOKEN_EXPIRED));
         String trimmedReason = reason == null ? "" : reason.strip();
         if (trimmedReason.isEmpty() || trimmedReason.length() > REASON_MAX) {
-            throw AdminActionException.badRequest("사유를 1~300자로 적어 주세요.");
+            throw AdminActionException.badRequest("사유를 1~300자로 적어 주세요." + RETRY_FROM_PREVIEW);
         }
         if (pending.confirmText() != null
                 && (confirmText == null || !pending.confirmText().strip().equals(confirmText.strip()))) {
-            throw AdminActionException.badRequest("확인 글자가 달라요: " + pending.confirmText());
+            throw AdminActionException.badRequest("확인 글자가 달라요: " + pending.confirmText() + "." + RETRY_FROM_PREVIEW);
         }
         String result = handler(action).execute(pending.targetId(), adminUserId);
         auditLog.record(adminUserId, action.name(), pending.targetId(), pending.targetUserId(), trimmedReason, result);

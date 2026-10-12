@@ -185,8 +185,11 @@ class AdminActionsControllerTest {
     void 사유가_비거나_너무_길면_400() throws Exception {
         User user = suspendedUser();
 
-        execute(admin(), preview(admin(), user.getId()), "   ").andExpect(status().isBadRequest());
-        execute(admin(), preview(admin(), user.getId()), "가".repeat(301)).andExpect(status().isBadRequest());
+        String message = "사유를 1~300자로 적어 주세요. 미리보기부터 다시 해 주세요.";
+        execute(admin(), preview(admin(), user.getId()), "   ").andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(message));
+        execute(admin(), preview(admin(), user.getId()), "가".repeat(301)).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(message));
 
         assertStillSuspended(user.getId());
     }
@@ -197,9 +200,11 @@ class AdminActionsControllerTest {
         String impact = "계정 1·영상 0·장소 0·여행 0·초안 0";
 
         executeAt("delete-account", admin(), previewAt("delete-account", admin(), user.getId(), impact),
-                "사유", "계정삭제").andExpect(status().isBadRequest());
+                "사유", "계정삭제").andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("확인 글자가 달라요: 계정 삭제. 미리보기부터 다시 해 주세요."));
         executeAt("delete-account", admin(), previewAt("delete-account", admin(), user.getId(), impact),
-                "사유", null).andExpect(status().isBadRequest());
+                "사유", null).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("확인 글자가 달라요: 계정 삭제. 미리보기부터 다시 해 주세요."));
 
         assertThat(userRepository.existsById(user.getId())).isTrue();
     }
