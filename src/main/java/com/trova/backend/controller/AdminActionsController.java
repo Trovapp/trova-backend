@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,6 +29,9 @@ import java.util.List;
 public class AdminActionsController {
 
     private static final Duration REAUTH_WINDOW = Duration.ofMinutes(10);
+
+    /** 실제 조치 기록만(관리자 로그인·사용자 찾기·열람 기록 제외). */
+    private static final List<String> ACTION_NAMES = Arrays.stream(AdminAction.values()).map(Enum::name).toList();
 
     public record PreviewRequest(Long targetId) { }
 
@@ -82,12 +86,25 @@ public class AdminActionsController {
         return new ExecuteResponse(parsed, executed.targetId(), executed.result());
     }
 
+    /**
+     * 사용자별 기록은 실제 조치만 준다 — 상세를 열 때마다 열람 기록이 쌓여 최근 50건에서 조치가 밀려나지 않게.
+     * 전체 목록은 kind=all(기본, 로그인·찾기·열람 포함) 또는 kind=actions(조치만).
+     */
     @GetMapping("/api/admin/actions")
-    public LogsResponse logs(Authentication authentication, @RequestParam(required = false) Long targetUserId) {
+    public LogsResponse logs(Authentication authentication, @RequestParam(required = false) Long targetUserId,
+                             @RequestParam(required = false, defaultValue = "all") String kind) {
         adminGuard.requireAdmin(authentication);
-        List<AdminActionLog> logs = targetUserId == null
-                ? logRepository.findTop50ByOrderByIdDesc()
-                : logRepository.findTop50ByTargetUserIdOrderByIdDesc(targetUserId);
+        if (!kind.equals("all") && !kind.equals("actions")) {
+            throw AdminActionException.badRequest("kind는 all 또는 actions만 돼요.");
+        }
+        List<AdminActionLog> logs;
+        if (targetUserId != null) {
+            logs = logRepository.findTop50ByTargetUserIdAndActionInOrderByIdDesc(targetUserId, ACTION_NAMES);
+        } else if (kind.equals("actions")) {
+            logs = logRepository.findTop50ByActionInOrderByIdDesc(ACTION_NAMES);
+        } else {
+            logs = logRepository.findTop50ByOrderByIdDesc();
+        }
         return new LogsResponse(logs.stream().map(l -> new LogItem(l.getId(), l.getCreatedAt(), l.getActorUserId(),
                 l.getAction(), l.getTargetId(), l.getTargetUserId(), l.getReason(), l.getResult())).toList());
     }

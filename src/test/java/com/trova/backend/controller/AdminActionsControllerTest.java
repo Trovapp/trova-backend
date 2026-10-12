@@ -2,6 +2,8 @@ package com.trova.backend.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trova.backend.admin.action.AdminAction;
+import com.trova.backend.entity.AdminActionLog;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.AdminActionLogRepository;
 import com.trova.backend.repository.UserRepository;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,9 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.in;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -245,5 +251,56 @@ class AdminActionsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.logs[0].action").value("UNSUSPEND_USER"))
                 .andExpect(jsonPath("$.logs[0].reason").value("목록 확인"));
+    }
+
+    private Long adminId() {
+        return userRepository.findByProviderAndProviderUserId("google", "act-admin").orElseThrow().getId();
+    }
+
+    @Test
+    void 사용자별_기록은_열람이_많아도_실제_조치를_보여준다() throws Exception {
+        admin();
+        User user = newUser();
+        Long adminId = adminId();
+        logRepository.save(new AdminActionLog(adminId, "SUSPEND_USER", user.getId(), user.getId(), "신고", "정지"));
+        for (int i = 0; i < 60; i++) {
+            logRepository.save(new AdminActionLog(adminId, AdminActionLog.ADMIN_USER_VIEW, user.getId(), user.getId(),
+                    null, null));
+        }
+
+        mockMvc.perform(get("/api/admin/actions").param("targetUserId", String.valueOf(user.getId())).with(admin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.logs.length()").value(1))
+                .andExpect(jsonPath("$.logs[0].action").value("SUSPEND_USER"))
+                .andExpect(jsonPath("$.logs[0].reason").value("신고"));
+    }
+
+    @Test
+    void kind_actions면_로그인_열람_검색_기록을_빼고_조치만_준다() throws Exception {
+        admin();
+        User user = newUser();
+        Long adminId = adminId();
+        logRepository.save(new AdminActionLog(adminId, "HIDE_DRAFT", 1L, user.getId(), "중복", "초안 1"));
+        logRepository.save(new AdminActionLog(adminId, AdminActionLog.ADMIN_WEB_LOGIN, null, null, null));
+        logRepository.save(new AdminActionLog(adminId, AdminActionLog.ADMIN_WEB_LOGIN_DENIED, null, null, null));
+        logRepository.save(new AdminActionLog(adminId, AdminActionLog.ADMIN_USER_SEARCH, null, null, null, "결과 1명"));
+        logRepository.save(new AdminActionLog(adminId, AdminActionLog.ADMIN_USER_VIEW, user.getId(), user.getId(),
+                null, null));
+        List<String> actions = Arrays.stream(AdminAction.values())
+                .map(Enum::name).toList();
+
+        mockMvc.perform(get("/api/admin/actions").param("kind", "actions").with(admin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.logs[0].action").value("HIDE_DRAFT"))
+                .andExpect(jsonPath("$.logs[*].action", everyItem(in(actions))));
+        mockMvc.perform(get("/api/admin/actions").with(admin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.logs[0].action").value(AdminActionLog.ADMIN_USER_VIEW))
+                .andExpect(jsonPath("$.logs[*].action", hasItem(AdminActionLog.ADMIN_WEB_LOGIN)));
+        mockMvc.perform(get("/api/admin/actions").param("kind", "all").with(admin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.logs[0].action").value(AdminActionLog.ADMIN_USER_VIEW));
+        mockMvc.perform(get("/api/admin/actions").param("kind", "nope").with(admin()))
+                .andExpect(status().isBadRequest());
     }
 }
