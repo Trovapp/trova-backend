@@ -41,10 +41,18 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                          Authentication authentication) throws IOException, ServletException {
         HttpSession session = request.getSession(false);
+        User loginUser = currentUserService.resolve(authentication);
+        if (loginUser.isSuspended()) {
+            String redirect = suspendedRedirect(session);
+            if (session != null) {
+                session.invalidate();
+            }
+            response.sendRedirect(redirect);
+            return;
+        }
         if (session != null && Boolean.TRUE.equals(session.getAttribute("MOBILE_LOGIN"))) {
             session.removeAttribute("MOBILE_LOGIN");
-            User user = currentUserService.resolve(authentication);
-            String token = jwtService.issue(user);
+            String token = jwtService.issue(loginUser);
             response.sendRedirect(mobileRedirectScheme + "://auth?token=" + token);
             return;
         }
@@ -56,8 +64,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 // 어차피 관리자 계정으로 바뀌므로 지우는 쪽이 안전하다. 기록 저장 등에서 예외가 나도 세션은 지운다.
                 String redirect;
                 try {
-                    User user = currentUserService.resolve(authentication);
-                    redirect = adminWebLoginService.loginRedirect(user);
+                    redirect = adminWebLoginService.loginRedirect(loginUser);
                 } finally {
                     session.invalidate();
                 }
@@ -71,7 +78,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 // PWA도 1회용 코드 → 토큰만 쓴다. 관리자 웹과 같은 이유로 세션을 지운다(#165).
                 String redirect;
                 try {
-                    redirect = webAppLoginService.loginRedirect(currentUserService.resolve(authentication));
+                    redirect = webAppLoginService.loginRedirect(loginUser);
                 } finally {
                     session.invalidate();
                 }
@@ -80,5 +87,21 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             }
         }
         response.sendRedirect(frontendUrl);
+    }
+
+    // 정지 계정은 어느 로그인 흐름이든 토큰·코드를 주지 않고 그 흐름의 실패 주소로 보낸다(#167).
+    private String suspendedRedirect(HttpSession session) {
+        if (session != null && Boolean.TRUE.equals(session.getAttribute("MOBILE_LOGIN"))) {
+            return mobileRedirectScheme + "://auth?error=suspended";
+        }
+        if (session != null && Boolean.TRUE.equals(session.getAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN))
+                && webAppLoginService.enabled()) {
+            return webAppLoginService.suspendedRedirect();
+        }
+        if (session != null && Boolean.TRUE.equals(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN))
+                && adminWebLoginService.enabled()) {
+            return adminWebLoginService.failureRedirect();
+        }
+        return frontendUrl + "/login?error=suspended";
     }
 }

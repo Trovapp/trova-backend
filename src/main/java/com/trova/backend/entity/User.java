@@ -32,6 +32,10 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // 관리자 계정 정지(#167, ADR 0014). null이면 정상. 정지하면 토큰·단축어 키·로그인이 막힌다.
+    @Column(name = "suspended_at")
+    private LocalDateTime suspendedAt;
+
     protected User() {
     }
 
@@ -70,5 +74,21 @@ public class User {
     public void updateProfile(String nickname, String profileImageUrl) {
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public void suspend() {
+        this.suspendedAt = LocalDateTime.now();
+    }
+
+    public void unsuspend() {
+        this.suspendedAt = null;
+    }
+
+    public LocalDateTime getSuspendedAt() {
+        return suspendedAt;
+    }
+
+    public boolean isSuspended() {
+        return suspendedAt != null;
     }
 }

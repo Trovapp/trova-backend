@@ -21,9 +21,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String ADMIN_API_PREFIX = "/api/admin/";
 
     private final JwtService jwtService;
+    private final SuspendedUsers suspendedUsers;
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    public JwtAuthenticationFilter(JwtService jwtService, SuspendedUsers suspendedUsers) {
         this.jwtService = jwtService;
+        this.suspendedUsers = suspendedUsers;
     }
 
     @Override
@@ -36,7 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 JwtService.VerifiedToken verified = jwtService.parse(token);
                 // 관리자 웹 토큰은 관리자 API에서만 인증으로 받는다 — 다른 API에서는 무시해 401(#163).
-                if (!verified.adminWeb() || request.getRequestURI().startsWith(ADMIN_API_PREFIX)) {
+                // 정지된 계정은 이미 받은 토큰이라도 인증하지 않는다 — 다음 요청부터 바로 401(#167).
+                if ((!verified.adminWeb() || request.getRequestURI().startsWith(ADMIN_API_PREFIX))
+                        && !suspendedUsers.isSuspended(verified.userId())) {
                     SecurityContextHolder.getContext().setAuthentication(
                             new JwtAuthenticationToken(verified.userId(), verified.adminWeb(), verified.issuedAt()));
                 }
