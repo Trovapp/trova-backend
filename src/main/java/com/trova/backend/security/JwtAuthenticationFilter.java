@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 관리자 웹 토큰은 관리자 API에서만 인증으로 받는다 — 다른 API에서는 무시해 401(#163).
                 if (!verified.adminWeb() || request.getRequestURI().startsWith(ADMIN_API_PREFIX)) {
                     SecurityContextHolder.getContext().setAuthentication(
-                            new JwtAuthenticationToken(verified.userId(), verified.adminWeb()));
+                            new JwtAuthenticationToken(verified.userId(), verified.adminWeb(), verified.issuedAt()));
                 }
             } catch (JwtException | IllegalArgumentException e) {
                 // 검증 실패 시 그냥 미인증 상태로 다음 필터로 넘긴다 —

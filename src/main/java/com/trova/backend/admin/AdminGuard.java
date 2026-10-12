@@ -10,6 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
+import java.time.Instant;
+
 /**
  * 관리자 API 공통 권한 확인. 로그인하지 않은 요청은 보안 필터가 먼저 401로 막는다.
  * 관리자 웹 전용 토큰(aud=admin-web, 1시간)으로 온 요청만 받는다 — 관리자라도 앱 토큰(90일)·웹 세션이면 403(ADR 0012, #163).
@@ -44,5 +47,13 @@ public class AdminGuard {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS);
         }
         return user;
+    }
+
+    /** 실행 조치 전용 — requireAdmin 뒤에 부른다. */
+    public void requireRecentLogin(Authentication authentication, Duration maxAge) {
+        if (!(authentication instanceof JwtAuthenticationToken token) || token.getIssuedAt() == null
+                || token.getIssuedAt().isBefore(Instant.now().minus(maxAge))) {
+            throw new AdminReauthRequiredException();
+        }
     }
 }
