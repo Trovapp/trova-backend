@@ -58,4 +58,25 @@ class JwtServiceTest {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    void 관리자_웹_토큰은_1시간짜리이고_관리자_웹_표시가_있다() {
+        User user = new User("google", "42", "테스트", null);
+        setId(user, 7L);
+
+        String token = jwtService.issueAdminWeb(user);
+
+        JwtService.VerifiedToken verified = jwtService.parse(token);
+        assertThat(verified.userId()).isEqualTo(7L);
+        assertThat(verified.adminWeb()).isTrue();
+        assertThat(verified.expiresAt()).isBetween(java.time.Instant.now().plusSeconds(3590), java.time.Instant.now().plusSeconds(3601));
+    }
+
+    @Test
+    void 앱_토큰은_관리자_웹_토큰이_아니다() {
+        User user = new User("google", "42", "테스트", null);
+        setId(user, 7L);
+
+        assertThat(jwtService.parse(jwtService.issue(user)).adminWeb()).isFalse();
+    }
 }

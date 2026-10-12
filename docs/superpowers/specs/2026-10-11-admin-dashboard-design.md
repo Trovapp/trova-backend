@@ -19,7 +19,7 @@
 
 ## 1단계 — 조회 대시보드
 
-### 화면 (trova-frontend `/admin`)
+### 화면 (trova-frontend 레포의 별도 앱 `admin-web/`, 관리자 웹 주소의 루트 `/`)
 - 맨 위 "지금 확인할 것" 카드 4개: 오늘 Gemini 사용량(1,000회 중), 최근 24시간 분석 실패 수, 5분 넘게 멈춘 작업 수, 최근 1시간 응답 시간 p90. 기준을 넘으면 빨간색(기준은 백엔드 설정, 처음 값은 감으로 정함: Gemini 800회, 실패 5건, 멈춤 1건, p90 1,000ms).
 - 탭 4개, 기간 7/14/30일. 휴대폰 브라우저 폭에서도 보이게.
 
@@ -46,10 +46,11 @@
 - 로컬 서버와 운영 서버가 같은 DB를 쓰는 환경이 있으므로 `source`(설정 `app.instance-name`, 예: prod/local) 칸을 두고 대시보드는 prod만 보여준다.
 
 ### 웹 로그인 (1회용 교환 코드)
-- 지금 로그인 성공 처리(`OAuth2LoginSuccessHandler`)는 앱(`MobileLoginFlagFilter`가 세션에 남기는 `MOBILE_LOGIN`)에만 토큰을 주고, 그 밖에는 `app.frontend-url`로 토큰 없이 보낸다. 웹용 `WEB_LOGIN` 표시를 같은 필터 방식으로 추가한다.
-- 흐름: 웹 → `/oauth2/authorization/{provider}?client=web` → 로그인 성공 → `https://<관리자 웹>/auth/callback?code=<1회용 코드>`로 이동 → 웹이 `POST /api/auth/exchange {code}` → JWT.
+- 지금 로그인 성공 처리(`OAuth2LoginSuccessHandler`)는 앱(`MobileLoginFlagFilter`가 세션에 남기는 `MOBILE_LOGIN`)에만 토큰을 주고, 그 밖에는 `app.frontend-url`로 토큰 없이 보낸다. 관리자 웹용 `ADMIN_WEB_LOGIN` 표시를 같은 필터 방식으로 추가한다(#163에서 일반 웹 로그인과 헷갈리지 않게 `client=web` → `client=admin-web`으로 확정).
+- 흐름: 웹 → `/oauth2/authorization/{provider}?client=admin-web` → 로그인 성공 → `https://<관리자 웹>/auth/callback/?code=<1회용 코드>`로 이동 → 웹이 `POST /api/auth/exchange {code}` → JWT.
 - 코드: 무작위 32바이트, 60초, 한 번만 쓸 수 있음. 교환 결과는 관리자 웹 전용 1시간 토큰(아래 "보안")(서버 메모리 저장 — 서버 1대라 충분, 재시작하면 사라져 다시 로그인하면 됨). 토큰을 주소창에 넣지 않아 브라우저 기록·서버 로그에 남지 않는다.
 - 돌아갈 주소는 설정 `app.admin-web-url` 하나만 허용한다. CORS도 그 주소만 열고, 이미 열린 주소는 그대로 둔다.
+- 관리자 웹은 Bearer 토큰만 쓰므로 CORS도 쿠키 없이 `/api/admin/**`·`/api/auth/exchange`에만 연다(#163). 로그인 뒤 서버 세션은 지운다(같은 브라우저의 일반 웹 세션도 함께 로그아웃).
 - 웹은 JWT를 메모리(+ 탭을 닫으면 사라지는 sessionStorage)에만 둔다. 관리자 아니면 화면 대신 "권한 없음".
 
 ### 보안 (#159 보강)

@@ -1,5 +1,6 @@
 package com.trova.backend.security;
 
+import com.trova.backend.admin.AdminWebLoginService;
 import com.trova.backend.entity.User;
 import com.trova.backend.service.CurrentUserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,12 +38,14 @@ class OAuth2LoginSuccessHandlerTest {
     private HttpServletResponse response;
     @Mock
     private HttpSession session;
+    @Mock
+    private AdminWebLoginService adminWebLoginService;
 
     private OAuth2LoginSuccessHandler handler;
 
     @BeforeEach
     void setUp() {
-        handler = new OAuth2LoginSuccessHandler(currentUserService, jwtService);
+        handler = new OAuth2LoginSuccessHandler(currentUserService, jwtService, adminWebLoginService);
         ReflectionTestUtils.setField(handler, "frontendUrl", "http://localhost:3000");
         ReflectionTestUtils.setField(handler, "mobileRedirectScheme", "trova");
     }
@@ -75,5 +81,54 @@ class OAuth2LoginSuccessHandlerTest {
         handler.onAuthenticationSuccess(request, response, tokenFor("42"));
 
         verify(response).sendRedirect("http://localhost:3000");
+    }
+
+    @Test
+    void 관리자_웹_로그인이면_교환_코드_주소로_보내고_세션을_지운다() throws Exception {
+        // 관리자 웹은 토큰만 쓴다 — 세션 쿠키가 남으면 웹 세션 인증 경로가 하나 더 생긴다(#163).
+        User user = new User("google", "42", "테스트", null);
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
+        when(adminWebLoginService.enabled()).thenReturn(true);
+        when(currentUserService.resolve(authentication)).thenReturn(user);
+        when(adminWebLoginService.loginRedirect(user)).thenReturn("https://admin.example.dev/auth/callback/?code=abc");
+
+        handler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(session).invalidate();
+        verify(response).sendRedirect("https://admin.example.dev/auth/callback/?code=abc");
+        verify(jwtService, never()).issue(any());
+    }
+
+    @Test
+    void 관리자_웹_주소가_없으면_관리자_웹_표시가_있어도_일반_웹_로그인처럼_보낸다() throws Exception {
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
+        when(adminWebLoginService.enabled()).thenReturn(false);
+
+        handler.onAuthenticationSuccess(request, response, tokenFor("42"));
+
+        verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
+        verify(response).sendRedirect("http://localhost:3000");
+    }
+
+    @Test
+    void 로그인_기록_저장이_실패해도_세션은_지운다() throws Exception {
+        User user = new User("google", "42", "테스트", null);
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
+        when(adminWebLoginService.enabled()).thenReturn(true);
+        when(currentUserService.resolve(authentication)).thenReturn(user);
+        when(adminWebLoginService.loginRedirect(user)).thenThrow(new IllegalStateException("DB 연결 끊김"));
+
+        assertThatThrownBy(() -> handler.onAuthenticationSuccess(request, response, authentication))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(session).invalidate();
     }
 }

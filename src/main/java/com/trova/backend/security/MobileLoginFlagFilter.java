@@ -25,6 +25,9 @@ public class MobileLoginFlagFilter extends OncePerRequestFilter {
     // 주의: getRequestURI()는 컨텍스트 패스를 포함한 값을 반환한다. 지금은 컨텍스트 패스를
     // 설정하지 않아 문제가 없지만, 나중에 컨텍스트 패스가 생기면 이 매칭이 깨질 수 있다.
     private static final String MOBILE_OAUTH_START_PATTERN = "/oauth2/authorization/**";
+    // 관리자 웹 로그인(?client=admin-web) 표시(#163). 앱 표시와 같은 방식으로 세션에 남기고, 둘 중 하나만 남긴다.
+    public static final String ADMIN_WEB_LOGIN = "ADMIN_WEB_LOGIN";
+    private static final String ADMIN_WEB_CLIENT = "admin-web";
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
     @Override
@@ -35,7 +38,13 @@ public class MobileLoginFlagFilter extends OncePerRequestFilter {
         // 스트림을 소비할 수 있으므로, 이 필터와 무관한 경로에서는 아예 호출하지 않는다.
         if (PATH_MATCHER.match(MOBILE_OAUTH_START_PATTERN, request.getRequestURI())) {
             if ("true".equals(request.getParameter("mobile"))) {
-                request.getSession(true).setAttribute("MOBILE_LOGIN", Boolean.TRUE);
+                HttpSession session = request.getSession(true);
+                session.setAttribute("MOBILE_LOGIN", Boolean.TRUE);
+                session.removeAttribute(ADMIN_WEB_LOGIN);
+            } else if (ADMIN_WEB_CLIENT.equals(request.getParameter("client"))) {
+                HttpSession session = request.getSession(true);
+                session.setAttribute(ADMIN_WEB_LOGIN, Boolean.TRUE);
+                session.removeAttribute("MOBILE_LOGIN");
             } else {
                 // mobile=true 없이 재진입한 요청(웹 로그인 포함)에서는 이전에 모바일 로그인을
                 // 시도했다가 중단한 세션에 남아있을 수 있는 플래그를 반드시 지운다. 그렇지
@@ -44,6 +53,7 @@ public class MobileLoginFlagFilter extends OncePerRequestFilter {
                 HttpSession existingSession = request.getSession(false);
                 if (existingSession != null) {
                     existingSession.removeAttribute("MOBILE_LOGIN");
+                    existingSession.removeAttribute(ADMIN_WEB_LOGIN);
                 }
             }
         }

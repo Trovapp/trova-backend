@@ -18,6 +18,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String ADMIN_API_PREFIX = "/api/admin/";
 
     private final JwtService jwtService;
 
@@ -33,8 +34,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith(BEARER_PREFIX)) {
             String token = header.substring(BEARER_PREFIX.length());
             try {
-                Long userId = jwtService.verify(token);
-                SecurityContextHolder.getContext().setAuthentication(new JwtAuthenticationToken(userId));
+                JwtService.VerifiedToken verified = jwtService.parse(token);
+                // 관리자 웹 토큰은 관리자 API에서만 인증으로 받는다 — 다른 API에서는 무시해 401(#163).
+                if (!verified.adminWeb() || request.getRequestURI().startsWith(ADMIN_API_PREFIX)) {
+                    SecurityContextHolder.getContext().setAuthentication(
+                            new JwtAuthenticationToken(verified.userId(), verified.adminWeb()));
+                }
             } catch (JwtException | IllegalArgumentException e) {
                 // 검증 실패 시 그냥 미인증 상태로 다음 필터로 넘긴다 —
                 // 기존 세션 인증 경로가 있으면 그쪽에서 처리되고,

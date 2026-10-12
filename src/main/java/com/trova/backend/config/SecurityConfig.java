@@ -6,6 +6,7 @@ import com.trova.backend.security.JwtSkippingSecurityContextRepository;
 import com.trova.backend.security.MobileLoginFlagFilter;
 import com.trova.backend.security.OAuth2LoginFailureHandler;
 import com.trova.backend.security.OAuth2LoginSuccessHandler;
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,10 @@ public class SecurityConfig {
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
+
+    // 관리자 웹(Cloudflare Pages, #163). 비어 있으면 CORS에 더하지 않는다.
+    @Value("${app.admin-web-url:}")
+    private String adminWebUrl;
 
     // API 문서(#149)를 켰을 때만 문서 경로를 로그인 없이 연다. 꺼져 있으면 다른 경로와 똑같이 로그인이 필요하다.
     @Value("${springdoc.api-docs.enabled:false}")
@@ -78,7 +83,12 @@ public class SecurityConfig {
                 .securityContext(context -> context.securityContextRepository(new JwtSkippingSecurityContextRepository()))
                 .requestCache(cache -> cache.requestCache(new NullRequestCache()))
                 .authorizeHttpRequests(auth -> {
+                    // 오류 응답 만들기(/error로 다시 넘김)는 인증을 다시 보지 않는다 — 막으면 로그인 없이 부르는 교환 API의
+                    // 400·429가 모두 401로 바뀐다(#163). 원래 요청의 권한 확인은 이미 끝난 뒤라 데이터가 새지 않는다.
+                    auth.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll();
                     auth.requestMatchers("/oauth2/**", "/login/**").permitAll()
+                            // 관리자 웹 1회용 코드 교환 — 코드 자체가 인증이다(AdminWebLoginService, #163).
+                            .requestMatchers(HttpMethod.POST, "/api/auth/exchange").permitAll()
                             // 인증 없이 열어두되, 실제로 노출되는 엔드포인트는 application.yml의
                             // management.endpoints.web.exposure.include가 정한다 — 기본은 health만이고
                             // prometheus는 로컬에서 ACTUATOR_EXPOSE로 켤 때만 노출된다(#27).
@@ -141,6 +151,17 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // 관리자 웹(#163)은 Bearer 토큰만 쓰므로 쿠키 없이, 관리자 API와 교환에만 연다 — 쿠키를 싣는 일반 API는 위 frontendUrl
+        // 하나만이라는 CSRF 판단 전제를 지킨다. 먼저 맞는 패턴 하나를 쓰므로 "/**"보다 먼저 등록해야 한다.
+        if (adminWebUrl != null && !adminWebUrl.isBlank()) {
+            CorsConfiguration adminWeb = new CorsConfiguration();
+            adminWeb.setAllowedOrigins(List.of(adminWebUrl.trim()));
+            adminWeb.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+            adminWeb.setAllowedHeaders(List.of("*"));
+            adminWeb.setAllowCredentials(false);
+            source.registerCorsConfiguration("/api/admin/**", adminWeb);
+            source.registerCorsConfiguration("/api/auth/exchange", adminWeb);
+        }
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
