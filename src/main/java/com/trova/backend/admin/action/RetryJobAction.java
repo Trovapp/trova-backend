@@ -73,9 +73,14 @@ public class RetryJobAction implements AdminActionHandler {
         return "새 작업 #" + newJob.getId();
     }
 
+    /** 상태·실패 이유만 본다(정지·처리 중 중복·Gemini 사용량은 미리보기에서). 관리자 사용자 상세에서도 쓴다. */
+    public static boolean isRetryableFailure(ProcessingJob job) {
+        return job.getStatus() == JobStatus.FAILED && RETRYABLE.contains(FailureReason.classify(job.getErrorMessage()));
+    }
+
     private ProcessingJob retryableJob(Long targetId) {
         ProcessingJob job = jobRepository.findById(targetId).orElseThrow(AdminActionException::notFound);
-        if (job.getStatus() != JobStatus.FAILED || !RETRYABLE.contains(FailureReason.classify(job.getErrorMessage()))) {
+        if (!isRetryableFailure(job)) {
             throw AdminActionException.conflict("일시 오류로 실패한 작업만 다시 실행해요.");
         }
         if (suspendedUsers.isSuspended(job.getUser().getId())) {
