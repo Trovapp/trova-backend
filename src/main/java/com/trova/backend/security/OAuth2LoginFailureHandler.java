@@ -1,6 +1,7 @@
 package com.trova.backend.security;
 
 import com.trova.backend.admin.AdminWebLoginService;
+import com.trova.backend.service.WebAppLoginService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,9 +23,11 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
     private String mobileRedirectScheme;
 
     private final AdminWebLoginService adminWebLoginService;
+    private final WebAppLoginService webAppLoginService;
 
-    public OAuth2LoginFailureHandler(AdminWebLoginService adminWebLoginService) {
+    public OAuth2LoginFailureHandler(AdminWebLoginService adminWebLoginService, WebAppLoginService webAppLoginService) {
         this.adminWebLoginService = adminWebLoginService;
+        this.webAppLoginService = webAppLoginService;
     }
 
     @Override
@@ -40,6 +43,13 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
             session.removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
             if (adminWebLoginService.enabled()) {
                 response.sendRedirect(adminWebLoginService.failureRedirect());
+                return;
+            }
+        }
+        if (session != null && Boolean.TRUE.equals(session.getAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN))) {
+            session.removeAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN);
+            if (webAppLoginService.enabled()) {
+                response.sendRedirect(webAppLoginService.failureRedirect());
                 return;
             }
         }

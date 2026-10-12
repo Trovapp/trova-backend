@@ -1,6 +1,7 @@
 package com.trova.backend.security;
 
 import com.trova.backend.admin.AdminWebLoginService;
+import com.trova.backend.service.WebAppLoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -21,6 +22,8 @@ class OAuth2LoginFailureHandlerTest {
     @Mock
     private AdminWebLoginService adminWebLoginService;
     @Mock
+    private WebAppLoginService webAppLoginService;
+    @Mock
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;
@@ -31,7 +34,7 @@ class OAuth2LoginFailureHandlerTest {
 
     @BeforeEach
     void setUp() {
-        handler = new OAuth2LoginFailureHandler(adminWebLoginService);
+        handler = new OAuth2LoginFailureHandler(adminWebLoginService, webAppLoginService);
         ReflectionTestUtils.setField(handler, "frontendUrl", "http://localhost:3000");
         ReflectionTestUtils.setField(handler, "mobileRedirectScheme", "trova");
     }
@@ -81,5 +84,19 @@ class OAuth2LoginFailureHandlerTest {
 
         verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
         verify(response).sendRedirect("http://localhost:3000/login?error=oauth_failed");
+    }
+
+    @Test
+    void 웹앱_로그인_실패면_웹앱의_오류_화면으로_보낸다() throws Exception {
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN)).thenReturn(Boolean.TRUE);
+        when(webAppLoginService.enabled()).thenReturn(true);
+        when(webAppLoginService.failureRedirect()).thenReturn("https://trova.example.dev/auth/callback/?error=oauth_failed");
+
+        handler.onAuthenticationFailure(request, response, new BadCredentialsException("x"));
+
+        verify(response).sendRedirect("https://trova.example.dev/auth/callback/?error=oauth_failed");
     }
 }

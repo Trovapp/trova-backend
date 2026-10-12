@@ -135,4 +135,18 @@ class MobileLoginFlagFilterTest {
         verify(session, never()).setAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN, Boolean.TRUE);
         verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
     }
+
+    @Test
+    void client가_web이면_웹앱_로그인_표시를_남기고_다른_표시는_지운다() throws Exception {
+        when(request.getRequestURI()).thenReturn("/oauth2/authorization/kakao");
+        when(request.getParameter("mobile")).thenReturn(null);
+        when(request.getParameter("client")).thenReturn("web");
+        when(request.getSession(true)).thenReturn(session);
+
+        filter.doFilterInternal(request, response, chain);
+
+        verify(session).setAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN, Boolean.TRUE);
+        verify(session).removeAttribute("MOBILE_LOGIN");
+        verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
+    }
 }
