@@ -50,7 +50,12 @@ public class JwtService {
     }
 
     public String issueAdminWeb(User user) {
-        Date now = new Date();
+        return issueAdminWebAt(user, Instant.now());
+    }
+
+    /** 발급 시각을 정해 관리자 웹 토큰을 만든다 — 테스트·재인증 확인용. */
+    public String issueAdminWebAt(User user, Instant issuedAt) {
+        Date now = Date.from(issuedAt);
         return Jwts.builder()
                 .subject(String.valueOf(user.getId()))
                 .audience().add(ADMIN_WEB_AUDIENCE).and()
