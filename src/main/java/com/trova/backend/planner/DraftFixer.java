@@ -636,11 +636,7 @@ public final class DraftFixer {
     }
 
     static long travelMinutes(DraftGenerator.Item a, DraftGenerator.Item b) {
-        if (!hasCoords(a) || !hasCoords(b)) {
-            return 30;
-        }
-        long minutes = (long) Math.ceil(km(a, b) / 30.0 * 60 / 10.0) * 10;
-        return Math.max(10, minutes);
+        return TravelTime.minutes(a.latitude(), a.longitude(), b.latitude(), b.longitude());
     }
 
     /** 식당과 좌표 없는 장소는 제자리에 두고, 나머지 자리를 앞 장소에서 가장 가까운 순으로 채운다. */

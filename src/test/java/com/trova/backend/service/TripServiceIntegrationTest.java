@@ -445,6 +445,52 @@ class TripServiceIntegrationTest {
         assertThat(reloadedSecond.getVisitOrder()).isEqualTo(1);
     }
 
+    @Test
+    void reorderPlace로_순서가_바뀌면_방문_시간을_새_순서대로_다시_매긴다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-retime-a", "아침", null, null, null, null, 33.4000, 126.5000, null));
+        placeRepository.save(new Place("trip-place-test-retime-b", "점심", null, null, null, null, 33.4010, 126.5010, null));
+        TripPlace morning = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-retime-a").orElseThrow();
+        TripPlace lunch = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-retime-b").orElseThrow();
+        tripService.updateDetails(user, morning.getId(), LocalTime.of(9, 0), LocalTime.of(10, 30), null, null);
+        tripService.updateDetails(user, lunch.getId(), LocalTime.of(12, 0), LocalTime.of(13, 0), null, null);
+
+        tripService.reorderPlace(user, morning.getId(), "DOWN");
+
+        TripPlace reloadedLunch = tripPlaceRepository.findById(lunch.getId()).orElseThrow();
+        TripPlace reloadedMorning = tripPlaceRepository.findById(morning.getId()).orElseThrow();
+        assertThat(reloadedLunch.getVisitStartTime()).isEqualTo(LocalTime.of(9, 0));
+        assertThat(reloadedLunch.getVisitEndTime()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(reloadedMorning.getVisitStartTime()).isEqualTo(LocalTime.of(10, 10));
+        assertThat(reloadedMorning.getVisitEndTime()).isEqualTo(LocalTime.of(11, 40));
+    }
+
+    @Test
+    void optimizeRoute_뒤_방문_시간이_순서대로_늘어난다() {
+        // 동선 최적화 뒤 1번 12:10, 2번 09:00처럼 시간이 거꾸로 보였다(2026-10-13 PWA QA)
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "서울 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-opt-a", "가", null, null, null, null, 37.5000, 127.0000, null));
+        placeRepository.save(new Place("trip-place-test-opt-b", "나", null, null, null, null, 37.6000, 127.0000, null));
+        placeRepository.save(new Place("trip-place-test-opt-c", "다", null, null, null, null, 37.5010, 127.0000, null));
+        String[] ids = {"trip-place-test-opt-a", "trip-place-test-opt-b", "trip-place-test-opt-c"};
+        LocalTime[] starts = {LocalTime.of(9, 0), LocalTime.of(11, 0), LocalTime.of(14, 0)};
+        for (int i = 0; i < ids.length; i++) {
+            TripPlace p = tripService.addPlaceToDay(user, trip.getId(), 1, ids[i]).orElseThrow();
+            tripService.updateDetails(user, p.getId(), starts[i], starts[i].plusHours(1), null, null);
+        }
+
+        List<TripPlace> optimized = tripService.optimizeRoute(user, trip.getId(), 1).orElseThrow();
+
+        assertThat(optimized.get(0).getVisitStartTime()).isEqualTo(LocalTime.of(9, 0));
+        for (int i = 1; i < optimized.size(); i++) {
+            assertThat(optimized.get(i).getVisitStartTime()).isAfterOrEqualTo(optimized.get(i - 1).getVisitEndTime());
+        }
+        List<TripPlace> saved = tripPlaceRepository.findAllById(optimized.stream().map(TripPlace::getId).toList());
+        assertThat(saved).allSatisfy(p -> assertThat(p.getVisitEndTime()).isAfter(p.getVisitStartTime()));
+    }
+
     private Notification rainNotificationFor(User user, TripPlace place) {
         return notificationRepository.save(new Notification(
                 user, place.getItinerary(), "비 소식이 있어요", "근처 실내 대안을 확인해보세요.", 0.8, place.getId()));
