@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -376,6 +377,11 @@ public class TripService {
 
                     TripPlace neighbor = siblings.get(swapIndex);
                     swapVisitOrder(place, neighbor);
+                    // 순서만 바꾸면 시간이 거꾸로 남는다(#175) — 새 순서대로 시간을 다시 매긴다.
+                    List<TripPlace> reordered = new ArrayList<>(siblings);
+                    reordered.sort(Comparator.comparingInt(TripPlace::getVisitOrder));
+                    TripDayRetimer.retime(reordered);
+                    tripPlaceRepository.saveAll(reordered);
                     return place;
                 });
     }
@@ -405,8 +411,10 @@ public class TripService {
                             RouteOptimizer.optimize(places, TripPlace::getLatitude, TripPlace::getLongitude);
                     for (int i = 0; i < optimized.size(); i++) {
                         optimized.get(i).applyVisitOrder(i + 1);
-                        tripPlaceRepository.save(optimized.get(i));
                     }
+                    // 순서만 바꾸면 1번 12:10, 2번 09:00처럼 시간이 거꾸로 남았다(#175).
+                    TripDayRetimer.retime(optimized);
+                    tripPlaceRepository.saveAll(optimized);
                     return optimized;
                 });
     }
