@@ -27,6 +27,42 @@ class RouteOptimizerTest {
         return new TripPlace(ITINERARY, name, "서울", "cafe", lat, lng, null, null, 1, PlaceSource.NORMAL, null);
     }
 
+    private TripPlace tripPlace(String name, String category, Double lat, Double lng) {
+        return new TripPlace(ITINERARY, name, "서울", category, lat, lng, null, null, 1, PlaceSource.NORMAL, null);
+    }
+
+    @Test
+    void 고정_장소는_제자리에_두고_나머지만_가장_짧은_경로로_채운다() {
+        // 거리만 보면 식당이 맨 앞·맨 뒤로 갔다 — 점심 식당이 09:00 첫 순서가 됐다(2026-10-13 PWA QA, #179)
+        TripPlace far = tripPlace("멀리", "attraction", 37.600, 127.000);
+        TripPlace lunch = tripPlace("점심", "restaurant", 37.550, 127.000);
+        TripPlace near = tripPlace("가까이", "attraction", 37.500, 127.000);
+        TripPlace nearer = tripPlace("더가까이", "attraction", 37.501, 127.000);
+
+        List<TripPlace> result = RouteOptimizer.optimizeKeepingFixed(
+                List.of(far, lunch, near, nearer), p -> "restaurant".equals(p.getCategory()),
+                TripPlace::getLatitude, TripPlace::getLongitude);
+
+        assertThat(result.get(1)).isSameAs(lunch);
+        // 식당은 2번째 그대로, 나머지 세 곳은 식당을 사이에 둔 전체 경로가 원래보다 짧아지게
+        assertThat(RouteOptimizer.totalDistanceKm(result, TripPlace::getLatitude, TripPlace::getLongitude))
+                .isLessThan(RouteOptimizer.totalDistanceKm(List.of(far, lunch, near, nearer), TripPlace::getLatitude, TripPlace::getLongitude));
+    }
+
+    @Test
+    void 좌표_없는_장소는_고정처럼_제자리에_둔다() {
+        TripPlace a = tripPlace("A", "attraction", 37.600, 127.000);
+        TripPlace unknown = tripPlace("위치모름", "attraction", null, null);
+        TripPlace b = tripPlace("B", "attraction", 37.500, 127.000);
+        TripPlace c = tripPlace("C", "attraction", 37.601, 127.000);
+
+        List<TripPlace> result = RouteOptimizer.optimizeKeepingFixed(
+                List.of(a, unknown, b, c), p -> false, TripPlace::getLatitude, TripPlace::getLongitude);
+
+        assertThat(result.get(1)).isSameAs(unknown);
+        assertThat(result).containsExactlyInAnyOrder(a, unknown, b, c);
+    }
+
     // TripService.optimizeRoute가 쓰는 제네릭 오버로드 — SavedPlace 전용 메서드와 같은
     // 알고리즘에 위임하지만, 실제로 TripPlace 같은 다른 엔티티 타입에서도 재배열이
     // 일어나는지는 별도로 검증해야 한다(접근자를 잘못 연결하면 컴파일은 되지만 항상

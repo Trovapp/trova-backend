@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * 하루 일정 안에서 총 이동거리가 최소가 되도록 장소 순서를 재배열한다. 구글/카카오
@@ -53,6 +54,82 @@ public final class RouteOptimizer {
 
         List<T> result = new ArrayList<>(orderedWithCoords);
         result.addAll(withoutCoords);
+        return result;
+    }
+
+    /**
+     * 고정 장소(예: 식당)와 좌표 없는 장소는 제자리에 두고, 나머지 자리만 채워 전체 경로를 가장 짧게 만든다.
+     * 여행 동선 최적화가 거리만 보고 식당을 옮겨 점심 식당이 아침 첫 순서가 됐다(#179) — 일정 초안(DraftFixer.reorder)과 같은 원칙.
+     * 남은 자리가 EXACT_SEARCH_MAX_SIZE 이하면 모든 순서를 따지고, 넘으면 앞 장소에서 가장 가까운 곳을 차례로 채운다.
+     */
+    public static <T> List<T> optimizeKeepingFixed(
+            List<T> places, Predicate<T> fixed, Function<T, Double> latOf, Function<T, Double> lngOf
+    ) {
+        List<Integer> slots = new ArrayList<>();
+        List<T> movable = new ArrayList<>();
+        for (int i = 0; i < places.size(); i++) {
+            T place = places.get(i);
+            if (!fixed.test(place) && hasCoordinates(place, latOf, lngOf)) {
+                slots.add(i);
+                movable.add(place);
+            }
+        }
+        if (movable.size() <= 1) {
+            return new ArrayList<>(places);
+        }
+        if (movable.size() > EXACT_SEARCH_MAX_SIZE) {
+            return fillNearestKeepingFixed(places, slots, movable, latOf, lngOf);
+        }
+        List<List<T>> best = new ArrayList<>();
+        best.add(new ArrayList<>(places));
+        double[] bestDistance = {totalDistanceKm(places, latOf, lngOf)};
+        permuteIntoSlots(new ArrayList<>(places), slots, movable, 0, best, bestDistance, latOf, lngOf);
+        return best.get(0);
+    }
+
+    private static <T> void permuteIntoSlots(
+            List<T> working, List<Integer> slots, List<T> movable, int k,
+            List<List<T>> best, double[] bestDistance, Function<T, Double> latOf, Function<T, Double> lngOf
+    ) {
+        if (k == movable.size()) {
+            for (int i = 0; i < slots.size(); i++) {
+                working.set(slots.get(i), movable.get(i));
+            }
+            double distance = totalDistanceKm(working, latOf, lngOf);
+            if (distance < bestDistance[0]) {
+                bestDistance[0] = distance;
+                best.set(0, new ArrayList<>(working));
+            }
+            return;
+        }
+        for (int i = k; i < movable.size(); i++) {
+            Collections.swap(movable, k, i);
+            permuteIntoSlots(working, slots, movable, k + 1, best, bestDistance, latOf, lngOf);
+            Collections.swap(movable, k, i);
+        }
+    }
+
+    private static <T> List<T> fillNearestKeepingFixed(
+            List<T> places, List<Integer> slots, List<T> movable, Function<T, Double> latOf, Function<T, Double> lngOf
+    ) {
+        List<T> remaining = new ArrayList<>(movable);
+        List<T> result = new ArrayList<>(places);
+        for (int slot : slots) {
+            T prev = slot > 0 ? result.get(slot - 1) : null;
+            T pick = remaining.get(0);
+            if (prev != null && hasCoordinates(prev, latOf, lngOf)) {
+                double nearest = Double.MAX_VALUE;
+                for (T candidate : remaining) {
+                    double d = haversineKm(latOf.apply(prev), lngOf.apply(prev), latOf.apply(candidate), lngOf.apply(candidate));
+                    if (d < nearest) {
+                        nearest = d;
+                        pick = candidate;
+                    }
+                }
+            }
+            remaining.remove(pick);
+            result.set(slot, pick);
+        }
         return result;
     }
 

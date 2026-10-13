@@ -467,6 +467,29 @@ class TripServiceIntegrationTest {
     }
 
     @Test
+    void optimizeRoute는_식당을_원래_자리에_둔다() {
+        // 점심 식당이 동선 최적화 뒤 09:00 첫 순서가 됐다(2026-10-13 PWA QA 2회차, #179)
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "서울 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-keep-a", "멀리", "attraction", null, null, null, 37.6000, 127.0000, null));
+        placeRepository.save(new Place("trip-place-test-keep-r", "점심", "restaurant", null, null, null, 37.5500, 127.0000, null));
+        placeRepository.save(new Place("trip-place-test-keep-b", "가까이", "attraction", null, null, null, 37.5000, 127.0000, null));
+        placeRepository.save(new Place("trip-place-test-keep-c", "더가까이", "attraction", null, null, null, 37.5010, 127.0000, null));
+        Long lunchId = null;
+        for (String id : List.of("trip-place-test-keep-a", "trip-place-test-keep-r", "trip-place-test-keep-b", "trip-place-test-keep-c")) {
+            TripPlace p = tripService.addPlaceToDay(user, trip.getId(), 1, id).orElseThrow();
+            if (id.endsWith("-r")) {
+                lunchId = p.getId();
+            }
+        }
+
+        List<TripPlace> optimized = tripService.optimizeRoute(user, trip.getId(), 1).orElseThrow();
+
+        assertThat(optimized.get(1).getId()).isEqualTo(lunchId);
+        assertThat(tripPlaceRepository.findById(lunchId).orElseThrow().getVisitOrder()).isEqualTo(2);
+    }
+
+    @Test
     void optimizeRoute_뒤_방문_시간이_순서대로_늘어난다() {
         // 동선 최적화 뒤 1번 12:10, 2번 09:00처럼 시간이 거꾸로 보였다(2026-10-13 PWA QA)
         User user = newUser();
