@@ -407,8 +407,13 @@ public class TripService {
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .map(itinerary -> {
                     List<TripPlace> places = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary);
-                    List<TripPlace> optimized =
-                            RouteOptimizer.optimize(places, TripPlace::getLatitude, TripPlace::getLongitude);
+                    // 식당은 제자리에 둔다 — 거리만 보면 점심 식당이 아침 첫 순서가 됐다(#179).
+                    // 좌표 없는 장소는 예전처럼 맨 뒤로 보낸다(동선을 계산할 수 없어서).
+                    List<TripPlace> withCoords = places.stream()
+                            .filter(p -> p.getLatitude() != null && p.getLongitude() != null).toList();
+                    List<TripPlace> optimized = new ArrayList<>(RouteOptimizer.optimizeKeepingFixed(
+                            withCoords, p -> "restaurant".equals(p.getCategory()), TripPlace::getLatitude, TripPlace::getLongitude));
+                    places.stream().filter(p -> p.getLatitude() == null || p.getLongitude() == null).forEach(optimized::add);
                     for (int i = 0; i < optimized.size(); i++) {
                         optimized.get(i).applyVisitOrder(i + 1);
                     }
