@@ -262,6 +262,67 @@ class AlternativeFinderServiceTest {
     }
 
     @Test
+    void 같은_여행에_이미_있는_장소는_후보에서_제외된다() {
+        // 진관사계곡 대안으로 같은 여행 1번 은평한옥마을이 나왔다(2026-10-13 PWA QA, #177).
+        // 영상에서 온 장소는 구글 장소 ID가 없어 이름으로, 검색으로 담은 장소는 ID로 거른다.
+        User owner = user();
+        TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
+        TripPlace sameTripByName = new TripPlace(
+                place.getItinerary(), "은평 한옥마을", null, "attraction", 37.6, 126.9, null, null, 2, PlaceSource.NORMAL, null);
+        TripPlace sameTripById = new TripPlace(
+                place.getItinerary(), "검색으로 담은 곳", null, "cafe", 37.6, 126.9, null, null, 3, PlaceSource.NORMAL, null);
+        sameTripById.applyGooglePlaceId("gp-in-trip");
+        // 구글 이름엔 종단명이 붙는다("대한불교조계종 진관사") — 이름이 그 장소 이름으로 끝나고 가까우면 같은 곳
+        TripPlace temple = new TripPlace(
+                place.getItinerary(), "진관사", null, "attraction", 37.5040, 127.0, null, null, 4, PlaceSource.NORMAL, null);
+        when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary()))
+                .thenReturn(List.of(place, sameTripByName, sameTripById, temple));
+        when(tripPlaceRepository.findByItinerary_Trip(place.getItinerary().getTrip()))
+                .thenReturn(List.of(place, sameTripByName, sameTripById, temple));
+
+        var rawByName = new GooglePlacesNearbySearchResponse.Place(
+                "gp-village", new GooglePlacesNearbySearchResponse.Place.DisplayName("은평한옥마을"),
+                List.of("tourist_attraction"), 4.3, 100, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.501, 127.0), "주소1");
+        var rawById = new GooglePlacesNearbySearchResponse.Place(
+                "gp-in-trip", new GooglePlacesNearbySearchResponse.Place.DisplayName("다른 이름"),
+                List.of("cafe"), 4.1, 10, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.502, 127.0), "주소2");
+        var rawOther = new GooglePlacesNearbySearchResponse.Place(
+                "gp-other", new GooglePlacesNearbySearchResponse.Place.DisplayName("새로운 곳"),
+                List.of("cafe"), 4.2, 5, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.503, 127.0), "주소3");
+        var rawTemple = new GooglePlacesNearbySearchResponse.Place(
+                "gp-temple", new GooglePlacesNearbySearchResponse.Place.DisplayName("대한불교조계종 진관사"),
+                List.of("place_of_worship"), 4.6, 300, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.5045, 127.0), "주소4");
+        // 이름에 여행 장소 이름이 들어 있어도 끝나지 않으면(지점) 다른 가게라 남는다
+        var rawBranch = new GooglePlacesNearbySearchResponse.Place(
+                "gp-branch", new GooglePlacesNearbySearchResponse.Place.DisplayName("청류 진관사점"),
+                List.of("cafe"), 4.0, 20, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.5041, 127.0), "주소5");
+        List<GooglePlacesNearbySearchResponse.Place> raws = List.of(rawByName, rawById, rawOther, rawTemple, rawBranch);
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raws));
+        when(placeCatalogService.upsertAll(raws)).thenReturn(List.of(
+                new Place("gp-village", "은평한옥마을", "attraction", 4.3, 100, null, 37.501, 127.0, "주소1"),
+                new Place("gp-in-trip", "다른 이름", "cafe", 4.1, 10, null, 37.502, 127.0, "주소2"),
+                new Place("gp-other", "새로운 곳", "cafe", 4.2, 5, null, 37.503, 127.0, "주소3"),
+                new Place("gp-temple", "대한불교조계종 진관사", "attraction", 4.6, 300, null, 37.5045, 127.0, "주소4"),
+                new Place("gp-branch", "청류 진관사점", "cafe", 4.0, 20, null, 37.5041, 127.0, "주소5")));
+        when(personalizationService.retrieveAndScore(eq(owner), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result).isPresent();
+        assertThat(result.get()).extracting(AlternativeCandidate::googlePlaceId)
+                .containsExactlyInAnyOrder("gp-other", "gp-branch");
+    }
+
+    @Test
     void 교체_대상_자기_자신은_후보에서_제외된다() {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
