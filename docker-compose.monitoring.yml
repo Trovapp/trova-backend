@@ -6,6 +6,10 @@
 #   ACTUATOR_EXPOSE=health,prometheus ./gradlew bootRun
 # 접속: Prometheus http://localhost:9090, Grafana http://localhost:3300
 #
+# 운영 서버 지표(ADR 0015): Mac에서 SSH 터널을 열어 두면 job=trova-prod로 수집된다.
+#   ssh -N -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes -i <키> -L 127.0.0.1:18080:127.0.0.1:8080 ubuntu@<서버>
+#   운영 지표가 이 Mac에 쌓이므로 포트는 127.0.0.1에만 연다(같은 와이파이의 다른 기기에서 못 보게).
+#
 # Grafana 기본 포트(3000)는 이 머신에서 Plan B용 Grafana(Homebrew, PID로 실행 중)와
 # Next.js 프론트가 이미 쓰고 있어서 3300으로 옮김 — 서로 다른 프로젝트 인스턴스라 하나로
 # 합치지 않고 각자 띄운다.
@@ -17,7 +21,7 @@ services:
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     restart: unless-stopped
 
   grafana:
@@ -31,7 +35,7 @@ services:
     volumes:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
     ports:
-      - "3300:3000"
+      - "127.0.0.1:3300:3000"
     depends_on:
       - prometheus
     restart: unless-stopped
