@@ -7,3 +7,11 @@ scrape_configs:
     static_configs:
       # host.docker.internal: 컨테이너 안에서 호스트에 떠있는 Spring Boot(8080)에 접근하기 위함
       - targets: ["host.docker.internal:8080"]
+
+  # 운영 서버 — Mac에서 SSH 터널(localhost:18080 → 서버 127.0.0.1:8080)을 열어 둔 동안만 수집된다.
+  # 운영 지표는 외부에 열지 않는다(Caddy가 /actuator/* 중 health 외 404, ADR 0015).
+  - job_name: trova-prod
+    scrape_interval: 15s
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["host.docker.internal:18080"]
