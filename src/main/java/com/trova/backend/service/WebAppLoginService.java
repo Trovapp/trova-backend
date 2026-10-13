@@ -50,6 +50,10 @@ public class WebAppLoginService {
         return webAppUrl + CALLBACK_PATH + "?error=oauth_failed";
     }
 
+    public String suspendedRedirect() {
+        return webAppUrl + CALLBACK_PATH + "?error=suspended";
+    }
+
     /** 없는·만료·이미 쓴·다른 용도의 코드는 400. */
     @Transactional(readOnly = true)
     public WebAppToken exchange(String code) {

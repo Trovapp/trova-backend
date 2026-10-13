@@ -23,7 +23,7 @@ public class JwtService {
     public static final Duration ADMIN_WEB_EXPIRY = Duration.ofHours(1);
 
     /** 검증된 토큰 — 사용자 내부 번호, 관리자 웹 토큰인지, 만료 시각. */
-    public record VerifiedToken(Long userId, boolean adminWeb, Instant expiresAt) {
+    public record VerifiedToken(Long userId, boolean adminWeb, Instant expiresAt, Instant issuedAt) {
     }
 
     private final SecretKey key;
@@ -50,7 +50,12 @@ public class JwtService {
     }
 
     public String issueAdminWeb(User user) {
-        Date now = new Date();
+        return issueAdminWebAt(user, Instant.now());
+    }
+
+    /** 발급 시각을 정해 관리자 웹 토큰을 만든다 — 테스트·재인증 확인용. */
+    public String issueAdminWebAt(User user, Instant issuedAt) {
+        Date now = Date.from(issuedAt);
         return Jwts.builder()
                 .subject(String.valueOf(user.getId()))
                 .audience().add(ADMIN_WEB_AUDIENCE).and()
@@ -71,6 +76,8 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
         boolean adminWeb = claims.getAudience() != null && claims.getAudience().contains(ADMIN_WEB_AUDIENCE);
-        return new VerifiedToken(Long.valueOf(claims.getSubject()), adminWeb, claims.getExpiration().toInstant());
+        // 예전 토큰은 iat가 없을 수 있다.
+        Instant issuedAt = claims.getIssuedAt() == null ? null : claims.getIssuedAt().toInstant();
+        return new VerifiedToken(Long.valueOf(claims.getSubject()), adminWeb, claims.getExpiration().toInstant(), issuedAt);
     }
 }

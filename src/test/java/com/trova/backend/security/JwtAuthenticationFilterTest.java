@@ -20,7 +20,9 @@ class JwtAuthenticationFilterTest {
     private static final String SECRET = "test-jwt-secret-please-do-not-use-in-production-environment";
 
     private final JwtService jwtService = new JwtService(SECRET);
-    private final JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService);
+    // 정지 목록은 DB를 읽는 reload를 부르지 않으므로 저장소 없이 만든다.
+    private final SuspendedUsers suspendedUsers = new SuspendedUsers(null);
+    private final JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService, suspendedUsers);
 
     @Mock
     private HttpServletRequest request;
@@ -55,6 +57,17 @@ class JwtAuthenticationFilterTest {
     @Test
     void 위조된_토큰이면_인증정보를_세팅하지_않고_다음_필터로_넘어간다() throws Exception {
         when(request.getHeader("Authorization")).thenReturn("Bearer garbage-token");
+
+        filter.doFilterInternal(request, response, chain);
+
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    void 정지된_계정의_토큰이면_인증정보를_세팅하지_않고_다음_필터로_넘어간다() throws Exception {
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + tokenFor(8L));
+        suspendedUsers.add(8L);
 
         filter.doFilterInternal(request, response, chain);
 

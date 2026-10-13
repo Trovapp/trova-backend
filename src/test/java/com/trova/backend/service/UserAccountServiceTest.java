@@ -70,6 +70,12 @@ class UserAccountServiceTest {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private ShareKeyService shareKeyService;
+
+    @Autowired
+    private ShareKeyRepository shareKeyRepository;
+
     @MockitoBean
     private GooglePlacesApiClient googlePlacesApiClient;
 
@@ -162,5 +168,20 @@ class UserAccountServiceTest {
 
         assertThat(userRepository.findById(userId)).isEmpty();
         assertThat(tripDraftRepository.findById(draftId)).isEmpty();
+    }
+
+    @Test
+    void 단축어_키가_있어도_탈퇴되고_키도_삭제되어_더는_인증되지_않는다() {
+        // share_keys는 user_id에 FK가 없어 탈퇴 뒤에도 남았다 — 남은 키는 지운 회원 번호로 인증됐다.
+        User me = userRepository.save(new User("google", "withdraw-sharekey", "키있는유저", null));
+        String key = shareKeyService.issue(me.getId()).key();
+        Long userId = me.getId();
+
+        userAccountService.withdraw(me);
+        entityManager.flush();
+
+        assertThat(userRepository.findById(userId)).isEmpty();
+        assertThat(shareKeyRepository.findByUserId(userId)).isEmpty();
+        assertThat(shareKeyService.authenticate(key)).isEmpty();
     }
 }

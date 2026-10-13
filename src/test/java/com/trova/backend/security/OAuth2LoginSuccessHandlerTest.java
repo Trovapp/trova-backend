@@ -79,9 +79,11 @@ class OAuth2LoginSuccessHandlerTest {
 
     @Test
     void 웹_로그인이면_기존처럼_프론트_URL로_리다이렉트한다() throws Exception {
+        OAuth2AuthenticationToken authentication = tokenFor("42");
         when(request.getSession(false)).thenReturn(null);
+        when(currentUserService.resolve(authentication)).thenReturn(new User("google", "42", "테스트", null));
 
-        handler.onAuthenticationSuccess(request, response, tokenFor("42"));
+        handler.onAuthenticationSuccess(request, response, authentication);
 
         verify(response).sendRedirect("http://localhost:3000");
     }
@@ -111,8 +113,10 @@ class OAuth2LoginSuccessHandlerTest {
         when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
         when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
         when(adminWebLoginService.enabled()).thenReturn(false);
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(currentUserService.resolve(authentication)).thenReturn(new User("google", "42", "테스트", null));
 
-        handler.onAuthenticationSuccess(request, response, tokenFor("42"));
+        handler.onAuthenticationSuccess(request, response, authentication);
 
         verify(session).removeAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN);
         verify(response).sendRedirect("http://localhost:3000");
@@ -136,6 +140,38 @@ class OAuth2LoginSuccessHandlerTest {
     }
 
     @Test
+    void 관리자_웹_로그인에서_사용자_확인이_실패해도_세션은_지운다() throws Exception {
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(Boolean.TRUE);
+        when(adminWebLoginService.enabled()).thenReturn(true);
+        when(currentUserService.resolve(authentication)).thenThrow(new IllegalStateException("DB 연결 끊김"));
+
+        assertThatThrownBy(() -> handler.onAuthenticationSuccess(request, response, authentication))
+                .isInstanceOf(IllegalStateException.class).hasMessage("DB 연결 끊김");
+
+        verify(session).invalidate();
+        verify(response, never()).sendRedirect(any());
+    }
+
+    @Test
+    void 웹앱_로그인에서_사용자_확인이_실패해도_세션은_지운다() throws Exception {
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN)).thenReturn(Boolean.TRUE);
+        when(webAppLoginService.enabled()).thenReturn(true);
+        when(currentUserService.resolve(authentication)).thenThrow(new IllegalStateException("DB 연결 끊김"));
+
+        assertThatThrownBy(() -> handler.onAuthenticationSuccess(request, response, authentication))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(session).invalidate();
+    }
+
+    @Test
     void 웹앱_로그인이면_교환_코드_주소로_보내고_세션을_지운다() throws Exception {
         User user = new User("google", "42", "테스트", null);
         OAuth2AuthenticationToken authentication = tokenFor("42");
@@ -151,5 +187,54 @@ class OAuth2LoginSuccessHandlerTest {
 
         verify(session).invalidate();
         verify(response).sendRedirect("https://trova.example.dev/auth/callback/?code=abc");
+    }
+
+    @Test
+    void 정지된_계정이_앱으로_로그인하면_토큰_없이_정지_주소로_보내고_세션을_지운다() throws Exception {
+        User user = new User("google", "42", "테스트", null);
+        user.suspend();
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(Boolean.TRUE);
+        when(currentUserService.resolve(authentication)).thenReturn(user);
+
+        handler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(session).invalidate();
+        verify(response).sendRedirect("trova://auth?error=suspended");
+        verify(jwtService, never()).issue(any());
+    }
+
+    @Test
+    void 정지된_계정이_웹앱으로_로그인하면_코드_없이_웹앱_정지_주소로_보낸다() throws Exception {
+        User user = new User("google", "42", "테스트", null);
+        user.suspend();
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("MOBILE_LOGIN")).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.ADMIN_WEB_LOGIN)).thenReturn(null);
+        when(session.getAttribute(MobileLoginFlagFilter.WEB_APP_LOGIN)).thenReturn(Boolean.TRUE);
+        when(webAppLoginService.enabled()).thenReturn(true);
+        when(webAppLoginService.suspendedRedirect()).thenReturn("https://trova.example.dev/auth/callback/?error=suspended");
+        when(currentUserService.resolve(authentication)).thenReturn(user);
+
+        handler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(session).invalidate();
+        verify(response).sendRedirect("https://trova.example.dev/auth/callback/?error=suspended");
+        verify(webAppLoginService, never()).loginRedirect(any());
+    }
+
+    @Test
+    void 정지된_계정이_일반_웹으로_로그인하면_프론트_로그인_정지_주소로_보낸다() throws Exception {
+        User user = new User("google", "42", "테스트", null);
+        user.suspend();
+        OAuth2AuthenticationToken authentication = tokenFor("42");
+        when(request.getSession(false)).thenReturn(null);
+        when(currentUserService.resolve(authentication)).thenReturn(user);
+
+        handler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(response).sendRedirect("http://localhost:3000/login?error=suspended");
     }
 }

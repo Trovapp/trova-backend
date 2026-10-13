@@ -12,6 +12,7 @@ public interface ProcessingJobRepository extends JpaRepository<ProcessingJob, Lo
     List<ProcessingJob> findByUserOrderByCreatedAtDescIdDesc(User user);
     List<ProcessingJob> findByUserAndStatusIn(User user, List<JobStatus> statuses);
     List<ProcessingJob> findByUserAndSourceUrlAndStatusIn(User user, String sourceUrl, List<JobStatus> statuses);
+    boolean existsByUserAndSourceUrlAndIdGreaterThan(User user, String sourceUrl, Long id);
     Optional<ProcessingJob> findByIdAndUser(Long id, User user);
     void deleteByUser(User user);
     // 서버 재시작 등으로 대기열에서 사라진 작업 정리용(#43).

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -75,6 +76,15 @@ public class AiDashboardService {
         Double callsPerJob = jobs == 0 ? null : (double) (Long) jobCalls[0] / jobs;
 
         return new AiDashboard(days, daily, byOperation, callsPerJob);
+    }
+
+    // Gemini 무료 한도는 태평양 시간 자정에 초기화된다(qaflow 사용량 확인과 같은 기준).
+    private static final ZoneId GEMINI_RESET_ZONE = ZoneId.of("America/Los_Angeles");
+
+    /** 오늘 Gemini 한도가 시작된 시각(태평양 자정)을 서버 시간대로. */
+    public static LocalDateTime geminiDayStart() {
+        return LocalDate.now(GEMINI_RESET_ZONE).atStartOfDay(GEMINI_RESET_ZONE)
+                .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     @Transactional(readOnly = true)

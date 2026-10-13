@@ -12,15 +12,20 @@ import java.time.LocalDateTime;
 
 /**
  * 관리자 감사 기록(ADR 0012). 개인정보(로그인 ID·닉네임·이메일)를 남기지 않고 내부 번호만 — 계정 삭제 뒤에도 남는 기록이라서.
- * 지금(#163)은 관리자 웹 로그인 성공·거부만 남기고, 2단계 관리자 조치(삭제·재실행)가 대상·사유·결과 칸을 쓴다.
+ * 로그인·조회(#167)·조치를 남긴다. 최소 1년 보관(ADR 0014).
  * 앱에서 수정·삭제하는 경로를 만들지 않는다.
  */
 @Entity
-@Table(name = "admin_action_logs", indexes = @Index(name = "idx_admin_action_logs_created", columnList = "created_at"))
+@Table(name = "admin_action_logs", indexes = {
+        @Index(name = "idx_admin_action_logs_created", columnList = "created_at"),
+        @Index(name = "idx_admin_action_logs_target_user", columnList = "target_user_id")
+})
 public class AdminActionLog {
 
     public static final String ADMIN_WEB_LOGIN = "ADMIN_WEB_LOGIN";
     public static final String ADMIN_WEB_LOGIN_DENIED = "ADMIN_WEB_LOGIN_DENIED";
+    public static final String ADMIN_USER_SEARCH = "ADMIN_USER_SEARCH";
+    public static final String ADMIN_USER_VIEW = "ADMIN_USER_VIEW";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +43,10 @@ public class AdminActionLog {
     @Column(name = "target_id", updatable = false)
     private Long targetId;
 
+    // 이 기록이 어느 사용자에 대한 것인지(여행·작업이 대상이어도 그 주인) — 사용자 상세의 조치 이력(#167).
+    @Column(name = "target_user_id", updatable = false)
+    private Long targetUserId;
+
     @Column(length = 500, updatable = false)
     private String reason;
 
@@ -48,10 +57,15 @@ public class AdminActionLog {
     }
 
     public AdminActionLog(Long actorUserId, String action, Long targetId, String reason, String result) {
+        this(actorUserId, action, targetId, null, reason, result);
+    }
+
+    public AdminActionLog(Long actorUserId, String action, Long targetId, Long targetUserId, String reason, String result) {
         this.createdAt = LocalDateTime.now();
         this.actorUserId = actorUserId;
         this.action = action;
         this.targetId = targetId;
+        this.targetUserId = targetUserId;
         this.reason = reason;
         this.result = result;
     }
@@ -61,6 +75,7 @@ public class AdminActionLog {
     public Long getActorUserId() { return actorUserId; }
     public String getAction() { return action; }
     public Long getTargetId() { return targetId; }
+    public Long getTargetUserId() { return targetUserId; }
     public String getReason() { return reason; }
     public String getResult() { return result; }
 }
