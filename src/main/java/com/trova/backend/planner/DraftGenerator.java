@@ -374,7 +374,7 @@ public class DraftGenerator {
     static List<String> assumptions(LocalDate startDate, List<SavedPlace> places) {
         List<String> notes = new ArrayList<>();
         if (startDate == null) {
-            notes.add("날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 정하면 다시 확인할게요.");
+            notes.add("날짜를 몰라 요일별 휴무는 확인하지 않았어요. 날짜를 넣어 다시 짜면 확인해요.");
         }
         long noHours = places.stream().filter(p -> p.getOpeningPeriods() == null).count();
         if (noHours > 0) {

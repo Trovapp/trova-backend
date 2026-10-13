@@ -140,6 +140,28 @@ public class TripService {
     }
 
     /**
+     * 여행 날짜를 정하거나 바꾼다(#181). 시작일만 받고 종료일은 지금 일차 수로 계산해 일차마다 날짜를 채운다 —
+     * 자동 초안으로 만든 여행은 날짜가 없어 날씨 확인·비 알림·다가오는/지난 여행 구분이 안 됐다.
+     * 예전 날짜 기준으로 만든 비 알림은 틀린 안내가 되므로 지운다(새 날짜로 다음 날씨 검사에서 다시 만든다).
+     */
+    @Transactional
+    public Optional<Trip> setDates(User user, Long tripId, LocalDate startDate) {
+        return tripRepository.findById(tripId)
+                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .map(trip -> {
+                    List<Itinerary> days = itineraryRepository.findByTripOrderByDay(trip);
+                    int dayCount = Math.max(1, days.size());
+                    trip.applyDates(startDate, startDate.plusDays(dayCount - 1));
+                    for (Itinerary itinerary : days) {
+                        itinerary.applyDate(startDate.plusDays(itinerary.getDay() - 1));
+                    }
+                    itineraryRepository.saveAll(days);
+                    notificationRepository.deleteAll(notificationRepository.findByItinerary_Trip(trip));
+                    return tripRepository.save(trip);
+                });
+    }
+
+    /**
      * Place 카탈로그(구글 플레이스 검색에서 이미 upsert된 장소)에서 googlePlaceId로 찾아
      * 해당 일차 맨 끝에 추가한다. 카탈로그에 없으면(검색 단계를 안 거친 잘못된 요청)
      * 아무것도 만들지 않는다.

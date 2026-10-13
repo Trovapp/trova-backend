@@ -44,6 +44,13 @@ public class Trip {
         this.updatedAt = this.createdAt;
     }
 
+    /** 날짜를 정하거나 바꾼다 — 자동 초안으로 만든 여행은 날짜가 없다(#181). */
+    public void applyDates(LocalDate startDate, LocalDate endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public Long getId() { return id; }
     public User getUser() { return user; }
     public String getTitle() { return title; }
