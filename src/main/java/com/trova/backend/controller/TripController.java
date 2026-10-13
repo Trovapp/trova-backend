@@ -229,18 +229,36 @@ public class TripController {
         User user = currentUserService.resolve(authentication);
         return tripRepository.findById(id)
                 .filter(trip -> trip.getUser().getId().equals(user.getId()))
-                .map(trip -> {
-                    List<ItineraryResponse> days = itineraryRepository.findByTripOrderByDay(trip).stream()
-                            .map(itinerary -> new ItineraryResponse(
-                                    itinerary.getId(), itinerary.getDay(), itinerary.getDate(),
-                                    tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary).stream()
-                                            .map(TripPlaceResponse::from)
-                                            .toList()))
-                            .toList();
-                    return ResponseEntity.ok(new TripDetailResponse(
-                            trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(), days));
-                })
+                .map(trip -> ResponseEntity.ok(toDetail(trip)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    public record SetTripDatesRequest(LocalDate startDate) {
+    }
+
+    /** 여행 날짜 정하기·바꾸기(#181) — 시작일만 받고 종료일·일차 날짜는 서버가 계산한다. 응답은 여행 상세와 같다. */
+    @PatchMapping("/api/trips/{id}/dates")
+    public ResponseEntity<TripDetailResponse> setTripDates(
+            Authentication authentication, @PathVariable Long id, @RequestBody SetTripDatesRequest request
+    ) {
+        if (request == null || request.startDate() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        User user = currentUserService.resolve(authentication);
+        return tripService.setDates(user, id, request.startDate())
+                .map(trip -> ResponseEntity.ok(toDetail(trip)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    private TripDetailResponse toDetail(Trip trip) {
+        List<ItineraryResponse> days = itineraryRepository.findByTripOrderByDay(trip).stream()
+                .map(itinerary -> new ItineraryResponse(
+                        itinerary.getId(), itinerary.getDay(), itinerary.getDate(),
+                        tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary).stream()
+                                .map(TripPlaceResponse::from)
+                                .toList()))
+                .toList();
+        return new TripDetailResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(), days);
     }
 
     @DeleteMapping("/api/trips/{id}")

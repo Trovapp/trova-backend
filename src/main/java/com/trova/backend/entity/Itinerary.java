@@ -31,6 +31,10 @@ public class Itinerary {
         this.date = date;
     }
 
+    public void applyDate(LocalDate date) {
+        this.date = date;
+    }
+
     public Long getId() { return id; }
     public Trip getTrip() { return trip; }
     public int getDay() { return day; }

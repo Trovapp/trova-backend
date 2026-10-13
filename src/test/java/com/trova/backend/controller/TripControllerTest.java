@@ -136,6 +136,51 @@ class TripControllerTest {
         return trip;
     }
 
+    @Test
+    void 날짜_없는_여행에_시작일을_정하면_종료일과_일차_날짜가_채워진다() throws Exception {
+        // 자동 초안으로 만든 여행은 날짜가 없어 날씨 확인을 못 했고 날짜를 정할 방법도 없었다(#181)
+        User me = userRepository.save(new User("google", "dates1", "날짜유저1", null));
+        Trip t = tripRepository.save(new Trip(me, "날짜 없는 여행", null, null));
+        itineraryRepository.save(new Itinerary(t, 1, null));
+        itineraryRepository.save(new Itinerary(t, 2, null));
+
+        mockMvc.perform(patch("/api/trips/" + t.getId() + "/dates")
+                        .with(loginAs("dates1", "날짜유저1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"startDate\":\"2026-11-01\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.startDate").value("2026-11-01"))
+                .andExpect(jsonPath("$.endDate").value("2026-11-02"))
+                .andExpect(jsonPath("$.days[0].date").value("2026-11-01"))
+                .andExpect(jsonPath("$.days[1].date").value("2026-11-02"));
+    }
+
+    @Test
+    void 여행_날짜를_시작일_없이_보내면_400() throws Exception {
+        User me = userRepository.save(new User("google", "dates2", "날짜유저2", null));
+        Trip t = trip(me, 1);
+
+        mockMvc.perform(patch("/api/trips/" + t.getId() + "/dates")
+                        .with(loginAs("dates2", "날짜유저2"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 남의_여행_날짜는_바꿀_수_없어_404() throws Exception {
+        User owner = userRepository.save(new User("google", "dates3-owner", "주인", null));
+        userRepository.save(new User("google", "dates3", "날짜유저3", null));
+        Trip t = trip(owner, 1);
+
+        mockMvc.perform(patch("/api/trips/" + t.getId() + "/dates")
+                        .with(loginAs("dates3", "날짜유저3"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"startDate\":\"2026-11-01\"}"))
+                .andExpect(status().isNotFound());
+        assertThat(tripRepository.findById(t.getId()).orElseThrow().getStartDate()).isEqualTo(LocalDate.of(2026, 1, 1));
+    }
+
     private TripPlace tripPlace(Itinerary itinerary, String name, Double lat, Double lng, int visitOrder) {
         return tripPlaceRepository.save(
                 new TripPlace(itinerary, name, "서울", "cafe", lat, lng, null, null, visitOrder, PlaceSource.NORMAL, null));

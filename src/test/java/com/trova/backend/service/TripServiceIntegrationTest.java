@@ -514,6 +514,22 @@ class TripServiceIntegrationTest {
         assertThat(saved).allSatisfy(p -> assertThat(p.getVisitEndTime()).isAfter(p.getVisitStartTime()));
     }
 
+    @Test
+    void 여행_날짜를_바꾸면_예전_날짜의_비_알림을_지운다() {
+        // 예전 날짜 기준으로 만든 비 알림은 날짜가 바뀌면 틀린 안내가 된다(#181)
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 2));
+        placeRepository.save(new Place("trip-place-test-dates-rain", "해수욕장", null, null, null, null, 33.4, 126.5, null));
+        TripPlace beach = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-dates-rain").orElseThrow();
+        Notification notification = rainNotificationFor(user, beach);
+
+        Trip updated = tripService.setDates(user, trip.getId(), LocalDate.of(2026, 12, 24)).orElseThrow();
+
+        assertThat(updated.getStartDate()).isEqualTo(LocalDate.of(2026, 12, 24));
+        assertThat(updated.getEndDate()).isEqualTo(LocalDate.of(2026, 12, 25));
+        assertThat(notificationRepository.findById(notification.getId())).isEmpty();
+    }
+
     private Notification rainNotificationFor(User user, TripPlace place) {
         return notificationRepository.save(new Notification(
                 user, place.getItinerary(), "비 소식이 있어요", "근처 실내 대안을 확인해보세요.", 0.8, place.getId()));

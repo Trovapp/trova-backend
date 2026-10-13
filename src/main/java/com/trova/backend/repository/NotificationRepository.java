@@ -2,6 +2,7 @@ package com.trova.backend.repository;
 
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Notification;
+import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -18,4 +19,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     // 알림이 가리키는 장소를 교체·삭제할 때 같이 정리하기 위한 조회(trip_place_id는 외래키가 없다, #41).
     List<Notification> findByTripPlaceId(Long tripPlaceId);
+
+    // 여행 날짜를 바꾸면 예전 날짜 기준 비 알림을 지운다(#181).
+    List<Notification> findByItinerary_Trip(Trip trip);
 }
