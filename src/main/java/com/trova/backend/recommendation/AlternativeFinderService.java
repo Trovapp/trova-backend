@@ -19,8 +19,11 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +38,8 @@ public class AlternativeFinderService {
     private static final Logger log = LoggerFactory.getLogger(AlternativeFinderService.class);
 
     private static final double SEARCH_RADIUS_METERS = 2000;
+    // 이름 끝이 같은 후보를 같은 장소로 볼 거리 — 구글·카카오 좌표 차이를 넉넉히 본다(#177).
+    private static final double SAME_PLACE_KM = 0.3;
     // 2026-09-14 실측: 덧셈 부스트(+최대 0.5)는 baseScore가 인기 랜드마크에서
     // 40~50대까지 나오는 걸 보니 사실상 무시할 수준이었다(경복궁 baseScore
     // ≈4.6*ln(46809)≈49.5 vs 개인화 최대 +0.5). baseScore에 비례한 곱셈 부스트로
@@ -136,6 +141,19 @@ public class AlternativeFinderService {
                     .filter(p -> !target.getGooglePlaceId().equals(p.getGooglePlaceId()))
                     .toList();
         }
+
+        // 같은 여행에 이미 있는 장소가 대안으로 나오면 안 된다 — 진관사계곡 대안으로 같은 여행의 은평한옥마을이 나왔다(#177).
+        // 영상에서 온 장소는 구글 장소 ID가 없어 이름(공백 무시)으로도 거른다. 같은 주소의 다른 가게가 있어 거리로는 거르지 않는다.
+        List<TripPlace> inTrip = tripPlaceRepository.findByItinerary_Trip(target.getItinerary().getTrip());
+        Set<String> tripGoogleIds = inTrip.stream().map(TripPlace::getGooglePlaceId)
+                .filter(Objects::nonNull).collect(Collectors.toSet());
+        Set<String> tripNames = inTrip.stream().map(p -> normalizeName(p.getPlaceName()))
+                .filter(n -> !n.isEmpty()).collect(Collectors.toSet());
+        candidates = candidates.stream()
+                .filter(p -> p.getGooglePlaceId() == null || !tripGoogleIds.contains(p.getGooglePlaceId()))
+                .filter(p -> !tripNames.contains(normalizeName(p.getName())))
+                .filter(p -> inTrip.stream().noneMatch(t -> sameNamedNearby(p, t)))
+                .toList();
 
         long tagStart = System.currentTimeMillis();
         if (Boolean.TRUE.equals(filter.indoorOnly())) {
@@ -253,6 +271,24 @@ public class AlternativeFinderService {
                 upsertMs, raw.size(), tagMs, embeddingMs, congestionMs, personalizationMs, result.size(),
                 System.currentTimeMillis() - explanationStart);
         return Optional.of(withReasons);
+    }
+
+    // 구글 이름엔 종단명·상호가 앞에 붙는다("대한불교조계종 진관사") — 여행 장소 이름으로 끝나고 가까우면 같은 곳.
+    // "청류 진관사점"처럼 이름이 들어 있어도 끝이 다르면 다른 가게라 남긴다.
+    private boolean sameNamedNearby(Place candidate, TripPlace tripPlace) {
+        String tripName = normalizeName(tripPlace.getPlaceName());
+        if (tripName.length() < 2 || !normalizeName(candidate.getName()).endsWith(tripName)) {
+            return false;
+        }
+        if (candidate.getLatitude() == null || tripPlace.getLatitude() == null) {
+            return false;
+        }
+        return haversineKm(candidate.getLatitude(), candidate.getLongitude(),
+                tripPlace.getLatitude(), tripPlace.getLongitude()) <= SAME_PLACE_KM;
+    }
+
+    private static String normalizeName(String name) {
+        return name == null ? "" : name.replaceAll("\\s+", "").toLowerCase(Locale.ROOT);
     }
 
     private boolean isOwner(TripPlace place, User user) {
