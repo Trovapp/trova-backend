@@ -26,6 +26,8 @@ public class AdminActionLog {
     public static final String ADMIN_WEB_LOGIN_DENIED = "ADMIN_WEB_LOGIN_DENIED";
     public static final String ADMIN_USER_SEARCH = "ADMIN_USER_SEARCH";
     public static final String ADMIN_USER_VIEW = "ADMIN_USER_VIEW";
+    // 관리자 본인 기기로 웹 푸시 테스트(#185).
+    public static final String ADMIN_PUSH_TEST = "ADMIN_PUSH_TEST";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
