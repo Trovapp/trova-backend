@@ -1,5 +1,6 @@
 package com.trova.backend.service;
 
+import com.trova.backend.push.TripDraftReadyEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
@@ -17,6 +18,7 @@ import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripDraftRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,16 +49,19 @@ public class TripPlannerService {
     private final PlanRequestParser planRequestParser;
     private final OpeningHoursService openingHoursService;
     private final TripPlanGraph tripPlanGraph;
+    private final ApplicationEventPublisher events;
 
     public TripPlannerService(TripDraftRepository tripDraftRepository, ProcessingJobRepository processingJobRepository,
                               SavedPlaceRepository savedPlaceRepository, PlanRequestParser planRequestParser,
-                              OpeningHoursService openingHoursService, TripPlanGraph tripPlanGraph) {
+                              OpeningHoursService openingHoursService, TripPlanGraph tripPlanGraph,
+                              ApplicationEventPublisher events) {
         this.tripDraftRepository = tripDraftRepository;
         this.processingJobRepository = processingJobRepository;
         this.savedPlaceRepository = savedPlaceRepository;
         this.planRequestParser = planRequestParser;
         this.openingHoursService = openingHoursService;
         this.tripPlanGraph = tripPlanGraph;
+        this.events = events;
     }
 
     /** 고른 영상이 모두 이 사용자의 완료된 분석이어야 만든다. 아니면 빈 값(컨트롤러가 400). */
@@ -172,6 +177,16 @@ public class TripPlannerService {
             draft.markReady(summaryJson(gathered, calls),
                     DraftGenerator.toJson(plan, outcome.fixes(), outcome.problems()));
             tripDraftRepository.save(draft);
+            if (draft.isAutoCreated()) {
+                // 공유만 하고 앱을 닫은 사람에게 준비됐다고 알린다(#185, ADR 0016). 직접 만든 초안은 화면에서 기다리고 있다.
+                int placeCount = plan.days().stream().mapToInt(d -> d.items().size()).sum();
+                try {
+                    events.publishEvent(new TripDraftReadyEvent(draft.getUser().getId(), draftId, placeCount, plan.days().size()));
+                } catch (RuntimeException e) {
+                    // 알림을 못 맡겨도(발송 대기열 가득 등) 이미 저장한 초안은 그대로 READY다 — 아래 catch로 가면 FAILED로 덮인다.
+                    log.warn("TripDraft {} 준비 알림을 맡기지 못함: {}", draftId, e.getClass().getSimpleName());
+                }
+            }
             log.info("TripDraft {} 초안 완료: 영상 {}개, 장소 {}곳, 영업시간 조회 {}번, Gemini {}번, AI 수정 {}번, ERROR {}→{}건",
                     draftId, videos.size(), gathered.totalPlaces(), calls, draft.getGeminiCalls(),
                     outcome.aiRepairs(), outcome.firstErrors(), outcome.finalErrors());

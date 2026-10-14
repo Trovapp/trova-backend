@@ -101,6 +101,12 @@ app:
   # iOS 단축어 공유 전용 키의 키당 분당 요청 수(#165) — 감으로 정함, 실측 아님.
   share-key:
     per-minute: ${SHARE_KEY_PER_MINUTE:10}
+  # PWA 웹 푸시(ADR 0016). 공개·비공개 키가 비면 알림만 꺼진다(로컬·테스트 기본).
+  # 공개 키: 비압축 EC 공개 키 base64url, 비공개 키: PKCS8 DER base64 한 줄. 만드는 법은 docs/superpowers/plans/2026-10-14-web-push.md Task D1.
+  push:
+    vapid-public-key: ${VAPID_PUBLIC_KEY:}
+    vapid-private-key: ${VAPID_PRIVATE_KEY:}
+    vapid-subject: ${VAPID_SUBJECT:mailto:trovapp26@gmail.com}
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
   # 서버 이름 — 서버 상태 스냅샷(server_metric_snapshots)을 서버별로 나눈다(#161). 운영은 APP_INSTANCE_NAME=prod.
   # 운영·로컬이 같은 DB를 쓸 때 이 값이 같으면 대시보드 서버 탭에 두 서버 값이 섞인다.

@@ -7,7 +7,10 @@ import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.weather.OpenWeatherApiClient;
 import com.trova.backend.weather.OpenWeatherForecastResponse;
+import com.trova.backend.push.RainNotificationCreatedEvent;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,6 +37,7 @@ class WeatherRecoveryServiceTest {
     @Mock private PlaceTaggingRunner placeTaggingRunner;
     @Mock private OpenWeatherApiClient openWeatherApiClient;
     @Mock private NotificationRepository notificationRepository;
+    @Mock private ApplicationEventPublisher events;
 
     private WeatherRecoveryService service;
 
@@ -51,7 +55,7 @@ class WeatherRecoveryServiceTest {
 
     private void setUp() {
         service = new WeatherRecoveryService(
-                tripPlaceRepository, placeTaggingRunner, openWeatherApiClient, notificationRepository);
+                tripPlaceRepository, placeTaggingRunner, openWeatherApiClient, notificationRepository, events);
     }
 
     /**
@@ -92,6 +96,13 @@ class WeatherRecoveryServiceTest {
         assertThat(result.get().getPrecipitationProb()).isEqualTo(0.8);
         assertThat(result.get().getTripPlaceId()).isEqualTo(42L);
         verify(placeTaggingRunner, never()).run(any(), anyLong());
+        // 새 비 알림은 웹 푸시(#185)로도 — 문구에 쓸 값을 담는다.
+        ArgumentCaptor<RainNotificationCreatedEvent> captor = ArgumentCaptor.forClass(RainNotificationCreatedEvent.class);
+        verify(events).publishEvent(captor.capture());
+        assertThat(captor.getValue().tripTitle()).isEqualTo("여행");
+        assertThat(captor.getValue().placeName()).isEqualTo("해운대");
+        assertThat(captor.getValue().tripPlaceId()).isEqualTo(42L);
+        assertThat(captor.getValue().pop()).isEqualTo(0.8);
     }
 
     @Test
@@ -190,6 +201,7 @@ class WeatherRecoveryServiceTest {
 
         assertThat(result).isEmpty();
         verify(tripPlaceRepository, never()).findByItineraryOrderByVisitOrder(any());
+        verify(events, never()).publishEvent(any());
     }
 
     @Test

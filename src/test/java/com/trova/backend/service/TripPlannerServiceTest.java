@@ -13,7 +13,9 @@ import com.trova.backend.planner.TripPlanGraph;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripDraftRepository;
+import com.trova.backend.push.TripDraftReadyEvent;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +36,8 @@ class TripPlannerServiceTest {
     private final PlanRequestParser parser = mock(PlanRequestParser.class);
     private final OpeningHoursService hours = mock(OpeningHoursService.class);
     private final TripPlanGraph graph = mock(TripPlanGraph.class);
-    private final TripPlannerService service = new TripPlannerService(drafts, jobs, saved, parser, hours, graph);
+    private final ApplicationEventPublisher events = mock(ApplicationEventPublisher.class);
+    private final TripPlannerService service = new TripPlannerService(drafts, jobs, saved, parser, hours, graph, events);
     private final User user = userWithId(1L);
 
     // 저장 전 엔티티는 id가 없어 소유자 비교를 할 수 없다 — id만 돌려주는 가짜 사용자를 쓴다.
@@ -118,6 +121,26 @@ class TripPlannerServiceTest {
 
         assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
         verify(hours, never()).fillMissing(anyList());
+        // 자동 초안이 준비되면 웹 푸시(#185) — 사용자·초안·장소 수·일수를 담는다.
+        verify(events).publishEvent(new TripDraftReadyEvent(1L, 9L, 0, 1));
+    }
+
+    @Test
+    void 알림_발송을_맡기지_못해도_준비된_초안은_실패로_바뀌지_않는다() {
+        // 발송 대기열이 차면 TaskRejectedException이 나는데, 예전엔 그 예외가 초안 처리 catch로 들어가 READY를 FAILED로 덮었다(#185 최종 리뷰).
+        TripDraft draft = autoDraft(List.of(1L));
+        ProcessingJob gimhae = job(1L);
+        when(saved.findByProcessingJob(gimhae)).thenReturn(List.of(place(gimhae, 35.23, 128.88)));
+        DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(new DraftGenerator.Day(1, null, List.of())),
+                List.of(), List.of(), List.of());
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList(), anyList()))
+                .thenReturn(new TripPlanGraph.Outcome(Optional.of(plan), 1, 0, 0, 0, List.of(), List.of(), null));
+        org.mockito.Mockito.doThrow(new org.springframework.core.task.TaskRejectedException("full"))
+                .when(events).publishEvent(any(TripDraftReadyEvent.class));
+
+        service.process(9L);
+
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
     }
 
     @Test
@@ -135,6 +158,8 @@ class TripPlannerServiceTest {
 
         assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
         verify(hours).fillMissing(anyList());
+        // 직접 만든 초안은 화면에서 기다리고 있어 알림을 보내지 않는다.
+        verify(events, never()).publishEvent(any(TripDraftReadyEvent.class));
     }
 
     @Test
@@ -151,6 +176,7 @@ class TripPlannerServiceTest {
         assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.FAILED);
         assertThat(draft.getErrorMessage()).doesNotContain("placeId");
         assertThat(draft.getGeminiCalls()).isEqualTo(2);
+        verify(events, never()).publishEvent(any(TripDraftReadyEvent.class));
     }
 
     @Test

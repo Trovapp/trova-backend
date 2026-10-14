@@ -76,6 +76,9 @@ class UserAccountServiceTest {
     @Autowired
     private ShareKeyRepository shareKeyRepository;
 
+    @Autowired
+    private PushSubscriptionRepository pushSubscriptionRepository;
+
     @MockitoBean
     private GooglePlacesApiClient googlePlacesApiClient;
 
@@ -183,5 +186,18 @@ class UserAccountServiceTest {
         assertThat(userRepository.findById(userId)).isEmpty();
         assertThat(shareKeyRepository.findByUserId(userId)).isEmpty();
         assertThat(shareKeyService.authenticate(key)).isEmpty();
+    }
+
+    @Test
+    void 탈퇴하면_웹_푸시_구독도_지운다() {
+        // push_subscriptions도 user_id만 들고 FK가 없다(#185) — 남으면 지운 회원 기기로 알림이 갈 수 있다.
+        User me = userRepository.save(new User("google", "withdraw-push", "구독있는유저", null));
+        Long userId = me.getId();
+        pushSubscriptionRepository.save(new PushSubscription(userId, "https://push.example/withdraw", "pk", "au"));
+
+        userAccountService.withdraw(me);
+        entityManager.flush();
+
+        assertThat(pushSubscriptionRepository.findByUserId(userId)).isEmpty();
     }
 }

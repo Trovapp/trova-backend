@@ -3,13 +3,18 @@ package com.trova.backend.service;
 import com.trova.backend.config.ClockConfig;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Notification;
+import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripPlace;
 import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
+import com.trova.backend.push.RainNotificationCreatedEvent;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.weather.OpenWeatherApiClient;
 import com.trova.backend.weather.OpenWeatherForecastResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -27,6 +32,8 @@ import java.util.stream.Collectors;
 @Service
 public class WeatherRecoveryService {
 
+    private static final Logger log = LoggerFactory.getLogger(WeatherRecoveryService.class);
+
     // Plan B에서 그대로 가져온 값 — Trova 실사용 데이터로 재검증한 적 없음(0-5 원칙).
     private static final double RAIN_PROBABILITY_THRESHOLD = 0.5;
 
@@ -34,17 +41,20 @@ public class WeatherRecoveryService {
     private final PlaceTaggingRunner placeTaggingRunner;
     private final OpenWeatherApiClient openWeatherApiClient;
     private final NotificationRepository notificationRepository;
+    private final ApplicationEventPublisher events;
 
     public WeatherRecoveryService(
             TripPlaceRepository tripPlaceRepository,
             PlaceTaggingRunner placeTaggingRunner,
             OpenWeatherApiClient openWeatherApiClient,
-            NotificationRepository notificationRepository
+            NotificationRepository notificationRepository,
+            ApplicationEventPublisher events
     ) {
         this.tripPlaceRepository = tripPlaceRepository;
         this.placeTaggingRunner = placeTaggingRunner;
         this.openWeatherApiClient = openWeatherApiClient;
         this.notificationRepository = notificationRepository;
+        this.events = events;
     }
 
     public Optional<Notification> checkAndNotify(Itinerary itinerary) {
@@ -84,7 +94,17 @@ public class WeatherRecoveryService {
                         "%d일차(%s)에 강수확률 %.0f%%예요. %s 근처 실내 대안을 확인해보세요.",
                         itinerary.getDay(), itinerary.getDate(), maxPop * 100, reference.getPlaceName()),
                 maxPop, reference.getId());
-        return Optional.of(notificationRepository.save(notification));
+        Notification saved = notificationRepository.save(notification);
+        // 새 비 알림은 웹 푸시(#185)로도 보낸다 — 리스너가 엔티티를 다시 읽지 않게 문구에 쓸 값을 담는다.
+        Trip trip = itinerary.getTrip();
+        try {
+            events.publishEvent(new RainNotificationCreatedEvent(trip.getUser().getId(), trip.getId(), itinerary.getId(),
+                    reference.getId(), trip.getTitle(), itinerary.getDate(), maxPop, reference.getPlaceName()));
+        } catch (RuntimeException e) {
+            // 푸시를 못 맡겨도 앱 안 알림은 이미 저장됐다 — 날씨 확인 결과를 실패로 만들지 않는다.
+            log.warn("비 알림 {} 푸시를 맡기지 못함: {}", saved.getId(), e.getClass().getSimpleName());
+        }
+        return Optional.of(saved);
     }
 
     private void ensureTagged(List<TripPlace> places) {
