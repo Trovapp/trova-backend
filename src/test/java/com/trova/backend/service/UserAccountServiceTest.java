@@ -79,6 +79,9 @@ class UserAccountServiceTest {
     @Autowired
     private PushSubscriptionRepository pushSubscriptionRepository;
 
+    @Autowired
+    private ExpoPushTokenRepository expoPushTokenRepository;
+
     @MockitoBean
     private GooglePlacesApiClient googlePlacesApiClient;
 
@@ -199,5 +202,17 @@ class UserAccountServiceTest {
         entityManager.flush();
 
         assertThat(pushSubscriptionRepository.findByUserId(userId)).isEmpty();
+    }
+
+    @Test
+    void 탈퇴하면_앱_알림_토큰도_지운다() {
+        User me = userRepository.save(new User("google", "withdraw-expo", "앱토큰유저", null));
+        Long userId = me.getId();
+        expoPushTokenRepository.save(new ExpoPushToken(userId, "ExponentPushToken[withdraw-device-1]"));
+
+        userAccountService.withdraw(me);
+        entityManager.flush();
+
+        assertThat(expoPushTokenRepository.findByUserId(userId)).isEmpty();
     }
 }
