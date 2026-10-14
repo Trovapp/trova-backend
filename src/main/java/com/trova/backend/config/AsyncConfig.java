@@ -46,6 +46,20 @@ public class AsyncConfig {
         return executor;
     }
 
+    // 웹 푸시 발송(#185). 알림 하나에 기기 몇 개라 짧은 HTTP 요청뿐 — 작은 풀, 쉬면 스레드를 내린다(운영 956MB).
+    @Bean("pushTaskExecutor")
+    public Executor pushTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(1);
+        executor.setAllowCoreThreadTimeOut(true);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("push-");
+        applyGracefulShutdown(executor);
+        executor.initialize();
+        return executor;
+    }
+
     /**
      * 영상 하나의 장소별 카카오 검색을 동시에 보내는 풀(#7). process()가 도는 pipelineTaskExecutor에 같이 넣으면
      * 그 풀의 스레드가 자기가 넣은 하위 작업을 기다리며 서로 자리를 막으므로 따로 둔다.

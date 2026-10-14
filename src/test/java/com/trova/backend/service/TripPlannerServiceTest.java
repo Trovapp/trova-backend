@@ -13,7 +13,9 @@ import com.trova.backend.planner.TripPlanGraph;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripDraftRepository;
+import com.trova.backend.push.TripDraftReadyEvent;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +36,8 @@ class TripPlannerServiceTest {
     private final PlanRequestParser parser = mock(PlanRequestParser.class);
     private final OpeningHoursService hours = mock(OpeningHoursService.class);
     private final TripPlanGraph graph = mock(TripPlanGraph.class);
-    private final TripPlannerService service = new TripPlannerService(drafts, jobs, saved, parser, hours, graph);
+    private final ApplicationEventPublisher events = mock(ApplicationEventPublisher.class);
+    private final TripPlannerService service = new TripPlannerService(drafts, jobs, saved, parser, hours, graph, events);
     private final User user = userWithId(1L);
 
     // 저장 전 엔티티는 id가 없어 소유자 비교를 할 수 없다 — id만 돌려주는 가짜 사용자를 쓴다.
@@ -118,6 +121,8 @@ class TripPlannerServiceTest {
 
         assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
         verify(hours, never()).fillMissing(anyList());
+        // 자동 초안이 준비되면 웹 푸시(#185) — 사용자·초안·장소 수·일수를 담는다.
+        verify(events).publishEvent(new TripDraftReadyEvent(1L, 9L, 0, 1));
     }
 
     @Test
@@ -135,6 +140,8 @@ class TripPlannerServiceTest {
 
         assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
         verify(hours).fillMissing(anyList());
+        // 직접 만든 초안은 화면에서 기다리고 있어 알림을 보내지 않는다.
+        verify(events, never()).publishEvent(any(TripDraftReadyEvent.class));
     }
 
     @Test
@@ -151,6 +158,7 @@ class TripPlannerServiceTest {
         assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.FAILED);
         assertThat(draft.getErrorMessage()).doesNotContain("placeId");
         assertThat(draft.getGeminiCalls()).isEqualTo(2);
+        verify(events, never()).publishEvent(any(TripDraftReadyEvent.class));
     }
 
     @Test
