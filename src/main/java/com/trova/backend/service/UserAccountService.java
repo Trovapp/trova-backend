@@ -6,6 +6,7 @@ import com.trova.backend.repository.BookmarkFolderRepository;
 import com.trova.backend.repository.BookmarkRepository;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
+import com.trova.backend.repository.PushSubscriptionRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.ShareKeyRepository;
 import com.trova.backend.repository.TripDraftRepository;
@@ -33,6 +34,7 @@ public class UserAccountService {
     private final UserPreferenceSignalRepository userPreferenceSignalRepository;
     private final TripDraftRepository tripDraftRepository;
     private final ShareKeyRepository shareKeyRepository;
+    private final PushSubscriptionRepository pushSubscriptionRepository;
 
     public UserAccountService(
             UserRepository userRepository,
@@ -47,7 +49,8 @@ public class UserAccountService {
             UserPreferenceRepository userPreferenceRepository,
             UserPreferenceSignalRepository userPreferenceSignalRepository,
             TripDraftRepository tripDraftRepository,
-            ShareKeyRepository shareKeyRepository
+            ShareKeyRepository shareKeyRepository,
+            PushSubscriptionRepository pushSubscriptionRepository
     ) {
         this.userRepository = userRepository;
         this.savedPlaceRepository = savedPlaceRepository;
@@ -62,6 +65,7 @@ public class UserAccountService {
         this.userPreferenceSignalRepository = userPreferenceSignalRepository;
         this.tripDraftRepository = tripDraftRepository;
         this.shareKeyRepository = shareKeyRepository;
+        this.pushSubscriptionRepository = pushSubscriptionRepository;
     }
 
     // 회원을 참조하는 데이터를 전부 지운 뒤 회원을 지운다(탈퇴 시 지체 없이 파기).
@@ -90,6 +94,8 @@ public class UserAccountService {
         // 단축어 키(#165)는 user_id만 들고 FK가 없어 남아도 탈퇴가 실패하지 않는다 — 그래서 빠져 있었다.
         // 남으면 지운 회원 번호로 인증되고 개인정보 보관도 되므로 함께 지운다.
         shareKeyRepository.deleteByUserId(user.getId());
+        // 웹 푸시 구독(#185)도 user_id만 들고 있다 — 남으면 지운 회원 기기로 알림이 갈 수 있다.
+        pushSubscriptionRepository.deleteByUserId(user.getId());
         userRepository.delete(user);
     }
 }
