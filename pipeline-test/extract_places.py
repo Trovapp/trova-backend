@@ -102,6 +102,18 @@ def load_api_key() -> str:
     raise SystemExit("GEMINI_API_KEY not set. pipeline-test/.env에 넣거나 export 하세요.")
 
 
+# 인스타 사진 게시물(#196) — 영상 프레임이 아니라 작성자가 올린 사진이라 글자(코스표·가격·꿀팁)가 많다.
+# 사용자 요청(2026-10-14): "사진 내용에 꿀팁이나 이런게 있으면 메모에다가 써주는건 넣어줘".
+PHOTO_POST_TEXT = (
+    "위 이미지들은 인스타그램 사진 게시물에 올라온 사진들입니다(올린 순서). "
+    "사진에 적힌 상호·코스표·위치 태그·주소를 모두 읽고 장소를 찾으세요. "
+    "코스표에 시간·순서와 함께 적힌 항목은 드라이브 코스(예: 북한강변길)라도 모두 장소로 남기세요. "
+    "다만 지도 위 경로 설명에 지나가는 지점으로만 적힌 다리·역·마을 이름(예: '○○교 → △△역 → □□리')은 빼세요. "
+    "사진에 적힌 꿀팁·주의사항(주차, 웨이팅, 예약, 추천 메뉴, 꼭 알아둘 점)은 그 장소의 videoNotes에 담고, "
+    "가격·영업시간보다 먼저 넣으세요."
+)
+
+
 def build_parts(
     transcript: str | None,
     audio_path: Path | None,
@@ -110,6 +122,7 @@ def build_parts(
     candidates: list[str] | None = None,
     video_uri: str | None = None,
     post_description: str | None = None,
+    photo_post: bool = False,
 ) -> list[dict]:
     parts: list[dict] = []
     if post_description:
@@ -131,10 +144,10 @@ def build_parts(
             mime = mimetypes.guess_type(frame_path.name)[0] or "image/jpeg"
             data = base64.b64encode(frame_path.read_bytes()).decode("ascii")
             parts.append({"inline_data": {"mime_type": mime, "data": data}})
-        parts.append({
-            "text": "위 이미지들은 영상에서 시간순으로 뽑은 프레임입니다. "
+        parts.append({"text": PHOTO_POST_TEXT if photo_post else (
+            "위 이미지들은 영상에서 시간순으로 뽑은 프레임입니다. "
             "화면에 적힌 자막/캡션/위치 태그 등 온스크린 텍스트에서 장소를 찾으세요."
-        })
+        )})
     if candidates is not None:
         parts.append({"text": f"1차 후보 목록: {json.dumps(candidates, ensure_ascii=False)}"})
     parts.append({"text": prompt})
@@ -356,6 +369,7 @@ def collect_candidates(
     api_key: str,
     video_uri: str | None = None,
     post_description: str | None = None,
+    photo_post: bool = False,
 ) -> list[str]:
     """1단계: 필터링 없이 장소일 가능성이 있는 고유명사를 최대한 후하게 나열한다."""
     def _parse(text: str) -> list[str]:
@@ -369,7 +383,7 @@ def collect_candidates(
 
     parts = build_parts(
         transcript, audio_path, frame_paths, prompt=COLLECT_PROMPT, video_uri=video_uri,
-        post_description=post_description,
+        post_description=post_description, photo_post=photo_post,
     )
     return call_gemini_with_repair(parts, model, api_key, "extract_places.collect", _parse)
 
@@ -381,13 +395,15 @@ def extract_places(
     model: str = DEFAULT_MODEL,
     video_uri: str | None = None,
     post_description: str | None = None,
+    photo_post: bool = False,
 ) -> list[dict]:
     if not transcript and not audio_path and not frame_paths and not video_uri:
         raise ValueError("transcript, audio_path, frame_paths, video_uri 중 하나는 필요합니다")
     api_key = load_api_key()
 
     candidates = collect_candidates(
-        transcript, audio_path, frame_paths, model, api_key, video_uri=video_uri, post_description=post_description
+        transcript, audio_path, frame_paths, model, api_key, video_uri=video_uri, post_description=post_description,
+        photo_post=photo_post,
     )
 
     def _parse(text: str) -> list[dict]:
@@ -401,7 +417,7 @@ def extract_places(
 
     parts = build_parts(
         transcript, audio_path, frame_paths, prompt=FILTER_PROMPT, candidates=candidates, video_uri=video_uri,
-        post_description=post_description,
+        post_description=post_description, photo_post=photo_post,
     )
     places = call_gemini_with_repair(parts, model, api_key, "extract_places.filter", _parse)
     return _normalize_video_notes(_normalize_name_candidates(_normalize_day_fields(places)))

@@ -179,6 +179,19 @@ class PlaceExtractionServiceTest {
     }
 
     @Test
+    void 게시물에서_영상도_사진도_받지_못하면_정해진_문구로_기록한다() {
+        // #196: 다시 해도 같은 실패라 앱이 [다시 시도] 대신 이유를 보여준다.
+        Long jobId = 7L;
+        when(lifecycleService.markProcessing(jobId)).thenReturn("https://www.instagram.com/p/x/");
+        when(pipelineRunner.run(eq("https://www.instagram.com/p/x/"), eq(jobId), any())).thenThrow(new PipelineException(
+                "파이프라인 실행 실패(exit=1): NO_MEDIA 게시물에서 영상도 사진도 받지 못했습니다"));
+
+        placeExtractionService.process(jobId);
+
+        verify(lifecycleService).markAnalysisFailed(jobId, ProcessingJob.NO_MEDIA_MESSAGE);
+    }
+
+    @Test
     void 장소별_후보_검색은_동시에_보낸다() throws Exception {
         // 순서대로 보내면 첫 검색이 둘째 검색을 기다리다 시간 초과로 끝난다 — 둘 다 동시에 들어와야 통과(#7).
         Long jobId = 7L;

@@ -14,6 +14,7 @@ class FailureReasonTest {
         assertThat(FailureReason.classify(ProcessingJob.AI_QUOTA_MESSAGE)).isEqualTo(FailureReason.AI_QUOTA);
         assertThat(FailureReason.classify(ProcessingJob.SOURCE_RATE_LIMIT_MESSAGE)).isEqualTo(FailureReason.SOURCE_RATE_LIMITED);
         assertThat(FailureReason.classify(OrphanedJobRecoveryService.STALE_MESSAGE)).isEqualTo(FailureReason.STALE);
+        assertThat(FailureReason.classify(ProcessingJob.NO_MEDIA_MESSAGE)).isEqualTo(FailureReason.NO_MEDIA);
     }
 
     @Test

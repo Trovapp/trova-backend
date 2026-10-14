@@ -159,6 +159,9 @@ public class PlaceExtractionService {
             } else if (message.contains(PipelineRunner.SOURCE_RATE_LIMIT_MARKER)) {
                 // 인스타 속도 제한도 원인을 알려야 사용자가 무작정 다시 누르지 않는다(#65).
                 lifecycleService.markAnalysisFailed(jobId, ProcessingJob.SOURCE_RATE_LIMIT_MESSAGE);
+            } else if (message.contains(PipelineRunner.NO_MEDIA_MARKER)) {
+                // 사진 게시물에서 사진도 설명도 못 받음(#196) — 다시 해도 같다.
+                lifecycleService.markAnalysisFailed(jobId, ProcessingJob.NO_MEDIA_MESSAGE);
             } else {
                 lifecycleService.markAnalysisFailed(jobId, e.getMessage());
             }

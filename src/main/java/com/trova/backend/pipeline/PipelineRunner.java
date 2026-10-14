@@ -27,6 +27,8 @@ public class PipelineRunner {
     public static final String DAILY_QUOTA_MARKER = "GEMINI_DAILY_QUOTA_EXCEEDED";
     /** 파이프라인(run_pipeline.py)이 인스타그램 속도 제한(429) 때 남기는 표식(#65). */
     public static final String SOURCE_RATE_LIMIT_MARKER = "SOURCE_RATE_LIMITED";
+    // 인스타 게시물에서 영상도 사진도 받지 못함(#196) — run_pipeline.py NO_MEDIA_MARKER와 같아야 한다.
+    public static final String NO_MEDIA_MARKER = "NO_MEDIA";
     private static final long PROGRESS_POLL_MILLIS = 500;
     private static final long STDOUT_JOIN_TIMEOUT_MILLIS = 30_000;
 
