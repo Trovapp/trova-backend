@@ -4,6 +4,7 @@ import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.BookmarkFolderRepository;
 import com.trova.backend.repository.BookmarkRepository;
+import com.trova.backend.repository.ExpoPushTokenRepository;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.PushSubscriptionRepository;
@@ -35,6 +36,7 @@ public class UserAccountService {
     private final TripDraftRepository tripDraftRepository;
     private final ShareKeyRepository shareKeyRepository;
     private final PushSubscriptionRepository pushSubscriptionRepository;
+    private final ExpoPushTokenRepository expoPushTokenRepository;
 
     public UserAccountService(
             UserRepository userRepository,
@@ -50,7 +52,8 @@ public class UserAccountService {
             UserPreferenceSignalRepository userPreferenceSignalRepository,
             TripDraftRepository tripDraftRepository,
             ShareKeyRepository shareKeyRepository,
-            PushSubscriptionRepository pushSubscriptionRepository
+            PushSubscriptionRepository pushSubscriptionRepository,
+            ExpoPushTokenRepository expoPushTokenRepository
     ) {
         this.userRepository = userRepository;
         this.savedPlaceRepository = savedPlaceRepository;
@@ -66,6 +69,7 @@ public class UserAccountService {
         this.tripDraftRepository = tripDraftRepository;
         this.shareKeyRepository = shareKeyRepository;
         this.pushSubscriptionRepository = pushSubscriptionRepository;
+        this.expoPushTokenRepository = expoPushTokenRepository;
     }
 
     // 회원을 참조하는 데이터를 전부 지운 뒤 회원을 지운다(탈퇴 시 지체 없이 파기).
@@ -96,6 +100,8 @@ public class UserAccountService {
         shareKeyRepository.deleteByUserId(user.getId());
         // 웹 푸시 구독(#185)도 user_id만 들고 있다 — 남으면 지운 회원 기기로 알림이 갈 수 있다.
         pushSubscriptionRepository.deleteByUserId(user.getId());
+        // 안드로이드 앱 알림 토큰(#190)도 같은 이유로 함께 지운다.
+        expoPushTokenRepository.deleteByUserId(user.getId());
         userRepository.delete(user);
     }
 }
