@@ -12,6 +12,8 @@ import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.weather.OpenWeatherApiClient;
 import com.trova.backend.weather.OpenWeatherForecastResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class WeatherRecoveryService {
+
+    private static final Logger log = LoggerFactory.getLogger(WeatherRecoveryService.class);
 
     // Plan B에서 그대로 가져온 값 — Trova 실사용 데이터로 재검증한 적 없음(0-5 원칙).
     private static final double RAIN_PROBABILITY_THRESHOLD = 0.5;
@@ -93,8 +97,13 @@ public class WeatherRecoveryService {
         Notification saved = notificationRepository.save(notification);
         // 새 비 알림은 웹 푸시(#185)로도 보낸다 — 리스너가 엔티티를 다시 읽지 않게 문구에 쓸 값을 담는다.
         Trip trip = itinerary.getTrip();
-        events.publishEvent(new RainNotificationCreatedEvent(trip.getUser().getId(), trip.getId(), itinerary.getId(),
-                reference.getId(), trip.getTitle(), itinerary.getDate(), maxPop, reference.getPlaceName()));
+        try {
+            events.publishEvent(new RainNotificationCreatedEvent(trip.getUser().getId(), trip.getId(), itinerary.getId(),
+                    reference.getId(), trip.getTitle(), itinerary.getDate(), maxPop, reference.getPlaceName()));
+        } catch (RuntimeException e) {
+            // 푸시를 못 맡겨도 앱 안 알림은 이미 저장됐다 — 날씨 확인 결과를 실패로 만들지 않는다.
+            log.warn("비 알림 {} 푸시를 맡기지 못함: {}", saved.getId(), e.getClass().getSimpleName());
+        }
         return Optional.of(saved);
     }
 

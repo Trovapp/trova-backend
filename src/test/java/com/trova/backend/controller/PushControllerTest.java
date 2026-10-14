@@ -123,4 +123,36 @@ class PushControllerTest {
                 .andExpect(status().isNoContent());
         assertThat(subscriptions.findByEndpoint(EP)).isEmpty();
     }
+
+    @Test
+    void 알려진_푸시_서버가_아닌_주소는_400() throws Exception {
+        // 서버가 사용자가 준 주소로 POST를 보내므로, 내부 주소나 아무 서버로 요청을 보내게 하지 않는다(#185 최종 리뷰).
+        User a = user("push-a");
+        for (String endpoint : new String[] {"https://internal.example/push", "https://fcm.googleapis.com.evil.io/x",
+                "https://localhost/push", "https://evil.io/web.push.apple.com"}) {
+            mockMvc.perform(post("/api/push/subscriptions").with(appToken(a))
+                    .contentType(MediaType.APPLICATION_JSON).content(body(endpoint)))
+                    .andExpect(status().isBadRequest());
+        }
+        for (String endpoint : new String[] {"https://fcm.googleapis.com/fcm/send/x", "https://web.push.apple.com/y",
+                "https://updates.push.services.mozilla.com/wpush/v2/z", "https://wns2-bl2p.notify.windows.com/w/?token=1"}) {
+            mockMvc.perform(post("/api/push/subscriptions").with(appToken(a))
+                    .contentType(MediaType.APPLICATION_JSON).content(body(endpoint)))
+                    .andExpect(status().isNoContent());
+        }
+    }
+
+    @Test
+    void 한_사람의_구독은_10개까지_넘으면_가장_오래된_것부터_지운다() throws Exception {
+        User a = user("push-a");
+        for (int i = 0; i < 12; i++) {
+            mockMvc.perform(post("/api/push/subscriptions").with(appToken(a))
+                    .contentType(MediaType.APPLICATION_JSON).content(body("https://fcm.googleapis.com/fcm/send/d" + i)))
+                    .andExpect(status().isNoContent());
+        }
+        assertThat(subscriptions.findByUserId(a.getId())).hasSize(10)
+                .extracting(PushSubscription::getEndpoint)
+                .doesNotContain("https://fcm.googleapis.com/fcm/send/d0", "https://fcm.googleapis.com/fcm/send/d1")
+                .contains("https://fcm.googleapis.com/fcm/send/d11");
+    }
 }

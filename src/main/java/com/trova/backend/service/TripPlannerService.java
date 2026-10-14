@@ -180,7 +180,12 @@ public class TripPlannerService {
             if (draft.isAutoCreated()) {
                 // 공유만 하고 앱을 닫은 사람에게 준비됐다고 알린다(#185, ADR 0016). 직접 만든 초안은 화면에서 기다리고 있다.
                 int placeCount = plan.days().stream().mapToInt(d -> d.items().size()).sum();
-                events.publishEvent(new TripDraftReadyEvent(draft.getUser().getId(), draftId, placeCount, plan.days().size()));
+                try {
+                    events.publishEvent(new TripDraftReadyEvent(draft.getUser().getId(), draftId, placeCount, plan.days().size()));
+                } catch (RuntimeException e) {
+                    // 알림을 못 맡겨도(발송 대기열 가득 등) 이미 저장한 초안은 그대로 READY다 — 아래 catch로 가면 FAILED로 덮인다.
+                    log.warn("TripDraft {} 준비 알림을 맡기지 못함: {}", draftId, e.getClass().getSimpleName());
+                }
             }
             log.info("TripDraft {} 초안 완료: 영상 {}개, 장소 {}곳, 영업시간 조회 {}번, Gemini {}번, AI 수정 {}번, ERROR {}→{}건",
                     draftId, videos.size(), gathered.totalPlaces(), calls, draft.getGeminiCalls(),

@@ -5,6 +5,8 @@ import com.trova.backend.repository.PushSubscriptionRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 웹 푸시 구독 등록(#185). 같은 기기(endpoint)면 덮어쓴다 — 다른 사람이 로그인했을 수도 있어 사용자까지.
  * 앱을 열 때의 재등록과 [알림 받기]가 같은 구독을 거의 동시에 보내면 둘 다 "없음"을 보고 저장하다 하나가
@@ -13,6 +15,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PushSubscriptionService {
+
+    // 한 사람의 기기(브라우저) 수 상한 — 넘으면 가장 오래 안 쓴 구독부터 지운다. 알림 한 번에 이만큼만 요청이 나간다.
+    static final int MAX_PER_USER = 10;
 
     private final PushSubscriptionRepository repository;
 
@@ -34,6 +39,11 @@ public class PushSubscriptionService {
                 raced.reassign(userId, p256dh, auth);
                 repository.save(raced);
             });
+            return;
+        }
+        List<PushSubscription> mine = repository.findByUserIdOrderByLastSeenAtDescIdDesc(userId);
+        if (mine.size() > MAX_PER_USER) {
+            repository.deleteAll(mine.subList(MAX_PER_USER, mine.size()));
         }
     }
 }

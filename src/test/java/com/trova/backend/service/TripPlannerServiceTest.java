@@ -126,6 +126,24 @@ class TripPlannerServiceTest {
     }
 
     @Test
+    void 알림_발송을_맡기지_못해도_준비된_초안은_실패로_바뀌지_않는다() {
+        // 발송 대기열이 차면 TaskRejectedException이 나는데, 예전엔 그 예외가 초안 처리 catch로 들어가 READY를 FAILED로 덮었다(#185 최종 리뷰).
+        TripDraft draft = autoDraft(List.of(1L));
+        ProcessingJob gimhae = job(1L);
+        when(saved.findByProcessingJob(gimhae)).thenReturn(List.of(place(gimhae, 35.23, 128.88)));
+        DraftGenerator.Draft plan = new DraftGenerator.Draft(List.of(new DraftGenerator.Day(1, null, List.of())),
+                List.of(), List.of(), List.of());
+        when(graph.run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList(), anyList()))
+                .thenReturn(new TripPlanGraph.Outcome(Optional.of(plan), 1, 0, 0, 0, List.of(), List.of(), null));
+        org.mockito.Mockito.doThrow(new org.springframework.core.task.TaskRejectedException("full"))
+                .when(events).publishEvent(any(TripDraftReadyEvent.class));
+
+        service.process(9L);
+
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
+    }
+
+    @Test
     void 사용자가_직접_만든_초안은_영업시간을_조회한다() {
         TripDraft draft = draft(List.of(1L));
         ProcessingJob gimhae = job(1L);
