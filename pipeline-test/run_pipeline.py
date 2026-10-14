@@ -21,6 +21,7 @@ from pathlib import Path
 import download
 import frames as frames_mod
 from extract_places import extract_places
+from post_images import download_images, post_image_urls
 from stage_timer import StageTimer
 
 MAX_FRAMES = 8
@@ -77,14 +78,17 @@ PLACEHOLDER_TITLE = re.compile(r"^(video|reel|post|photo) by\s", re.IGNORECASE)
 
 # 인스타그램이 요청을 막았을 때(429) 남기는 표식 — 서버(PlaceExtractionService)가 이 문자열로 구분한다(#65).
 SOURCE_RATE_LIMIT_MARKER = "SOURCE_RATE_LIMITED"
+# 게시물에서 영상도 사진도 받지 못함(#196) — 다시 해도 같아 서버가 안내 문구로 바꾼다.
+NO_MEDIA_MARKER = "NO_MEDIA"
 
 
-def instagram_fetch(url: str, out_dir: Path) -> tuple[Path, str | None, str | None]:
+def instagram_fetch(url: str, out_dir: Path) -> tuple[Path | None, str | None, str | None, list[str]]:
     """yt-dlp를 한 번만 불러 영상과 게시물 정보(제목·설명)를 함께 받는다(#65).
 
     예전엔 정보 조회와 다운로드로 인스타 페이지를 두 번 요청했다 — 운영 서버(데이터센터 IP)는 요청이 쌓이면 429로 막힌다.
     429면 크롬 쿠키 재시도(서버엔 크롬이 없어 소용없음) 없이 바로 표식을 남기고 멈춘다.
-    반환: (영상 경로, 제목, 게시물 설명). 제목이 자동 제목("Video by …")이면 설명의 첫 줄을 쓴다(#59).
+    반환: (영상 경로, 제목, 게시물 설명, 사진 주소들). 제목이 자동 제목("Video by …")이면 설명의 첫 줄을 쓴다(#59).
+    사진 게시물(#196)은 영상이 없다 — 영상 없이도 정보를 받게 하고(--ignore-no-formats-error), 영상 대신 사진 주소를 돌려준다.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
     for stale in out_dir.iterdir():
@@ -97,6 +101,9 @@ def instagram_fetch(url: str, out_dir: Path) -> tuple[Path, str | None, str | No
     if result.returncode != 0:
         if "429" in result.stderr or "Too Many Requests" in result.stderr:
             raise SystemExit(f"{SOURCE_RATE_LIMIT_MARKER} 인스타그램이 요청을 막음(429): {result.stderr[-300:]}")
+        if "No video formats found" in result.stderr:
+            # 사진 게시물(#196) — 받기 모드에선 사진 항목 정보가 비어 나온다. 정보만 한 번 더 받는다(사진 게시물만 요청 2번).
+            return _photo_post_info(url)
         raise SystemExit(f"yt-dlp 다운로드 실패:\n{result.stderr[-2000:]}")
     info = json.loads(result.stdout)
     videos = sorted(
@@ -105,12 +112,32 @@ def instagram_fetch(url: str, out_dir: Path) -> tuple[Path, str | None, str | No
     )
     if not videos:
         raise SystemExit(f"yt-dlp가 영상 파일을 만들지 못했습니다 (out_dir={out_dir})")
+    title, description = _title_and_description(info)
+    return videos[0], title, description, []
+
+
+def _title_and_description(info: dict) -> tuple[str | None, str | None]:
     description = (info.get("description") or "").strip() or None
     title = info.get("title")
     if (not title or PLACEHOLDER_TITLE.match(title)) and description:
         title = next((line.strip() for line in description.splitlines() if is_title_like(line)), None)
         title = title[:100] if title else None
-    return videos[0], title, description
+    return title, description
+
+
+def _photo_post_info(url: str) -> tuple[None, str | None, str | None, list[str]]:
+    """사진 게시물 정보만 받는다(내려받지 않음). 영상이 없어도 실패하지 않게 --ignore-no-formats-error."""
+    result = subprocess.run(
+        ["yt-dlp", "--no-warnings", "--dump-single-json", "--ignore-no-formats-error", "--", url],
+        capture_output=True, text=True, timeout=120,
+    )
+    if result.returncode != 0:
+        if "429" in result.stderr or "Too Many Requests" in result.stderr:
+            raise SystemExit(f"{SOURCE_RATE_LIMIT_MARKER} 인스타그램이 요청을 막음(429): {result.stderr[-300:]}")
+        raise SystemExit(f"{NO_MEDIA_MARKER} 게시물 정보를 받지 못했습니다: {result.stderr[-500:]}")
+    info = json.loads(result.stdout)
+    title, description = _title_and_description(info)
+    return None, title, description, post_image_urls(info)
 
 
 def is_title_like(line: str) -> bool:
@@ -147,7 +174,8 @@ def run_download(url: str, work_dir: Path, title: str | None = None, timer: Stag
     if INSTAGRAM_URL.match(url):
         print(f"[pipeline] 인스타그램 받는 중(영상 + 게시물 정보): {url}", file=sys.stderr)
         with timer.stage("download"):
-            video_path, info_title, post_description = instagram_fetch(url, work_dir / "download")
+            video_path, info_title, post_description, image_urls = instagram_fetch(url, work_dir / "download")
+            image_paths = download_images(image_urls, work_dir / "photos") if video_path is None else []
         caption_path = None
         if title is None and info_title:
             title = info_title
@@ -166,6 +194,9 @@ def run_download(url: str, work_dir: Path, title: str | None = None, timer: Stag
             print(f"[pipeline] 제목: {title!r}", file=sys.stderr)
             if title:
                 emit_progress(title=title)
+
+    if INSTAGRAM_URL.match(url) and video_path is None:
+        return run_photo_post(title, post_description, image_paths, timer)
 
     transcript = None
     if caption_path:
@@ -192,6 +223,18 @@ def run_download(url: str, work_dir: Path, title: str | None = None, timer: Stag
         places = extract_places(
             transcript=transcript, audio_path=audio_path, frame_paths=frame_paths, post_description=post_description
         )
+    emit_progress(placeNames=[p["name"] for p in places if p.get("name")])
+    return {"title": title, "places": places, "timings": timer.as_dict()}
+
+
+def run_photo_post(title: str | None, post_description: str | None, image_paths: list[Path], timer: StageTimer) -> dict:
+    """사진 게시물(#196): 영상 프레임 대신 올라온 사진들과 게시물 설명으로 같은 추출을 한다."""
+    if not image_paths and not post_description:
+        raise SystemExit(f"{NO_MEDIA_MARKER} 게시물에서 영상도 사진도 받지 못했습니다")
+    print(f"[pipeline] 사진 게시물 — 사진 {len(image_paths)}장과 게시물 설명으로 찾는다", file=sys.stderr)
+    with timer.stage("gemini"):
+        places = extract_places(frame_paths=image_paths or None, post_description=post_description, photo_post=True) \
+            if image_paths else extract_places(transcript=post_description, photo_post=True)
     emit_progress(placeNames=[p["name"] for p in places if p.get("name")])
     return {"title": title, "places": places, "timings": timer.as_dict()}
 

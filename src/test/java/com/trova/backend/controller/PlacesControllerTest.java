@@ -510,4 +510,17 @@ class PlacesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].jobId").value(job.getId()));
     }
+
+    @Test
+    void 게시물에서_영상도_사진도_받지_못한_작업은_failureReason이_NO_MEDIA다() throws Exception {
+        User me = userRepository.save(new User("google", "nomedia1", "게시물유저", null));
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(me, "https://www.instagram.com/p/nm1/", SourcePlatform.INSTAGRAM));
+        job.markFailed(ProcessingJob.NO_MEDIA_MESSAGE);
+        processingJobRepository.save(job);
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("nomedia1", "게시물유저")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].failureReason").value("NO_MEDIA"));
+    }
 }

@@ -92,7 +92,8 @@ public class PlacesController {
                     foundPlaceNames,
                     job.isNoPlacesFailure() ? "NO_PLACES"
                             : job.isAiQuotaFailure() ? "AI_QUOTA"
-                            : job.isSourceRateLimitFailure() ? "SOURCE_RATE_LIMITED" : null
+                            : job.isSourceRateLimitFailure() ? "SOURCE_RATE_LIMITED"
+                            : job.isNoMediaFailure() ? "NO_MEDIA" : null
             );
         }
     }
