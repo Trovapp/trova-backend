@@ -185,4 +185,18 @@ class PipelineOutputParserTest {
         assertThat(output.places().get(0).address()).isEqualTo("부산 해운대구 우동1로 45 1층");
         assertThat(output.places().get(1).address()).isNull();
     }
+
+    @Test
+    void 단계별_시간을_함께_파싱하고_없으면_빈_값으로_둔다() {
+        // #194: 추출 41초 중 어디가 느린지 — 파이썬이 단계마다 밀리초를 돌려준다.
+        PipelineOutput withTimings = PipelineOutputParser.parse("""
+                {"title": "t", "places": [], "timings": {"download": 28100, "frames": 1200, "gemini": 10600}}
+                """);
+        assertThat(withTimings.timings()).containsEntry("download", 28100L).containsEntry("gemini", 10600L);
+
+        PipelineOutput without = PipelineOutputParser.parse("""
+                {"title": "t", "places": []}
+                """);
+        assertThat(without.timings()).isEmpty();
+    }
 }

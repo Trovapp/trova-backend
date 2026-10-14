@@ -21,6 +21,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.BeforeEach;
+import com.trova.backend.pipeline.PipelineStageMetrics;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -67,7 +69,8 @@ class PlaceExtractionServiceTest {
 
     private PlaceExtractionService serviceWith(Executor geocodingTaskExecutor) {
         return new PlaceExtractionService(lifecycleService, pipelineRunner, kakaoGeocodingService,
-                placeSelectionRunner, placeVerificationRunner, foundPlaceNameStore, autoDraftService, geocodingTaskExecutor);
+                placeSelectionRunner, placeVerificationRunner, foundPlaceNameStore, autoDraftService, geocodingTaskExecutor,
+                new PipelineStageMetrics(new SimpleMeterRegistry()));
     }
 
     @Test

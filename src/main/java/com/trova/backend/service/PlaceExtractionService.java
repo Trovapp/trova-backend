@@ -8,6 +8,7 @@ import com.trova.backend.geocoding.KakaoKeywordSearchResponse;
 import com.trova.backend.pipeline.ExtractedPlace;
 import com.trova.backend.pipeline.PipelineOutput;
 import com.trova.backend.pipeline.PipelineRunner;
+import com.trova.backend.pipeline.PipelineStageMetrics;
 import com.trova.backend.pipeline.PlaceSelection;
 import com.trova.backend.pipeline.PlaceSelectionRunner;
 import com.trova.backend.pipeline.PlaceVerification;
@@ -43,6 +44,7 @@ public class PlaceExtractionService {
     private final FoundPlaceNameStore foundPlaceNameStore;
     private final AutoDraftService autoDraftService;
     private final Executor geocodingTaskExecutor;
+    private final PipelineStageMetrics stageMetrics;
 
     public PlaceExtractionService(
             ProcessingJobLifecycleService lifecycleService,
@@ -52,7 +54,8 @@ public class PlaceExtractionService {
             PlaceVerificationRunner placeVerificationRunner,
             FoundPlaceNameStore foundPlaceNameStore,
             AutoDraftService autoDraftService,
-            @Qualifier("geocodingTaskExecutor") Executor geocodingTaskExecutor
+            @Qualifier("geocodingTaskExecutor") Executor geocodingTaskExecutor,
+            PipelineStageMetrics stageMetrics
     ) {
         this.lifecycleService = lifecycleService;
         this.pipelineRunner = pipelineRunner;
@@ -62,6 +65,7 @@ public class PlaceExtractionService {
         this.foundPlaceNameStore = foundPlaceNameStore;
         this.autoDraftService = autoDraftService;
         this.geocodingTaskExecutor = geocodingTaskExecutor;
+        this.stageMetrics = stageMetrics;
     }
 
     @Async("pipelineTaskExecutor")
@@ -81,6 +85,11 @@ public class PlaceExtractionService {
                 }
             });
             log.info("ProcessingJob {} 파이프라인 완료: {}개 장소 추출", jobId, output.places().size());
+            // 추출 시간 중 어디가 느린지(#194) — 받기·오디오·화면·Gemini를 로그 한 줄과 지표로.
+            String stageLine = stageMetrics.record(jobId, output.timings());
+            if (stageLine != null) {
+                log.info("ProcessingJob {} 단계 시간: {}", jobId, stageLine);
+            }
 
             lifecycleService.setTitle(jobId, output.title());
 
