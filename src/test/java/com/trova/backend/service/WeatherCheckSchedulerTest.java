@@ -2,6 +2,9 @@ package com.trova.backend.service;
 
 import com.trova.backend.repository.ItineraryRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,5 +35,13 @@ class WeatherCheckSchedulerTest {
         scheduler.checkUpcomingItineraries();
 
         verify(itineraryRepository).findByDateBetween(LocalDate.of(2026, 9, 29), LocalDate.of(2026, 10, 4));
+    }
+
+    @Test
+    void 날씨_확인은_한국_시간_8_12_16_20시에만_돈다() throws Exception {
+        Scheduled scheduled = WeatherCheckScheduler.class.getMethod("checkUpcomingItineraries")
+                .getAnnotation(Scheduled.class);
+        assertThat(scheduled.cron()).isEqualTo("0 0 8,12,16,20 * * *");
+        assertThat(scheduled.zone()).isEqualTo("Asia/Seoul");
     }
 }
