@@ -56,4 +56,12 @@ class VapidKeysTest {
         VapidKeys keys = new VapidKeys("not-a-key", "also-wrong", "mailto:a@b.c");
         assertThat(keys.isEnabled()).isFalse();
     }
+
+    @Test
+    void 공개_키와_비공개_키가_짝이_아니면_알림을_끈다() throws Exception {
+        // 형식만 맞으면 켜진 채 떠서 모든 발송이 403이 될 수 있었다(#200) — 운영 .env 복사 실수 대비.
+        String[] a = newKeys();
+        String[] b = newKeys();
+        assertThat(new VapidKeys(a[0], b[1], "mailto:a@b.c").isEnabled()).isFalse();
+    }
 }

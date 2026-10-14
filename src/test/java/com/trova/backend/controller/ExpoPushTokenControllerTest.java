@@ -123,4 +123,21 @@ class ExpoPushTokenControllerTest {
                 .contentType(MediaType.APPLICATION_JSON).content(body(TOKEN))).andExpect(status().isNoContent());
         assertThat(tokens.findByToken(TOKEN)).isEmpty();
     }
+
+    @Test
+    void 다른_사람에게서_옮겨_온_토큰도_10개_제한을_지킨다() throws Exception {
+        // 옮겨 오는 경로는 정리를 건너뛰어 새 주인의 토큰이 11개가 될 수 있었다(#200).
+        User a = user("expo-a");
+        User b = user("expo-b");
+        tokens.save(new ExpoPushToken(a.getId(), TOKEN));
+        for (int i = 0; i < 10; i++) {
+            mockMvc.perform(post("/api/push/expo-tokens").with(appToken(b))
+                    .contentType(MediaType.APPLICATION_JSON).content(body("ExponentPushToken[b-device-number-" + i + "]")))
+                    .andExpect(status().isNoContent());
+        }
+        mockMvc.perform(post("/api/push/expo-tokens").with(appToken(b))
+                .contentType(MediaType.APPLICATION_JSON).content(body(TOKEN))).andExpect(status().isNoContent());
+
+        assertThat(tokens.findByUserId(b.getId())).hasSize(10).extracting(ExpoPushToken::getToken).contains(TOKEN);
+    }
 }

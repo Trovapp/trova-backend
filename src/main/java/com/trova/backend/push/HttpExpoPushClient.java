@@ -34,8 +34,25 @@ public class HttpExpoPushClient implements ExpoPushClient {
         if (response.statusCode() != 200) {
             return new Response(response.statusCode(), List.of());
         }
+        return new Response(200, parseTickets(response.body()));
+    }
+
+    /**
+     * 티켓 배열을 보낸 순서대로 오류 코드(성공은 null)로. data가 배열이 아니면(형식이 다르거나 요청 전체 오류) 빈 목록 —
+     * 서비스가 모자란 티켓을 실패로 센다. 하나짜리 객체의 칸들을 티켓처럼 세어 성공으로 잘못 세지 않게(#200).
+     */
+    static List<String> parseTickets(String body) {
         List<String> errors = new ArrayList<>();
-        for (JsonNode ticket : MAPPER.readTree(response.body()).path("data")) {
+        JsonNode data;
+        try {
+            data = MAPPER.readTree(body).path("data");
+        } catch (Exception e) {
+            return errors;
+        }
+        if (!data.isArray()) {
+            return errors;
+        }
+        for (JsonNode ticket : data) {
             if ("error".equals(ticket.path("status").asText())) {
                 String code = ticket.path("details").path("error").asText("");
                 errors.add(code.isEmpty() ? ticket.path("message").asText("error") : code);
@@ -43,6 +60,6 @@ public class HttpExpoPushClient implements ExpoPushClient {
                 errors.add(null);
             }
         }
-        return new Response(200, errors);
+        return errors;
     }
 }
