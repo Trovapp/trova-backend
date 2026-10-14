@@ -1,13 +1,12 @@
 package com.trova.backend.controller;
 
-import com.trova.backend.entity.PushSubscription;
 import com.trova.backend.entity.User;
+import com.trova.backend.push.PushSubscriptionService;
 import com.trova.backend.push.VapidKeys;
 import com.trova.backend.repository.PushSubscriptionRepository;
 import com.trova.backend.service.CurrentUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,12 +29,14 @@ public class PushController {
 
     private final VapidKeys vapidKeys;
     private final PushSubscriptionRepository subscriptions;
+    private final PushSubscriptionService subscriptionService;
     private final CurrentUserService currentUserService;
 
     public PushController(VapidKeys vapidKeys, PushSubscriptionRepository subscriptions,
-                          CurrentUserService currentUserService) {
+                          PushSubscriptionService subscriptionService, CurrentUserService currentUserService) {
         this.vapidKeys = vapidKeys;
         this.subscriptions = subscriptions;
+        this.subscriptionService = subscriptionService;
         this.currentUserService = currentUserService;
     }
 
@@ -49,16 +50,12 @@ public class PushController {
     }
 
     @PostMapping("/api/push/subscriptions")
-    @Transactional
     public ResponseEntity<Void> subscribe(Authentication authentication, @RequestBody SubscribeRequest request) {
         User user = currentUserService.resolve(authentication);
         if (!isValid(request)) {
             return ResponseEntity.badRequest().build();
         }
-        subscriptions.findByEndpoint(request.endpoint()).ifPresentOrElse(
-                existing -> existing.reassign(user.getId(), request.keys().p256dh(), request.keys().auth()),
-                () -> subscriptions.save(new PushSubscription(
-                        user.getId(), request.endpoint(), request.keys().p256dh(), request.keys().auth())));
+        subscriptionService.upsert(user.getId(), request.endpoint(), request.keys().p256dh(), request.keys().auth());
         return ResponseEntity.noContent().build();
     }
 
