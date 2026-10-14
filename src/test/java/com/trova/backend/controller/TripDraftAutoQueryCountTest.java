@@ -137,4 +137,26 @@ class TripDraftAutoQueryCountTest {
         System.out.println("[#139] 자동 초안 목록 쿼리 수: 초안 1개=" + withOne + ", 초안 8개=" + withEight);
         assertThat(withEight).isEqualTo(withOne);
     }
+
+    @Test
+    void 자동초안_목록의_쿼리_수는_저장한_영상_수와도_상관없다() throws Exception {
+        // 예전엔 "이미 여행이 된 영상"을 가리려고 사용자의 모든 영상과 저장 장소를 읽었다(#204, 로컬 중앙값 0.32초).
+        User few = userRepository.save(new User("google", "autoq3", "쿼리유저3", null));
+        readyAutoDraft(few, "https://youtu.be/AutoQ300", "영상0");
+        long withFew = queriesForAutoList("autoq3", "쿼리유저3");
+
+        User lots = userRepository.save(new User("google", "autoq4", "쿼리유저4", null));
+        readyAutoDraft(lots, "https://youtu.be/AutoQ400", "영상0");
+        for (int i = 0; i < 12; i++) {
+            ProcessingJob job = videoJob(lots, "https://youtu.be/AutoQ41" + i, "다른 영상" + i);
+            savedPlaceRepository.save(new SavedPlace(job, lots, "장소" + i, "서울", "attraction", 37.5, 127.0));
+            savedPlaceRepository.save(new SavedPlace(job, lots, "장소b" + i, "서울", "cafe", 37.5, 127.0));
+        }
+        long withLots = queriesForAutoList("autoq4", "쿼리유저4");
+
+        System.out.println("[#204] 자동 초안 목록 쿼리 수: 영상 1개=" + withFew + ", 영상 13개=" + withLots);
+        assertThat(withLots).isEqualTo(withFew);
+        // 사용자 확인 1 + 초안 1 + 영상 1 + 여행에 들어간 영상 주소 1 — 영상·장소 전체를 읽던 3번을 1번으로.
+        assertThat(withLots).isLessThanOrEqualTo(4);
+    }
 }
