@@ -32,6 +32,8 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+	// PWA 웹 푸시(ADR 0016) — 의존성 없는 VAPID·암호화 라이브러리, HTTP는 Java 기본 HttpClient.
+	implementation 'com.zerodeplibs:zerodep-web-push-java:2.1.5'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
