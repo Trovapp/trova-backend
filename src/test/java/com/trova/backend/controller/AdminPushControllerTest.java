@@ -1,6 +1,7 @@
 package com.trova.backend.controller;
 
 import com.trova.backend.entity.AdminActionLog;
+import com.trova.backend.push.ExpoPushService;
 import com.trova.backend.push.PushNotificationService;
 import com.trova.backend.repository.AdminActionLogRepository;
 import com.trova.backend.repository.UserRepository;
@@ -50,6 +51,9 @@ class AdminPushControllerTest {
     @MockitoBean
     private PushNotificationService pushNotificationService;
 
+    @MockitoBean
+    private ExpoPushService expoPushService;
+
     @Test
     void 관리자가_아니면_403() throws Exception {
         mockMvc.perform(post("/api/admin/push/test")
@@ -63,11 +67,14 @@ class AdminPushControllerTest {
     void 관리자_본인에게_고른_문구로_보내고_기록한다() throws Exception {
         when(pushNotificationService.sendToUser(anyLong(), eq("test-rain"), any()))
                 .thenReturn(new PushNotificationService.Result(1, 0, 0));
+        when(expoPushService.sendToUser(anyLong(), eq("test-rain"), any()))
+                .thenReturn(new PushNotificationService.Result(2, 1, 0));
         mockMvc.perform(post("/api/admin/push/test")
                         .with(AdminWebAuth.adminWebToken(jwtService, userRepository, "push-admin"))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"kind\":\"rain\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.sent").value(1));
+                .andExpect(jsonPath("$.sent").value(3))
+                .andExpect(jsonPath("$.removed").value(1));
 
         Long adminId = userRepository.findByProviderAndProviderUserId("google", "push-admin").orElseThrow().getId();
         verify(pushNotificationService).sendToUser(eq(adminId), eq("test-rain"), any());
