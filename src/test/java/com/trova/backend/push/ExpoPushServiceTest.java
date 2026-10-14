@@ -112,4 +112,16 @@ class ExpoPushServiceTest {
         assertThat(result.failed()).isEqualTo(1);
         verify(repository, never()).deleteByIdAndUserId(anyLong(), anyLong());
     }
+
+    @Test
+    void 티켓_수가_모자라면_모자란_토큰은_실패로_센다() {
+        when(repository.findByUserId(7L)).thenReturn(List.of(token(1, "ExponentPushToken[a1234567890]"),
+                token(2, "ExponentPushToken[b1234567890]")));
+        client.answers.add(new ExpoPushClient.Response(200, List.of()));
+
+        PushNotificationService.Result result = service.sendToUser(7L, "draft", message);
+
+        assertThat(result.failed()).isEqualTo(2);
+        assertThat(result.sent()).isZero();
+    }
 }

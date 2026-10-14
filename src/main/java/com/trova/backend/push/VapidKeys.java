@@ -2,13 +2,20 @@ package com.trova.backend.push;
 
 import com.zerodeplibs.webpush.VAPIDKeyPair;
 import com.zerodeplibs.webpush.VAPIDKeyPairs;
+import com.zerodeplibs.webpush.key.PrivateKeySource;
 import com.zerodeplibs.webpush.key.PrivateKeySources;
+import com.zerodeplibs.webpush.key.PublicKeySource;
 import com.zerodeplibs.webpush.key.PublicKeySources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
 import java.util.Base64;
 
 /**
@@ -38,12 +45,34 @@ public class VapidKeys {
             return null;
         }
         try {
-            return VAPIDKeyPairs.of(
-                    PrivateKeySources.ofPKCS8Bytes(Base64.getDecoder().decode(privateKey)),
-                    PublicKeySources.ofUncompressedBytes(Base64.getUrlDecoder().decode(publicKey)));
+            PrivateKeySource privateSource = PrivateKeySources.ofPKCS8Bytes(Base64.getDecoder().decode(privateKey));
+            PublicKeySource publicSource = PublicKeySources.ofUncompressedBytes(Base64.getUrlDecoder().decode(publicKey));
+            if (!isPair(privateSource.extract(), publicSource.extract())) {
+                // 짝이 아니면 켜진 채 떠서 모든 발송이 403이 된다(#200) — 운영 .env 복사 실수 대비.
+                log.warn("웹 푸시 꺼짐: VAPID 공개 키와 비공개 키가 짝이 아니에요");
+                return null;
+            }
+            return VAPIDKeyPairs.of(privateSource, publicSource);
         } catch (RuntimeException e) {
             log.warn("웹 푸시 꺼짐: VAPID 키 형식이 올바르지 않아요({})", e.getClass().getSimpleName());
             return null;
+        }
+    }
+
+    /** 비공개 키로 서명한 것을 공개 키로 검증해 본다. */
+    private static boolean isPair(PrivateKey privateKey, PublicKey publicKey) {
+        try {
+            byte[] probe = "trova-vapid-check".getBytes(StandardCharsets.UTF_8);
+            Signature signer = Signature.getInstance("SHA256withECDSA");
+            signer.initSign(privateKey);
+            signer.update(probe);
+            byte[] signature = signer.sign();
+            Signature verifier = Signature.getInstance("SHA256withECDSA");
+            verifier.initVerify(publicKey);
+            verifier.update(probe);
+            return verifier.verify(signature);
+        } catch (GeneralSecurityException e) {
+            return false;
         }
     }
 

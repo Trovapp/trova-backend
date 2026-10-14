@@ -155,4 +155,20 @@ class PushControllerTest {
                 .doesNotContain("https://fcm.googleapis.com/fcm/send/d0", "https://fcm.googleapis.com/fcm/send/d1")
                 .contains("https://fcm.googleapis.com/fcm/send/d11");
     }
+
+    @Test
+    void 다른_사람에게서_옮겨_온_구독도_10개_제한을_지킨다() throws Exception {
+        User a = user("push-a");
+        User b = user("push-b");
+        subscriptions.save(new PushSubscription(a.getId(), EP, "pk", "au"));
+        for (int i = 0; i < 10; i++) {
+            mockMvc.perform(post("/api/push/subscriptions").with(appToken(b))
+                    .contentType(MediaType.APPLICATION_JSON).content(body("https://fcm.googleapis.com/fcm/send/b" + i)))
+                    .andExpect(status().isNoContent());
+        }
+        mockMvc.perform(post("/api/push/subscriptions").with(appToken(b))
+                .contentType(MediaType.APPLICATION_JSON).content(body(EP))).andExpect(status().isNoContent());
+
+        assertThat(subscriptions.findByUserId(b.getId())).hasSize(10).extracting(PushSubscription::getEndpoint).contains(EP);
+    }
 }
