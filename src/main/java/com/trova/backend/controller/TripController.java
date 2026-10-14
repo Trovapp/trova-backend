@@ -431,9 +431,9 @@ public class TripController {
                 .filter(trip -> trip.getUser().getId().equals(user.getId()))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .map(itinerary -> {
-                    boolean notified = weatherRecoveryService.checkAndNotify(itinerary).isPresent();
-                    String message = notified ? "비 소식이 있어 알림을 만들었어요" : "알림을 만들 조건이 아니에요(비 소식 없음/실외 장소 없음/이미 알림 있음)";
-                    return ResponseEntity.ok(new WeatherCheckResponse(notified, message));
+                    // 이유 하나만 사람이 읽는 문장으로(#202) — 예전엔 "알림을 만들 조건이 아니에요(비 소식 없음/…)".
+                    WeatherRecoveryService.Check check = weatherRecoveryService.check(itinerary);
+                    return ResponseEntity.ok(new WeatherCheckResponse(check.notification() != null, check.message()));
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
