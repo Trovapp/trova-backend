@@ -29,9 +29,10 @@ public interface TripPlaceRepository extends JpaRepository<TripPlace, Long> {
     // 있는지 확인하는 용도 — confirm-trip 중복 제출 방지에 쓴다.
     Optional<TripPlace> findFirstBySavedPlaceIdIn(List<Long> savedPlaceIds);
 
-    // 홈의 자동 초안 목록(#139) — 영상 장소 중 이미 이 사용자의 여행에 들어간 것을 한 번에 고른다.
-    @Query("select distinct tp.savedPlaceId from TripPlace tp "
-            + "where tp.savedPlaceId in :ids and tp.itinerary.trip.user = :user")
-    List<Long> findSavedPlaceIdsInTripsOf(@Param("ids") Collection<Long> savedPlaceIds,
-                                          @Param("user") User user);
+
+    // 자동 초안 목록(#204) — 이 사용자의 여행에 들어간 영상 장소들의 원본 영상 주소만. 예전엔 사용자의 영상·저장 장소
+    // 전체를 엔티티로 읽은 뒤 걸렀다(쿼리 3번 + 큰 칸들).
+    @Query("select distinct sp.processingJob.sourceUrl from TripPlace tp, SavedPlace sp "
+            + "where tp.savedPlaceId = sp.id and tp.itinerary.trip.user = :user and sp.user = :user")
+    List<String> findSourceUrlsInTripsOf(@Param("user") User user);
 }

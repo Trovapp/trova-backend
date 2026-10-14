@@ -475,16 +475,9 @@ public class TripService {
         if (jobs.isEmpty()) {
             return java.util.Set.of();
         }
-        List<ProcessingJob> userJobs = processingJobRepository.findByUserOrderByCreatedAtDescIdDesc(user);
-        List<SavedPlace> places = savedPlaceRepository.findByProcessingJobIn(userJobs);
-        if (places.isEmpty()) {
-            return java.util.Set.of();
-        }
-        java.util.Set<Long> inTrips = new java.util.HashSet<>(tripPlaceRepository.findSavedPlaceIdsInTripsOf(
-                places.stream().map(SavedPlace::getId).toList(), user));
-        java.util.Set<String> trippedKeys = places.stream()
-                .filter(p -> inTrips.contains(p.getId()))
-                .map(p -> VideoKey.of(p.getProcessingJob().getSourceUrl()))
+        // 같은 영상을 다시 분석한 작업도 같은 영상으로 본다(VideoKey) — 여행에 들어간 장소의 영상 주소만 한 번에 읽는다(#204).
+        java.util.Set<String> trippedKeys = tripPlaceRepository.findSourceUrlsInTripsOf(user).stream()
+                .map(VideoKey::of)
                 .collect(java.util.stream.Collectors.toSet());
         return jobs.stream()
                 .filter(job -> trippedKeys.contains(VideoKey.of(job.getSourceUrl())))
