@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,15 +57,21 @@ public class PushNotificationService {
         int removed = 0;
         int failed = 0;
         for (PushSubscription subscription : targets) {
-            int status = sendWithRetry(subscription, payload, message.tag());
-            if (status >= 200 && status < 300) {
-                subscription.markSuccess();
-                repository.save(subscription);
-                sent++;
-            } else if (status == 404 || status == 410) {
-                repository.delete(subscription);
-                removed++;
-            } else {
+            // 한 기기에서 무슨 일이 나도 나머지 기기에는 계속 보낸다. 저장은 조건부 한 칸 갱신·삭제로 —
+            // 보내는 동안 같은 기기에 다른 사람이 로그인했거나(로그아웃으로) 지워졌을 수 있다.
+            try {
+                int status = sendWithRetry(subscription, payload, message.tag());
+                if (status >= 200 && status < 300) {
+                    repository.markSuccess(subscription.getId(), userId, LocalDateTime.now());
+                    sent++;
+                } else if (status == 404 || status == 410) {
+                    repository.deleteByIdAndUserId(subscription.getId(), userId);
+                    removed++;
+                } else {
+                    failed++;
+                }
+            } catch (RuntimeException e) {
+                log.warn("웹 푸시 처리 오류: subscriptionId={} {}", subscription.getId(), e.getClass().getSimpleName());
                 failed++;
             }
         }

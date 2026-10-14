@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -69,8 +71,7 @@ class PushNotificationServiceTest {
         PushNotificationService.Result result = service.sendToUser(7L, "draft", message);
 
         assertThat(result.sent()).isEqualTo(1);
-        assertThat(a.getLastSuccessAt()).isNotNull();
-        verify(repository).save(a);
+        verify(repository).markSuccess(eq(a.getId()), eq(7L), any());
         Map<String, Object> json = new ObjectMapper().readValue(transport.lastPayload, new TypeReference<Map<String, Object>>() { });
         assertThat(json).containsEntry("title", "제목").containsEntry("open", "draft:1").containsEntry("tag", "draft-1");
     }
@@ -88,7 +89,7 @@ class PushNotificationServiceTest {
 
         assertThat(result.removed()).isEqualTo(1);
         assertThat(result.sent()).isEqualTo(1);
-        verify(repository).delete(gone);
+        verify(repository).deleteByIdAndUserId(gone.getId(), 7L);
     }
 
     @Test
@@ -114,6 +115,6 @@ class PushNotificationServiceTest {
 
         assertThat(transport.calls).hasSize(2);
         assertThat(result.failed()).isEqualTo(1);
-        verify(repository, never()).delete(a);
+        verify(repository, never()).deleteByIdAndUserId(a.getId(), 7L);
     }
 }
