@@ -214,4 +214,67 @@ class WeatherRecoveryServiceTest {
         assertThat(result).isEmpty();
         verifyNoInteractions(notificationRepository, tripPlaceRepository, openWeatherApiClient);
     }
+
+    // ---- 날씨 확인 결과를 이유 하나로(#202) ----
+
+    @Test
+    void 비_소식이_없으면_가장_높은_강수확률과_함께_알려준다() {
+        setUp();
+        when(notificationRepository.findByItinerary(itinerary)).thenReturn(Optional.empty());
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(outdoorPlace("OUTDOOR")));
+        when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
+                forecastAtKst("2026-10-01T12:00", 0.2))));
+
+        WeatherRecoveryService.Check check = service.check(itinerary);
+
+        assertThat(check.outcome()).isEqualTo(WeatherRecoveryService.Outcome.NO_RAIN);
+        assertThat(check.message()).isEqualTo("이날은 비 소식이 없어요(강수확률 최고 20%).");
+    }
+
+    @Test
+    void 실외_장소가_없으면_비가_와도_괜찮다고_알려준다() {
+        setUp();
+        when(notificationRepository.findByItinerary(itinerary)).thenReturn(Optional.empty());
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(outdoorPlace("INDOOR")));
+
+        assertThat(service.check(itinerary).message()).isEqualTo("이날 일정은 모두 실내라 비가 와도 괜찮아요.");
+    }
+
+    @Test
+    void 예보_범위_밖이면_아직_예보가_없다고_알려준다() {
+        setUp();
+        when(notificationRepository.findByItinerary(itinerary)).thenReturn(Optional.empty());
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(outdoorPlace("OUTDOOR")));
+        when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
+                forecastAtKst("2026-09-20T12:00", 0.9))));
+
+        assertThat(service.check(itinerary).message()).isEqualTo("아직 이날 예보가 없어요. 5일 안으로 다가오면 다시 확인해 주세요.");
+    }
+
+    @Test
+    void 이미_알림이_있으면_알림에서_보라고_알려준다() {
+        setUp();
+        when(notificationRepository.findByItinerary(itinerary)).thenReturn(
+                Optional.of(new Notification(user, itinerary, "t", "b", 0.9, 1L)));
+
+        assertThat(service.check(itinerary).message()).isEqualTo("이미 비 소식 알림이 있어요. 알림에서 실내 대안을 볼 수 있어요.");
+    }
+
+    @Test
+    void 알림을_만들면_앱_안_알림도_사람이_읽는_날짜로() {
+        setUp();
+        TripPlace place = outdoorPlace("OUTDOOR");
+        setId(place, 42L);
+        when(notificationRepository.findByItinerary(itinerary)).thenReturn(Optional.empty());
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(place));
+        when(openWeatherApiClient.forecast(35.15, 129.16)).thenReturn(new OpenWeatherForecastResponse(List.of(
+                forecastAtKst("2026-10-01T12:00", 0.8))));
+        when(notificationRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        WeatherRecoveryService.Check check = service.check(itinerary);
+
+        assertThat(check.outcome()).isEqualTo(WeatherRecoveryService.Outcome.NOTIFIED);
+        assertThat(check.notification().getBody()).isEqualTo("10월 1일(목) 강수확률 80%예요. 해운대 근처 실내 대안을 확인해보세요.");
+        assertThat(check.message()).isEqualTo("비 소식이 있어 알림을 만들었어요. 알림에서 실내 대안을 볼 수 있어요.");
+    }
 }
