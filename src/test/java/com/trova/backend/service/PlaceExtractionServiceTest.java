@@ -192,6 +192,19 @@ class PlaceExtractionServiceTest {
     }
 
     @Test
+    void 장소를_소개하지_않는_콘텐츠면_정해진_문구로_기록한다() {
+        // #206: 제품 광고·요리·일상 — 다시 해도 같아 앱이 [다시 시도] 대신 이유를 보여준다.
+        Long jobId = 8L;
+        when(lifecycleService.markProcessing(jobId)).thenReturn("https://www.instagram.com/reel/ad/");
+        when(pipelineRunner.run(eq("https://www.instagram.com/reel/ad/"), eq(jobId), any())).thenThrow(new PipelineException(
+                "파이프라인 실행 실패(exit=1): NOT_PLACE_CONTENT 장소를 소개하는 콘텐츠가 아님 (후보 1개)"));
+
+        placeExtractionService.process(jobId);
+
+        verify(lifecycleService).markAnalysisFailed(jobId, ProcessingJob.NOT_PLACE_CONTENT_MESSAGE);
+    }
+
+    @Test
     void 장소별_후보_검색은_동시에_보낸다() throws Exception {
         // 순서대로 보내면 첫 검색이 둘째 검색을 기다리다 시간 초과로 끝난다 — 둘 다 동시에 들어와야 통과(#7).
         Long jobId = 7L;
