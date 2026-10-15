@@ -29,6 +29,8 @@ public class PipelineRunner {
     public static final String SOURCE_RATE_LIMIT_MARKER = "SOURCE_RATE_LIMITED";
     // 인스타 게시물에서 영상도 사진도 받지 못함(#196) — run_pipeline.py NO_MEDIA_MARKER와 같아야 한다.
     public static final String NO_MEDIA_MARKER = "NO_MEDIA";
+    // 장소를 소개하지 않는 콘텐츠(#206) — extract_places.py NOT_PLACE_CONTENT_MARKER와 같아야 한다.
+    public static final String NOT_PLACE_CONTENT_MARKER = "NOT_PLACE_CONTENT";
     private static final long PROGRESS_POLL_MILLIS = 500;
     private static final long STDOUT_JOIN_TIMEOUT_MILLIS = 30_000;
 

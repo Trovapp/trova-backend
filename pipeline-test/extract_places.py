@@ -25,8 +25,13 @@ COLLECT_PROMPT = """당신은 여행 영상 자막/음성/화면 텍스트에서
 상호명인지 구분하지 말고, 장소처럼 들리거나 화면에 보이는 고유명사는 전부 후보로
 넣으세요. 같은 곳이 여러 번 언급돼도 중복 없이 한 번만 넣으세요.
 
-JSON 배열(문자열 목록)만 출력하세요. 예: ["부산", "해운대", "서면", "황금집"]
-후보가 전혀 없으면 빈 배열 []을 반환하세요. JSON 배열 외의 다른 텍스트는 출력하지 마세요.
+먼저 이 콘텐츠가 가 볼 만한 장소(여행지·맛집·카페·가게·숙소·데이트 코스 등)를 소개하거나
+직접 방문하는 내용인지 판단하세요(isPlaceContent). 옷·화장품·전자제품 같은 제품 소개나 광고, 요리법,
+장소를 소개하지 않는 일상·정보·뉴스면 false입니다. 이런 콘텐츠에 브랜드·매장 이름이 나와도 장소 소개가 아닙니다.
+애매하면 true로 두세요.
+
+JSON 객체 하나만 출력하세요. 예: {"isPlaceContent": true, "candidates": ["부산", "해운대", "서면", "황금집"]}
+후보가 전혀 없으면 "candidates"를 빈 배열 []로 두세요. JSON 외의 다른 텍스트는 출력하지 마세요.
 """
 
 FILTER_PROMPT = """당신은 여행 영상 자막/음성/화면 텍스트에서 지도에 저장할 만한 구체적인 장소를 추출하는 도구입니다.
@@ -44,6 +49,8 @@ FILTER_PROMPT = """당신은 여행 영상 자막/음성/화면 텍스트에서 
   단, "해운대"처럼 그 안의 동네/랜드마크가 함께 언급됐다면 그 동네/랜드마크만 name으로 쓰고,
   상위 지역명은 region 필드에 넣으세요.
 - 일반명사만 있고 고유명사가 없는 경우 (예: "카페", "시장" 단독)는 제외하세요.
+- 브랜드·제품 이름(예: 옷·화장품 브랜드)은 그 매장의 위치(지점)를 직접 소개할 때만 장소로 넣고,
+  협찬·광고·제품 소개로 이름만 나오면 제외하세요.
 - 공항/지하철역/기차역/버스터미널/여객터미널/항구/버스정류장 등 교통 시설이 "~에 도착해서",
   "~에서 출발", "~에서 내려서", "~까지 타고 가서", "~에서 환승"처럼 여행의 출발·도착·경유로만
   언급됐다면 제외하세요(예: "김해공항에 도착해서", "KTX 타고 묵호에 도착"). 그 시설 자체가 이번
@@ -211,6 +218,8 @@ def _normalize_name_candidates(places: list[dict]) -> list[dict]:
 MAX_ATTEMPTS = 5
 # 하루 한도(RPD) 소진 표식 — 서버(PlaceExtractionService)가 이 문자열로 "AI 한도" 실패를 구분한다(#63).
 DAILY_QUOTA_MARKER = "GEMINI_DAILY_QUOTA_EXCEEDED"
+# 장소를 소개하는 콘텐츠가 아님(#206) — 2차를 부르지 않고 멈춘다. 서버(PipelineRunner)와 문자열이 같아야 한다.
+NOT_PLACE_CONTENT_MARKER = "NOT_PLACE_CONTENT"
 # 분당 한도에 걸렸을 때 응답이 알려준 대기 시간을 이 이상이면 따르지 않는다(작업 하나가 너무 오래 붙잡히지 않게).
 MAX_SUGGESTED_RETRY_DELAY = 60.0
 RETRY_BASE_DELAY = 5.0  # 무료 티어 RPM 제한 대응 — 429/일시 오류 시 지수 백오프
@@ -361,6 +370,23 @@ def call_gemini_with_repair(parts: list[dict], model: str, api_key: str, operati
             raise SystemExit(f"self-repair 재질의 이후에도 실패: {second_error}")
 
 
+def parse_collect(text: str) -> tuple[bool, list[str]]:
+    """1차 응답 → (장소 소개 콘텐츠인가, 후보). 예전 형식(배열만)이나 판정 칸이 없거나 이상하면 장소 소개로 본다 —
+    장소 영상을 잘못 거르는 쪽이 더 나쁘다(#206)."""
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        raise ValueError(f"유효한 JSON이 아님: {text[:500]}")
+    if isinstance(data, list):
+        return True, data
+    if not isinstance(data, dict):
+        raise ValueError(f"응답이 객체가 아님: {text[:500]}")
+    candidates = data.get("candidates")
+    if not isinstance(candidates, list):
+        candidates = []
+    return data.get("isPlaceContent") is not False, candidates
+
+
 def collect_candidates(
     transcript: str | None,
     audio_path: Path | None,
@@ -370,22 +396,13 @@ def collect_candidates(
     video_uri: str | None = None,
     post_description: str | None = None,
     photo_post: bool = False,
-) -> list[str]:
-    """1단계: 필터링 없이 장소일 가능성이 있는 고유명사를 최대한 후하게 나열한다."""
-    def _parse(text: str) -> list[str]:
-        try:
-            candidates = json.loads(text)
-        except json.JSONDecodeError:
-            raise ValueError(f"유효한 JSON이 아님: {text[:500]}")
-        if not isinstance(candidates, list):
-            raise ValueError(f"응답이 배열이 아님: {text[:500]}")
-        return candidates
-
+) -> tuple[bool, list[str]]:
+    """1단계: 장소 소개 콘텐츠인지 판정하고, 장소일 가능성이 있는 고유명사를 최대한 후하게 나열한다."""
     parts = build_parts(
         transcript, audio_path, frame_paths, prompt=COLLECT_PROMPT, video_uri=video_uri,
         post_description=post_description, photo_post=photo_post,
     )
-    return call_gemini_with_repair(parts, model, api_key, "extract_places.collect", _parse)
+    return call_gemini_with_repair(parts, model, api_key, "extract_places.collect", parse_collect)
 
 
 def extract_places(
@@ -401,10 +418,13 @@ def extract_places(
         raise ValueError("transcript, audio_path, frame_paths, video_uri 중 하나는 필요합니다")
     api_key = load_api_key()
 
-    candidates = collect_candidates(
+    is_place_content, candidates = collect_candidates(
         transcript, audio_path, frame_paths, model, api_key, video_uri=video_uri, post_description=post_description,
         photo_post=photo_post,
     )
+    if not is_place_content:
+        # 제품 광고·요리·일상처럼 장소를 소개하지 않는 콘텐츠 — 2차(거르기)를 부르지 않는다(Gemini 1번 절약, #206).
+        raise SystemExit(f"{NOT_PLACE_CONTENT_MARKER} 장소를 소개하는 콘텐츠가 아님 (후보 {len(candidates)}개)")
 
     def _parse(text: str) -> list[dict]:
         try:

@@ -30,4 +30,11 @@ class DailyQuotaMarkerTest {
 
         assertThat(script).contains("NO_MEDIA_MARKER = \"" + PipelineRunner.NO_MEDIA_MARKER + "\"");
     }
+
+    @Test
+    void 파이프라인_스크립트와_서버의_장소_소개_아님_표식이_같다() throws Exception {
+        String script = Files.readString(Path.of("pipeline-test/extract_places.py"));
+
+        assertThat(script).contains("NOT_PLACE_CONTENT_MARKER = \"" + PipelineRunner.NOT_PLACE_CONTENT_MARKER + "\"");
+    }
 }

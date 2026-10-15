@@ -523,4 +523,17 @@ class PlacesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].failureReason").value("NO_MEDIA"));
     }
+
+    @Test
+    void 장소를_소개하지_않는_영상으로_실패한_작업은_failureReason이_NOT_PLACE_CONTENT다() throws Exception {
+        User me = userRepository.save(new User("google", "notplace1", "광고유저", null));
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(me, "https://www.instagram.com/reel/np1/", SourcePlatform.INSTAGRAM));
+        job.markFailed(ProcessingJob.NOT_PLACE_CONTENT_MESSAGE);
+        processingJobRepository.save(job);
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("notplace1", "광고유저")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].failureReason").value("NOT_PLACE_CONTENT"));
+    }
 }

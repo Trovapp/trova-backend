@@ -17,6 +17,8 @@ public class ProcessingJob {
     public static final String SOURCE_RATE_LIMIT_MESSAGE = "인스타그램이 잠시 요청을 막았어요";
     // 게시물에서 영상도 사진도 받지 못함(#196) — 다시 해도 같아 앱이 이유를 보여준다.
     public static final String NO_MEDIA_MESSAGE = "게시물에서 영상이나 사진을 받지 못했어요";
+    // 제품 광고·요리·일상처럼 장소를 소개하지 않는 콘텐츠(#206) — 다시 해도 같다.
+    public static final String NOT_PLACE_CONTENT_MESSAGE = "여행·맛집을 소개하는 영상이 아닌 것 같아요";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -138,6 +140,7 @@ public class ProcessingJob {
     public String getErrorMessage() { return errorMessage; }
     public boolean isNoPlacesFailure() { return status == JobStatus.FAILED && NO_PLACES_MESSAGE.equals(errorMessage); }
     public boolean isAiQuotaFailure() { return status == JobStatus.FAILED && AI_QUOTA_MESSAGE.equals(errorMessage); }
+    public boolean isNotPlaceContentFailure() { return status == JobStatus.FAILED && NOT_PLACE_CONTENT_MESSAGE.equals(errorMessage); }
     public boolean isNoMediaFailure() { return status == JobStatus.FAILED && NO_MEDIA_MESSAGE.equals(errorMessage); }
     public boolean isSourceRateLimitFailure() { return status == JobStatus.FAILED && SOURCE_RATE_LIMIT_MESSAGE.equals(errorMessage); }
     public int getRetryCount() { return retryCount; }
