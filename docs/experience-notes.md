@@ -1398,3 +1398,25 @@
 ### 남은 것
 - 아이폰 PWA는 웹 배포 전이라 이 수정이 아직 안 나감.
 - production 채널은 출시용 빌드가 없어 여전히 미확인.
+
+## 2026-10-15 안드로이드 출시용 빌드(AAB) 준비 (#213, 앱 #37)
+
+### 범위
+- 사용자: 남은 일 중 "플레이 출시 준비"를 고름. 개발자 등록비(약 $25)는 사용자가 직접 결제하므로 그 전까지 할 수 있는 것만 진행.
+
+### 한 것
+- production 프로필로 AAB 빌드(EAS 706ef3f8, versionCode 2) → bundletool로 manifest를 풀어 보니 앱이 쓰지 않는 권한 5개(SYSTEM_ALERT_WINDOW, READ/WRITE_EXTERNAL_STORAGE, USE_BIOMETRIC, USE_FINGERPRINT)가 라이브러리 기본으로 들어 있었다. 플레이 심사가 권한마다 사유를 묻기 때문에 첫 업로드 전에 `android.blockedPermissions`로 뺐다(앱 #38).
+- 다시 빌드(EAS a01978ef, versionCode 3) — 이걸 첫 업로드 후보로 둔다.
+
+### 확인
+- versionCode 3 AAB: 권한 7개(INTERNET, ACCESS_NETWORK_STATE, POST_NOTIFICATIONS, READ_APP_BADGE, RECEIVE_BOOT_COMPLETED, VIBRATE, WAKE_LOCK), `usesCleartextTraffic="false"`, 업데이트 채널 `production`, 번들에 운영 주소 1건·`http://localhost` 0건.
+- fingerprint: 맥에서 production 환경 변수로 계산한 값 = AAB 안 값 = `7cbdffdf`(권한 변경 전 빌드는 `f7430755`로 역시 일치). 출시 뒤 production 채널 업데이트가 이 앱에 맞물린다.
+- **운영**: AAB를 임시 키로 서명한 universal APK로 에뮬레이터에 설치 → 온보딩·로그인 화면 정상, "Google로 시작하기"가 운영 서버(`193-123-161-217.sslip.io`)를 거쳐 accounts.google.com을 엶(계정 입력은 안 함). 확인 뒤 QA용 preview 앱으로 되돌림.
+- AAB 85MB 중 대부분은 디버그 기호와 CPU 종류별 네이티브 라이브러리(플레이가 기기별로 나눠 내려줌). 앱 자산 중 가장 큰 것은 토스페이스 폰트 12.7MB.
+- 무료 빌드 이번 달 11번 사용.
+
+### 남은 것 (사용자가 할 일 포함)
+- 플레이 콘솔 개발자 등록(약 $25, 사용자 결제)과 본인 확인.
+- 2023-11-13 이후 만든 개인 계정은 비공개 테스트에 테스터 12명이 14일 연속 참여해야 프로덕션 트랙이 열린다(2026-10-15 검색, Google 공식 도움말은 직접 확인 못 함).
+- 스토어 등록 정보: 앱 설명, 스크린샷, 512 아이콘, 1024×500 그래픽, 개인정보처리방침 URL(trovapp.github.io/privacy), 데이터 보안 양식, 콘텐츠 등급.
+- QA용 preview 빌드는 권한 변경 전 값(`b3ac3b02`)이라 main에서 올리는 preview 업데이트를 못 받는다 — 다음 안드로이드 QA 때 preview를 새로 빌드.
