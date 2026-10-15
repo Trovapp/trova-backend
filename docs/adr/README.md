@@ -51,3 +51,4 @@
 | [0015](0015-prod-metrics-via-ssh-tunnel.md) | 운영 서버 지표는 서버 안에서만 열고, Mac의 Prometheus가 SSH 터널로 가져간다 | 확정 | 2026-10-13 |
 | [0016](0016-pwa-web-push.md) | PWA에 표준 웹 푸시(VAPID)로 일정 초안 준비·여행 날 비 소식 알림 (0013 일부 변경) | 확정 | 2026-10-14 |
 | [0017](0017-android-native-app.md) | 안드로이드는 네이티브 앱(같은 Expo 코드, EAS 빌드·Expo 푸시), 아이폰은 PWA (0013 일부 변경) | 확정 | 2026-10-14 |
+| [0018](0018-android-ota-updates-eas-update.md) | 안드로이드 앱은 무선 업데이트(EAS Update, fingerprint·채널·올리기 전 서버 주소 검사)로 JS 변경을 내보낸다 | 확정 | 2026-10-15 |
