@@ -1369,3 +1369,32 @@
 
 ### 남은 것
 - production 채널은 빌드가 아직 없어 실제 업데이트는 preview로만 확인했다. 플레이 출시용 빌드 때 production 채널 주소·fingerprint를 같은 방법으로 확인.
+
+## 2026-10-15 안드로이드 QA 발견 3건 수정과 fingerprint에서 scripts 제외 (#211, 앱 #35)
+
+### 범위
+- 사용자: "머지하고 다 고쳐줘" — 같은 날 안드로이드 QA에서 찾은 3건(분석 화면이 알림·공유 화면을 덮음, 홈 초안 카드 쌓임, 404 화면 메뉴·버튼).
+- 고치는 중 무선 업데이트가 막히는 원인(fingerprint에 `package.json` scripts가 들어감)을 발견해 같이 고침(ADR 0018 보완).
+
+### 방법 비교
+| 항목 | 방법 | 결정 |
+|---|---|---|
+| 분석 화면 덮기 | 알림·공유 쪽에서 분석 화면을 먼저 닫기 / 분석 화면이 보이는 화면일 때만 넘어가기 | 뒤쪽 — 원인이 넘어가는 쪽에 있고, 들어오는 길(알림·공유·앞으로 더 생길 길)마다 고칠 필요가 없다 |
+| 초안 카드 | 별도 목록 화면 / 2개 + 펼치기 | 펼치기 — 새 화면 없이 홈이 밀리지 않게 |
+| fingerprint | scripts를 바꿀 때마다 새 빌드 / scripts 제외 | 제외 — scripts는 기기 코드가 아니다 |
+
+### 한 것
+- 앱 `ProcessingScreen`: `useIsFocused`와 타이머 안 `navigation.isFocused()`로, 지금 보이는 화면일 때만 결과로 `replace`(`src/lib/processingRules.ts`). React Navigation 7의 `replace`는 출처 화면을 못 찾으면(알림이 `reset`해 스택이 새로 만들어짐) 맨 위 화면을 바꾼다 — 그래서 알림으로 연 화면이 덮였다.
+- 홈 초안 카드: 준비된 것부터 2개 + "일정 초안 N개 더 보기"(`src/lib/draftCards.ts`).
+- 여행 상세 404: `⋯` 숨김, `QueryErrorView` 버튼을 옅은 채움으로.
+- 앱 `fingerprint.config.js`: `SourceSkips.PackageJsonScriptsAll`. ADR 0018 결과에 한 줄 추가.
+
+### 확인
+- 앱 단위 테스트 6개 먼저 실패 확인 후 통과, `test:web` 29/29, `tsc`, 디자인 토큰 검사.
+- fingerprint(로컬 맥): 테스트를 scripts에 더한 뒤 값이 바뀌는 것 확인(`packageJson:scripts`만 다름) → 제외 설정 뒤 scripts만 다른 두 package.json에서 같은 값(preview b3ac3b02, production f7430755). 새 preview 빌드 runtime과 올린 업데이트 runtime이 같음(b3ac3b02). 무료 빌드 이번 달 9번째.
+- **로컬**(안드로이드 에뮬레이터 + 로컬 서버 + 개발 DB): 공유 → "새로 분석" → 홈 → 없는 여행 알림 누르기 → 분석이 끝난 뒤에도 404 유지. 404에 `⋯` 없음·채운 버튼. 초안 4개(테스트 행 2개 추가)에서 카드 2개 + "2개 더 보기", 펼치면 준비된 3개 → 짜는 중 1개. 테스트 데이터는 qaflow로 원래대로(16행).
+- 12:44 공유 유실은 재현되지 않아, 같은 원인(공유가 홈으로 `navigate` → 새 분석 화면을 옛 분석 화면 타이머가 바꿈)이라는 건 추정이다.
+
+### 남은 것
+- 아이폰 PWA는 웹 배포 전이라 이 수정이 아직 안 나감.
+- production 채널은 출시용 빌드가 없어 여전히 미확인.

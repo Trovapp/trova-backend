@@ -22,4 +22,5 @@
 
 ## 결과
 - fingerprint가 로컬과 빌드 서버에서 같아야 업데이트가 맞물린다. 그래서 앱 설정의 Firebase 파일 경로를 `./google-services.json`으로 고정하고, 빌드 서버에서는 `eas-build-pre-install`이 EAS 파일 변수를 그 자리로 복사한다. http 허용 여부는 `eas.json` 프로필 변수 `TROVA_ALLOW_HTTP`(preview=1, production=0)로만 정한다 — 처음엔 `EAS_BUILD_PROFILE`로 정했는데 이 값은 빌드 서버에만 있어, 맥에서 eas-cli가 미리 계산한 값과 달라 첫 빌드가 멈췄다. 올리기 스크립트도 같은 값을 둔다.
+- 같은 날(#211, 앱 #35) 테스트 하나를 `package.json` `scripts`에 더했더니 fingerprint가 바뀌어 설치된 앱이 업데이트를 못 받았다 — 기본 설정이 scripts를 값에 넣는다. 앱 레포 `fingerprint.config.js`에서 scripts를 뺐다(`SourceSkips.PackageJsonScriptsAll`). 스크립트는 기기에 들어가는 코드가 아니고, 빌드 서버 훅(`eas-build-pre-install`)이 바뀌어도 앱 호환에는 영향이 없다. 이 설정을 넣은 뒤 preview 빌드를 다시 냈다.
 - 월 활성 사용자가 1,000명에 가까워지면 그때 유료 전환이나 다른 방법을 다시 정한다.
