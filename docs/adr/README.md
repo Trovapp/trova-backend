@@ -39,7 +39,7 @@
 | [0003](0003-validate-pipeline-first.md) | 파이프라인 검증 먼저, 그다음 API·배포 | 확정 | 2026-08 |
 | [0004](0004-stt-gemini-audio.md) | STT는 Whisper 셀프호스팅 대신 Gemini 오디오 직접 입력 | 확정 | 2026-08-20 |
 | [0005](0005-deploy-e2-micro-systemd.md) | 배포는 Oracle E2.1.Micro + systemd, k3s는 보류 | 확정 | 2026-09 |
-| [0006](0006-places-without-coordinates.md) | 좌표 없는 장소는 목록에 남기고 "위치 확인 안됨" 표시 | 확정 | 2026-09-28 |
+| [0006](0006-places-without-coordinates.md) | 좌표 없는 장소는 목록에 남기고 "위치 확인 안됨" 표시(2026-10-18 사용자가 바로잡기 보완) | 확정 | 2026-09-28 |
 | [0007](0007-travel-pass-bm.md) | 수익 모델: 무료 + 여행 패스 | 대기 | 2026-10-05 |
 | [0008](0008-auto-draft-needs-approval.md) | 공유하면 일정 초안까지만 자동, 여행은 승인 후 | 확정 | 2026-10-07 |
 | [0009](0009-code-style-as-is.md) | 코드 스타일은 지금 쓰는 방식 유지, 포맷 전환 보류 | 확정 | 2026-10-08 |
