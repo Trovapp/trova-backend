@@ -175,4 +175,23 @@ public class SavedPlace {
         this.dayNumber = dayNumber;
         this.orderInDay = orderInDay;
     }
+
+    /**
+     * 위치를 못 찾은 장소를 사용자가 이름 검색으로 고른 실제 장소로 바로잡는다(#217, ADR 0006 보완).
+     * 영상에서 잘못 들은 이름("파오스반브레드")도 실제 가게 이름으로 바꾼다. 카카오 정보·영업시간은 예전 이름 기준이라 지운다.
+     */
+    public void relocateTo(String placeName, Double latitude, Double longitude, String address,
+                           String phone, String googlePlaceId) {
+        this.placeName = placeName;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.address = address;
+        this.roadAddress = null;
+        this.phone = phone;
+        this.kakaoCategoryName = null;
+        this.kakaoPlaceUrl = null;
+        this.googlePlaceId = googlePlaceId;
+        this.openingPeriods = null;
+        this.hoursCheckedAt = null;
+    }
 }

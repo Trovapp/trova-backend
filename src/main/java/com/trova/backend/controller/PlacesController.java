@@ -11,6 +11,7 @@ import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.FoundPlaceNameStore;
 import com.trova.backend.service.ItineraryEditService;
 import com.trova.backend.service.ItineraryGenerationService;
+import com.trova.backend.service.PlaceRelocateService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,7 @@ public class PlacesController {
     private final ItineraryEditService itineraryEditService;
 
     private final FoundPlaceNameStore foundPlaceNameStore;
+    private final PlaceRelocateService placeRelocateService;
 
     public PlacesController(
             CurrentUserService currentUserService,
@@ -40,7 +42,8 @@ public class PlacesController {
             ProcessingJobRepository processingJobRepository,
             ItineraryGenerationService itineraryGenerationService,
             ItineraryEditService itineraryEditService,
-            FoundPlaceNameStore foundPlaceNameStore
+            FoundPlaceNameStore foundPlaceNameStore,
+            PlaceRelocateService placeRelocateService
     ) {
         this.currentUserService = currentUserService;
         this.savedPlaceRepository = savedPlaceRepository;
@@ -48,6 +51,7 @@ public class PlacesController {
         this.itineraryGenerationService = itineraryGenerationService;
         this.itineraryEditService = itineraryEditService;
         this.foundPlaceNameStore = foundPlaceNameStore;
+        this.placeRelocateService = placeRelocateService;
     }
 
     public record PlaceResponse(
@@ -103,6 +107,10 @@ public class PlacesController {
     }
 
     public record ReorderRequest(String direction) {
+    }
+
+    // placeId: 장소 검색(GET /api/places/search) 결과의 id
+    public record RelocateRequest(Long placeId) {
     }
 
     @GetMapping
@@ -197,6 +205,20 @@ public class PlacesController {
         }
         User user = currentUserService.resolve(authentication);
         return itineraryEditService.moveToDay(id, user, body.dayNumber())
+                .map(place -> ResponseEntity.ok(PlaceResponse.from(place)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // 위치를 못 찾은 장소를 사용자가 검색으로 고른 실제 장소로 바로잡는다(#217). 앱의 "위치 확인 필요" 모아 보기에서 쓴다.
+    @PatchMapping("/{id}/location")
+    public ResponseEntity<PlaceResponse> relocate(
+            Authentication authentication, @PathVariable Long id, @RequestBody RelocateRequest body
+    ) {
+        if (body == null || body.placeId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        User user = currentUserService.resolve(authentication);
+        return placeRelocateService.relocate(id, user, body.placeId())
                 .map(place -> ResponseEntity.ok(PlaceResponse.from(place)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

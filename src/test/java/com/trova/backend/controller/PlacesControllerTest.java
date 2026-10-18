@@ -1,9 +1,11 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.entity.Place;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.User;
+import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.UserRepository;
@@ -49,6 +51,9 @@ class PlacesControllerTest {
 
     @Autowired
     private SavedPlaceRepository savedPlaceRepository;
+
+    @Autowired
+    private PlaceRepository placeRepository;
 
     @Autowired
     private com.trova.backend.service.FoundPlaceNameStore foundPlaceNameStore;
@@ -535,5 +540,65 @@ class PlacesControllerTest {
         mockMvc.perform(get("/api/places/pending").with(loginAs("notplace1", "광고유저")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].failureReason").value("NOT_PLACE_CONTENT"));
+    }
+
+    @Test
+    void 위치를_못_찾은_장소를_검색으로_고른_실제_장소로_바로잡는다() throws Exception {
+        User me = userRepository.save(new User("google", "rel1", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(me, "https://youtu.be/rel1", SourcePlatform.YOUTUBE));
+        SavedPlace saved = savedPlaceRepository.save(new SavedPlace(job, me, "파오스반브레드", "서울", "bakery", null, null));
+        Place picked = placeRepository.save(new Place("g-farmers", "파머스반브레드", "bakery", 4.6, 120, null, 37.574, 126.991, "서울 종로구 돈화문로 11"));
+
+        mockMvc.perform(patch("/api/places/" + saved.getId() + "/location").with(loginAs("rel1", "나"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"placeId\": " + picked.getId() + "}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.placeName").value("파머스반브레드"))
+                .andExpect(jsonPath("$.latitude").value(37.574))
+                .andExpect(jsonPath("$.longitude").value(126.991))
+                .andExpect(jsonPath("$.address").value("서울 종로구 돈화문로 11"))
+                .andExpect(jsonPath("$.region").value("서울"))
+                .andExpect(jsonPath("$.category").value("bakery"));
+    }
+
+    @Test
+    void 남의_장소_위치는_바꿀_수_없다() throws Exception {
+        User me = userRepository.save(new User("google", "rel2", "나", null));
+        User other = userRepository.save(new User("google", "rel2-other", "남", null));
+        ProcessingJob otherJob = processingJobRepository.save(new ProcessingJob(other, "https://youtu.be/rel2", SourcePlatform.YOUTUBE));
+        SavedPlace otherPlace = savedPlaceRepository.save(new SavedPlace(otherJob, other, "남의 장소", null, "cafe", null, null));
+        Place picked = placeRepository.save(new Place("g-rel2", "어떤 카페", "cafe", null, 0, null, 37.5, 127.0, "서울"));
+
+        mockMvc.perform(patch("/api/places/" + otherPlace.getId() + "/location").with(loginAs("rel2", "나"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"placeId\": " + picked.getId() + "}"))
+                .andExpect(status().isNotFound());
+        org.assertj.core.api.Assertions.assertThat(savedPlaceRepository.findById(otherPlace.getId()).orElseThrow().getLatitude()).isNull();
+    }
+
+    @Test
+    void 좌표가_없는_검색_결과로는_바꾸지_않는다() throws Exception {
+        User me = userRepository.save(new User("google", "rel3", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(me, "https://youtu.be/rel3", SourcePlatform.YOUTUBE));
+        SavedPlace saved = savedPlaceRepository.save(new SavedPlace(job, me, "그대로", null, "cafe", null, null));
+        Place noCoords = placeRepository.save(new Place("g-rel3", "좌표 없음", "cafe", null, 0, null, null, null, null));
+
+        mockMvc.perform(patch("/api/places/" + saved.getId() + "/location").with(loginAs("rel3", "나"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"placeId\": " + noCoords.getId() + "}"))
+                .andExpect(status().isNotFound());
+        org.assertj.core.api.Assertions.assertThat(savedPlaceRepository.findById(saved.getId()).orElseThrow().getPlaceName()).isEqualTo("그대로");
+    }
+
+    @Test
+    void 고른_장소가_없으면_400() throws Exception {
+        User me = userRepository.save(new User("google", "rel4", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(me, "https://youtu.be/rel4", SourcePlatform.YOUTUBE));
+        SavedPlace saved = savedPlaceRepository.save(new SavedPlace(job, me, "장소", null, "cafe", null, null));
+
+        mockMvc.perform(patch("/api/places/" + saved.getId() + "/location").with(loginAs("rel4", "나"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
     }
 }
