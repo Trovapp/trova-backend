@@ -51,6 +51,12 @@ public class Trip {
         this.updatedAt = LocalDateTime.now();
     }
 
+    /** 이름을 바꾼다(#221). 앞뒤 공백은 지운다. */
+    public void applyTitle(String title) {
+        this.title = title.trim();
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public Long getId() { return id; }
     public User getUser() { return user; }
     public String getTitle() { return title; }
