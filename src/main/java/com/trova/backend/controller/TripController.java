@@ -87,7 +87,8 @@ public class TripController {
     public record CreateTripRequest(String title, LocalDate startDate, LocalDate endDate) {
     }
 
-    public record AddPlaceRequest(String googlePlaceId) {
+    // fitRoute: 맨 끝 대신 동선에 맞는 자리에 시간을 매겨 넣는다(#221, 일정 초안에서 뺀 장소 찾아 넣기).
+    public record AddPlaceRequest(String googlePlaceId, Boolean fitRoute) {
     }
 
     public record ReplaceRequest(String googlePlaceId) {
@@ -250,6 +251,23 @@ public class TripController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    public record RenameTripRequest(String title) {
+    }
+
+    /** 여행 이름 바꾸기(#221). 응답은 여행 상세와 같다. */
+    @PatchMapping("/api/trips/{id}/title")
+    public ResponseEntity<TripDetailResponse> renameTrip(
+            Authentication authentication, @PathVariable Long id, @RequestBody RenameTripRequest request
+    ) {
+        if (request == null || !isValidTripTitle(request.title())) {
+            return ResponseEntity.badRequest().build();
+        }
+        User user = currentUserService.resolve(authentication);
+        return tripService.rename(user, id, request.title())
+                .map(trip -> ResponseEntity.ok(toDetail(trip)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     private TripDetailResponse toDetail(Trip trip) {
         List<ItineraryResponse> days = itineraryRepository.findByTripOrderByDay(trip).stream()
                 .map(itinerary -> new ItineraryResponse(
@@ -277,7 +295,7 @@ public class TripController {
             return ResponseEntity.badRequest().build();
         }
         User user = currentUserService.resolve(authentication);
-        return tripService.addPlaceToDay(user, tripId, day, request.googlePlaceId())
+        return tripService.addPlaceToDay(user, tripId, day, request.googlePlaceId(), Boolean.TRUE.equals(request.fitRoute()))
                 .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

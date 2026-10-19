@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -179,6 +180,99 @@ class TripControllerTest {
                         .content("{\"startDate\":\"2026-11-01\"}"))
                 .andExpect(status().isNotFound());
         assertThat(tripRepository.findById(t.getId()).orElseThrow().getStartDate()).isEqualTo(LocalDate.of(2026, 1, 1));
+    }
+
+    @Test
+    void 여행_이름을_바꾸면_상세에_새_이름이_온다() throws Exception {
+        // 앱 어디에도 여행 이름을 바꿀 곳이 없었다(2026-10-18 안드로이드 QA, #221)
+        User me = userRepository.save(new User("google", "title1", "이름유저1", null));
+        Trip t = trip(me, 1);
+
+        mockMvc.perform(patch("/api/trips/" + t.getId() + "/title")
+                        .with(loginAs("title1", "이름유저1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"  가을 춘천  \"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("가을 춘천"))
+                .andExpect(jsonPath("$.days[0].day").value(1));
+        assertThat(tripRepository.findById(t.getId()).orElseThrow().getTitle()).isEqualTo("가을 춘천");
+    }
+
+    @Test
+    void 여행_이름이_비거나_50자를_넘으면_400() throws Exception {
+        User me = userRepository.save(new User("google", "title2", "이름유저2", null));
+        Trip t = trip(me, 1);
+
+        for (String body : List.of("{}", "{\"title\":\"   \"}", "{\"title\":\"" + "가".repeat(51) + "\"}")) {
+            mockMvc.perform(patch("/api/trips/" + t.getId() + "/title")
+                            .with(loginAs("title2", "이름유저2"))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(body))
+                    .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Test
+    void 남의_여행_이름은_바꿀_수_없어_404() throws Exception {
+        User owner = userRepository.save(new User("google", "title3-owner", "주인", null));
+        userRepository.save(new User("google", "title3", "이름유저3", null));
+        Trip t = trip(owner, 1);
+        String before = t.getTitle();
+
+        mockMvc.perform(patch("/api/trips/" + t.getId() + "/title")
+                        .with(loginAs("title3", "이름유저3"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"바꾼 이름\"}"))
+                .andExpect(status().isNotFound());
+        assertThat(tripRepository.findById(t.getId()).orElseThrow().getTitle()).isEqualTo(before);
+    }
+
+    @Test
+    void fitRoute로_넣으면_이동이_가장_적게_늘어나는_자리에_시간을_매겨_넣는다() throws Exception {
+        // 일정 초안에서 뺀 장소를 찾아 넣으면 그날 맨 끝에 시간 없이 붙어 동선이 되돌아갔다(2026-10-18 QA, #221)
+        User me = userRepository.save(new User("google", "fit1", "동선유저1", null));
+        Trip t = trip(me, 1);
+        Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
+        TripPlace south = tripPlace(day1, "남쪽", 37.50, 127.00, 1);
+        south.applyDetails(LocalTime.of(9, 0), LocalTime.of(10, 0), null, null);
+        TripPlace north = tripPlace(day1, "북쪽", 37.70, 127.00, 2);
+        north.applyDetails(LocalTime.of(11, 0), LocalTime.of(12, 30), null, null);
+        tripPlaceRepository.saveAll(List.of(south, north));
+        placeRepository.save(new Place("gp-mid", "가운데", "attraction", 4.5, 100, null, 37.60, 127.00, "가운데 주소"));
+
+        mockMvc.perform(post("/api/trips/" + t.getId() + "/days/1/places")
+                        .with(loginAs("fit1", "동선유저1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"googlePlaceId\":\"gp-mid\",\"fitRoute\":true}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.visitOrder").value(2))
+                .andExpect(jsonPath("$.visitStartTime").exists());
+
+        List<TripPlace> ordered = tripPlaceRepository.findByItineraryOrderByVisitOrder(day1);
+        assertThat(ordered).extracting(TripPlace::getPlaceName).containsExactly("남쪽", "가운데", "북쪽");
+        assertThat(ordered).allSatisfy(p -> assertThat(p.getVisitStartTime()).isNotNull());
+        // 앞 장소가 끝난 뒤 이동 시간을 두고 시작하고, 뒤 장소는 그만큼 밀린다
+        assertThat(ordered.get(1).getVisitStartTime()).isAfter(ordered.get(0).getVisitEndTime());
+        assertThat(ordered.get(2).getVisitStartTime()).isAfter(ordered.get(1).getVisitEndTime());
+    }
+
+    @Test
+    void fitRoute_없이_넣으면_예전처럼_맨_끝에_시간_없이_넣는다() throws Exception {
+        User me = userRepository.save(new User("google", "fit2", "동선유저2", null));
+        Trip t = trip(me, 1);
+        Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
+        TripPlace south = tripPlace(day1, "남쪽", 37.50, 127.00, 1);
+        TripPlace north = tripPlace(day1, "북쪽", 37.70, 127.00, 2);
+        placeRepository.save(new Place("gp-mid2", "가운데", "attraction", 4.5, 100, null, 37.60, 127.00, "가운데 주소"));
+
+        mockMvc.perform(post("/api/trips/" + t.getId() + "/days/1/places")
+                        .with(loginAs("fit2", "동선유저2"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"googlePlaceId\":\"gp-mid2\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.visitOrder").value(3));
+        assertThat(tripPlaceRepository.findById(south.getId()).orElseThrow().getVisitOrder()).isEqualTo(1);
+        assertThat(tripPlaceRepository.findById(north.getId()).orElseThrow().getVisitOrder()).isEqualTo(2);
     }
 
     private TripPlace tripPlace(Itinerary itinerary, String name, Double lat, Double lng, int visitOrder) {
@@ -498,7 +592,7 @@ class TripControllerTest {
         Trip t = trip(me, 1);
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
         TripPlace place = tripPlace(day1, "원래장소", 37.5, 127.0, 1);
-        tripService.updateDetails(me, place.getId(), java.time.LocalTime.of(10, 0), null, null, "원래 메모");
+        tripService.updateDetails(me, place.getId(), LocalTime.of(10, 0), null, null, "원래 메모");
         placeRepository.save(new Place("gp-new", "새장소", "restaurant", 4.1, 20, null, 37.6, 127.1, "새 주소"));
 
         mockMvc.perform(post("/api/trip-places/" + place.getId() + "/replace")
@@ -527,8 +621,8 @@ class TripControllerTest {
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
         TripPlace a = tripPlace(day1, "A", 37.500, 127.000, 1);
         TripPlace b = tripPlace(day1, "B", 37.510, 127.000, 2);
-        tripService.updateDetails(me, a.getId(), null, java.time.LocalTime.of(10, 0), null, null);
-        tripService.updateDetails(me, b.getId(), java.time.LocalTime.of(11, 0), null, null, null);
+        tripService.updateDetails(me, a.getId(), null, LocalTime.of(10, 0), null, null);
+        tripService.updateDetails(me, b.getId(), LocalTime.of(11, 0), null, null, null);
 
         mockMvc.perform(get("/api/trips/" + t.getId() + "/days/1/gap-recommendations")
                         .with(loginAs("gapc1", "빈시간유저1")))

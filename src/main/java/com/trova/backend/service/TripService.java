@@ -44,6 +44,8 @@ public class TripService {
     private static final Logger log = LoggerFactory.getLogger(TripService.class);
 
     private static final Set<String> VALID_DIRECTIONS = Set.of("UP", "DOWN");
+    // 찾아 넣은 장소(fitRoute)의 머무는 시간 — 사용자가 장소 시간에서 바로 고칠 수 있다.
+    private static final int FIT_ROUTE_STAY_MINUTES = 60;
 
     private final TripRepository tripRepository;
     private final ItineraryRepository itineraryRepository;
@@ -161,25 +163,58 @@ public class TripService {
                 });
     }
 
+    /** 여행 이름을 바꾼다(#221) — 앱 어디에도 이름을 바꿀 곳이 없었다(2026-10-18 안드로이드 QA). 본인 여행만. */
+    @Transactional
+    public Optional<Trip> rename(User user, Long tripId, String title) {
+        return tripRepository.findById(tripId)
+                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .map(trip -> {
+                    trip.applyTitle(title);
+                    return tripRepository.save(trip);
+                });
+    }
+
+    public Optional<TripPlace> addPlaceToDay(User user, Long tripId, int day, String googlePlaceId) {
+        return addPlaceToDay(user, tripId, day, googlePlaceId, false);
+    }
+
     /**
      * Place 카탈로그(구글 플레이스 검색에서 이미 upsert된 장소)에서 googlePlaceId로 찾아
      * 해당 일차 맨 끝에 추가한다. 카탈로그에 없으면(검색 단계를 안 거친 잘못된 요청)
      * 아무것도 만들지 않는다.
+     * fitRoute면 맨 끝 대신 이동이 가장 적게 늘어나는 자리에 넣고(#221), 그날 장소가 모두 시간이 있으면
+     * 새 장소에 한 시간을 주고 새 순서대로 시간을 다시 매긴다 — 일정 초안에서 뺀 장소를 찾아 넣을 때 쓴다.
      */
-    public Optional<TripPlace> addPlaceToDay(User user, Long tripId, int day, String googlePlaceId) {
+    @Transactional
+    public Optional<TripPlace> addPlaceToDay(User user, Long tripId, int day, String googlePlaceId, boolean fitRoute) {
         return tripRepository.findById(tripId)
                 .filter(trip -> trip.getUser().getId().equals(user.getId()))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .flatMap(itinerary -> placeRepository.findByGooglePlaceId(googlePlaceId).map(place -> {
                     List<TripPlace> siblings = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary);
-                    int nextOrder = siblings.size() + 1;
+                    int index = fitRoute
+                            ? RouteInsertion.bestIndex(siblings, place.getLatitude(), place.getLongitude())
+                            : siblings.size();
+                    for (int i = index; i < siblings.size(); i++) {
+                        siblings.get(i).applyVisitOrder(i + 2);
+                    }
                     TripPlace tripPlace = new TripPlace(
                             itinerary, place.getName(), null, place.getCategory(),
                             place.getLatitude(), place.getLongitude(), null, place.getAddress(),
-                            nextOrder, PlaceSource.NORMAL, null);
+                            index + 1, PlaceSource.NORMAL, null);
                     tripPlace.applyGooglePlaceId(place.getGooglePlaceId());
+                    List<TripPlace> ordered = new ArrayList<>(siblings);
+                    ordered.add(index, tripPlace);
+                    if (fitRoute && !siblings.isEmpty()
+                            && siblings.stream().allMatch(p -> p.getVisitStartTime() != null && p.getVisitEndTime() != null)) {
+                        // 시작 시각은 다시 매길 때 정해진다 — 그날 가장 이른 시각을 넣어 두어야 출발 시각이 바뀌지 않는다.
+                        LocalTime earliest = siblings.stream().map(TripPlace::getVisitStartTime).min(LocalTime::compareTo).orElseThrow();
+                        tripPlace.applyDetails(earliest, earliest.plusMinutes(FIT_ROUTE_STAY_MINUTES), null, null);
+                        TripDayRetimer.retime(ordered);
+                    }
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, place, SignalType.TRIP_PLACE_ADDED));
                     placeEmbeddingService.ensureEmbeddings(List.of(place));
+                    tripPlaceRepository.saveAll(siblings);
                     return tripPlaceRepository.save(tripPlace);
                 }));
     }
