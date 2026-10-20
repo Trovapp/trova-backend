@@ -52,3 +52,4 @@
 | [0016](0016-pwa-web-push.md) | PWA에 표준 웹 푸시(VAPID)로 일정 초안 준비·여행 날 비 소식 알림 (0013 일부 변경) | 확정 | 2026-10-14 |
 | [0017](0017-android-native-app.md) | 안드로이드는 네이티브 앱(같은 Expo 코드, EAS 빌드·Expo 푸시), 아이폰은 PWA (0013 일부 변경) | 확정 | 2026-10-14 |
 | [0018](0018-android-ota-updates-eas-update.md) | 안드로이드 앱은 무선 업데이트(EAS Update, fingerprint·채널·올리기 전 서버 주소 검사)로 JS 변경을 내보낸다 | 확정 | 2026-10-15 |
+| [0019](0019-admin-web-no-cloudflare-access.md) | 관리자 웹 앞의 Cloudflare Access는 붙이지 않는다, 대신 관리자 카카오 계정 2단계 인증 (0012 일부 변경) | 확정 | 2026-10-20 |
