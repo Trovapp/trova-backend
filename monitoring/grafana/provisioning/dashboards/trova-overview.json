@@ -647,6 +647,148 @@
           "legendFormat": "최대"
         }
       ]
+    },
+    {
+      "id": 14,
+      "type": "bargauge",
+      "title": "분석 단계별 평균 시간(선택 기간)",
+      "description": "영상 분석 한 건을 받기(download)·오디오(audio)·화면(frames)·Gemini 단계로 나눈 평균. 서버 재시작 뒤 분석이 한 번도 없으면 비어 있다(#195). 기간은 오른쪽 위 시간 범위.",
+      "gridPos": {
+        "x": 0,
+        "y": 36,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "noValue": "이 기간 기록 없음",
+          "color": {
+            "mode": "continuous-BlYlRd"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (stage) (increase(trova_pipeline_stage_seconds_sum{job=~\"$job\"}[$__range])) / (sum by (stage) (increase(trova_pipeline_stage_seconds_count{job=~\"$job\"}[$__range])) > 0)",
+          "legendFormat": "{{stage}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "type": "bargauge",
+      "title": "외부 API 평균 시간(선택 기간, 성공만)",
+      "description": "Gemini·카카오·Google 등 외부 호출(api_call_logs와 같은 provider·operation)의 평균 걸린 시간. 실패 호출은 빨리 끝나 평균을 낮추므로 뺐다.",
+      "gridPos": {
+        "x": 8,
+        "y": 36,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "noValue": "이 기간 기록 없음",
+          "color": {
+            "mode": "continuous-BlYlRd"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (provider, operation) (increase(trova_api_call_seconds_sum{job=~\"$job\",success=\"true\"}[$__range])) / (sum by (provider, operation) (increase(trova_api_call_seconds_count{job=~\"$job\",success=\"true\"}[$__range])) > 0)",
+          "legendFormat": "{{provider}} {{operation}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "type": "bargauge",
+      "title": "외부 API 호출 수(선택 기간)",
+      "description": "provider·operation·성공 여부별 호출 수. 평균이 한두 건으로 계산된 값인지 여기서 확인한다. Gemini 하루 한도는 관리자 대시보드(DB 기준)를 본다.",
+      "gridPos": {
+        "x": 16,
+        "y": 36,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "noValue": "이 기간 기록 없음",
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (provider, operation, success) (increase(trova_api_call_seconds_count{job=~\"$job\"}[$__range])) > 0",
+          "legendFormat": "{{provider}} {{operation}} 성공={{success}}",
+          "instant": true
+        }
+      ]
     }
   ],
   "templating": {
