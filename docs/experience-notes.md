@@ -1575,3 +1575,31 @@
 ### 남은 것
 - bookmarks: 하나씩 부를 때 20회 중 1번 4,562ms(나머지 286~322ms). 한 번뿐이라 원인 모름 — 다시 나오면 본다.
 - 관리자 p90 카드는 `/api/admin/**`도 집계한다(관리자 요약 API 0.95초가 섞임). 뺄지는 미정.
+
+## 2026-10-21 운영 구글 로그인 연결 (#231)
+
+### 범위
+- 플레이 스토어 등록 전 안드로이드 QA에서 출시용 빌드의 "Google로 시작하기"가 400 `redirect_uri_mismatch`였다. 2026-09-30에 보류한 운영 redirect 주소 미등록 건이 스토어 사용자에게 보이는 버튼이 됐다.
+- 사용자: "구글 로그인 처리 해보자", "지금 아예 연결이 안되어 있는거 같아 새로 만들어야할거 같은데".
+
+### 방법 비교
+| 항목 | 방법 | 결정 |
+|---|---|---|
+| 클라이언트 | 기존 클라이언트(프로젝트 68744492607)에 주소만 추가 / **trova 프로젝트에 새로 만들기** | 새로 — 기존 프로젝트를 사용자 콘솔에서 찾지 못했고, Gemini·Places 키가 있는 trova 프로젝트로 모은다 |
+| 유형 | Android / **웹 애플리케이션** | 웹 — 앱이 서버의 `/oauth2/authorization/google`을 거쳐 로그인한다 |
+| 값 전달 | 채팅 / **레포 밖 파일(`~/.config/devflow/trova/google-oauth.env`, 600)** | 파일 — 값을 화면에 출력하지 않고 운영 .env의 두 키만 바꿈 |
+
+### 한 것
+- 사용자: trova 프로젝트에 동의 화면(외부, 프로덕션 게시, 로고 없음)과 웹 클라이언트 `trova-backend`를 만들고 redirect 주소 2개(운영 sslip.io, `localhost:8080`)를 등록.
+- 운영 `/opt/trova-backend/.env`를 백업(`.env.bak-google-20261021165619`)하고 `GOOGLE_CLIENT_ID`·`GOOGLE_CLIENT_SECRET`만 교체, `trova-backend` 재시작. 코드 변경 없음.
+- 방침·약관 저장소(`Trovapp/trovapp.github.io`)가 비공개로 바뀌어 GitHub Pages가 꺼져 있던 것(privacy/terms 404, 브랜딩·스토어 링크에 필요)을 발견 → 사용자 요청으로 공개 전환, Pages(main /) 다시 켬.
+
+### 확인
+- **운영**: 재시작 후 UP까지 97초. 로그인 시작 주소가 새 클라이언트(프로젝트 278922261473)·scope `profile`·redirect sslip.io 주소를 보냄, 구글이 오류 없이 계정 입력 화면을 돌려줌(curl).
+- **운영 + 출시 빌드**: AAB 853a2d23(versionCode 4)을 임시 키로 서명한 universal APK를 에뮬레이터(trova-fold)에 설치 → Google로 시작하기 → 구글 로그인 화면 → 사용자가 직접 계정 입력 → 홈("Trovapp님") 진입.
+- 방침·약관 페이지 200 확인.
+- 운영 DB `users`에 provider google 행이 새로 생김(id 4, 17:32 — 로그인 시각과 같음).
+- **로컬**: 로컬 서버 `.env`·`.env.prod-db.bak`도 같은 두 키만 교체(백업 후), 서버 재시작 → 로그인 시작 주소가 새 클라이언트·`localhost:8080` redirect를 보냄.
+
+### 남은 것
+- 구글 로그인 화면에 앱 이름 대신 "sslip.io(으)로 이동"이 보인다(브랜딩 미인증). 바꾸려면 자체 도메인 + 브랜딩 인증.
