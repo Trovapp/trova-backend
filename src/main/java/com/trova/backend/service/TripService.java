@@ -48,6 +48,7 @@ public class TripService {
     // 찾아 넣은 장소(fitRoute)의 머무는 시간 — 사용자가 장소 시간에서 바로 고칠 수 있다.
     private static final int FIT_ROUTE_STAY_MINUTES = 60;
     private static final double SAME_PLACE_RADIUS_KM = 0.2; // 같은 이름이 이 안이면 같은 장소(지점이 다른 체인점은 보통 더 멀다)
+    private static final int MIN_SUFFIX_NAME_LENGTH = 3; // "카페"처럼 짧은 이름은 끝맺음으로 비교하지 않는다(어느 "○○카페"와도 맞아 버린다)
 
     private final TripRepository tripRepository;
     private final ItineraryRepository itineraryRepository;
@@ -313,9 +314,13 @@ public class TripService {
         }
     }
 
-    /** 영상 장소(구글 id 없음)와 검색 장소를 같은 곳으로 보는 기준 — 띄어쓰기·대소문자를 뺀 이름이 같고 가까우면. */
+    /**
+     * 영상 장소(구글 id 없음)와 검색 장소를 같은 곳으로 보는 기준 — 띄어쓰기·대소문자를 뺀 이름이 같거나, 한쪽이 띄어 쓴 앞말 뒤에
+     * 다른 쪽 이름으로 끝나고(구글이 "대한불교조계종 진관사"처럼 앞말을 붙인다), 가까우면.
+     * "진관사 연지원"처럼 뒤에 붙는 건 안쪽 시설, "더가까이"처럼 붙여 쓴 건 다른 이름이라 다른 장소.
+     */
     private static boolean isSameNameNearby(TripPlace existing, String name, Double latitude, Double longitude) {
-        if (name == null || existing.getPlaceName() == null || !normalizeName(name).equals(normalizeName(existing.getPlaceName()))) {
+        if (name == null || existing.getPlaceName() == null || !sameName(name, existing.getPlaceName())) {
             return false;
         }
         if (latitude == null || longitude == null || existing.getLatitude() == null || existing.getLongitude() == null) {
@@ -324,8 +329,15 @@ public class TripService {
         return GeoUtils.haversineKm(latitude, longitude, existing.getLatitude(), existing.getLongitude()) <= SAME_PLACE_RADIUS_KM;
     }
 
-    private static String normalizeName(String name) {
-        return name.replaceAll("\\s+", "").toLowerCase();
+    private static boolean sameName(String a, String b) {
+        if (a.replaceAll("\\s+", "").equalsIgnoreCase(b.replaceAll("\\s+", ""))) {
+            return true;
+        }
+        String x = a.trim().replaceAll("\\s+", " ").toLowerCase();
+        String y = b.trim().replaceAll("\\s+", " ").toLowerCase();
+        String shorter = x.length() <= y.length() ? x : y;
+        String longer = x.length() <= y.length() ? y : x;
+        return shorter.length() >= MIN_SUFFIX_NAME_LENGTH && longer.endsWith(" " + shorter);
     }
 
     /** 이미 이 여행에 있는 장소를 담으려 할 때. day는 이미 있는 날(sameDay면 담으려던 날과 같다). */

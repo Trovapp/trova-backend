@@ -320,6 +320,25 @@ class TripServiceIntegrationTest {
     }
 
     @Test
+    void 구글_이름에_앞말이_붙어도_가까우면_같은_장소로_보고_안쪽_시설은_다른_장소로_본다() {
+        // 2026-10-22 QA: 영상의 "진관사"를 검색하면 구글은 "대한불교조계종 진관사"로 준다. 바로 옆 "진관사 연지원"은 절 안 찻집.
+        User user = newUser();
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(user, "https://youtu.be/trip-dup-prefix", SourcePlatform.YOUTUBE));
+        SavedPlace temple = savedPlaceRepository.save(
+                new SavedPlace(job, user, "진관사", "서울", "attraction", 37.63804, 126.94689, 1, 1));
+        Trip trip = tripService.confirmVideoPlacesIntoTrip(user, "서울 당일치기", List.of(temple), null);
+        placeRepository.save(new Place("trip-place-test-dup-prefix", "대한불교조계종 진관사", null, null, null, null, 37.63839, 126.94641, null));
+        placeRepository.save(new Place("trip-place-test-dup-inner", "진관사 연지원", null, null, null, null, 37.63838, 126.94614, null));
+        placeRepository.save(new Place("trip-place-test-dup-joined", "작은진관사", null, null, null, null, 37.63840, 126.94620, null));
+
+        assertThatThrownBy(() -> tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-dup-prefix"))
+                .isInstanceOf(TripService.DuplicateTripPlaceException.class);
+        assertThat(tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-dup-inner")).isPresent();
+        assertThat(tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-dup-joined")).isPresent(); // 붙여 쓴 건 다른 이름
+    }
+
+    @Test
     void 이름이_같아도_멀리_떨어진_지점은_다른_장소로_본다() {
         User user = newUser();
         Trip trip = tripService.createTrip(user, "서울 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
