@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +47,7 @@ public class TripService {
     private static final Set<String> VALID_DIRECTIONS = Set.of("UP", "DOWN");
     // 찾아 넣은 장소(fitRoute)의 머무는 시간 — 사용자가 장소 시간에서 바로 고칠 수 있다.
     private static final int FIT_ROUTE_STAY_MINUTES = 60;
+    private static final double SAME_PLACE_RADIUS_KM = 0.2; // 같은 이름이 이 안이면 같은 장소(지점이 다른 체인점은 보통 더 멀다)
 
     private final TripRepository tripRepository;
     private final ItineraryRepository itineraryRepository;
@@ -175,7 +177,7 @@ public class TripService {
     }
 
     public Optional<TripPlace> addPlaceToDay(User user, Long tripId, int day, String googlePlaceId) {
-        return addPlaceToDay(user, tripId, day, googlePlaceId, false);
+        return addPlaceToDay(user, tripId, day, googlePlaceId, false, false);
     }
 
     /**
@@ -184,13 +186,19 @@ public class TripService {
      * 아무것도 만들지 않는다.
      * fitRoute면 맨 끝 대신 이동이 가장 적게 늘어나는 자리에 넣고(#221), 그날 장소가 모두 시간이 있으면
      * 새 장소에 한 시간을 주고 새 순서대로 시간을 다시 매긴다 — 일정 초안에서 뺀 장소를 찾아 넣을 때 쓴다.
+     * 같은 여행에 이미 있는 장소면 담지 않고 DuplicateTripPlaceException(#233) — 다른 날이면 allowOtherDay로 담는다.
      */
     @Transactional
-    public Optional<TripPlace> addPlaceToDay(User user, Long tripId, int day, String googlePlaceId, boolean fitRoute) {
+    public Optional<TripPlace> addPlaceToDay(
+            User user, Long tripId, int day, String googlePlaceId, boolean fitRoute, boolean allowOtherDay
+    ) {
         return tripRepository.findById(tripId)
                 .filter(trip -> trip.getUser().getId().equals(user.getId()))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .flatMap(itinerary -> placeRepository.findByGooglePlaceId(googlePlaceId).map(place -> {
+                    rejectDuplicate(itinerary, allowOtherDay, existing ->
+                            googlePlaceId.equals(existing.getGooglePlaceId())
+                                    || isSameNameNearby(existing, place.getName(), place.getLatitude(), place.getLongitude()));
                     List<TripPlace> siblings = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary);
                     int index = fitRoute
                             ? RouteInsertion.bestIndex(siblings, place.getLatitude(), place.getLongitude())
@@ -222,10 +230,14 @@ public class TripService {
     /**
      * 영상에서 찾은 장소(SavedPlace)를 여행의 그 일차 맨 끝에 담는다(#126) — 영상 전체로 새 여행을 만들거나 여행 화면에서
      * 다시 검색하지 않아도 되게. 영상 장소의 값(이름·좌표·주소·전화)을 그대로 복사하고 외부 호출은 하지 않는다.
-     * 영상 장소와 여행 모두 본인 것이어야 한다.
+     * 영상 장소와 여행 모두 본인 것이어야 한다. 이미 있는 장소면 addPlaceToDay와 같이 막는다(#233).
      */
-    @Transactional
     public Optional<TripPlace> addVideoPlaceToDay(User user, Long tripId, int day, Long savedPlaceId) {
+        return addVideoPlaceToDay(user, tripId, day, savedPlaceId, false);
+    }
+
+    @Transactional
+    public Optional<TripPlace> addVideoPlaceToDay(User user, Long tripId, int day, Long savedPlaceId, boolean allowOtherDay) {
         Optional<SavedPlace> saved = savedPlaceRepository.findById(savedPlaceId)
                 .filter(p -> p.getUser().getId().equals(user.getId()));
         if (saved.isEmpty()) {
@@ -236,6 +248,10 @@ public class TripService {
                 .filter(trip -> trip.getUser().getId().equals(user.getId()))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .map(itinerary -> {
+                    rejectDuplicate(itinerary, allowOtherDay, existing ->
+                            place.getId().equals(existing.getSavedPlaceId())
+                                    || (place.getGooglePlaceId() != null && place.getGooglePlaceId().equals(existing.getGooglePlaceId()))
+                                    || isSameNameNearby(existing, place.getPlaceName(), place.getLatitude(), place.getLongitude()));
                     int nextOrder = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary).size() + 1;
                     TripPlace tripPlace = new TripPlace(
                             itinerary, place.getPlaceName(), place.getRegion(), place.getCategory(),
@@ -275,6 +291,67 @@ public class TripService {
 
     /** 본인 영상 장소였을 때의 연결 결과 — place가 비면 지도에서 찾지 못한 것. */
     public record SavedPlaceMatch(Optional<Place> place) {
+    }
+
+    /**
+     * 담으려는 장소가 이 여행에 이미 있으면 막는다(#233, 2026-10-21 QA — 같은 장소가 맨 끝에 시간 없이 또 들어갔다).
+     * 같은 날이면 항상 막고, 다른 날이면 allowOtherDay일 때만 통과 — 숙소 근처 카페처럼 이틀 다 가는 경우가 있다.
+     */
+    private void rejectDuplicate(Itinerary target, boolean allowOtherDay, Predicate<TripPlace> sameAs) {
+        List<TripPlace> matches = tripPlaceRepository.findByItinerary_Trip(target.getTrip()).stream()
+                .filter(sameAs)
+                .toList();
+        Optional<TripPlace> sameDay = matches.stream()
+                .filter(p -> p.getItinerary().getId().equals(target.getId()))
+                .findFirst();
+        if (sameDay.isPresent()) {
+            throw new DuplicateTripPlaceException(true, target.getDay(), sameDay.get().getPlaceName());
+        }
+        if (!allowOtherDay && !matches.isEmpty()) {
+            TripPlace other = matches.stream().min(Comparator.comparingInt(p -> p.getItinerary().getDay())).orElseThrow();
+            throw new DuplicateTripPlaceException(false, other.getItinerary().getDay(), other.getPlaceName());
+        }
+    }
+
+    /** 영상 장소(구글 id 없음)와 검색 장소를 같은 곳으로 보는 기준 — 띄어쓰기·대소문자를 뺀 이름이 같고 가까우면. */
+    private static boolean isSameNameNearby(TripPlace existing, String name, Double latitude, Double longitude) {
+        if (name == null || existing.getPlaceName() == null || !normalizeName(name).equals(normalizeName(existing.getPlaceName()))) {
+            return false;
+        }
+        if (latitude == null || longitude == null || existing.getLatitude() == null || existing.getLongitude() == null) {
+            return true; // 좌표 없는 장소(ADR 0006)는 이름으로만 본다
+        }
+        return GeoUtils.haversineKm(latitude, longitude, existing.getLatitude(), existing.getLongitude()) <= SAME_PLACE_RADIUS_KM;
+    }
+
+    private static String normalizeName(String name) {
+        return name.replaceAll("\\s+", "").toLowerCase();
+    }
+
+    /** 이미 이 여행에 있는 장소를 담으려 할 때. day는 이미 있는 날(sameDay면 담으려던 날과 같다). */
+    public static class DuplicateTripPlaceException extends RuntimeException {
+        private final boolean sameDay;
+        private final int day;
+        private final String placeName;
+
+        public DuplicateTripPlaceException(boolean sameDay, int day, String placeName) {
+            super(placeName + "은(는) 이미 " + day + "일차에 있어요.");
+            this.sameDay = sameDay;
+            this.day = day;
+            this.placeName = placeName;
+        }
+
+        public boolean sameDay() {
+            return sameDay;
+        }
+
+        public int day() {
+            return day;
+        }
+
+        public String placeName() {
+            return placeName;
+        }
     }
 
     /** 보낸 필드만 부분적으로 갱신한다(null인 필드는 기존 값 유지 — TripPlace.applyDetails 참고). */

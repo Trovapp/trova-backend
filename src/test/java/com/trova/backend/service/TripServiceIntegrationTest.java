@@ -258,6 +258,79 @@ class TripServiceIntegrationTest {
     }
 
     @Test
+    void addPlaceToDay는_같은_날에_이미_있는_장소면_막는다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-dup-same", "돈사돈", null, null, null, null, 33.4, 126.5, null));
+        tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-dup-same").orElseThrow();
+
+        assertThatThrownBy(() -> tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-dup-same", false, true))
+                .isInstanceOfSatisfying(TripService.DuplicateTripPlaceException.class, e -> {
+                    assertThat(e.sameDay()).isTrue();
+                    assertThat(e.day()).isEqualTo(1);
+                    assertThat(e.placeName()).isEqualTo("돈사돈");
+                });
+        assertThat(tripPlaceRepository.findByItinerary_Trip(trip)).hasSize(1);
+    }
+
+    @Test
+    void addPlaceToDay는_다른_날에_있으면_알리고_확인하면_담는다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 2));
+        placeRepository.save(new Place("trip-place-test-dup-other", "돈사돈", null, null, null, null, 33.4, 126.5, null));
+        tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-dup-other").orElseThrow();
+
+        assertThatThrownBy(() -> tripService.addPlaceToDay(user, trip.getId(), 2, "trip-place-test-dup-other"))
+                .isInstanceOfSatisfying(TripService.DuplicateTripPlaceException.class, e -> {
+                    assertThat(e.sameDay()).isFalse();
+                    assertThat(e.day()).isEqualTo(1);
+                });
+
+        TripPlace again = tripService.addPlaceToDay(user, trip.getId(), 2, "trip-place-test-dup-other", false, true).orElseThrow();
+        assertThat(again.getItinerary().getDay()).isEqualTo(2);
+    }
+
+    @Test
+    void addVideoPlaceToDay는_같은_날에_같은_영상_장소가_있으면_막는다() {
+        User user = newUser();
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(user, "https://youtu.be/trip-dup-video", SourcePlatform.YOUTUBE));
+        SavedPlace museum = savedPlaceRepository.save(
+                new SavedPlace(job, user, "삼각산금암미술관", "서울", "attraction", 37.6416, 126.9412, 1, 1));
+        Trip trip = tripService.confirmVideoPlacesIntoTrip(user, "서울 당일치기", List.of(museum), null);
+
+        assertThatThrownBy(() -> tripService.addVideoPlaceToDay(user, trip.getId(), 1, museum.getId()))
+                .isInstanceOfSatisfying(TripService.DuplicateTripPlaceException.class, e -> assertThat(e.sameDay()).isTrue());
+        assertThat(tripPlaceRepository.findByItinerary_Trip(trip)).hasSize(1);
+    }
+
+    @Test
+    void 영상_장소와_검색_장소도_이름이_같고_가까우면_같은_장소로_본다() {
+        User user = newUser();
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(user, "https://youtu.be/trip-dup-cross", SourcePlatform.YOUTUBE));
+        SavedPlace museum = savedPlaceRepository.save(
+                new SavedPlace(job, user, "삼각산금암미술관", "서울", "attraction", 37.6416, 126.9412, 1, 1));
+        Trip trip = tripService.confirmVideoPlacesIntoTrip(user, "서울 당일치기", List.of(museum), null);
+        // 구글 결과는 좌표가 조금 다르고 이름 띄어쓰기도 다를 수 있다.
+        placeRepository.save(new Place("trip-place-test-dup-cross", "삼각산 금암미술관", null, null, null, null, 37.6420, 126.9415, null));
+
+        assertThatThrownBy(() -> tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-dup-cross"))
+                .isInstanceOf(TripService.DuplicateTripPlaceException.class);
+    }
+
+    @Test
+    void 이름이_같아도_멀리_떨어진_지점은_다른_장소로_본다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "서울 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-branch-a", "스타벅스", null, null, null, null, 37.5000, 127.0000, null));
+        placeRepository.save(new Place("trip-place-test-branch-b", "스타벅스", null, null, null, null, 37.5100, 127.0000, null));
+        tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-branch-a").orElseThrow();
+
+        assertThat(tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-branch-b")).isPresent();
+    }
+
+    @Test
     void addPlaceToDay는_존재하지_않는_googlePlaceId면_아무것도_만들지_않는다() {
         User user = newUser();
         Trip trip = tripService.createTrip(user, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
