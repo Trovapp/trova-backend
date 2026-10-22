@@ -88,7 +88,8 @@ public class TripController {
     }
 
     // fitRoute: 맨 끝 대신 동선에 맞는 자리에 시간을 매겨 넣는다(#221, 일정 초안에서 뺀 장소 찾아 넣기).
-    public record AddPlaceRequest(String googlePlaceId, Boolean fitRoute) {
+    /** allowOtherDay: 같은 여행의 다른 날에 이미 있다는 409를 받은 뒤 사용자가 그래도 담겠다고 했을 때(#233). */
+    public record AddPlaceRequest(String googlePlaceId, Boolean fitRoute, Boolean allowOtherDay) {
     }
 
     public record ReplaceRequest(String googlePlaceId) {
@@ -295,15 +296,19 @@ public class TripController {
             return ResponseEntity.badRequest().build();
         }
         User user = currentUserService.resolve(authentication);
-        return tripService.addPlaceToDay(user, tripId, day, request.googlePlaceId(), Boolean.TRUE.equals(request.fitRoute()))
+        return tripService.addPlaceToDay(user, tripId, day, request.googlePlaceId(),
+                        Boolean.TRUE.equals(request.fitRoute()), Boolean.TRUE.equals(request.allowOtherDay()))
                 .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    public record AddVideoPlaceRequest(Long savedPlaceId) {
+    public record AddVideoPlaceRequest(Long savedPlaceId, Boolean allowOtherDay) {
     }
 
-    /** 영상에서 찾은 장소 하나를 이 여행의 그 일차 끝에 담는다(#126). 영상 장소·여행이 본인 것이 아니면 404. */
+    /**
+     * 영상에서 찾은 장소 하나를 이 여행의 그 일차 끝에 담는다(#126). 영상 장소·여행이 본인 것이 아니면 404.
+     * 이미 이 여행에 있으면 409(DuplicateTripPlaceHandler, #233).
+     */
     @PostMapping("/api/trips/{tripId}/days/{day}/video-places")
     public ResponseEntity<TripPlaceResponse> addVideoPlace(
             Authentication authentication, @PathVariable Long tripId, @PathVariable int day,
@@ -313,7 +318,7 @@ public class TripController {
             return ResponseEntity.badRequest().build();
         }
         User user = currentUserService.resolve(authentication);
-        return tripService.addVideoPlaceToDay(user, tripId, day, request.savedPlaceId())
+        return tripService.addVideoPlaceToDay(user, tripId, day, request.savedPlaceId(), Boolean.TRUE.equals(request.allowOtherDay()))
                 .map(place -> ResponseEntity.ok(TripPlaceResponse.from(place)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

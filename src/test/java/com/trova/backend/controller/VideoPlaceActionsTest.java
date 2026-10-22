@@ -117,6 +117,35 @@ class VideoPlaceActionsTest {
     }
 
     @Test
+    void 이미_담긴_영상_장소는_같은_날이면_409로_막고_다른_날은_확인하면_담는다() throws Exception {
+        User me = userRepository.save(new User("google", "vp-trip-dup", "영상유저", null));
+        SavedPlace cafe = videoPlace(me, "바다카페");
+        Trip trip = trip(me);
+        String body = "{\"savedPlaceId\":" + cafe.getId() + "}";
+        mockMvc.perform(post("/api/trips/" + trip.getId() + "/days/1/video-places").with(loginAs("vp-trip-dup"))
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/trips/" + trip.getId() + "/days/1/video-places").with(loginAs("vp-trip-dup"))
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("DUPLICATE_SAME_DAY"))
+                .andExpect(jsonPath("$.day").value(1))
+                .andExpect(jsonPath("$.placeName").value("바다카페"));
+        mockMvc.perform(post("/api/trips/" + trip.getId() + "/days/2/video-places").with(loginAs("vp-trip-dup"))
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("DUPLICATE_OTHER_DAY"))
+                .andExpect(jsonPath("$.day").value(1));
+        mockMvc.perform(post("/api/trips/" + trip.getId() + "/days/2/video-places").with(loginAs("vp-trip-dup"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"savedPlaceId\":" + cafe.getId() + ",\"allowOtherDay\":true}"))
+                .andExpect(status().isOk());
+
+        assertThat(tripPlaceRepository.findByItinerary_Trip(trip)).hasSize(2);
+    }
+
+    @Test
     void 남의_영상_장소나_남의_여행에는_담지_못한다() throws Exception {
         User me = userRepository.save(new User("google", "vp-trip-2", "영상유저", null));
         User other = userRepository.save(new User("google", "vp-trip-other", "남", null));
