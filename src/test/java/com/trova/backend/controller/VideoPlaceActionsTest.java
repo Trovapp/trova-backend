@@ -4,6 +4,8 @@ import com.trova.backend.entity.*;
 import com.trova.backend.recommendation.GooglePlacesApiClient;
 import com.trova.backend.recommendation.GooglePlacesNearbySearchResponse;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
+import com.trova.backend.recommendation.PlaceReviewService;
+import com.trova.backend.pipeline.ReviewSummary;
 import com.trova.backend.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,13 +22,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -60,6 +65,8 @@ class VideoPlaceActionsTest {
     private GooglePlacesApiClient googlePlacesApiClient;
     @MockitoBean
     private PlaceEmbeddingService placeEmbeddingService;
+    @MockitoBean
+    private PlaceReviewService placeReviewService;
 
     @BeforeEach
     void noSearchResults() {
@@ -159,6 +166,35 @@ class VideoPlaceActionsTest {
                 .andExpect(status().isNotFound());
         mockMvc.perform(post("/api/trips/" + othersTrip.getId() + "/days/1/video-places").with(loginAs("vp-trip-2"))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + mine.getId() + "}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void 일정_초안의_영상_장소도_리뷰_요약을_본다() throws Exception {
+        // #235: 일정 초안 장소는 아직 여행 장소가 아니라 영상 장소 — 찜하기와 같은 규칙으로 구글 장소에 연결해 리뷰를 준다.
+        User me = userRepository.save(new User("google", "vp-review-1", "영상유저", null));
+        placeRepository.save(new Place("gp-video-review", "바다카페", "cafe", 4.4, 30, null, 33.45, 126.5, "제주"));
+        SavedPlace cafe = videoPlace(me, "바다카페");
+        cafe.applyOpeningHours("gp-video-review", null);
+        savedPlaceRepository.save(cafe);
+        when(placeReviewService.getOrGenerateSummary(anyLong())).thenReturn(Optional.of(new PlaceReviewService.PlaceReviewInfo(
+                new ReviewSummary("통창 **바다 뷰**", List.of("뷰가 좋다"), List.of("주말엔 붐빈다"), null, null, List.of(), List.of()),
+                List.of("바다가 보여요"))));
+
+        mockMvc.perform(get("/api/saved-places/" + cafe.getId() + "/details").with(loginAs("vp-review-1")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("바다카페"))
+                .andExpect(jsonPath("$.pros[0]").value("뷰가 좋다"));
+        verify(googlePlacesApiClient, never()).searchText(anyString());
+    }
+
+    @Test
+    void 남의_영상_장소_리뷰는_볼_수_없다() throws Exception {
+        userRepository.save(new User("google", "vp-review-2", "영상유저", null));
+        User other = userRepository.save(new User("google", "vp-review-other", "남", null));
+        SavedPlace others = videoPlace(other, "남의카페");
+
+        mockMvc.perform(get("/api/saved-places/" + others.getId() + "/details").with(loginAs("vp-review-2")))
                 .andExpect(status().isNotFound());
     }
 
