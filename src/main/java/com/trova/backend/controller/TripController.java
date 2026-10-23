@@ -403,6 +403,23 @@ public class TripController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * 영상 장소(SavedPlace)의 리뷰 요약(#235) — 일정 초안 장소는 아직 여행 장소가 아니라 위 API를 못 쓴다.
+     * 찜하기(#125)와 같은 규칙(구글 id가 있으면 그대로, 없으면 지역을 붙여 검색해 3km 안)으로 연결하고 요약은 캐시를 쓴다.
+     * 본인 장소가 아니거나 지도에서 못 찾으면 404.
+     */
+    @GetMapping("/api/saved-places/{id}/details")
+    public ResponseEntity<TripPlaceDetailResponse> savedPlaceDetails(Authentication authentication, @PathVariable Long id) {
+        User user = currentUserService.resolve(authentication);
+        dailyQuotaService.consumePlaceCall(user);
+        return tripService.resolveSavedPlace(user, id)
+                .flatMap(TripService.SavedPlaceMatch::place)
+                .flatMap(place -> placeReviewService.getOrGenerateSummary(place.getId())
+                        .map(reviewInfo -> TripPlaceDetailResponse.from(place, reviewInfo)))
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     /** 이 영상으로 이미 만든 여행 — 앱이 "여행으로 만들기" 대신 "만든 여행 보기"를 보여줄 때 쓴다. 없으면 404. */
     @GetMapping("/api/places/videos/{jobId}/trip")
     public ResponseEntity<TripResponse> getVideoTrip(Authentication authentication, @PathVariable Long jobId) {
