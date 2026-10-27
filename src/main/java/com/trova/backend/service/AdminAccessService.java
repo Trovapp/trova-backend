@@ -26,6 +26,11 @@ public class AdminAccessService {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
+    /** "로그인제공자:제공자사용자ID" 목록 — 사용 지표에서 관리자 계정을 빼는 데 쓴다(#237). */
+    public Set<String> adminKeys() {
+        return adminKeys;
+    }
+
     public boolean isAdmin(User user) {
         return user != null && adminKeys.contains(user.getProvider() + ":" + user.getProviderUserId());
     }

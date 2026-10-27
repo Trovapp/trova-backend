@@ -3,6 +3,7 @@ package com.trova.backend.controller;
 import com.trova.backend.admin.AdminGuard;
 import com.trova.backend.admin.AiDashboardService;
 import com.trova.backend.admin.DashboardSummaryService;
+import com.trova.backend.admin.FunnelDashboardService;
 import com.trova.backend.admin.PipelineDashboardService;
 import com.trova.backend.admin.ServerDashboardService;
 import com.trova.backend.admin.UsageDashboardService;
@@ -21,16 +22,19 @@ public class AdminDashboardController {
     private final AiDashboardService aiDashboardService;
     private final ServerDashboardService serverDashboardService;
     private final DashboardSummaryService dashboardSummaryService;
+    private final FunnelDashboardService funnelDashboardService;
 
     public AdminDashboardController(AdminGuard adminGuard, UsageDashboardService usageDashboardService,
                                     PipelineDashboardService pipelineDashboardService, AiDashboardService aiDashboardService,
-                                    ServerDashboardService serverDashboardService, DashboardSummaryService dashboardSummaryService) {
+                                    ServerDashboardService serverDashboardService, DashboardSummaryService dashboardSummaryService,
+                                    FunnelDashboardService funnelDashboardService) {
         this.adminGuard = adminGuard;
         this.usageDashboardService = usageDashboardService;
         this.pipelineDashboardService = pipelineDashboardService;
         this.aiDashboardService = aiDashboardService;
         this.serverDashboardService = serverDashboardService;
         this.dashboardSummaryService = dashboardSummaryService;
+        this.funnelDashboardService = funnelDashboardService;
     }
 
     @GetMapping("/api/admin/dashboard/usage")
@@ -64,5 +68,13 @@ public class AdminDashboardController {
     public DashboardSummaryService.DashboardSummary summary(Authentication authentication) {
         adminGuard.requireAdmin(authentication);
         return dashboardSummaryService.summary();
+    }
+
+    /** 사용자 퍼널·기능 사용(#237). days=0은 전체 기간. */
+    @GetMapping("/api/admin/dashboard/funnel")
+    public FunnelDashboardService.FunnelDashboard funnel(Authentication authentication,
+                                                         @RequestParam(defaultValue = "30") int days) {
+        adminGuard.requireAdmin(authentication);
+        return funnelDashboardService.funnel(days);
     }
 }
