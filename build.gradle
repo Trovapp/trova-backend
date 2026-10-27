@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.1.0'
+	id 'org.springframework.boot' version '4.1.2'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -25,13 +25,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
-	implementation 'org.bsc.langgraph4j:langgraph4j-core:1.8.13'
+	implementation 'org.bsc.langgraph4j:langgraph4j-core:1.9.6'
 	// API 문서 자동 생성(#149) — 기본은 꺼져 있고 API_DOCS_ENABLED=true일 때만 열린다.
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
 	runtimeOnly 'org.postgresql:postgresql'
-	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+	implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
 	// PWA 웹 푸시(ADR 0016) — 의존성 없는 VAPID·암호화 라이브러리, HTTP는 Java 기본 HttpClient.
 	implementation 'com.zerodeplibs:zerodep-web-push-java:2.1.5'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
