@@ -85,6 +85,9 @@ app:
   quota:
     shares-per-day: ${QUOTA_SHARES_PER_DAY:20}
     place-calls-per-day: ${QUOTA_PLACE_CALLS_PER_DAY:100}
+  # IP별 분당 요청 수 제한(#239) — 넘으면 429. 앱 폴링(5초)보다 넉넉하게 감으로 정함(실측 아님), 0이면 끈다. 서버 안(127.0.0.1) 요청은 세지 않는다.
+  rate-limit:
+    ip-per-minute: ${IP_RATE_LIMIT_PER_MINUTE:300}
   # 관리자 API(/api/admin/*)를 쓸 수 있는 사용자 — "로그인제공자:제공자사용자ID"를 쉼표로 구분(예: google:1234).
   # 비워두면 아무도 쓸 수 없다.
   admin:
