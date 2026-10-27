@@ -1,0 +1,11 @@
+# 의존성 취약점·업데이트 자동 점검(#239, 무료). 한 주에 한 번, 같은 종류는 PR 하나로 묶어 알림이 쌓이지 않게 한다.
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      gradle-minor-patch:
+        update-types: [minor, patch]
