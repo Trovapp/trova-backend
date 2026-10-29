@@ -53,4 +53,5 @@
 | [0017](0017-android-native-app.md) | 안드로이드는 네이티브 앱(같은 Expo 코드, EAS 빌드·Expo 푸시), 아이폰은 PWA (0013 일부 변경) | 확정 | 2026-10-14 |
 | [0018](0018-android-ota-updates-eas-update.md) | 안드로이드 앱은 무선 업데이트(EAS Update, fingerprint·채널·올리기 전 서버 주소 검사)로 JS 변경을 내보낸다 | 확정 | 2026-10-15 |
 | [0019](0019-admin-web-no-cloudflare-access.md) | 관리자 웹 앞의 Cloudflare Access는 붙이지 않는다, 대신 관리자 카카오 계정 2단계 인증 (0012 일부 변경) | 확정 | 2026-10-20 |
+| [0020](0020-spring-ai-for-gemini-calls.md) | Gemini 호출은 Spring AI 2(google-genai)로, 재시도는 우리 코드 한 곳에서만 | 확정 | 2026-10-30 |
 | [0021](0021-share-job-queue-kafka-optional.md) | 영상 분석 시작은 교체 가능한 대기열로 — 운영은 Aiven 무료 Kafka, 브로커가 안 되면 서버 안 대기열로 | 확정 | 2026-10-30 |

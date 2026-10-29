@@ -1,11 +1,17 @@
 package com.trova.backend.planner;
 
+import com.google.genai.errors.ApiException;
 import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestClient;
+import org.mockito.ArgumentCaptor;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.metadata.ChatResponseMetadata;
+import org.springframework.ai.chat.metadata.DefaultUsage;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,50 +22,66 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static org.mockito.Mockito.when;
 
 class GeminiJsonClientImplTest {
 
-    private static final String URL = GeminiJsonClientImpl.BASE_URL + "/v1beta/models/" + GeminiJsonClientImpl.MODEL + ":generateContent";
-    private static final String OK_BODY = """
-            {"candidates":[{"content":{"parts":[{"text":"{\\"days\\": 2}"}]}}],
-             "usageMetadata":{"promptTokenCount":120,"candidatesTokenCount":8,"totalTokenCount":128}}
-            """;
+    private static ChatResponse ok(String text) {
+        return ChatResponse.builder()
+                .generations(List.of(new Generation(new AssistantMessage(text))))
+                .metadata(ChatResponseMetadata.builder().usage(new DefaultUsage(120, 8, 128)).build())
+                .build();
+    }
+
+    // Spring AI는 google-genai 오류를 RuntimeException으로 감싸 던진다.
+    private static RuntimeException gemini(int code) {
+        return new RuntimeException("Gemini 호출 실패", new ApiException(code, "STATUS", "message"));
+    }
 
     @Test
     void JSON_응답을_요청하고_429면_기다렸다_다시_시도한다() {
-        RestClient.Builder builder = RestClient.builder();
-        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
-        server.expect(requestTo(URL)).andExpect(jsonPath("$.generationConfig.responseMimeType").value("application/json"))
-                .andRespond(withStatus(HttpStatus.TOO_MANY_REQUESTS));
-        server.expect(requestTo(URL)).andRespond(withSuccess(OK_BODY, MediaType.APPLICATION_JSON));
+        ChatModel chatModel = mock(ChatModel.class);
+        when(chatModel.call(any(Prompt.class))).thenThrow(gemini(429)).thenReturn(ok("{\"days\": 2}"));
         ApiCallLogService logs = mock(ApiCallLogService.class);
         List<Long> sleeps = new ArrayList<>();
-        GeminiJsonClientImpl client = new GeminiJsonClientImpl("k", builder, GeminiJsonClientImpl.BASE_URL, logs, sleeps::add);
+        GeminiJsonClientImpl client = new GeminiJsonClientImpl(chatModel, logs, sleeps::add);
 
         assertThat(client.generateJson("p", "trip-plan.test")).contains("{\"days\": 2}");
         assertThat(sleeps).containsExactly(2_000L);
         verify(logs).record(eq("gemini"), eq("trip-plan.test"), isNull(), anyLong(), eq(true), isNull(), eq(120), eq(8), eq(128));
-        server.verify();
+        ArgumentCaptor<Prompt> prompt = ArgumentCaptor.forClass(Prompt.class);
+        verify(chatModel, times(2)).call(prompt.capture());
+        GoogleGenAiChatOptions options = (GoogleGenAiChatOptions) prompt.getValue().getOptions();
+        assertThat(options.getResponseMimeType()).isEqualTo("application/json");
+        assertThat(options.getTemperature()).isEqualTo(0.1);
     }
 
     @Test
     void 다시_시도해도_소용없는_오류는_바로_실패로_기록한다() {
-        RestClient.Builder builder = RestClient.builder();
-        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
-        server.expect(requestTo(URL)).andRespond(withStatus(HttpStatus.BAD_REQUEST));
+        ChatModel chatModel = mock(ChatModel.class);
+        when(chatModel.call(any(Prompt.class))).thenThrow(gemini(400));
         ApiCallLogService logs = mock(ApiCallLogService.class);
         List<Long> sleeps = new ArrayList<>();
-        GeminiJsonClientImpl client = new GeminiJsonClientImpl("k", builder, GeminiJsonClientImpl.BASE_URL, logs, sleeps::add);
+        GeminiJsonClientImpl client = new GeminiJsonClientImpl(chatModel, logs, sleeps::add);
 
         assertThat(client.generateJson("p", "trip-plan.test")).isEmpty();
         assertThat(sleeps).isEmpty();
-        verify(logs).record(eq("gemini"), eq("trip-plan.test"), isNull(), anyLong(), eq(false), any(), isNull(), isNull(), isNull());
-        server.verify();
+        verify(chatModel, times(1)).call(any(Prompt.class));
+        verify(logs).record(eq("gemini"), eq("trip-plan.test"), isNull(), anyLong(), eq(false), eq("Gemini 400"), isNull(), isNull(), isNull());
+    }
+
+    @Test
+    void 상태_코드_없는_오류는_세_번까지만_시도한다() {
+        ChatModel chatModel = mock(ChatModel.class);
+        when(chatModel.call(any(Prompt.class))).thenThrow(new RuntimeException("timeout"));
+        List<Long> sleeps = new ArrayList<>();
+        GeminiJsonClientImpl client = new GeminiJsonClientImpl(chatModel, mock(ApiCallLogService.class), sleeps::add);
+
+        assertThat(client.generateJson("p", "trip-plan.test")).isEmpty();
+        verify(chatModel, times(GeminiJsonClientImpl.MAX_ATTEMPTS)).call(any(Prompt.class));
+        assertThat(sleeps).containsExactly(2_000L, 4_000L);
     }
 
     @Test

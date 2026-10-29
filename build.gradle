@@ -17,6 +17,13 @@ repositories {
 	mavenCentral()
 }
 
+dependencyManagement {
+	imports {
+		// Gemini 호출을 Spring AI로(#243, ADR 0020). 2.0은 Spring Boot 4 기준.
+		mavenBom 'org.springframework.ai:spring-ai-bom:2.0.2'
+	}
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -32,6 +39,7 @@ dependencies {
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'org.bsc.langgraph4j:langgraph4j-core:1.8.13'
+	implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
 	// API 문서 자동 생성(#149) — 기본은 꺼져 있고 API_DOCS_ENABLED=true일 때만 열린다.
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
 	runtimeOnly 'org.postgresql:postgresql'
