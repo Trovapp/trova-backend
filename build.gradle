@@ -23,6 +23,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	// 영상 분석 시작 대기열을 Kafka로 바꿀 수 있게(#244, ADR 0021) — 기본은 꺼져 있고 app.queue.type=kafka일 때만 연결한다.
+	implementation('org.springframework.boot:spring-boot-starter-kafka') {
+		// 메시지가 작업 id 하나라 압축을 켜지 않는다 — 압축 코덱 네이티브 라이브러리(zstd 7MB·snappy 2.2MB)는 그때만 필요해 JAR에서 뺀다.
+		exclude group: 'com.github.luben', module: 'zstd-jni'
+		exclude group: 'org.xerial.snappy', module: 'snappy-java'
+	}
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'org.bsc.langgraph4j:langgraph4j-core:1.8.13'
@@ -38,6 +44,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testRuntimeOnly 'com.h2database:h2'
 }
