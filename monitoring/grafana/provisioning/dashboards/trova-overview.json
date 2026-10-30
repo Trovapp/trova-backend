@@ -789,6 +789,247 @@
           "instant": true
         }
       ]
+    },
+    {
+      "id": 17,
+      "type": "row",
+      "title": "Kafka 작업 대기열 (#244·#249)",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 44,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 18,
+      "type": "bargauge",
+      "title": "공유 → 분석 시작 평균 대기(경로별, 선택 기간)",
+      "description": "kafka = Kafka 리스너, async = 서버 안 대기열(Kafka 실패 시 넘김 포함). 작업이 만들어진 뒤 분석이 시작되기까지.",
+      "gridPos": {
+        "x": 0,
+        "y": 45,
+        "w": 8,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "decimals": 2,
+          "noValue": "이 기간 공유 없음",
+          "color": {
+            "mode": "continuous-GrYlRd"
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (path) (increase(trova_queue_wait_seconds_sum{job=~\"$job\"}[$__range])) / sum by (path) (increase(trova_queue_wait_seconds_count{job=~\"$job\"}[$__range]))",
+          "legendFormat": "{{path}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "type": "stat",
+      "title": "1초 안 시작 비율",
+      "description": "선택 기간 공유 중 1초 안에 분석이 시작된 비율(경로별). trova_queue_wait 버킷 1초 기준.",
+      "gridPos": {
+        "x": 8,
+        "y": 45,
+        "w": 4,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "decimals": 0,
+          "noValue": "공유 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (path) (increase(trova_queue_wait_seconds_bucket{job=~\"$job\",le=\"1.0\"}[$__range])) / sum by (path) (increase(trova_queue_wait_seconds_count{job=~\"$job\"}[$__range]))",
+          "legendFormat": "{{path}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "type": "stat",
+      "title": "넘김(Kafka 실패)",
+      "description": "선택 기간에 Kafka(Aiven)에 못 넣고 서버 안 대기열로 넘긴 공유 수. 1 이상이면 그동안 브로커 문제가 있었다(공유는 처리됨).",
+      "gridPos": {
+        "x": 12,
+        "y": 45,
+        "w": 4,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "min": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(trova_queue_fallback_total{job=~\"$job\"}[$__range]))",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "Kafka 소비자 배정 파티션 수",
+      "description": "정상은 2(파티션 0·1). 0이면 브로커와 끊긴 상태 — 공유는 넘김으로 처리된다.",
+      "gridPos": {
+        "x": 16,
+        "y": 45,
+        "w": 8,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "decimals": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "stepAfter"
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (job) (kafka_consumer_coordinator_assigned_partitions{job=~\"$job\"})",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "Aiven 보내기 지연(프로듀서 요청 평균·최대)",
+      "description": "서버 → Aiven 메시지 한 건 보내기 왕복. 대기 시간 중 Kafka 몫의 하한.",
+      "gridPos": {
+        "x": 0,
+        "y": 52,
+        "w": 12,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max by (job) (kafka_producer_request_latency_avg{job=~\"$job\"})",
+          "legendFormat": "평균 {{job}}"
+        },
+        {
+          "refId": "B",
+          "expr": "max by (job) (kafka_producer_request_latency_max{job=~\"$job\"})",
+          "legendFormat": "최대 {{job}}"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "Kafka 연결 수(소비자·프로듀서)",
+      "description": "브로커 재시작·주소 변경 뒤 다시 붙는지 확인용.",
+      "gridPos": {
+        "x": 12,
+        "y": 52,
+        "w": 12,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (job) (kafka_consumer_connection_count{job=~\"$job\"})",
+          "legendFormat": "소비자 {{job}}"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job) (kafka_producer_connection_count{job=~\"$job\"})",
+          "legendFormat": "프로듀서 {{job}}"
+        }
+      ]
     }
   ],
   "templating": {
