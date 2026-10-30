@@ -1937,3 +1937,26 @@
 - Spring AI 1회는 `429 You exceeded your current quota`로 2.0초 만에 실패했다. 30초 안에 15번 넘게 불러 분당 제한에 걸린 것이다(하루 한도 아님).
   SDK 재시도를 1회로 묶어서 다시 보내지 않고 바로 실패했다 — 설정이 실제로 동작하는 것을 확인했다.
   키를 운영과 같이 쓰므로, 그 순간 운영 요청도 429를 받았을 수 있다. 다음 측정은 호출 사이에 간격을 둔다.
+
+## 2026-10-31 Spring AI 운영 반영 뒤 Gemini 호출 전부 시간 초과 → HTTP/1.1 고정 (#253, PR #254)
+
+### 문제와 조건
+- #245(Spring AI 2)를 01:41 운영에 올린 뒤 사용자 계정 시뮬레이터로 "영상으로 일정 짜기"(당일·영상 1개)를 2회 돌렸다. Gemini 호출 6회 전부 20.3초 시간 초과(`gen_ai_client_operation_seconds{error="RuntimeException"}` 6, 합 120.8초), 앱은 "일정 초안을 만들지 못했어요".
+- 같은 시각 맥에서 REST 직접 호출은 200·0.2초(한 번 503 6.8초). Gemini 장애가 아니다. 예전 클라이언트(SimpleClientHttpRequestFactory = HttpURLConnection, HTTP/1.1)는 운영에서 정상이었고, 영상 분석(Python)은 영향이 없다.
+- 사용자: "Spring AI2 써서 더 안좋아졌어?" → "원인 파악해주고 해결하면 되는거 아니야?", "성능면에서 스프링ai로 바꿨을때 기록도해줘 카프카랑".
+
+### 선택한 방법과 이유
+- google-genai 1.65.0은 OkHttp 4.12로 HTTP/2(ALPN)를 먼저 쓴다. 운영 원인 로그(Caused by)는 자동 권한 분류기가 SSH·운영 DB 읽기를 막아 못 봤다. 예전과 같은 조건(HTTP/1.1)으로 맞추는 쪽을 택했다.
+- `ClientOptions.customHttpClient`에 HTTP/1.1 전용 OkHttpClient를 넘긴다. 바이트코드(`ApiClient.createHttpClient`)로 확인: 직접 넘긴 클라이언트는 `newBuilder()`로 이어받되 재시도 인터셉터만 덧붙이고, 연결·읽기·쓰기 제한 0과 전체 제한(`httpOptions.timeout`)은 **건너뛴다**. 요청 단위 전체 제한은 요청에 HttpOptions가 붙을 때만인데 Spring AI는 붙이지 않는다.
+  - 그래서 전체 제한 20초(`callTimeout`)를 직접 걸고, 연결·읽기·쓰기는 SDK 기본처럼 0으로 둔다. OkHttp 기본값 10초가 남으면 긴 초안 생성이 10초에 끊기고, 전체 제한이 없으면 상한이 사라진다.
+- reviewflow 리뷰(관점 4개 + 검증)에서 위 시간 제한 문제 3건을 잡아 고쳤다. 처음 코드는 HTTP/1.1만 넣고 제한을 빠뜨렸다.
+
+### 확인한 것
+- `./gradlew build` 926개 통과(로컬). 새 테스트: 실제로 만든 `Client`의 OkHttpClient가 HTTP/1.1만, callTimeout 20,000ms, 연결·읽기·쓰기 0인지.
+- 성능 기록: Spring AI·Kafka 전후 실측을 docs/bench/spring-ai-kafka-performance.md로 모았다(로컬/운영·실측/추정 구분).
+
+### 남은 것
+- 운영 배포 뒤 같은 시나리오 재확인과 `gen_ai_client_operation_seconds` 성공 수치(bench 문서에 덧붙임). 실패하면 `app.jar.bak-20261031-013856`으로 되돌린다.
+- 운영 원인 로그(Caused by)와 서버에서 `curl --http2` 비교는 사용자가 SSH로 확인.
+- 테스트로 생긴 실패 초안 2개가 사용자 계정(운영)에 남았다.
+
