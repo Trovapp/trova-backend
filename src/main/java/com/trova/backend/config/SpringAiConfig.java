@@ -1,9 +1,13 @@
 package com.trova.backend.config;
 
 import com.google.genai.Client;
+import com.google.genai.types.ClientOptions;
 import com.google.genai.types.HttpOptions;
 import com.google.genai.types.HttpRetryOptions;
 import io.micrometer.observation.ObservationRegistry;
+import java.util.List;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import org.springframework.ai.google.genai.GoogleGenAiChatModel;
 import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
 import org.springframework.ai.model.tool.ToolCallingManager;
@@ -33,6 +37,23 @@ public class SpringAiConfig {
         return Client.builder()
                 .apiKey(apiKey == null || apiKey.isBlank() ? "unset" : apiKey)
                 .httpOptions(httpOptions())
+                .clientOptions(clientOptions())
+                .build();
+    }
+
+    /**
+     * google-genai는 OkHttp로 HTTP/2(ALPN)를 먼저 쓴다. 예전 클라이언트(SimpleClientHttpRequestFactory = HttpURLConnection, HTTP/1.1)는
+     * 운영(Oracle E2.1.Micro)에서 잘 됐는데, Spring AI로 바꾼 뒤 운영에서만 호출이 전부 20초 시간 초과였다(2026-10-31, 6/6, #253).
+     * 같은 시각 맥에서는 정상이라 Gemini 쪽 문제가 아니다. 예전과 같은 HTTP/1.1만 쓰도록 OkHttpClient를 직접 넘긴다.
+     * SDK는 이 클라이언트를 newBuilder()로 이어받아 시간 제한·재시도 설정을 덧붙인다(ApiClient.createHttpClient, 1.65.0 바이트코드 확인).
+     */
+    static ClientOptions clientOptions() {
+        return ClientOptions.builder().customHttpClient(http1Client()).build();
+    }
+
+    static OkHttpClient http1Client() {
+        return new OkHttpClient.Builder()
+                .protocols(List.of(Protocol.HTTP_1_1))
                 .build();
     }
 
