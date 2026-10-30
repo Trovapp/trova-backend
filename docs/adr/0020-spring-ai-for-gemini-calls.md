@@ -25,3 +25,4 @@
 - 로컬 실측(-Xmx384m, 같은 개발 DB, 각 2회): JAR 71.2MB → 95.9MB, 시작 후 RSS 평균 383MB → 400MB(+16MB), 불러온 클래스 +약 920개, 시작 시간 3.6초 → 4.0초. 운영 서버 메모리는 956MB라 감당 가능한 크기로 본다.
 - 응답 시간: 첫 측정은 Gemini `503 high demand`로 실패했다. 다시 잰 결과(2026-10-30)는 중앙값 기존 902ms, Spring AI 892ms로 같았다. 속도 이득은 없고, 이득은 코드·설정·지표 쪽이다.
 - 다음 단계(대화 도구 호출 → `@Tool`, 임베딩·pgvector)는 1단계를 운영에서 본 뒤 정한다.
+- **2026-10-31 운영 반영 뒤 제약:** google-genai(OkHttp)의 HTTP/2 연결이 운영(Oracle)에서 응답을 못 받아 Gemini 호출이 전부 20초 시간 초과였다(6/6, #253). 예전 클라이언트와 같은 HTTP/1.1만 쓰도록 `ClientOptions.customHttpClient`를 넘긴다(#254). 이때 SDK가 전체 제한(20초)·연결/읽기/쓰기 제한을 걸어 주지 않으므로 `SpringAiConfig.http1Client()`에서 직접 건다 — 이 OkHttpClient를 빼면 같은 장애가 재발한다. 성능 수치는 docs/bench/spring-ai-kafka-performance.md.
