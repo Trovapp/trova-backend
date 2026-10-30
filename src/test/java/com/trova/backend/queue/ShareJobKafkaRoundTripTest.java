@@ -100,7 +100,7 @@ class ShareJobKafkaRoundTripTest {
 
             context.getBean(KafkaShareJobQueue.class).enqueue(42L);
 
-            verify(context.getBean(PlaceExtractionService.class), timeout(30_000)).processNow(42L);
+            verify(context.getBean(PlaceExtractionService.class), timeout(30_000)).processNow(42L, QueuePath.KAFKA);
             // Kafka로 갔으면 서버 안 대기열(process)로는 넘기지 않는다.
             verify(context.getBean(PlaceExtractionService.class), never()).process(42L);
         }
