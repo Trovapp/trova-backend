@@ -10,6 +10,7 @@
 - 배포 목표: Oracle Cloud Free Tier + k3s (지금은 로컬 개발 단계). 단, Always Free
   Ampere A1 스펙이 2026-06부터 2 OCPU/12GB로 축소됨(기존 4 OCPU/24GB 기준 계획은 재검토 필요)
 - LLM(장소 추출): Gemini API 무료 티어 (Gemini 3.5 Flash 또는 Flash-Lite — 2.5 Flash-Lite는 2026-08 기준 신규 사용자에게 제공 종료됨)
+- Java 쪽 Gemini 호출: Spring AI 2(google-genai) `ChatModel` — 재시도는 우리 코드 한 곳에서만, 라이브러리 기본 재시도는 끈다(docs/adr/0020)
 - STT: Gemini API에 오디오 파일을 직접 입력 (별도 Whisper 셀프호스팅 안 함 — 2026-08-20 결정, 아래 참고)
 - 지오코딩: 카카오 로컬 API (무료 쿼터: 일 10만 / 월 300만 건)
 - 영상 다운로드: yt-dlp
