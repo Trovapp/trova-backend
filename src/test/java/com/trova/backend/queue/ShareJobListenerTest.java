@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -35,7 +36,7 @@ class ShareJobListenerTest {
 
         listener.onMessage("42");
 
-        verify(extraction).processNow(42L);
+        verify(extraction).processNow(42L, QueuePath.KAFKA);
     }
 
     @ParameterizedTest
@@ -45,7 +46,7 @@ class ShareJobListenerTest {
 
         listener.onMessage("42");
 
-        verify(extraction, never()).processNow(anyLong());
+        verify(extraction, never()).processNow(anyLong(), any());
     }
 
     @Test
@@ -54,6 +55,6 @@ class ShareJobListenerTest {
 
         listener.onMessage("42");
 
-        verify(extraction, never()).processNow(anyLong());
+        verify(extraction, never()).processNow(anyLong(), any());
     }
 }

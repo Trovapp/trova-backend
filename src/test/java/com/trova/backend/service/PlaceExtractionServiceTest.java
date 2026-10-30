@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.BeforeEach;
 import com.trova.backend.pipeline.PipelineStageMetrics;
+import com.trova.backend.queue.QueueWaitMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -70,7 +72,7 @@ class PlaceExtractionServiceTest {
     private PlaceExtractionService serviceWith(Executor geocodingTaskExecutor) {
         return new PlaceExtractionService(lifecycleService, pipelineRunner, kakaoGeocodingService,
                 placeSelectionRunner, placeVerificationRunner, foundPlaceNameStore, autoDraftService, geocodingTaskExecutor,
-                new PipelineStageMetrics(new SimpleMeterRegistry()));
+                new PipelineStageMetrics(new SimpleMeterRegistry()), mock(QueueWaitMetrics.class));
     }
 
     @Test

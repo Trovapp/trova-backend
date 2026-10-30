@@ -13,6 +13,8 @@ import com.trova.backend.pipeline.PlaceSelection;
 import com.trova.backend.pipeline.PlaceSelectionRunner;
 import com.trova.backend.pipeline.PlaceVerification;
 import com.trova.backend.pipeline.PlaceVerificationRunner;
+import com.trova.backend.queue.QueuePath;
+import com.trova.backend.queue.QueueWaitMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,6 +47,7 @@ public class PlaceExtractionService {
     private final AutoDraftService autoDraftService;
     private final Executor geocodingTaskExecutor;
     private final PipelineStageMetrics stageMetrics;
+    private final QueueWaitMetrics queueWaitMetrics;
 
     public PlaceExtractionService(
             ProcessingJobLifecycleService lifecycleService,
@@ -55,7 +58,8 @@ public class PlaceExtractionService {
             FoundPlaceNameStore foundPlaceNameStore,
             AutoDraftService autoDraftService,
             @Qualifier("geocodingTaskExecutor") Executor geocodingTaskExecutor,
-            PipelineStageMetrics stageMetrics
+            PipelineStageMetrics stageMetrics,
+            QueueWaitMetrics queueWaitMetrics
     ) {
         this.lifecycleService = lifecycleService;
         this.pipelineRunner = pipelineRunner;
@@ -66,21 +70,24 @@ public class PlaceExtractionService {
         this.autoDraftService = autoDraftService;
         this.geocodingTaskExecutor = geocodingTaskExecutor;
         this.stageMetrics = stageMetrics;
+        this.queueWaitMetrics = queueWaitMetrics;
     }
 
     @Async("pipelineTaskExecutor")
     public void process(Long jobId) {
-        processNow(jobId);
+        processNow(jobId, QueuePath.ASYNC);
     }
 
     /**
      * 부른 스레드에서 끝까지 처리한다. Kafka 리스너(#244)는 처리가 끝난 뒤 메시지를 완료로 표시해야 서버가 중간에 죽었을 때
      * 같은 작업을 다시 받으므로, @Async를 거치지 않고 이걸 부른다.
      */
-    public void processNow(Long jobId) {
+    public void processNow(Long jobId, QueuePath path) {
         try {
+            // 작업이 만들어진 뒤 여기까지 기다린 시간(#249) — 대기열 경로별로 비교한다.
+            long waitMs = queueWaitMetrics.record(jobId, path);
             String sourceUrl = lifecycleService.markProcessing(jobId);
-            log.info("ProcessingJob {} 파이프라인 시작: {}", jobId, sourceUrl);
+            log.info("ProcessingJob {} 파이프라인 시작({}, 대기 {}ms): {}", jobId, path.tag(), waitMs, sourceUrl);
 
             lifecycleService.updateStage(jobId, ProcessingStage.EXTRACTING);
             // 분석이 끝나기 전에 제목·찾은 장소 이름을 앱에 보여줄 수 있게 바로 반영한다(#51).

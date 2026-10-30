@@ -40,6 +40,6 @@ public class ShareJobListener {
             log.info("ProcessingJob {} 대기열 메시지 건너뜀(상태 {})", id, status.map(Enum::name).orElse("없음"));
             return;
         }
-        placeExtractionService.processNow(id);
+        placeExtractionService.processNow(id, QueuePath.KAFKA);
     }
 }
