@@ -8,6 +8,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -22,10 +23,12 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 
+import java.time.Clock;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -77,8 +80,8 @@ class ShareJobKafkaRoundTripTest {
         }
 
         @Bean
-        KafkaShareJobQueue shareJobQueue(KafkaTemplate<String, String> kafkaTemplate) {
-            return new KafkaShareJobQueue(kafkaTemplate);
+        KafkaShareJobQueue shareJobQueue(KafkaTemplate<String, String> kafkaTemplate, PlaceExtractionService extraction) {
+            return new KafkaShareJobQueue(kafkaTemplate, extraction, new SimpleMeterRegistry(), Clock.systemUTC());
         }
 
         @Bean
@@ -98,6 +101,8 @@ class ShareJobKafkaRoundTripTest {
             context.getBean(KafkaShareJobQueue.class).enqueue(42L);
 
             verify(context.getBean(PlaceExtractionService.class), timeout(30_000)).processNow(42L);
+            // Kafka로 갔으면 서버 안 대기열(process)로는 넘기지 않는다.
+            verify(context.getBean(PlaceExtractionService.class), never()).process(42L);
         }
     }
 }
