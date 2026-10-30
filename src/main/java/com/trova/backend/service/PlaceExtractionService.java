@@ -70,6 +70,14 @@ public class PlaceExtractionService {
 
     @Async("pipelineTaskExecutor")
     public void process(Long jobId) {
+        processNow(jobId);
+    }
+
+    /**
+     * 부른 스레드에서 끝까지 처리한다. Kafka 리스너(#244)는 처리가 끝난 뒤 메시지를 완료로 표시해야 서버가 중간에 죽었을 때
+     * 같은 작업을 다시 받으므로, @Async를 거치지 않고 이걸 부른다.
+     */
+    public void processNow(Long jobId) {
         try {
             String sourceUrl = lifecycleService.markProcessing(jobId);
             log.info("ProcessingJob {} 파이프라인 시작: {}", jobId, sourceUrl);

@@ -28,6 +28,19 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  # app.queue.type=kafka일 때만 쓴다(#244, ADR 0021). 기본(async)에서는 Kafka 빈이 만들어져도 연결하지 않는다.
+  # Aiven 같은 원격 브로커는 SSL·SASL 설정을 SPRING_KAFKA_SECURITY_PROTOCOL 등 환경 변수로 더한다.
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      # 리스너가 처음 붙기 전에 쌓인 작업도 처리한다.
+      auto-offset-reset: earliest
+      # 한 번에 하나씩 — 분석 한 건이 수십 초라 여러 건을 가져오면 뒤의 작업이 앞 작업이 끝날 때까지 묶인다.
+      max-poll-records: 1
+    producer:
+      properties:
+        # 브로커가 꺼져 있으면 send()가 브로커 정보를 기본 60초까지 기다려 공유 요청이 61초 걸렸다(로컬 실측) — 5초에 503으로.
+        max.block.ms: 5000
   security:
     oauth2:
       client:
@@ -77,6 +90,13 @@ management:
       application: trova-backend
 
 app:
+  # 영상 분석 작업 대기열(#244, ADR 0021). async(기본) = 서버 안 @Async, kafka = Kafka 토픽 trova.share-jobs.
+  queue:
+    type: ${APP_QUEUE_TYPE:async}
+    kafka:
+      concurrency: 2
+      # 로컬 Docker 브로커 1대는 1. 브로커가 여러 대인 곳(Aiven 등)은 그곳 최소값에 맞춘다.
+      replicas: ${KAFKA_TOPIC_REPLICAS:1}
   # 영상 분석이 끝나면 일정 초안을 자동으로 만들지(#136). 문제가 생기면 끌 수 있게 설정으로 둔다.
   auto-draft:
     enabled: ${AUTO_DRAFT_ENABLED:true}

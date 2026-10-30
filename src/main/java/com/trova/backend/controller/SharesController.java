@@ -6,10 +6,10 @@ import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.User;
+import com.trova.backend.queue.ShareJobQueue;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.service.CurrentUserService;
-import com.trova.backend.service.PlaceExtractionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -26,13 +26,13 @@ public class SharesController {
     private final CurrentUserService currentUserService;
     private final DailyQuotaService dailyQuotaService;
     private final ProcessingJobRepository processingJobRepository;
-    private final PlaceExtractionService placeExtractionService;
+    private final ShareJobQueue shareJobQueue;
     private final SavedPlaceRepository savedPlaceRepository;
 
     public SharesController(
             CurrentUserService currentUserService,
             ProcessingJobRepository processingJobRepository,
-            PlaceExtractionService placeExtractionService,
+            ShareJobQueue shareJobQueue,
             DailyQuotaService dailyQuotaService,
             SavedPlaceRepository savedPlaceRepository
     ) {
@@ -40,7 +40,7 @@ public class SharesController {
         this.currentUserService = currentUserService;
         this.dailyQuotaService = dailyQuotaService;
         this.processingJobRepository = processingJobRepository;
-        this.placeExtractionService = placeExtractionService;
+        this.shareJobQueue = shareJobQueue;
     }
 
     // reanalyze: 이미 분석한 영상이라도 새로 분석한다(앱의 "다시 분석하기"). 없으면 false.
@@ -122,7 +122,7 @@ public class SharesController {
         dailyQuotaService.checkShare(user);
         ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, url, platform));
         try {
-            placeExtractionService.process(job.getId());
+            shareJobQueue.enqueue(job.getId());
         } catch (TaskRejectedException e) {
             // 대기열이 가득 차 실행기가 거절하면, 방금 만든 작업을 지운다 — 남기면 아무도 처리하지 않는
             // PENDING 작업이 돼 앱의 "처리 중" 표시가 영원히 사라지지 않는다(#31). 응답은 503(TaskRejectionHandler).

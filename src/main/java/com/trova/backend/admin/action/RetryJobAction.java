@@ -4,9 +4,9 @@ import com.trova.backend.admin.AiDashboardService;
 import com.trova.backend.admin.FailureReason;
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.queue.ShareJobQueue;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.security.SuspendedUsers;
-import com.trova.backend.service.PlaceExtractionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskRejectedException;
 import org.springframework.stereotype.Component;
@@ -26,16 +26,16 @@ public class RetryJobAction implements AdminActionHandler {
             EnumSet.of(FailureReason.AI_QUOTA, FailureReason.SOURCE_RATE_LIMITED, FailureReason.STALE);
 
     private final ProcessingJobRepository jobRepository;
-    private final PlaceExtractionService placeExtractionService;
+    private final ShareJobQueue shareJobQueue;
     private final AiDashboardService aiDashboardService;
     private final SuspendedUsers suspendedUsers;
     private final long geminiAlert;
 
-    public RetryJobAction(ProcessingJobRepository jobRepository, PlaceExtractionService placeExtractionService,
+    public RetryJobAction(ProcessingJobRepository jobRepository, ShareJobQueue shareJobQueue,
                           AiDashboardService aiDashboardService, SuspendedUsers suspendedUsers,
                           @Value("${app.admin.dashboard.gemini-alert:800}") long geminiAlert) {
         this.jobRepository = jobRepository;
-        this.placeExtractionService = placeExtractionService;
+        this.shareJobQueue = shareJobQueue;
         this.aiDashboardService = aiDashboardService;
         this.suspendedUsers = suspendedUsers;
         this.geminiAlert = geminiAlert;
@@ -64,7 +64,7 @@ public class RetryJobAction implements AdminActionHandler {
         ProcessingJob newJob = jobRepository.save(
                 new ProcessingJob(job.getUser(), job.getSourceUrl(), job.getSourcePlatform()));
         try {
-            placeExtractionService.process(newJob.getId());
+            shareJobQueue.enqueue(newJob.getId());
         } catch (TaskRejectedException e) {
             // 남기면 아무도 처리하지 않는 PENDING 작업이 된다(#31).
             jobRepository.delete(newJob);
