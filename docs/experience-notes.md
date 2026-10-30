@@ -1776,3 +1776,13 @@
 - 남은 것:
   - 테스트 계정에 다시 분석한 결과 3개(작업 84~86)가 더 생겼다(영상 기록에는 대표 결과만 보임).
   - Aiven 계정은 사용자가 만드는 중이다(이메일 확인 단계).
+
+### 추가: Aiven 무료 Kafka 연결 확인 (로컬 → Aiven)
+- Aiven 프로젝트 `trovapp26-fc38`에 Free 플랜 Kafka 4.3 `kafka-trovapp`(Asia Pacific, 토픽 5개 제한)을 만들었다. 사용자가 GitHub로 가입하고 직접 만들었다. 처음엔 PostgreSQL로 잘못 만들어져 Kafka로 다시 만들었다.
+- 연결: SASL_SSL + SCRAM-SHA-256, 신뢰 인증서는 프로젝트 CA(PEM). 연결 정보는 레포 밖 `~/.config/trova/aiven-kafka.env`(권한 600)와 `aiven-kafka-ca.pem`에 두고, Spring 환경 변수(`SPRING_KAFKA_SECURITY_PROTOCOL`, `SPRING_KAFKA_PROPERTIES_SASL_*`, `SPRING_KAFKA_SSL_TRUST_STORE_*`)로 넣는다. 코드 변경은 없다.
+- **로컬 임시 서버 8091(Kafka 모드) + 개발 DB → Aiven**:
+  - 첫 시도는 "invalid credentials"로 실패했다. 사용자가 Aiven에서 비밀번호를 리셋했는데 파일에는 예전 값이 남아 있었다. 인증에 실패해도 서버는 UP이었다.
+  - 다시 넣은 뒤 소비자 2개가 파티션 0·1을 맡았다. 토픽은 파티션 2, 복제 2(Aiven 쪽 값).
+  - 없는 작업 id를 보내자 "건너뜀(상태 없음)"이 나왔고, 오프셋 1까지 커밋됐다. Gemini는 쓰지 않았다.
+  - 중간에 개발 DB 연결 오류("This connection has been closed")로 서버가 한 번 뜨지 않았다. 바로 다시 띄우자 정상이었다(일시적).
+- 사고와 처리: 비밀번호가 들어갔는지 확인하다가 내 명령의 가리기가 틀려 비밀번호 값이 작업 출력에 한 번 찍혔다. 외부 전송은 없었다. 사용자에게 알리고 바꾸기를 권했지만, 사용자가 그대로 진행하기로 했다(2026-10-30 "2"). 이후 확인은 해시·길이로만 한다.
