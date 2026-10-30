@@ -86,5 +86,5 @@
 - 브로커가 꺼졌을 때 공유 응답: 기본 `max.block.ms` 60초 → 5초로 줄여 503까지 61초 → 6초(로컬).
 
 ## 남은 측정
-- Spring AI: HTTP/1.1 고정 배포 뒤 운영 호출 시간(`gen_ai_client_operation_seconds` sum/count)과 성공 여부.
+- Spring AI: 운영 호출이 쌓이면 `gen_ai_client_operation_seconds`로 중앙값·실패율을 기록(지금은 1회).
 - Kafka: 운영 공유가 쌓이면 경로별 대기 중앙값과 1초 안 시작 비율(Grafana 패널 #252).

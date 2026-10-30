@@ -1955,8 +1955,12 @@
 - `./gradlew build` 926개 통과(로컬). 새 테스트: 실제로 만든 `Client`의 OkHttpClient가 HTTP/1.1만, callTimeout 20,000ms, 연결·읽기·쓰기 0인지.
 - 성능 기록: Spring AI·Kafka 전후 실측을 docs/bench/spring-ai-kafka-performance.md로 모았다(로컬/운영·실측/추정 구분).
 
+### 운영 확인 (2026-10-31 02:24, 배포 2b1b56e)
+- 사용자가 "너가 실행해"라고 해 devflow deploy로 배포했다(처음엔 자동 권한 분류기가 머지·배포를 막아 사용자가 직접 지시). 해시 일치, UP까지 108초, 확인 3항목 통과, 백업 `app.jar.bak-20261031-022143`.
+- 같은 시나리오 재확인: Gemini 1회 성공 5.1초(토큰 926/325), 앱에 당일·서울 6곳 초안. HTTP/2 때 6/6 시간 초과 → HTTP/1.1 뒤 1/1 성공이라 원인은 운영 망의 HTTP/2 연결로 본다(서버 로그의 Caused by는 끝내 못 봄).
+- 수치는 docs/bench/spring-ai-kafka-performance.md에 덧붙였다.
+
 ### 남은 것
-- 운영 배포 뒤 같은 시나리오 재확인과 `gen_ai_client_operation_seconds` 성공 수치(bench 문서에 덧붙임). 실패하면 `app.jar.bak-20261031-013856`으로 되돌린다.
-- 운영 원인 로그(Caused by)와 서버에서 `curl --http2` 비교는 사용자가 SSH로 확인.
-- 테스트로 생긴 실패 초안 2개가 사용자 계정(운영)에 남았다.
+- 운영 호출이 쌓이면 `gen_ai_client_operation_seconds` 중앙값·실패율 기록.
+- 테스트로 생긴 실패 초안 2개와 확인용 초안 1개(저장 안 함)가 사용자 계정(운영)에 남았다.
 
