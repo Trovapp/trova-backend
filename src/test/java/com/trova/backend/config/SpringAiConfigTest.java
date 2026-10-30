@@ -22,14 +22,15 @@ class SpringAiConfigTest {
     }
 
     @Test
-    void 만들어진_Gemini_클라이언트는_HTTP_1_1만_쓰고_연결_읽기_쓰기_제한을_따로_두지_않는다() {
+    void 만들어진_Gemini_클라이언트는_HTTP_1_1만_쓰고_전체_20초_제한만_둔다() {
         Client client = new SpringAiConfig().geminiClient("test-key");
         ApiClient apiClient = (ApiClient) ReflectionTestUtils.getField(client, "apiClient");
         OkHttpClient http = apiClient.httpClient();
 
         assertThat(http.protocols()).containsExactly(Protocol.HTTP_1_1);
-        // 20초는 SDK가 요청마다 httpOptions().timeout으로 전체 제한(callTimeout)을 건다(위 테스트). 여기서는 SDK가 직접 만들 때와 같게
-        // 연결·읽기·쓰기 제한을 0으로 둔다 — OkHttp 기본값 10초가 남으면 긴 초안 생성이 20초가 아니라 10초에 끊긴다.
+        // 직접 넘긴 클라이언트에는 SDK가 httpOptions().timeout을 걸어 주지 않는다 — 전체 제한은 우리가 건 20초여야 한다.
+        assertThat(http.callTimeoutMillis()).isEqualTo(20_000);
+        // SDK가 직접 만들 때와 같게 연결·읽기·쓰기 제한은 0 — OkHttp 기본값 10초가 남으면 긴 초안 생성이 10초에 끊긴다.
         assertThat(http.connectTimeoutMillis()).isZero();
         assertThat(http.readTimeoutMillis()).isZero();
         assertThat(http.writeTimeoutMillis()).isZero();

@@ -46,9 +46,10 @@ public class SpringAiConfig {
      * google-genai는 OkHttp로 HTTP/2(ALPN)를 먼저 쓴다. 예전 클라이언트(SimpleClientHttpRequestFactory = HttpURLConnection, HTTP/1.1)는
      * 운영(Oracle E2.1.Micro)에서 잘 됐는데, Spring AI로 바꾼 뒤 운영에서만 호출이 전부 20초 시간 초과였다(2026-10-31, 6/6, #253).
      * 같은 시각 맥에서는 정상이라 Gemini 쪽 문제가 아니다. 예전과 같은 HTTP/1.1만 쓰도록 OkHttpClient를 직접 넘긴다.
-     * SDK는 이 클라이언트를 newBuilder()로 이어받아 전체 제한(callTimeout = httpOptions.timeout)과 재시도만 덧붙이고,
-     * 직접 만들 때 두는 연결·읽기·쓰기 제한 0(제한 없음)은 건너뛴다(ApiClient.createHttpClient, 1.65.0 바이트코드 확인).
-     * OkHttp 기본값 10초가 남으면 긴 초안 생성이 20초가 아니라 10초에 끊기므로 같은 0으로 맞춘다.
+     * SDK는 이 클라이언트를 newBuilder()로 이어받아 재시도 인터셉터만 덧붙이고, 직접 만들 때 두는 설정(연결·읽기·쓰기 제한 0,
+     * 전체 제한 callTimeout = httpOptions.timeout)은 모두 건너뛴다(ApiClient.createHttpClient, 1.65.0 바이트코드 확인). 요청 단위 제한은
+     * 요청에 HttpOptions가 붙을 때만 거는데 Spring AI는 붙이지 않는다. 그래서 전체 20초를 여기서 직접 걸고, 연결·읽기·쓰기는 SDK 기본처럼
+     * 0으로 둔다 — OkHttp 기본값 10초가 남으면 긴 초안 생성이 20초가 아니라 10초에 끊긴다.
      */
     static ClientOptions clientOptions() {
         return ClientOptions.builder().customHttpClient(http1Client()).build();
@@ -57,6 +58,7 @@ public class SpringAiConfig {
     static OkHttpClient http1Client() {
         return new OkHttpClient.Builder()
                 .protocols(List.of(Protocol.HTTP_1_1))
+                .callTimeout(Duration.ofMillis(READ_TIMEOUT_MS))
                 .connectTimeout(Duration.ZERO)
                 .readTimeout(Duration.ZERO)
                 .writeTimeout(Duration.ZERO)
