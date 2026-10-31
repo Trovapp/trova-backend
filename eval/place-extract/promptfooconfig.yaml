@@ -1,7 +1,8 @@
 # 영상 장소 추출 정확도(evalflow) — 정답 대비 재현율·정밀도. 실행: evalflow eval 스킬(`eval.sh run place-extract --label before|after`).
-# 정답(expected)은 사람이 확인한 것만 믿는다. "초안"으로 표시된 정답은 파이프라인 출력에서 옮긴 것이라 사용자 확인 전까지는
-# "같은 입력에서 결과가 바뀌었는가(회귀)"만 잰다. 이름은 공백을 뺀 뒤 비교한다.
-description: 유튜브 쇼츠 10개에서 장소 이름 추출(Gemini 무료 티어, 영상당 Gemini 2회)
+# 정답(expected)은 eval/extraction/answers.csv(사람이 영상을 보고 적은 것)에서 build_config.py가 만든다 — 여기서 손으로 고치지 않는다(ADR 0022).
+# 이름은 공백을 뺀 뒤 한쪽이 다른 쪽을 포함하면 같은 곳으로 본다("테라로사 커피공장 본점" ≈ "테라로사 본점"). 정밀한 좌표 채점은 Part A(score.py).
+# 정답이 비어 있으면(목적지 없음 영상) 결과가 비어야 맞다.
+description: 장소 추출 회귀 — eval/extraction 정답 영상에서 장소 이름(Gemini 무료 티어, 영상당 Gemini 2회)
 prompts: ["URL:{{url}}"]
 providers: ["exec: python3 provider.py"]
 defaultTest:
@@ -10,34 +11,37 @@ defaultTest:
       metric: recall
       value: |
         const norm = s => String(s).replace(/\s+/g, "");
+        const same = (a, b) => a === b || a.includes(b) || b.includes(a);
         const got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);
-        const hit = exp.filter(x => got.includes(x)).length;
-        return { pass: hit === exp.length, score: exp.length ? hit / exp.length : 1, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.includes(x)).join(",") || "없음"}` };
+        if (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };
+        const hit = exp.filter(x => got.some(g => same(g, x))).length;
+        return { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(",") || "없음"}` };
     - type: javascript
       metric: precision
       value: |
         const norm = s => String(s).replace(/\s+/g, "");
+        const same = (a, b) => a === b || a.includes(b) || b.includes(a);
         const got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);
-        const ok = got.filter(x => exp.includes(x)).length;
-        return { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(x => !exp.includes(x)).join(",") || "없음"}` };
-tests:
-  - description: 부산-민콩이네 브이로그(초안)
-    vars: {url: "https://www.youtube.com/shorts/YrN-JLPp0wg", expected: '[]'}
-  - description: 부산-NvdrCwcTnlE(초안)
-    vars: {url: "https://www.youtube.com/shorts/NvdrCwcTnlE", expected: '[]'}
-  - description: 제주-해수욕장 10곳(초안)
-    vars: {url: "https://www.youtube.com/shorts/-yD__roX08g", expected: '[]'}
-  - description: 제주-nbTZNiFcif0(초안)
-    vars: {url: "https://www.youtube.com/shorts/nbTZNiFcif0", expected: '[]'}
-  - description: 서울-45fEeutPgSc(초안)
-    vars: {url: "https://www.youtube.com/shorts/45fEeutPgSc", expected: '[]'}
-  - description: 서울-4fe0FhzGdcE(초안)
-    vars: {url: "https://www.youtube.com/shorts/4fe0FhzGdcE", expected: '[]'}
-  - description: 강릉-테라로사(초안)
-    vars: {url: "https://www.youtube.com/shorts/GYisCxtX7sc", expected: '[]'}
-  - description: 강릉-HfSbvpLPEqM(초안)
-    vars: {url: "https://www.youtube.com/shorts/HfSbvpLPEqM", expected: '[]'}
-  - description: 전주-LBRXg7Zxlr0(초안)
-    vars: {url: "https://www.youtube.com/shorts/LBRXg7Zxlr0", expected: '[]'}
-  - description: 전주-m--pASyRfDE(초안)
-    vars: {url: "https://www.youtube.com/shorts/m--pASyRfDE", expected: '[]'}
+        const ok = got.filter(g => exp.some(x => same(g, x))).length;
+        return { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(",") || "없음"}` };
+tests:  # 아래는 build_config.py가 만든다 — 손으로 고치지 말 것
+  - description: "1-youtube_shorts-김해 당일치기"
+    vars: {url: "https://www.youtube.com/shorts/8vmpPuFwQ94", expected: "[\"가야랜드\", \"밀양돼지국밥\", \"수로왕릉\", \"명월카페\", \"만리향\", \"연지공원\"]"}
+  - description: "2-youtube_shorts-묵호 노는법"
+    vars: {url: "https://www.youtube.com/shorts/ppCfDrwbHMk", expected: "[\"하평해변\", \"파닭김밥\", \"어달삼거리\", \"어달항\", \"카페어달\", \"논골담길\", \"등대쉼터\", \"등대그집\", \"비비소\", \"해랑전망대\"]"}
+  - description: "3-youtube_shorts-사당에서 노는법"
+    vars: {url: "https://www.youtube.com/shorts/xl2s78K2luM", expected: "[\"트로페오비토리아\", \"작은피자집\", \"서울시립남서울미술관\", \"꿈꾸는크루아상\", \"도쿄빙수\", \"아트나인&잇나인\"]"}
+  - description: "4-youtube_shorts-안산에서 노는법"
+    vars: {url: "https://www.youtube.com/shorts/uwPOCSjh3ZA", expected: "[\"임페리아\", \"후르셰다사마르칸트\", \"안산다문화음식거리\", \"미쉐\", \"마리나베이커리\"]"}
+  - description: "5-youtube_shorts-부산여행 40초 요약"
+    vars: {url: "https://www.youtube.com/shorts/NvdrCwcTnlE", expected: "[]"}
+  - description: "6-youtube_shorts-부산 2박3일 요약"
+    vars: {url: "https://www.youtube.com/shorts/tX7P33Gv0dU", expected: "[\"카츠키친 전포점\", \"이바바커피\", \"해운대역\", \"광안리\", \"해변포차\", \"광안리 썰스데이파티\", \"타이카텐푸라&마츠도 해리단길점\", \"코오리마찌 해리단길점\", \"해운대 메인거리 & 시장\", \"개미집 해운대역점\", \"해운대 T1 베이스캠프\"]"}
+  - description: "7-youtube_shorts-제주 해수욕장 10곳"
+    vars: {url: "https://www.youtube.com/shorts/-yD__roX08g", expected: "[\"삼양해수욕장\", \"함덕해수욕장\", \"김녕해수욕장\", \"세화해수욕장\", \"표선해수욕장\", \"색달해수욕장\", \"화순금모래해수욕장\", \"판포포구\", \"협재해수욕장\", \"이호테우해수욕장\"]"}
+  - description: "8-youtube_shorts-제주 서쪽 2박3일"
+    vars: {url: "https://www.youtube.com/shorts/IMfvv-P5CXY", expected: "[\"우진해장국\", \"삼무국수\", \"제주당\", \"금오름\", \"성이시돌목장\", \"봄빛코티지\", \"신창풍차해안\", \"돈어길\", \"오설록\", \"곶자왈도립공원\", \"한라산아래첫마을\", \"중문고등어쌈밥\", \"화순한가네식당\", \"용머리해안\", \"송악산\", \"미영이네\", \"순천미향\", \"뚱보아저씨\", \"협재해수욕장\", \"호텔샌드\", \"한림칼국수\", \"동문시장\", \"빽다방 제주사수점\", \"제주공항\"]"}
+  - description: "9-youtube_shorts-서귀포 BEST 10"
+    vars: {url: "https://www.youtube.com/shorts/wMBpwZ9GTRA", expected: "[\"대포해안주상절리대\", \"정방폭포\", \"천지연폭포\", \"엉또폭포\", \"쇠소깍\", \"황우지해안\", \"소천지\", \"서귀포치유의숲\", \"약천사\", \"중문색달해수욕장\"]"}
+  - description: "10-youtube_shorts-테라로사 커피공장 본점"
+    vars: {url: "https://www.youtube.com/shorts/GYisCxtX7sc", expected: "[\"테라로사커피공장 강릉점\"]"}

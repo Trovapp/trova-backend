@@ -449,8 +449,12 @@ def extract_places(
             raise ValueError(f"응답이 배열이 아님: {text[:500]}")
         return places
 
-    # 텍스트가 하나도 없으면(자막·설명 없음) 미디어 없이 고를 근거가 없어 평소대로 보낸다.
-    text_only = bool(FILTER_TEXT_ONLY and not video_uri and (transcript or post_description) and (audio_path or frame_paths))
+    # 텍스트가 하나도 없으면(자막·설명 없음) 미디어 없이 고를 근거가 없어 평소대로 보낸다. 사진 게시물은 사진 자체가 1차 정보
+    # (코스표·꿀팁이 사진에만 적힘)라 플래그와 무관하게 사진을 다시 보낸다.
+    text_only = bool(
+        FILTER_TEXT_ONLY and not video_uri and not photo_post
+        and (transcript or post_description) and (audio_path or frame_paths)
+    )
     if text_only:
         print("[extract_places] 선별 호출은 자막·설명·1차 후보만으로 (PIPELINE_FILTER_TEXT_ONLY=1)", file=sys.stderr)
     parts = build_parts(

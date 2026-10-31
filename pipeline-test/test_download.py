@@ -51,3 +51,13 @@ class DownloadRetryTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class GetTitleCookieTest(unittest.TestCase):
+    def test_제목_조회는_쿠키를_켜면_403에_쿠키를_붙여_한_번_더_시도한다(self):
+        ok = subprocess.CompletedProcess(args=["yt-dlp"], returncode=0, stdout="제목\n", stderr="")
+        with mock.patch.object(download, "BROWSER_COOKIES", "chrome"), \
+                mock.patch.object(download, "_run_yt_dlp", side_effect=[_fail("HTTP Error 403"), ok]) as run:
+            self.assertEqual(download.get_title("https://www.youtube.com/shorts/x"), "제목")
+        self.assertEqual(run.call_count, 2)
+        self.assertEqual(run.call_args_list[1].args[0][:2], ["--cookies-from-browser", "chrome"])

@@ -83,25 +83,31 @@ NO_MEDIA_MARKER = "NO_MEDIA"
 # 비공개·삭제·로그인 필요처럼 다시 해도 받을 수 없는 게시물·영상(#257 E) — 서버(PipelineRunner)가 같은 문자열로 구분해
 # 앱이 "다시 시도" 대신 "볼 수 없는 게시물"로 안내한다. 운영 실패 2건이 429가 아닌데 한 문구로 뭉쳐 있었다.
 SOURCE_UNAVAILABLE_MARKER = "SOURCE_UNAVAILABLE"
+# 확실한 문구만 — "not available"·"private"처럼 넓은 조각은 형식 선택 실패("Requested format is not available") 같은
+# 다시 하면 될 오류까지 "다시 해도 같음"으로 잘못 분류한다(리뷰에서 잡음).
 UNAVAILABLE_PATTERNS = (
-    ("login required", "로그인 필요"),
-    ("requested content is not available", "볼 수 없는 게시물"),
     ("this post is private", "비공개"),
     ("private video", "비공개"),
-    ("private", "비공개"),
+    ("private account", "비공개"),
+    ("sign in to confirm your age", "로그인 필요"),
+    ("video unavailable", "볼 수 없는 영상"),
     ("no longer available", "삭제됨"),
     ("has been removed", "삭제됨"),
-    ("video unavailable", "볼 수 없는 영상"),
-    ("not available", "볼 수 없는 게시물"),
     ("http error 404", "없는 게시물"),
     ("does not exist", "없는 게시물"),
     ("unsupported url", "지원하지 않는 주소"),
 )
+# yt-dlp 인스타 추출기의 범용 실패 문구 — 비공개·삭제·속도 제한·로그인 필요가 모두 이 한 문구라 어느 쪽인지 알 수 없다.
+# 속도 제한으로 보면 비공개 게시물을 영원히 다시 시도하고, 볼 수 없음으로 보면 잠깐 막힌 것을 못 본다고 말하게 되므로
+# 예전처럼 일반 실패(다시 시도 가능)로 둔다.
+AMBIGUOUS_INSTAGRAM_ERROR = "rate-limit reached or login required"
 
 
 def unavailable_reason(stderr: str) -> str | None:
     """yt-dlp 오류 중 다시 시도해도 같은 것(비공개·삭제·로그인 필요)을 한국어 이유로 돌려준다. 모르면 None."""
     low = (stderr or "").lower()
+    if AMBIGUOUS_INSTAGRAM_ERROR in low:
+        return None
     for needle, reason in UNAVAILABLE_PATTERNS:
         if needle in low:
             return reason
@@ -132,7 +138,7 @@ def instagram_fetch(url: str, out_dir: Path) -> tuple[Path | None, str | None, s
         capture_output=True, text=True, timeout=240,
     )
     if result.returncode != 0:
-        if "429" in result.stderr or "Too Many Requests" in result.stderr or "rate-limit reached" in result.stderr:
+        if "429" in result.stderr or "Too Many Requests" in result.stderr:
             raise SystemExit(f"{SOURCE_RATE_LIMIT_MARKER} 인스타그램이 요청을 막음(429): {result.stderr[-300:]}")
         if "No video formats found" in result.stderr:
             # 사진 게시물(#196) — 받기 모드에선 사진 항목 정보가 비어 나온다. 정보만 한 번 더 받는다(사진 게시물만 요청 2번).
@@ -168,7 +174,7 @@ def _photo_post_info(url: str) -> tuple[None, str | None, str | None, list[str]]
         capture_output=True, text=True, timeout=120,
     )
     if result.returncode != 0:
-        if "429" in result.stderr or "Too Many Requests" in result.stderr or "rate-limit reached" in result.stderr:
+        if "429" in result.stderr or "Too Many Requests" in result.stderr:
             raise SystemExit(f"{SOURCE_RATE_LIMIT_MARKER} 인스타그램이 요청을 막음(429): {result.stderr[-300:]}")
         unavailable = _unavailable_exit(result.stderr, "볼 수 없는 게시물")
         if unavailable is not None:

@@ -55,3 +55,4 @@
 | [0019](0019-admin-web-no-cloudflare-access.md) | 관리자 웹 앞의 Cloudflare Access는 붙이지 않는다, 대신 관리자 카카오 계정 2단계 인증 (0012 일부 변경) | 확정 | 2026-10-20 |
 | [0020](0020-spring-ai-for-gemini-calls.md) | Gemini 호출은 Spring AI 2(google-genai)로, 재시도는 우리 코드 한 곳에서만 | 확정 | 2026-10-30 |
 | [0021](0021-share-job-queue-kafka-optional.md) | 영상 분석 시작은 교체 가능한 대기열로 — 운영은 Aiven 무료 Kafka, 브로커가 안 되면 서버 안 대기열로 | 확정 | 2026-10-30 |
+| [0022](0022-pipeline-regression-eval-evalflow.md) | 장소 추출 회귀 측정은 evalflow 세트로, 정답은 eval/extraction/answers.csv 한 곳에서 생성 | 확정 | 2026-10-31 |
