@@ -1,0 +1,42 @@
+{
+  "sourceCommit": "4307b79ace781dec36b26bff8cb5df83995a041e",
+  "fullBuild": {
+    "tests": 951,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "releaseFiles": {
+    "app.jar": "b67bd9e62149c189c0f5b76b456107bfcd46f5df5dba8d542a8594691f1a74dc",
+    "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77"
+  },
+  "productionBefore": {
+    "app.jar": "08e88164b433ad08c85b2674621941bb3a4acf0a10cb15b05fe0daec446f8e84",
+    "pipeline-test/extract_places.py": "ccd0d2466259e268bef9aa11df52918a6e4516248b17f786b4e0a2efbb4628be",
+    "pipeline-test/run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+    "pipeline-test/download.py": "24eca44859a2aaadd7848555d994ac8ec48778a4f92224f5ae1d601054708451"
+  },
+  "productionSnapshot": {
+    "service": "active/running",
+    "queueType": "kafka",
+    "health": "UP",
+    "inFlight": {
+      "analyses": 0,
+      "drafts": 0,
+      "replans": 0
+    }
+  },
+  "uploaded": false,
+  "deployed": false,
+  "newApiCalls": 0,
+  "preparedArchive": {
+    "localPath": "/private/tmp/trova-release-4307b79.tgz",
+    "sha256": "382ddc6266e3a50ed9d062abaad034051f6287ccbe945d9dadb4aac771e7dd80",
+    "bytes": 97779837,
+    "entries": [
+      "app.jar",
+      "pipeline-test/extract_places.py",
+      "SHA256SUMS"
+    ]
+  }
+}
