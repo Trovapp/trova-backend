@@ -37,6 +37,7 @@ STT 방식 결정 배경(Whisper 셀프호스팅 대신 Gemini 오디오 직접 
 - 외부 API 호출(Gemini, 카카오, yt-dlp 등)이 포함된 처리는 반드시 비동기(`@Async`)로 처리
 - 영상 분석 시작은 `ShareJobQueue.enqueue`로만 넣는다(직접 `process()` 호출 금지). 코드 기본 `async`, 운영은 `APP_QUEUE_TYPE=kafka`(Aiven 무료, 브로커 실패 시 async로 넘김) — 브로커를 운영 서버에 같이 띄우지 않는다(docs/adr/0021)
 - 일정 재구성의 새 접수는 기존 장소 요청 한도에 포함하고, 같은 여행의 동시 접수는 단일 JVM에서 직렬화한다(기존 작업 재사용은 차감하지 않음, docs/adr/0025).
+- 같은 장소의 상세/요약/전화 조회는 `PlaceReviewService`에서 진행 중 작업을 공유한다. 단일 JVM 범위이며 실패 후 독립 재시도는 허용한다(docs/adr/0027).
 - 관리자 API 조치는 `AdminActionService`를 통해 DB 변경과 실행 감사를 함께 커밋한다. 재실행 큐 전달과 정지 목록 반영은 커밋 뒤에 한다(docs/adr/0026).
 - 엔드포인트 목록은 코드(`controller` 패키지)가 기준이다 — 여기에 따로 적지 않는다.
   시작할 때의 핵심 흐름: `POST /api/shares`(URL 제출, 비동기 시작) → `GET /api/places/pending`(폴링) → `GET /api/places`
