@@ -2179,3 +2179,12 @@
 - 전체build1010중1007통과·실패/오류0·기존opt-in3skip, 새검사25개와 집중35개통과. 실제 Kafka/별도JVM 복구opt-in1개추가통과. 기존원본과새근거분리. 외부실제API검증없음.
 - 운영읽기점검은 기존b473f2b배포대상: active/UP/Kafka·해시일치·진행각0,24시간DONE14/FAILED0이나전부알려진테스트라실제트래픽신뢰도판단불가. INFO메시지의ERROR/timeout단순검색오탐을제외해실제WARN/ERROR레벨0확인.
 - 상세 docs/reviews/auxiliary-process-review-284-20261101.md 및production-observation-284-20261101.md. 이번수정머지/배포전이며잠자기복구보류유지. REST/SpringAI/Kafka성능비교에이smoke집계를합산하지않는다.
+
+
+## 2026-11-01 보조 실행기 최종 리뷰·머지·운영 배포·성능 비교 정리 (#286)
+
+- 사용자1,2선택에따라 PR285리뷰후squash머지bd196e1. 입력/파서/정리/종료미확인보존/인터럽트/공유helper검토에추가차단문제없음. 머지소스동일확인·main build1010중1007통과·실패/오류0·기존opt-in3skip. 같은소스Kafka별도JVM복구근거재사용.
+- 유휴각0/인증읽기확인후JAR백업·해시검증·교체,108.095초에UP. 새JARf820ab28...·Kafka·진단OFF·무인증401/쿠키없음·완성상세캐시200,변경없는Python7개해시확인. 환경/스키마/의존성변경없음.
+- 실제Kafka영상107 DONE·장소6,한글제목확인. 테스트장소6/자동초안1만0600백업후삭제·잔여0,job/API기록유지. 최종유휴각0·작업폴더잔여0·실제WARN/ERROR레벨0·운영/백업해시재확인. devflow배포이력기록. rollback미실행,잠자기복구보류.
+- 비교원본3개재계산/해시저장·표준Python재계산스크립트추가. 실제도입REST+async→REST+Kafka→SpringAI2+Kafka정리. 정상호출중앙3656.64→3636.54ms/운영큐135→574ms각n4,유의한전체속도개선입증불가. 후속중복억제/복구검증과과거재현미해결기록구분,원본보존·기존문서에최신링크추가. 추가성능API실험/운영모드전환없음.
+- docs/reviews/production-release-286-20261101.md 및배포JSON,docs/bench/system-comparison-summary-20261101.md 및재계산JSON참고.

@@ -1,0 +1,185 @@
+{
+  "sourceCommit": "bd196e107c4d668b70fa77b635bac81738fcc9c5",
+  "release": "main-bd196e1-20261101-024348",
+  "startedAt": "2026-11-01T02:43:50.114974+09:00",
+  "beforeHashes": {
+    "app.jar": "ded293aa679a44335eaf72df1679e67767d40b63d790095fc2fa499f119478b3"
+  },
+  "expectedHashes": {
+    "app.jar": "f820ab28d6ba3e66fa7b8b2abbf9fb26f3a899d4409eb4390911383b5ed0e910"
+  },
+  "unchangedRuntimeFiles": {
+    "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+    "pipeline-test/run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+    "pipeline-test/generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+    "pipeline-test/verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+    "pipeline-test/select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+    "pipeline-test/tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+    "pipeline-test/summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+  },
+  "backupDirectory": "/opt/trova-backend/releases/main-bd196e1-20261101-024348/previous",
+  "deployed": true,
+  "rollback": false,
+  "checks": {
+    "predeployAuthenticatedRead": 200,
+    "unauthenticatedShare": 401,
+    "unauthenticatedAutoDraft": 401,
+    "unauthenticatedPlacesAndNoSessionCookie": true,
+    "cachedDetailsRead": {
+      "placeId": 143,
+      "httpStatus": 200,
+      "cacheEligibilityVerified": true
+    }
+  },
+  "smoke": {
+    "jobId": 107,
+    "httpStatus": 202,
+    "status": "DONE",
+    "createdAt": "2026-11-01 02:46:28.519265",
+    "analysisFinishedAt": "2026-11-01 02:46:57.409672",
+    "titlePresent": true,
+    "titleHasNoReplacementCharacter": true,
+    "titleContainsHangul": true,
+    "savedPlaces": 6,
+    "apiCalls": [
+      {
+        "operation": "extract_places.collect",
+        "success": true,
+        "attempts": 1,
+        "waitedMs": 0
+      },
+      {
+        "operation": "extract_places.filter",
+        "success": true,
+        "attempts": 1,
+        "waitedMs": 0
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "select_place_match",
+        "success": true,
+        "attempts": 1,
+        "waitedMs": 0
+      }
+    ]
+  },
+  "cleanup": {
+    "draftsDeleted": 1,
+    "placesDeleted": 6,
+    "privateBackup": "/Users/gimtaehyeong/.config/devflow/trova/prod-release-286-backup-20261101-024348.json",
+    "jobAndApiLogsKept": true,
+    "residualPlaces": 0,
+    "residualDrafts": 0
+  },
+  "inFlightBeforeSwap": [
+    0,
+    0,
+    0
+  ],
+  "swap": {
+    "swapped": true,
+    "backupDirectory": "/opt/trova-backend/releases/main-bd196e1-20261101-024348/previous"
+  },
+  "healthSeconds": 108.095,
+  "runtime": {
+    "hashes": {
+      "app.jar": "f820ab28d6ba3e66fa7b8b2abbf9fb26f3a899d4409eb4390911383b5ed0e910"
+    },
+    "service": "active",
+    "selectedFlags": {
+      "APP_QUEUE_TYPE": "kafka",
+      "PIPELINE_TRACE": "",
+      "PIPELINE_FILTER_AUDIT": "",
+      "PIPELINE_FILTER_TEXT_ONLY": ""
+    },
+    "unchangedRuntimeFiles": {
+      "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+      "pipeline-test/run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+      "pipeline-test/generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+      "pipeline-test/verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+      "pipeline-test/select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+      "pipeline-test/tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+      "pipeline-test/summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+    }
+  },
+  "baseChecksPassed": true,
+  "preSmokeChecksPassed": true,
+  "geminiRowsBeforeSmoke": 8,
+  "finishedAt": "2026-11-01T02:47:05.262868+09:00",
+  "postVerification": {
+    "service": "active",
+    "active_since": "Sat 2026-10-31 17:44:30 UTC",
+    "queue_type": "kafka",
+    "smoke_queue_path": "kafka",
+    "final_jar_hashes": {
+      "app.jar": "f820ab28d6ba3e66fa7b8b2abbf9fb26f3a899d4409eb4390911383b5ed0e910"
+    },
+    "previous_jar_hashes": {
+      "app.jar": "ded293aa679a44335eaf72df1679e67767d40b63d790095fc2fa499f119478b3"
+    },
+    "unchanged_python_hashes": {
+      "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+      "pipeline-test/run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+      "pipeline-test/generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+      "pipeline-test/verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+      "pipeline-test/select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+      "pipeline-test/tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+      "pipeline-test/summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+    },
+    "owned_smoke_workdir_exists": {
+      "job": false,
+      "select": false,
+      "verify": false,
+      "itinerary": false
+    },
+    "journal_since_start_warn_error_level_entries": {},
+    "health": {
+      "groups": [
+        "liveness",
+        "readiness"
+      ],
+      "status": "UP"
+    },
+    "inFlightJobsDraftsReplans": [
+      0,
+      0,
+      0
+    ],
+    "inFlightObservedAt": "2026-11-01T02:48:20.500764+09:00"
+  }
+}

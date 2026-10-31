@@ -1,0 +1,114 @@
+{
+  "scope": "Recalculation of dated evidence; no new performance experiment",
+  "source_sha256": {
+    "client-latency-20261031.json": "952ed411ddb7a6b25b8ba4f5024545f805314510570ed5ca119b4d71aefa2bfd",
+    "local-queue-latency-20261031.json": "8da65dd8bd6922dc2603823c6328d54e83f2c7d169ac270cf160fab24c4a3298",
+    "production-queue-ab-20261031.json": "d58ad7b8ed31e8a4e08bacf3356020a97529fbf9007749ef77f1e6797c41e7c8"
+  },
+  "client_latency_ms": {
+    "rest": {
+      "n": 4,
+      "median": 3656.6441665,
+      "mean": 4030.35969775
+    },
+    "spring-ai": {
+      "n": 4,
+      "median": 3636.544875,
+      "mean": 3593.95125
+    }
+  },
+  "local_delivery_ms": {
+    "async": {
+      "n": 20,
+      "median": 0.0548965,
+      "mean": 0.06394585,
+      "sample_p90_nearest_rank": 0.077125
+    },
+    "kafka": {
+      "n": 20,
+      "median": 6.632728999999999,
+      "mean": 6.46521255,
+      "sample_p90_nearest_rank": 6.762875
+    }
+  },
+  "production": {
+    "async": {
+      "queueWaitMs": {
+        "n": 4,
+        "median": 135.0,
+        "mean": 138.25
+      },
+      "requestMs": {
+        "n": 4,
+        "median": 400.3315,
+        "mean": 435.24174999999997
+      },
+      "processingSeconds": {
+        "n": 4,
+        "median": 22.0625,
+        "mean": 25.3825
+      },
+      "createdToAnalysisDoneSeconds": {
+        "n": 4,
+        "median": 22.197499999999998,
+        "mean": 25.52075
+      },
+      "rssKiBAfterDrafts": {
+        "n": 4,
+        "median": 389750.0,
+        "mean": 389811
+      },
+      "logical_calls": 12,
+      "known_attempts": 14,
+      "known_waited_ms": 15000,
+      "job_ids": [
+        98,
+        99,
+        100,
+        101
+      ]
+    },
+    "kafka": {
+      "queueWaitMs": {
+        "n": 4,
+        "median": 574.0,
+        "mean": 614.5
+      },
+      "requestMs": {
+        "n": 4,
+        "median": 834.251,
+        "mean": 835.96525
+      },
+      "processingSeconds": {
+        "n": 4,
+        "median": 21.451,
+        "mean": 20.022
+      },
+      "createdToAnalysisDoneSeconds": {
+        "n": 4,
+        "median": 21.7545,
+        "mean": 20.6365
+      },
+      "rssKiBAfterDrafts": {
+        "n": 4,
+        "median": 402074.0,
+        "mean": 401857
+      },
+      "logical_calls": 12,
+      "known_attempts": 12,
+      "known_waited_ms": 0,
+      "job_ids": [
+        95,
+        96,
+        103,
+        104
+      ]
+    }
+  },
+  "limitations": [
+    "Client and production samples n=4 per mode; no inferential speed or failure-rate claim",
+    "Production K-A-K blocks, one URL, serial low load; rest baseline server not deployed",
+    "RSS uncontrolled across restarts; historical JAR sizes do not isolate dependency effects",
+    "Deployment smoke and mixed 24h observations excluded"
+  ]
+}

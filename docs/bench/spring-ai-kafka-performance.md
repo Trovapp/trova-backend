@@ -1,5 +1,7 @@
 # Spring AI 2·Kafka 대기열 도입 성능 기록 (2026-10-29 ~ 2026-10-31)
 
+> 최신 종합: [2026-11-01 비교 정리](system-comparison-summary-20261101.md). 원본 재계산과 후속 중복 억제/복구 검증 상태를 포함합니다. 아래 수치는 당시 기록입니다.
+
 > 2026-10-31 후속 검증: [기존·Spring AI 2·Kafka 비교](system-comparison-20261031.md). 과거 Kafka 87·88은 서로 다른 영상이므로 통제 속도 비교가 아니다. 최신 비교와 한계는 이 후속 문서를 우선한다.
 
 두 도입(PR #245 Spring AI, PR #246 Kafka)이 성능에 무엇을 바꿨는지 실측으로 모은 기록. 출처는 docs/experience-notes.md의 각 작업 항목이다.
