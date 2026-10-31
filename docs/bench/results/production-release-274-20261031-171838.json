@@ -1,0 +1,132 @@
+{
+  "sourceCommit": "2ebf4b69a08afa7ba5fd2560f95ed604fe729a76",
+  "release": "main-2ebf4b6-20261031-171838",
+  "startedAt": "2026-10-31T17:18:40.348722+09:00",
+  "beforeHashes": {
+    "app.jar": "08e88164b433ad08c85b2674621941bb3a4acf0a10cb15b05fe0daec446f8e84",
+    "pipeline-test/extract_places.py": "ccd0d2466259e268bef9aa11df52918a6e4516248b17f786b4e0a2efbb4628be"
+  },
+  "expectedHashes": {
+    "app.jar": "5b2ce3ea17ae1379f0cc5e62f4752a381fe124368a6c4b32bec145b641d0e8fd",
+    "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77"
+  },
+  "backupDirectory": "/opt/trova-backend/releases/main-2ebf4b6-20261031-171838/previous",
+  "deployed": true,
+  "rollback": false,
+  "checks": {
+    "unauthenticatedShare": 401,
+    "unauthenticatedAutoDraft": 401,
+    "unauthenticatedPlacesAndNoSessionCookie": true
+  },
+  "smoke": {
+    "jobId": 105,
+    "httpStatus": 202,
+    "status": "DONE",
+    "createdAt": "2026-10-31 17:21:09.064065",
+    "analysisFinishedAt": "2026-10-31 17:21:41.258216",
+    "savedPlaces": 7,
+    "apiCalls": [
+      {
+        "operation": "extract_places.collect",
+        "success": true,
+        "attempts": 1,
+        "waitedMs": 0
+      },
+      {
+        "operation": "extract_places.filter",
+        "success": true,
+        "attempts": 1,
+        "waitedMs": 0
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "select_place_match",
+        "success": true,
+        "attempts": 1,
+        "waitedMs": 0
+      }
+    ]
+  },
+  "cleanup": {
+    "draftsDeleted": 1,
+    "placesDeleted": 7,
+    "privateBackup": "/Users/gimtaehyeong/.config/devflow/trova/prod-release-274-backup-20261031-171838.json",
+    "jobAndApiLogsKept": true,
+    "residualPlaces": 0,
+    "residualDrafts": 0
+  },
+  "inFlightBeforeSwap": [
+    0,
+    0,
+    0
+  ],
+  "swap": {
+    "swapped": true,
+    "backupDirectory": "/opt/trova-backend/releases/main-2ebf4b6-20261031-171838/previous"
+  },
+  "healthSeconds": 102.384,
+  "runtime": {
+    "hashes": {
+      "app.jar": "5b2ce3ea17ae1379f0cc5e62f4752a381fe124368a6c4b32bec145b641d0e8fd",
+      "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77"
+    },
+    "service": "active",
+    "selectedFlags": {
+      "APP_QUEUE_TYPE": "kafka",
+      "PIPELINE_TRACE": "",
+      "PIPELINE_FILTER_AUDIT": "",
+      "PIPELINE_FILTER_TEXT_ONLY": ""
+    }
+  },
+  "baseChecksPassed": true,
+  "geminiRowsBeforeSmoke": 0,
+  "finishedAt": "2026-10-31T17:21:57.181950+09:00",
+  "finalRuntimeCheck": {
+    "hashes": {
+      "app.jar": "5b2ce3ea17ae1379f0cc5e62f4752a381fe124368a6c4b32bec145b641d0e8fd",
+      "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77"
+    },
+    "service": "active"
+  }
+}

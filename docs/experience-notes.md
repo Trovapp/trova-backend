@@ -2120,3 +2120,13 @@
 - 우선 수정: 재구성 진입점의 장소 호출 한도 누락, 관리자 조치 커밋 후 감사 저장 실패 시 조치만 남는 경계. 후속 개선: 동일 재구성 동시 제출 2개 작업, 같은 장소 동시 캐시 미스의 상세 API 2회, 잘못된 Expo 티켓의 성공 판정.
 - 외부 API/저장소를 mock한 실제 컨트롤러·서비스/파서 probe와 Spring 트랜잭션+H2 fixture로 5개 현 동작 재현. 원하는 동작을 고정하는 정상 회귀 테스트가 아니므로 docs/reviews/probes에 보관하고 실행용 src/test 임시 복사본은 제거했다. 제품 수정/실제 외부 호출/운영 데이터 변경 없음.
 - 임시 probe 제거 후 ./gradlew build -q는 기존951개 중948통과·실패/오류0·opt-in3skip. 추가 재현5개도 별도실행 통과. 상세 docs/reviews/extended-code-review-20261031.md, deployment-plan-4307b79-20261031.md 및 JSON 근거. 전수 감사나 다중 JVM/실제 외부 응답 검증을 주장하지 않는다.
+
+
+## 2026-10-31 수정 포함 main 운영 배포 및 기록 반영 (#274)
+
+- 사용자의 순차 승인에 따라 재구성 한도·동시 접수(#272)와 관리자 DB/감사 원자성(#273)을 먼저 수정/검증/머지하고 main2ebf4b6의 JAR+extract_places.py를 함께 배포했다.
+- 분석/초안/재구성 진행각0 확인, 전송/이전파일쌍 백업/교체 후102.4초에UP. 새해시·Kafka·진단플래그OFF·인증없는401·세션쿠키없음 확인. 환경파일변경없음. 이전쌍은 /opt/trova-backend/releases/main-2ebf4b6-20261031-171838/previous 에 보관.
+- 실제 영상105 DONE·장소7개. 테스트장소7/자동초안1을 비공개600백업 후 해당작업행만삭제, 잔여0. 완료job/API기록유지. 실제사용자대상관리자삭제/정지조치는실행하지않았으며 해당경계는JPA/H2검사로확인.
+- 배포main build968중965통과·실패/오류0·opt-in3skip, Kafka별도JVM복구opt-in1개추가통과·Python48통과. 단일smoke는성능/정확도개선주장근거아님.
+- 배포후기록PR268/269도충돌해결/최신mainbuild후순차머지. 과거4307b79배포계획과probe는역사적기록으로구분하고후속해결상태추가. CLAUDE.md에ADR0025/0026요약추가.
+- 상세 docs/reviews/production-release-274-20261031.md와production-release-274-20261031-171838.json. 잠자기설정보류유지. 남은상세cachemiss중복/Expo티켓/UTF8진행표시는사용자선택전자동진행안함.

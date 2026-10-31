@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "2ebf4b69a08afa7ba5fd2560f95ed604fe729a76",
+  "fullBuild": {
+    "tests": 968,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "pythonTests": 48,
+  "recoveryTest": [
+    {
+      "name": "com.trova.backend.queue.ShareJobProcessRecoveryTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-31T08:18:01.298Z",
+      "hostname": "gimtaehyeong-ui-MacBookPro.local",
+      "time": "15.028"
+    }
+  ]
+}
