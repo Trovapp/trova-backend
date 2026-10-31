@@ -20,4 +20,10 @@ public class AdminAuditLog {
     public void record(Long actorId, String action, Long targetId, Long targetUserId, String reason, String result) {
         repository.save(new AdminActionLog(actorId, action, targetId, targetUserId, reason, result));
     }
+
+    /** DB 실행 조치와 감사 기록이 같은 커밋을 사용해야 하는 경로. */
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void recordInTransaction(Long actorId, String action, Long targetId, Long targetUserId, String reason, String result) {
+        repository.save(new AdminActionLog(actorId, action, targetId, targetUserId, reason, result));
+    }
 }

@@ -23,9 +23,9 @@ public class AdminActionService {
 
     private final Map<AdminAction, AdminActionHandler> handlers = new EnumMap<>(AdminAction.class);
     private final ConfirmTokenStore confirmTokens;
-    private final AdminAuditLog auditLog;
+    private final AdminActionTransactionService transactionService;
 
-    public AdminActionService(List<AdminActionHandler> handlers, ConfirmTokenStore confirmTokens, AdminAuditLog auditLog) {
+    public AdminActionService(List<AdminActionHandler> handlers, ConfirmTokenStore confirmTokens, AdminActionTransactionService transactionService) {
         for (AdminActionHandler handler : handlers) {
             // 같은 조치를 둘이 맡으면 어느 쪽이 실행될지 모르게 된다 — 시작부터 막는다.
             if (this.handlers.putIfAbsent(handler.action(), handler) != null) {
@@ -33,7 +33,7 @@ public class AdminActionService {
             }
         }
         this.confirmTokens = confirmTokens;
-        this.auditLog = auditLog;
+        this.transactionService = transactionService;
     }
 
     /** 경로의 소문자·하이픈 이름(`delete-trip`)을 조치로 바꾼다. 모르면 빈 값. */
@@ -65,8 +65,7 @@ public class AdminActionService {
                 && (confirmText == null || !pending.confirmText().strip().equals(confirmText.strip()))) {
             throw AdminActionException.badRequest("확인 글자가 달라요: " + pending.confirmText() + "." + RETRY_FROM_PREVIEW);
         }
-        String result = handler(action).execute(pending.targetId(), adminUserId);
-        auditLog.record(adminUserId, action.name(), pending.targetId(), pending.targetUserId(), trimmedReason, result);
+        String result = transactionService.execute(handler(action), pending, trimmedReason);
         return new Executed(pending.targetId(), result);
     }
 
