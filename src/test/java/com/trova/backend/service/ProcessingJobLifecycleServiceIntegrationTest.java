@@ -230,4 +230,39 @@ class ProcessingJobLifecycleServiceIntegrationTest {
         assertThat(reloaded.getAnalysisStatus()).isEqualTo(JobStatus.DONE);
         assertThat(reloaded.getAnalysisFinishedAt()).isNotNull();
     }
+
+    @Test
+    void 중단된_PROCESSING은_재시작_후_영상분석을_다시_시작할_수_있다() {
+        ProcessingJob job = newJob();
+        lifecycleService.markProcessing(job.getId());
+        assertThat(lifecycleService.startAnalysis(job.getId())).isEqualTo(job.getSourceUrl());
+        assertThat(processingJobRepository.findById(job.getId()).orElseThrow().getStatus()).isEqualTo(JobStatus.PROCESSING);
+    }
+
+    @Test
+    void 끝난_분석은_일정생성으로_PROCESSING이어도_다시_분석하지_않는다() {
+        ProcessingJob job = newJob();
+        lifecycleService.markAnalysisDone(job.getId());
+        lifecycleService.markProcessing(job.getId());
+        assertThat(lifecycleService.startAnalysis(job.getId())).isNull();
+        assertThat(processingJobRepository.findById(job.getId()).orElseThrow().getAnalysisStatus()).isEqualTo(JobStatus.DONE);
+    }
+
+    @Test
+    void 실패나_완료한_작업과_삭제된_작업은_분석을_시작하지_않는다() {
+        ProcessingJob job = newJob();
+        lifecycleService.markFailed(job.getId(), "실패");
+        assertThat(lifecycleService.startAnalysis(job.getId())).isNull();
+        lifecycleService.markDone(job.getId());
+        assertThat(lifecycleService.startAnalysis(job.getId())).isNull();
+        processingJobRepository.deleteById(job.getId());
+        assertThat(lifecycleService.startAnalysis(job.getId())).isNull();
+    }
+
+    @Test
+    void 새_영상분석_시작은_트랜잭션으로_진행상태를_저장한다() {
+        ProcessingJob job = newJob();
+        assertThat(lifecycleService.startAnalysis(job.getId())).isEqualTo(job.getSourceUrl());
+        assertThat(processingJobRepository.findById(job.getId()).orElseThrow().getStatus()).isEqualTo(JobStatus.PROCESSING);
+    }
 }

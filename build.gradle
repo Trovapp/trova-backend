@@ -59,4 +59,7 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	if (System.getenv('TROVA_RUN_PROCESS_RECOVERY') == '1') {
+		systemProperty 'trova.test.runtime.classpath', sourceSets.test.runtimeClasspath.asPath
+	}
 }

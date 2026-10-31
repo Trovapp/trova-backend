@@ -1,6 +1,7 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingStage;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.geocoding.GeocodingResult;
@@ -29,6 +30,22 @@ public class ProcessingJobLifecycleService {
     ) {
         this.processingJobRepository = processingJobRepository;
         this.savedPlaceRepository = savedPlaceRepository;
+    }
+
+    /**
+     * 영상 분석 전용. 호출자는 같은 JVM의 작업 잠금을 잡고 있어야 한다(ADR 0024).
+     * 끝난/삭제된 작업은 null, 재시작 후 중단된 PROCESSING은 다시 분석할 URL을 반환한다.
+     * 일정 생성도 쓰는 markProcessing은 별도 유지한다.
+     */
+    @Transactional
+    public String startAnalysis(Long jobId) {
+        ProcessingJob job = processingJobRepository.findById(jobId).orElse(null);
+        if (job == null || job.getStatus() == JobStatus.DONE || job.getStatus() == JobStatus.FAILED
+                || job.getAnalysisStatus() != null) {
+            return null;
+        }
+        job.markProcessing();
+        return job.getSourceUrl();
     }
 
     @Transactional
