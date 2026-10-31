@@ -13,6 +13,7 @@ import com.trova.backend.repository.TripReplanJobRepository;
 import com.trova.backend.service.OrphanedJobRecoveryService;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.TripReplanJobService;
+import com.trova.backend.service.DailyQuotaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -34,17 +35,29 @@ public class TripReplanController {
     private final TripRepository tripRepository;
     private final TripReplanJobRepository tripReplanJobRepository;
     private final TripReplanJobService tripReplanJobService;
+    private final DailyQuotaService dailyQuotaService;
+    private final Object[] submissionLocks = createSubmissionLocks();
+
+    private static Object[] createSubmissionLocks() {
+        Object[] locks = new Object[256];
+        for (int i = 0; i < locks.length; i++) {
+            locks[i] = new Object();
+        }
+        return locks;
+    }
 
     public TripReplanController(
             CurrentUserService currentUserService,
             TripRepository tripRepository,
             TripReplanJobRepository tripReplanJobRepository,
-            TripReplanJobService tripReplanJobService
+            TripReplanJobService tripReplanJobService,
+            DailyQuotaService dailyQuotaService
     ) {
         this.currentUserService = currentUserService;
         this.tripRepository = tripRepository;
         this.tripReplanJobRepository = tripReplanJobRepository;
         this.tripReplanJobService = tripReplanJobService;
+        this.dailyQuotaService = dailyQuotaService;
     }
 
     // allPlaces=true면 카테고리 매칭 기반 전체 재추천(여행의 모든 장소가 대상),
@@ -120,12 +133,21 @@ public class TripReplanController {
     // 무기한 재사용하면 해당 여행은 다시는 재구성을 못 돌리게 된다. 실측 응답시간이
     // 최악 75~80초였으므로 5분이면 정상 작업과 충분히 구분된다.
     private Long resolveJobId(User user, Trip trip, boolean indoorOnly, boolean allPlaces) {
+        // 조회→생성→접수까지 같은 여행의 동시 요청을 직렬화한다. 단일 JVM 범위(ADR 0025).
+        synchronized (submissionLocks[Math.floorMod(trip.getId().hashCode(), submissionLocks.length)]) {
+            return resolveJobIdSerially(user, trip, indoorOnly, allPlaces);
+        }
+    }
+
+    private Long resolveJobIdSerially(User user, Trip trip, boolean indoorOnly, boolean allPlaces) {
         List<TripReplanJob> inFlight = tripReplanJobRepository.findByUserAndTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
                 user, trip, indoorOnly, allPlaces, List.of(JobStatus.PENDING, JobStatus.PROCESSING),
                 LocalDateTime.now().minusMinutes(STALE_JOB_MINUTES));
         if (!inFlight.isEmpty()) {
             return inFlight.get(0).getId();
         }
+        // 기존 작업 재사용은 무료. 새 접수 시도는 외부 호출 전 기존 장소 요청 한도 1회를 쓴다.
+        dailyQuotaService.consumePlaceCall(user);
         TripReplanJob job = tripReplanJobRepository.save(new TripReplanJob(user, trip, indoorOnly, allPlaces));
         try {
             tripReplanJobService.process(job.getId());
