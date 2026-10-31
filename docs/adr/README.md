@@ -62,3 +62,4 @@
 | [0025](0025-replan-admission-quota.md) | 재구성 새 접수는 기존 장소 요청 한도에 포함하고 단일 JVM에서 직렬화 | 확정 | 2026-10-31 |
 | [0026](0026-admin-action-atomic-audit.md) | 관리자 DB 변경과 실행 감사는 함께 커밋하고 큐 전달은 커밋 뒤에 | 확정 | 2026-10-31 |
 | [0027](0027-place-details-single-flight.md) | 같은 장소의 진행 중 상세 생성을 단일 JVM에서 공유 | 확정 | 2026-10-31 |
+| [0028](0028-python-process-lifecycle.md) | 보조 Python도 소유 프로세스 종료 확인 뒤 출력·파일 처리 | 확정 | 2026-11-01 |
