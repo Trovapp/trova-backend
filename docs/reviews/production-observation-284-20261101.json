@@ -1,0 +1,164 @@
+{
+  "measured_at_kst": "2026-11-01 02:39:48.718768",
+  "window_start_kst": "2026-10-31 02:39:48.718768",
+  "runtime_source": "b473f2b035a71f3ad43df8ed0584f3df1c8a1a61",
+  "new_fix_deployed": false,
+  "known_smoke_job_ids": [
+    87,
+    88,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106
+  ],
+  "read_only": true,
+  "cohorts": {
+    "last_24h_all": {
+      "statuses": {
+        "DONE": 14
+      },
+      "terminal_count": 14,
+      "terminal_failure_rate": 0.0,
+      "success_duration": {
+        "n": 14,
+        "median_seconds": 19.3137435,
+        "p90_seconds": 31.5060506
+      }
+    },
+    "last_24h_known_smoke_excluded": {
+      "statuses": {},
+      "terminal_count": 0,
+      "terminal_failure_rate": null,
+      "success_duration": {
+        "n": 0,
+        "median_seconds": null,
+        "p90_seconds": null
+      }
+    },
+    "since_release_smoke_all": {
+      "statuses": {
+        "DONE": 1
+      },
+      "terminal_count": 1,
+      "terminal_failure_rate": 0.0,
+      "success_duration": {
+        "n": 1,
+        "median_seconds": 14.451452,
+        "p90_seconds": 14.451452
+      }
+    },
+    "since_release_smoke_known_smoke_excluded": {
+      "statuses": {},
+      "terminal_count": 0,
+      "terminal_failure_rate": null,
+      "success_duration": {
+        "n": 0,
+        "median_seconds": null,
+        "p90_seconds": null
+      }
+    }
+  },
+  "inflight": {
+    "processing_jobs": [],
+    "trip_drafts": [],
+    "trip_replan_jobs": []
+  },
+  "api_log_rows_last_24h": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "rows": 14,
+      "success_rows": 14,
+      "failed_rows": 0,
+      "attempts_known_rows": 14,
+      "waited_known_rows": 14,
+      "known_attempts_sum": 16,
+      "known_waited_ms_sum": "15000"
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "rows": 14,
+      "success_rows": 14,
+      "failed_rows": 0,
+      "attempts_known_rows": 14,
+      "waited_known_rows": 14,
+      "known_attempts_sum": 14,
+      "known_waited_ms_sum": "0"
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "rows": 14,
+      "success_rows": 14,
+      "failed_rows": 0,
+      "attempts_known_rows": 14,
+      "waited_known_rows": 14,
+      "known_attempts_sum": 14,
+      "known_waited_ms_sum": "0"
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "rows": 4,
+      "success_rows": 4,
+      "failed_rows": 0,
+      "attempts_known_rows": 0,
+      "waited_known_rows": 0,
+      "known_attempts_sum": null,
+      "known_waited_ms_sum": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "rows": 85,
+      "success_rows": 85,
+      "failed_rows": 0,
+      "attempts_known_rows": 0,
+      "waited_known_rows": 0,
+      "known_attempts_sum": null,
+      "known_waited_ms_sum": null
+    }
+  ],
+  "failed_job_categories_last_24h": [],
+  "server": {
+    "service": "active",
+    "active_since": "Sat 2026-10-31 17:09:30 UTC",
+    "jar_sha256": "ded293aa679a44335eaf72df1679e67767d40b63d790095fc2fa499f119478b3",
+    "python_sha256": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+    "queue_type": "kafka",
+    "diagnostic_flags": {
+      "PIPELINE_TRACE": "unset",
+      "PIPELINE_FILTER_AUDIT": "unset",
+      "PIPELINE_FILTER_TEXT_ONLY": "unset"
+    },
+    "journal_24h_total_lines": 2466,
+    "journal_24h_warn_error_level_entries": {},
+    "journal_since_start_warn_error_level_entries": {},
+    "journal_24h_warn_error_category_matching_lines": {
+      "quota_or_rate_limit": 0,
+      "timeout": 0,
+      "process_unconfirmed": 0,
+      "kafka_fallback": 0
+    }
+  },
+  "health": {
+    "groups": [
+      "liveness",
+      "readiness"
+    ],
+    "status": "UP"
+  }
+}

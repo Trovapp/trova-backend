@@ -16,9 +16,6 @@ import java.time.Duration;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -40,7 +37,6 @@ public class PipelineRunner {
     // 비공개·삭제·로그인 필요라 다시 해도 받을 수 없는 게시물·영상(#257) — run_pipeline.py SOURCE_UNAVAILABLE_MARKER와 같아야 한다.
     public static final String SOURCE_UNAVAILABLE_MARKER = "SOURCE_UNAVAILABLE";
     private static final long PROGRESS_POLL_MILLIS = 500;
-    private static final long TERMINATION_TIMEOUT_SECONDS = 5;
 
     private final String scriptPath;
     private final String workDirBase;
@@ -151,78 +147,11 @@ public class PipelineRunner {
     }
 
     private void captureDescendants(Process process, Map<Long, ProcessHandle> descendants) {
-        process.descendants().forEach(child -> descendants.put(child.pid(), child));
+        OwnedProcessTerminator.capture(process, descendants);
     }
 
     boolean terminateOwnedProcesses(Process process, Map<Long, ProcessHandle> descendants, Long jobId) {
-        if (process == null) {
-            return true;
-        }
-        boolean interrupted = Thread.interrupted();
-        boolean complete = true;
-        try {
-            try {
-                captureDescendants(process, descendants);
-            } catch (RuntimeException error) {
-                complete = false;
-                log.warn("ProcessingJob {} 하위 프로세스 탐색 실패 — 부모/관찰 자식 종료는 계속 시도", jobId, error);
-            }
-            // 일부 탐색/종료가 실패해도 다른 소유 프로세스의 정리는 계속한다.
-            for (ProcessHandle child : new ArrayList<>(descendants.values())) {
-                try {
-                    child.descendants().forEach(nested -> descendants.put(nested.pid(), nested));
-                } catch (RuntimeException error) {
-                    complete = false;
-                    log.warn("ProcessingJob {} 하위 트리 탐색 실패: {}", jobId, child.pid(), error);
-                }
-            }
-            try {
-                process.destroyForcibly();
-            } catch (RuntimeException error) {
-                complete = false;
-                log.warn("ProcessingJob {} 부모 종료 시도 실패", jobId, error);
-            }
-            for (ProcessHandle child : descendants.values()) {
-                try {
-                    child.destroyForcibly();
-                } catch (RuntimeException error) {
-                    complete = false;
-                    log.warn("ProcessingJob {} 하위 프로세스 종료 시도 실패: {}", jobId, child.pid(), error);
-                }
-            }
-            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(TERMINATION_TIMEOUT_SECONDS);
-            while (process.isAlive()) {
-                long remaining = deadline - System.nanoTime();
-                if (remaining <= 0) return false;
-                try {
-                    process.waitFor(remaining, TimeUnit.NANOSECONDS);
-                } catch (InterruptedException error) {
-                    interrupted = true;
-                }
-            }
-            for (ProcessHandle child : descendants.values()) {
-                while (child.isAlive()) {
-                    long remaining = deadline - System.nanoTime();
-                    if (remaining <= 0) return false;
-                    try {
-                        child.onExit().get(remaining, TimeUnit.NANOSECONDS);
-                    } catch (InterruptedException error) {
-                        interrupted = true;
-                    } catch (ExecutionException | TimeoutException error) {
-                        log.warn("ProcessingJob {} 하위 프로세스 종료 대기 실패: {}", jobId, child.pid(), error);
-                        return false;
-                    }
-                }
-            }
-            return complete;
-        } catch (RuntimeException error) {
-            log.error("ProcessingJob {} 소유 프로세스 정리 실패", jobId, error);
-            return false;
-        } finally {
-            if (interrupted) {
-                Thread.currentThread().interrupt();
-            }
-        }
+        return new OwnedProcessTerminator().terminate(process, descendants, jobId);
     }
 
     private void deleteTemporaryFile(File file) {

@@ -1,0 +1,35 @@
+{
+  "full_build": {
+    "command": "./gradlew build -q",
+    "tests": 1010,
+    "passed": 1007,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "focused": {
+    "tests": 35,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_auxiliary_tests": 25,
+  "negative_control": {
+    "tests": 5,
+    "failures": 5,
+    "errors": 0
+  },
+  "opt_in_recovery": {
+    "command": "TROVA_RUN_PROCESS_RECOVERY=1 ./gradlew test --tests '*ShareJobProcessRecoveryTest' -q",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "external_api_calls_in_validation": 0,
+  "limitations": [
+    "Observed descendants only; no atomic process-group guarantee",
+    "Unconfirmed termination retention tested through injected false result, not actual OS signal denial",
+    "No production deployment in this task"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "scope": "Original five adapters, actual Python parent/child processes, owned fixture cleanup in finally",
+  "tests": 5,
+  "failures": 5,
+  "errors": 0,
+  "fixedSourcesRestored": true,
+  "externalApiCalls": 0
+}
