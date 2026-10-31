@@ -1,4 +1,4 @@
 # 새 워크트리(오르카·Claude Code)에 메인 체크아웃에서 복사할 git 무시 파일. 값은 커밋하지 않는다.
-.env
+# 루트 .env는 DB 오접속 방지를 위해 자동 복사하지 않는다(ADR 0023).
 pipeline-test/.env
 .claude/settings.local.json
