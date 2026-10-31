@@ -65,3 +65,8 @@ TROVA_RUN_PROCESS_RECOVERY=1 ./gradlew test --tests '*ShareJobProcessRecoveryTes
 최종 main의 src/pipeline-test/eval 파일이 앞선 로컬 조합 `3fa9bbb`와 동일함을 확인했다. 해당 main에서 `./gradlew clean build -q`를 다시 실행해 951개 중 948 통과·실패/오류 0·명시 실행용 3 skip을 확인했고, 실제 Kafka/별도 JVM 재시작 테스트를 다시 명시 실행해 1개 통과·skip 0을 확인했다. 다른 두 opt-in은 앞서 동일 코드 조합에서 통과한 결과를 유지하며 추가 재측정하지 않았다.
 
 원격 머지 커밋은 #262 `4d37e62`, #263 `ac6c949`, #265 `4307b79`다. 원래의 로컬 통합 커밋을 머지한 것이 아니다. 운영 JAR/Python 교체·서비스 재시작·실제 API 호출은 하지 않았다. [main 검증 집계](../bench/results/merged-main-266-verification-20261031.json)와 [재시작 원본](../bench/results/merged-main-266-kafka-process-recovery-20261031.json)을 별도로 보관했다.
+
+
+### 기록 반영 전 후속 상태
+
+후속 #272/#273 수정이 main 2ebf4b6에 들어갔다. 이 기록 PR도 해당 main을 반영하고 전체 build968개 중965통과·실패/오류0·기존opt-in3skip을 확인했다. 문서의 원래 frozen head/당시 main 결과는 역사적 원본으로 유지한다. 2ebf4b6의 JAR/Python 운영 배포 및 영상105 smoke·정리는 #274에서 별도로 기록한다.
