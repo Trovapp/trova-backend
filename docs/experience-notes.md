@@ -2014,3 +2014,9 @@
 - 실제 Python으로 인터럽트·시간초과·콜백 실패·관찰한 자식 잔존·큰 한국어 stdout을 검사한다. 종료 생략 negative control은 프로세스 생존 검사에서 실패하고 정상 구현에서는 통과했다.
 - JVM SIGKILL·관찰 전에 분리된 프로세스·다른 Python runner 전체를 해결한 것은 아니다. 운영 변경/배포·외부 API 호출은 하지 않았다. 상세: docs/reviews/pipeline-process-cleanup-20261031.md.
 - 이번 main 기반 브랜치 전체 빌드 935 tests 통과(실패/오류/skip 0), 기본 PipelineRunner 3개·신규 5개 포함. 다른 열린 PR의 전용 테스트와 병합 검증은 별도다. diff 검사 통과.
+
+### PR #265 리뷰 후속
+- 탐색 예외가 부모 종료를 막고 한 자식의 종료 예외가 나머지 자식 정리를 중단하던 경로를 발견했다. 각 시도를 분리해 계속 정리하되 실패가 있으면 미확인으로 파일을 보존한다.
+- 예외 주입 테스트 2개를 추가했고 이전 helper의 negative control에서는 모두 실패했다. 실제 OS 권한을 바꾸거나 종료 거부 프로세스를 만든 것은 아니다.
+- 보존 로그에 stdout/stderr 경로를 추가했다. 상세: docs/reviews/pr-265-review-20261031.md.
+- 리뷰 수정 후 이번 main 기반 브랜치 전체 빌드 937 tests 통과(실패/오류/skip 0), diff 검사 통과. PR #265에 반영하며 자동 머지·배포하지 않는다.

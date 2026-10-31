@@ -144,7 +144,8 @@ public class PipelineRunner {
                 deleteTemporaryFile(stdoutFile);
                 deleteWorkDir(workDir, jobId);
             } else {
-                log.error("ProcessingJob {} 프로세스 종료 미확인 — 작업/출력 파일을 보존합니다: {}", jobId, workDir);
+                log.error("ProcessingJob {} 프로세스 종료 미확인 — 파일 보존: workDir={}, stdout={}, stderr={}",
+                        jobId, workDir, stdoutFile, stderrFile);
             }
         }
     }
@@ -153,23 +154,40 @@ public class PipelineRunner {
         process.descendants().forEach(child -> descendants.put(child.pid(), child));
     }
 
-    private boolean terminateOwnedProcesses(Process process, Map<Long, ProcessHandle> descendants, Long jobId) {
+    boolean terminateOwnedProcesses(Process process, Map<Long, ProcessHandle> descendants, Long jobId) {
         if (process == null) {
             return true;
         }
         boolean interrupted = Thread.interrupted();
+        boolean complete = true;
         try {
-            captureDescendants(process, descendants);
-            // 부모가 이미 끝났어도 앞서 관찰한 자식의 새 하위 프로세스를 수집한다.
-            for (ProcessHandle child : new ArrayList<>(descendants.values())) {
-                child.descendants().forEach(nested -> descendants.put(nested.pid(), nested));
+            try {
+                captureDescendants(process, descendants);
+            } catch (RuntimeException error) {
+                complete = false;
+                log.warn("ProcessingJob {} 하위 프로세스 탐색 실패 — 부모/관찰 자식 종료는 계속 시도", jobId, error);
             }
-            if (process.isAlive()) {
+            // 일부 탐색/종료가 실패해도 다른 소유 프로세스의 정리는 계속한다.
+            for (ProcessHandle child : new ArrayList<>(descendants.values())) {
+                try {
+                    child.descendants().forEach(nested -> descendants.put(nested.pid(), nested));
+                } catch (RuntimeException error) {
+                    complete = false;
+                    log.warn("ProcessingJob {} 하위 트리 탐색 실패: {}", jobId, child.pid(), error);
+                }
+            }
+            try {
                 process.destroyForcibly();
+            } catch (RuntimeException error) {
+                complete = false;
+                log.warn("ProcessingJob {} 부모 종료 시도 실패", jobId, error);
             }
             for (ProcessHandle child : descendants.values()) {
-                if (child.isAlive()) {
+                try {
                     child.destroyForcibly();
+                } catch (RuntimeException error) {
+                    complete = false;
+                    log.warn("ProcessingJob {} 하위 프로세스 종료 시도 실패: {}", jobId, child.pid(), error);
                 }
             }
             long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(TERMINATION_TIMEOUT_SECONDS);
@@ -196,7 +214,7 @@ public class PipelineRunner {
                     }
                 }
             }
-            return true;
+            return complete;
         } catch (RuntimeException error) {
             log.error("ProcessingJob {} 소유 프로세스 정리 실패", jobId, error);
             return false;
