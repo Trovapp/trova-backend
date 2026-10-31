@@ -53,13 +53,21 @@ public class HttpExpoPushClient implements ExpoPushClient {
             return errors;
         }
         for (JsonNode ticket : data) {
-            if ("error".equals(ticket.path("status").asText())) {
-                String code = ticket.path("details").path("error").asText("");
-                errors.add(code.isEmpty() ? ticket.path("message").asText("error") : code);
-            } else {
+            String status = ticket.path("status").asText("");
+            if ("ok".equals(status)) {
                 errors.add(null);
+            } else if ("error".equals(status)) {
+                String code = textOrNull(ticket.path("details").path("error"));
+                String message = textOrNull(ticket.path("message"));
+                errors.add(code != null ? code : message != null ? message : "error");
+            } else {
+                // 순서를 유지해야 뒤의 성공/등록 해제 티켓이 다른 기기에 적용되지 않는다.
+                errors.add("InvalidTicket");
             }
         }
         return errors;
+    }
+    private static String textOrNull(JsonNode value) {
+        return value.isTextual() && !value.asText().isBlank() ? value.asText() : null;
     }
 }

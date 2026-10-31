@@ -2130,3 +2130,10 @@
 - 배포main build968중965통과·실패/오류0·opt-in3skip, Kafka별도JVM복구opt-in1개추가통과·Python48통과. 단일smoke는성능/정확도개선주장근거아님.
 - 배포후기록PR268/269도충돌해결/최신mainbuild후순차머지. 과거4307b79배포계획과probe는역사적기록으로구분하고후속해결상태추가. CLAUDE.md에ADR0025/0026요약추가.
 - 상세 docs/reviews/production-release-274-20261031.md와production-release-274-20261031-171838.json. 잠자기설정보류유지. 남은상세cachemiss중복/Expo티켓/UTF8진행표시는사용자선택전자동진행안함.
+
+
+## 2026-10-31 Expo 비정상 티켓 성공 판정 차단 (#277)
+
+- status=ok만 성공(null)으로 인정하고 빈 객체/null/비객체/알 수 없는 status는 InvalidTicket 실패로 바꿨다. 오류 코드/메시지는 비어 있지 않은 문자열만 사용하며 형식 오류가 다음 티켓을 막지 않도록 했다.
+- 배열 항목을 생략하지 않아 성공/등록 해제 티켓과 기기 순서를 보존한다. data가 없거나 JSON이 깨진 전체 응답은 기존 빈 티켓 목록(모두 실패) 처리 유지. 실제 HTTP/재시도/기기 보관 정책 변경 없음.
+- 파서3개와 실제 발송서비스+fake client1개 검사 추가. 잘못된 티켓의 성공시각 갱신/기기 삭제 없음, 뒤의 정상 성공/DeviceNotRegistered 대상 유지 확인. 전체 build972개 중969통과·실패/오류0·기존opt-in3skip. 실제 Expo/외부API/운영 호출 없음.
