@@ -70,7 +70,8 @@ STT 방식 결정 배경(Whisper 셀프호스팅 대신 Gemini 오디오 직접 
 작업 하나 = 이슈 하나 = 워크트리 하나. 오르카는 `~/orca/workspaces/<프로젝트>/<이름>`에 워크트리를 만든다.
 - 시작할 때: `git branch --show-current`로 브랜치를 보고, 규칙(`타입/#이슈번호-내용`)과 다르면 이슈를 만들고
   `git branch -m`으로 이름을 바꾼 뒤 시작한다. 새 세션이면 메모리의 인계 메모와 `docs/adr/`부터 본다.
-- `.env`, `pipeline-test/.env`는 `.worktreeinclude`로 복사된다. 없으면 메인 체크아웃에서 복사한다(외부로 보내지 않음).
+- 루트 `.env`는 워크트리에 자동 복사하지 않는다(운영 DB 오접속 방지, docs/adr/0023). 서버 실행이 필요하면 개발 DB용 환경을 명시적으로 준비하고 대상 DB를 확인한다. 운영 설정이 필요한 도구는 지정된 운영 환경 파일을 명시적으로 읽는다.
+- `pipeline-test/.env`는 `.worktreeinclude`로 복사된다. 없으면 확인된 로컬 서버의 환경에서 키를 준비한다(외부로 보내지 않음).
 - devflow `ship.sh start`·`merge`는 쓰지 않는다(워크트리를 직접 만들고 지워서 오르카 작업이 깨진다).
   PR은 `ship.sh pr` 또는 `gh pr create`, 머지는 `gh pr merge --squash`, 워크트리 정리는 오르카에서 작업을 닫아서 한다.
 - 하나뿐인 자원은 한 작업에서만 쓴다: 로컬 서버(8080, `.claude/worktrees/local-server`에서만 실행), QA 시뮬레이터(QA SE),

@@ -1,0 +1,106 @@
+{
+  "scope": "Saved captions + frames; two cases only; not representative of Instagram or full pipeline",
+  "results": [
+    {
+      "video_no": "7",
+      "title": "제주 해수욕장 10곳",
+      "flag": false,
+      "seconds": 8.162,
+      "recall": 0.9,
+      "precision": 0.9,
+      "names": [
+        "삼양해수욕장",
+        "함덕해수욕장",
+        "김녕해수욕장",
+        "세화해수욕장",
+        "표선해수욕장",
+        "중문색달해수욕장",
+        "화순금모래해변",
+        "판포포구",
+        "협재해수욕장",
+        "이호테우해수욕장"
+      ],
+      "expected": [
+        "삼양해수욕장",
+        "함덕해수욕장",
+        "김녕해수욕장",
+        "세화해수욕장",
+        "표선해수욕장",
+        "색달해수욕장",
+        "화순금모래해수욕장",
+        "판포포구",
+        "협재해수욕장",
+        "이호테우해수욕장"
+      ],
+      "caption_chars": 535,
+      "frames": 8
+    },
+    {
+      "video_no": "7",
+      "title": "제주 해수욕장 10곳",
+      "flag": true,
+      "seconds": 5.995,
+      "recall": 0.5,
+      "precision": 0.45454545454545453,
+      "names": [
+        "삼양해수욕장",
+        "한덕해수욕장",
+        "김영해수욕장",
+        "새화해수욕장",
+        "표선해수욕장",
+        "중문색살해수욕장",
+        "화순금모래해변",
+        "판포포구",
+        "비양도",
+        "협재해수욕장",
+        "이호테우해수욕장"
+      ],
+      "expected": [
+        "삼양해수욕장",
+        "함덕해수욕장",
+        "김녕해수욕장",
+        "세화해수욕장",
+        "표선해수욕장",
+        "색달해수욕장",
+        "화순금모래해수욕장",
+        "판포포구",
+        "협재해수욕장",
+        "이호테우해수욕장"
+      ],
+      "caption_chars": 535,
+      "frames": 8
+    },
+    {
+      "video_no": "10",
+      "title": "테라로사 커피공장 본점",
+      "flag": false,
+      "seconds": 7.111,
+      "recall": 1.0,
+      "precision": 1.0,
+      "names": [
+        "테라로사커피공장"
+      ],
+      "expected": [
+        "테라로사커피공장강릉점"
+      ],
+      "caption_chars": 40,
+      "frames": 8
+    },
+    {
+      "video_no": "10",
+      "title": "테라로사 커피공장 본점",
+      "flag": true,
+      "seconds": 5.022,
+      "recall": 1.0,
+      "precision": 1.0,
+      "names": [
+        "테라로사커피공장"
+      ],
+      "expected": [
+        "테라로사커피공장강릉점"
+      ],
+      "caption_chars": 40,
+      "frames": 8
+    }
+  ]
+}
