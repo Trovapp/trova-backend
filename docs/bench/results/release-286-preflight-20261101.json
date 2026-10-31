@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "bd196e107c4d668b70fa77b635bac81738fcc9c5",
+  "fullBuild": {
+    "tests": 1010,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "sameRuntimeAndTestsAsReviewedHead": "a873ca14b8d036605457e1020a32922dd2f98eea",
+  "recoveryEvidenceReused": "auxiliary-process-recovery-20261101.json",
+  "jarSha256": "f820ab28d6ba3e66fa7b8b2abbf9fb26f3a899d4409eb4390911383b5ed0e910",
+  "rootEnvAbsent": true
+}

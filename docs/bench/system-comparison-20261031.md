@@ -1,5 +1,7 @@
 # 기존·Spring AI 2·Kafka 성능 비교 (#260)
 
+> 최신 종합: [2026-11-01 비교 정리](system-comparison-summary-20261101.md). 원본 재계산과 후속 중복 억제/복구 검증 상태를 포함합니다. 아래 수치는 당시 기록입니다.
+
 ## 비교 대상과 적용 범위
 
 실제 도입 순서는 **기존 REST + async → REST + Kafka → Spring AI 2 + Kafka**다. Spring AI 2는 Java 텍스트/JSON 호출만 바꿨으며, Python 영상 장소 추출은 별도다. 대화 도구 호출과 임베딩도 모두 Spring AI로 전환된 것은 아니다.
