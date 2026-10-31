@@ -22,4 +22,44 @@ class HttpExpoPushClientTest {
         assertThat(HttpExpoPushClient.parseTickets("{\"data\":{\"status\":\"ok\",\"id\":\"a\"}}")).isEmpty();
         assertThat(HttpExpoPushClient.parseTickets("{\"errors\":[{\"code\":\"VALIDATION_ERROR\"}]}")).isEmpty();
     }
+    @Test
+    void 비정상_티켓은_성공이_아니며_원래_순서의_실패로_남는다() {
+        String body = """
+                {"data":[{},null,"text",4,[],{"status":null},{"status":2},{"status":true},
+                  {"status":"unknown"},{"status":"OK"},{"status":" ok "},{"status":"ok","id":"last"}]}
+                """;
+        assertThat(HttpExpoPushClient.parseTickets(body)).containsExactly(
+                "InvalidTicket", "InvalidTicket", "InvalidTicket", "InvalidTicket", "InvalidTicket",
+                "InvalidTicket", "InvalidTicket", "InvalidTicket", "InvalidTicket", "InvalidTicket", "InvalidTicket", null);
+    }
+
+    @Test
+    void 오류_구조가_이상해도_실패를_유지하고_뒤의_정상_티켓을_해석한다() {
+        String body = """
+                {"data":[{"status":"error"},{"status":"error","details":{"error":null},"message":" "},
+                 {"status":"error","details":{"error":{}},"message":[]},
+                 {"status":"error","details":{"error":12},"message":"fallback"},
+                 {"status":"error","details":{"error":"DeviceNotRegistered"}},
+                 {"status":"ok","id":"last"}]}
+                """;
+        assertThat(HttpExpoPushClient.parseTickets(body)).containsExactly("error", "error", "error", "error", "DeviceNotRegistered", null);
+    }
+
+    @Test
+    void 깨진_JSON과_없는_data는_성공_티켓을_만들지_않는다() {
+        for (String body : Arrays.asList("", "not-json", "null", "[]", "{}", "{\"data\":null}")) {
+            assertThat(HttpExpoPushClient.parseTickets(body)).isEmpty();
+        }
+    }
+
+    @Test
+    void 오류_설명만으로는_기기_등록_해제_코드를_만들지_않는다() {
+        String body = """
+                {"data":[{"status":"error","message":"DeviceNotRegistered"},
+                 {"status":"error","details":{"error":{}},"message":"DeviceNotRegistered"},
+                 {"status":"error","details":{"error":"DeviceNotRegistered"},"message":"description"}]}
+                """;
+        assertThat(HttpExpoPushClient.parseTickets(body)).containsExactly("error", "error", "DeviceNotRegistered");
+    }
+
 }
