@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 장소 리뷰요약(구조화: highlights/pros/cons/hours/fee/tips/checklist)+원문 스니펫
@@ -41,6 +44,7 @@ public class PlaceReviewService {
     private final GooglePlacesApiClient googlePlacesApiClient;
     private final ReviewSummaryRunner reviewSummaryRunner;
     private final ApiCallLogService apiCallLogService;
+    private final ConcurrentHashMap<Long, CompletableFuture<Optional<PlaceReviewInfo>>> inFlight = new ConcurrentHashMap<>();
 
     // phone: Google 장소 상세의 국내 전화번호(없으면 null, #99).
     public record PlaceReviewInfo(ReviewSummary summary, List<String> snippets, String phone) {
@@ -85,6 +89,43 @@ public class PlaceReviewService {
     }
 
     public Optional<PlaceReviewInfo> getOrGenerateSummary(Long placeId) {
+        CompletableFuture<Optional<PlaceReviewInfo>> own = new CompletableFuture<>();
+        CompletableFuture<Optional<PlaceReviewInfo>> existing = inFlight.putIfAbsent(placeId, own);
+        if (existing != null) {
+            return awaitShared(existing);
+        }
+        try {
+            Optional<PlaceReviewInfo> result = loadOrGenerateSummary(placeId);
+            own.complete(result);
+            return result;
+        } catch (RuntimeException | Error error) {
+            own.completeExceptionally(error);
+            throw error;
+        } finally {
+            inFlight.remove(placeId, own);
+        }
+    }
+
+    private Optional<PlaceReviewInfo> awaitShared(CompletableFuture<Optional<PlaceReviewInfo>> existing) {
+        try {
+            return existing.get();
+        } catch (InterruptedException error) {
+            // 대기자 취소로 공유 생성을 멈추지 않고, 인터럽트는 호출자에게 전달한다.
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("장소 상세 조회 대기 중 인터럽트", error);
+        } catch (ExecutionException error) {
+            Throwable cause = error.getCause();
+            if (cause instanceof RuntimeException runtimeException) {
+                throw runtimeException;
+            }
+            if (cause instanceof Error fatalError) {
+                throw fatalError;
+            }
+            throw new IllegalStateException("장소 상세 조회 실패", cause);
+        }
+    }
+
+    private Optional<PlaceReviewInfo> loadOrGenerateSummary(Long placeId) {
         Optional<PlaceState> state = loadPlaceState(placeId);
         if (state.isEmpty()) {
             return Optional.empty();
