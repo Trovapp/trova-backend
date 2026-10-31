@@ -49,9 +49,6 @@ class DownloadRetryTest(unittest.TestCase):
         self.assertEqual(run.call_count, 1)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class GetTitleCookieTest(unittest.TestCase):
     def test_제목_조회는_쿠키를_켜면_403에_쿠키를_붙여_한_번_더_시도한다(self):
@@ -61,3 +58,7 @@ class GetTitleCookieTest(unittest.TestCase):
             self.assertEqual(download.get_title("https://www.youtube.com/shorts/x"), "제목")
         self.assertEqual(run.call_count, 2)
         self.assertEqual(run.call_args_list[1].args[0][:2], ["--cookies-from-browser", "chrome"])
+
+
+if __name__ == "__main__":
+    unittest.main()
