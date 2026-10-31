@@ -49,6 +49,8 @@ class TripReplanControllerTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private UserRepository userRepository;
+    @Autowired private com.trova.backend.service.DailyQuotaService quota;
+    @org.springframework.beans.factory.annotation.Value("${app.quota.place-calls-per-day:100}") private int placeLimit;
     @Autowired private TripRepository tripRepository;
     @Autowired private ItineraryRepository itineraryRepository;
     @Autowired private TripReplanJobRepository tripReplanJobRepository;
@@ -253,4 +255,31 @@ class TripReplanControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.errorMessage").value(OrphanedJobRecoveryService.STALE_MESSAGE));
     }
+    @Test
+    void 장소_한도를_소진한_새_재구성은_429() throws Exception {
+        for (int i = 0; i < placeLimit; i++) {
+            quota.consumePlaceCall(me);
+        }
+        mockMvc.perform(post("/api/trips/" + trip.getId() + "/replan")
+                        .with(loginAs("replan1", "재구성유저"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"indoorOnly\":true}"))
+                .andExpect(status().isTooManyRequests());
+        assertThat(tripReplanJobRepository.findAll()).isEmpty();
+        verify(tripReplanJobService, never()).process(anyLong());
+    }
+
+    @Test
+    void 한도를_소진해도_진행중_재구성은_같은_ID로_202() throws Exception {
+        TripReplanJob existing = tripReplanJobRepository.save(new TripReplanJob(me, trip, true, false));
+        for (int i = 0; i < placeLimit; i++) {
+            quota.consumePlaceCall(me);
+        }
+        mockMvc.perform(post("/api/trips/" + trip.getId() + "/replan")
+                        .with(loginAs("replan1", "재구성유저"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"indoorOnly\":true}"))
+                .andExpect(status().isAccepted()).andExpect(jsonPath("$.jobId").value(existing.getId()));
+        assertThat(tripReplanJobRepository.count()).isEqualTo(1);
+        verify(tripReplanJobService, never()).process(anyLong());
+    }
+
 }
