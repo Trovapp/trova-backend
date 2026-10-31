@@ -1,0 +1,9 @@
+{
+  "scope": "Original parser with new UTF-8 and malformed-line regression tests; no external APIs",
+  "baseCommit": "7f7427107fa0c240c718468b7c07777da5db8020",
+  "testSourceSha256": "5890695beefdcfc947133c7b3a6187f4f2957cb42a6742cd07f82b65d5da3706",
+  "tests": 4,
+  "failures": 3,
+  "errors": 0,
+  "sourceRestored": true
+}

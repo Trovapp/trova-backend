@@ -2130,3 +2130,11 @@
 - 배포main build968중965통과·실패/오류0·opt-in3skip, Kafka별도JVM복구opt-in1개추가통과·Python48통과. 단일smoke는성능/정확도개선주장근거아님.
 - 배포후기록PR268/269도충돌해결/최신mainbuild후순차머지. 과거4307b79배포계획과probe는역사적기록으로구분하고후속해결상태추가. CLAUDE.md에ADR0025/0026요약추가.
 - 상세 docs/reviews/production-release-274-20261031.md와production-release-274-20261031-171838.json. 잠자기설정보류유지. 남은상세cachemiss중복/Expo티켓/UTF8진행표시는사용자선택전자동진행안함.
+
+
+## 2026-10-31 진행 로그 UTF-8 분할 문자 보존 (#278)
+
+- stderr의 새 조각을 바로 String으로 바꾸지 않고 원본 바이트를 줄 단위로 모은 뒤 UTF-8 디코딩한다. 한글/이모지의 바이트가 poll 경계에서 갈려도 제목·장소명이 보존된다.
+- CRLF·일반 로그·잘못된 JSON 뒤 정상 줄·미완성 줄 대기를 유지한다. 빈 진행 JSON이 readTree null로 중단시키던 경로도 건너뛰도록 보강했다.
+- 새 검사4개는 모든 분할 위치, 한 바이트씩 쓰는 혼합 로그, 개행 전 대기, 여러 완성 줄 뒤 불완전한 UTF-8을 확인한다. 원래 parser negative control에서는4개중3실패·오류0, 수정복원후 전체 build972개 중969통과·실패/오류0·기존opt-in3skip. 원본/테스트해시 docs/reviews/progress-utf8-negative-control-20261031.json.
+- 기존 실제 Python Runner/자식 정리 검사도 전체 build에 포함. 외부API/운영변경없음.

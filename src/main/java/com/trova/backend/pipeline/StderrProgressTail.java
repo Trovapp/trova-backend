@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -28,7 +29,7 @@ class StderrProgressTail {
     private final Path file;
     private final Consumer<PipelineProgress> onProgress;
     private long offset;
-    private final StringBuilder partialLine = new StringBuilder();
+    private final ByteArrayOutputStream partialLine = new ByteArrayOutputStream();
 
     StderrProgressTail(Path file, Consumer<PipelineProgress> onProgress) {
         this.file = file;
@@ -50,21 +51,29 @@ class StderrProgressTail {
             log.debug("파이프라인 stderr 중간 읽기 실패: {}", e.getMessage());
             return;
         }
-        // 한국어(여러 바이트 문자)가 읽기 경계에서 잘릴 수 있지만, 완성된 줄만 해석하므로 줄 단위로는 안전하다.
-        partialLine.append(new String(added, StandardCharsets.UTF_8));
-        int newline;
-        while ((newline = partialLine.indexOf("\n")) >= 0) {
-            String line = partialLine.substring(0, newline).trim();
-            partialLine.delete(0, newline + 1);
+        // 줄의 원본 바이트를 먼저 모은다. poll 사이에서 UTF-8 문자 바이트가 나뉘어도 손상되지 않는다.
+        int start = 0;
+        for (int i = 0; i < added.length; i++) {
+            if (added[i] != '\n') {
+                continue;
+            }
+            partialLine.write(added, start, i - start);
+            String line = partialLine.toString(StandardCharsets.UTF_8).trim();
+            partialLine.reset();
+            start = i + 1;
             if (line.startsWith(MARKER)) {
                 parse(line.substring(MARKER.length())).ifPresent(onProgress);
             }
         }
+        partialLine.write(added, start, added.length - start);
     }
 
     private Optional<PipelineProgress> parse(String json) {
         try {
             JsonNode node = MAPPER.readTree(json);
+            if (node == null) {
+                return Optional.empty();
+            }
             if (node.hasNonNull("title")) {
                 return Optional.of(new PipelineProgress(node.get("title").asText(), null));
             }
