@@ -11,6 +11,7 @@ import com.trova.backend.queue.QueuePath;
 import com.trova.backend.queue.QueueWaitMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.TransientDataAccessResourceException;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -150,12 +151,32 @@ class PlaceExtractionDeduplicationTest {
     @Test
     void 선행_실패_후_늦은_메시지는_외부호출을_반복하지_않는다() {
         PlaceExtractionService service = service();
-        when(lifecycle.startAnalysis(42L)).thenReturn("https://youtu.be/x", null);
+        when(lifecycle.startAnalysis(42L)).thenReturn("https://youtu.be/x").thenReturn(null);
         when(pipeline.run(eq("https://youtu.be/x"), eq(42L), any())).thenThrow(new IllegalStateException("controlled failure"));
         dispatch(service, QueuePath.ASYNC);
         dispatch(service, QueuePath.KAFKA);
         verify(pipeline, times(1)).run(any(), eq(42L), any());
         verify(lifecycle, times(1)).markAnalysisFailed(42L, "controlled failure");
+        verify(lifecycle, never()).savePlace(any(), any(), any());
+        verify(drafts, never()).startFor(any());
+    }
+
+    @Test
+    void 시작상태_조회실패는_기존_결과를_실패로_덮어쓰지_않는다() throws Exception {
+        PlaceExtractionService service = service();
+        TransientDataAccessResourceException unavailable = new TransientDataAccessResourceException("DB unavailable");
+        when(lifecycle.startAnalysis(42L)).thenThrow(unavailable).thenReturn(null);
+        assertThatThrownBy(() -> dispatch(service, QueuePath.KAFKA)).isSameAs(unavailable);
+        // 다른 스레드가 이어서 잠금을 얻고 DB의 완료 결과를 다시 확인할 수 있어야 한다.
+        ExecutorService worker = Executors.newSingleThreadExecutor();
+        try {
+            worker.submit(() -> dispatch(service, QueuePath.KAFKA)).get(5, TimeUnit.SECONDS);
+        } finally {
+            worker.shutdownNow();
+        }
+        verify(lifecycle, times(2)).startAnalysis(42L);
+        verify(lifecycle, never()).markAnalysisFailed(any(), any());
+        verify(pipeline, never()).run(any(), any(), any());
         verify(lifecycle, never()).savePlace(any(), any(), any());
         verify(drafts, never()).startFor(any());
     }

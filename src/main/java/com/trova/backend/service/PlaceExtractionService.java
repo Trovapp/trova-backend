@@ -101,12 +101,14 @@ public class PlaceExtractionService {
     }
 
     private void processSerially(Long jobId, QueuePath path) {
+        // 시작 상태 조회/커밋 실패는 이 경로가 분석을 소유했다는 뜻이 아니다.
+        // 완료된 작업일 수도 있으므로 분석 실패로 덮지 않고 호출자에게 전달한다.
+        String sourceUrl = lifecycleService.startAnalysis(jobId);
+        if (sourceUrl == null) {
+            log.info("ProcessingJob {} 중복 분석 건너뜀(완료·실패·삭제)", jobId);
+            return;
+        }
         try {
-            String sourceUrl = lifecycleService.startAnalysis(jobId);
-            if (sourceUrl == null) {
-                log.info("ProcessingJob {} 중복 분석 건너뜀(완료·실패·삭제)", jobId);
-                return;
-            }
             // 작업이 만들어진 뒤 여기까지 기다린 시간(#249) — 대기열 경로별로 비교한다.
             long waitMs = queueWaitMetrics.record(jobId, path);
             log.info("ProcessingJob {} 파이프라인 시작({}, 대기 {}ms): {}", jobId, path.tag(), waitMs, sourceUrl);
