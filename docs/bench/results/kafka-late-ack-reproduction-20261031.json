@@ -1,0 +1,8 @@
+{
+  "scenario" : "controlled ACK timeout, async fallback in progress, then late Kafka delivery",
+  "scope" : "real queue/listener branches with mocked future/repository/extraction; duplicate execution entry, not actual duplicate Gemini calls or saved rows",
+  "lateAckAccepted" : true,
+  "asyncDispatches" : 1,
+  "statusAtLateDelivery" : "PROCESSING",
+  "kafkaDispatches" : 1
+}

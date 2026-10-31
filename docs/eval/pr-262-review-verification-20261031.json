@@ -1,0 +1,14 @@
+{
+  "environment": "offline echo provider; zero external API calls",
+  "cases": 10,
+  "legacyPassed": 3,
+  "legacyCasePassAndScoreUnchanged": true,
+  "legacyMetricsUnchanged": true,
+  "strictMetricSource": "namedScores only; not an extra assertion",
+  "meanNamedScores": {
+    "recall": 0.7027272727272728,
+    "precision": 0.6816666666666666,
+    "strict_recall": 0.6637121212121212,
+    "strict_precision": 0.6417857142857143
+  }
+}

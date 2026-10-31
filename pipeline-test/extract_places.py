@@ -419,6 +419,92 @@ def collect_candidates(
     return call_gemini_with_repair(parts, model, api_key, "extract_places.collect", parse_collect)
 
 
+FILTER_AUDIT_PROMPT = """
+진단용 출력 형식: 배열 대신 {"places": [위에서 요구한 장소 항목], "decisions": [...]} 객체를 출력하세요.
+decisions에는 1차 후보 목록의 각 항목을 순서대로 하나씩 검토한 기록을 넣으세요.
+각 기록: {"candidateIndex": 0부터 시작하는 후보 번호, "action": "include" 또는 "exclude",
+"placeIndices": 최종 places 배열에서 이 후보에 대응하는 0부터 시작하는 번호 배열,
+"reason": "포함/제외/이름 보정 판단 이유",
+"evidence": "화면·음성·설명에서 실제 확인한 짧은 근거. 확인할 수 없으면 빈 문자열"}.
+include는 실제 최종 places의 항목을 한 개 이상 연결하고 exclude는 placeIndices를 빈 배열로 두세요.
+같은 장소의 다른 표기 후보는 동일한 최종 항목에 연결할 수 있습니다.
+최종 장소마다 해당하는 후보를 연결하세요. 추측을 확인한 근거처럼 쓰지 마세요.
+"""
+
+
+def validate_decisions(decisions, candidate_count: int, place_count: int) -> list[str]:
+    """구조와 최종 항목 연결만 검사한다. 자연어 근거의 진실성은 보증하지 않는다."""
+    if not isinstance(decisions, list):
+        return ["decisions_not_array"]
+    errors = []
+    indices = [d.get("candidateIndex") for d in decisions if isinstance(d, dict)]
+    if (len(indices) != candidate_count or any(type(i) is not int for i in indices)
+            or sorted(indices) != list(range(candidate_count))):
+        errors.append("candidate_indices_incomplete_or_duplicate")
+    linked = set()
+    for position, decision in enumerate(decisions):
+        prefix = f"decision[{position}]"
+        if not isinstance(decision, dict):
+            errors.append(prefix + ":not_object")
+            continue
+        if (not isinstance(decision.get("reason"), str) or not decision["reason"].strip()
+                or not isinstance(decision.get("evidence"), str)):
+            errors.append(prefix + ":invalid_reason_or_evidence")
+        action = decision.get("action")
+        targets = decision.get("placeIndices")
+        if action not in ("include", "exclude"):
+            errors.append(prefix + ":invalid_action")
+        if (not isinstance(targets, list)
+                or any(type(i) is not int or not 0 <= i < place_count for i in targets)):
+            errors.append(prefix + ":invalid_place_indices")
+            continue
+        if len(set(targets)) != len(targets):
+            errors.append(prefix + ":duplicate_place_indices")
+        if action == "include":
+            if not targets:
+                errors.append(prefix + ":include_without_final_place")
+            linked.update(targets)
+        elif action == "exclude" and targets:
+            errors.append(prefix + ":exclude_with_final_place")
+    if linked != set(range(place_count)):
+        errors.append("unlinked_final_places")
+    return errors
+
+
+def parse_filter(text: str, candidate_count: int, audit: bool) -> list[dict]:
+    data = json.loads(text)
+    # 유효한 장소와 진단의 성패를 분리한다. 진단만 잘못됐으면 재질의하지 않는다.
+    places = data.get("places") if audit and isinstance(data, dict) else data
+    if not isinstance(places, list) or any(not isinstance(p, dict) for p in places):
+        raise ValueError("장소 항목은 객체 배열이어야 합니다")
+    if audit:
+        if any(not isinstance(p.get("name"), str) or not p["name"].strip() for p in places):
+            raise ValueError("장소 이름은 비어 있지 않은 문자열이어야 합니다")
+        decisions = data.get("decisions") if isinstance(data, dict) else None
+        errors = validate_decisions(decisions, candidate_count, len(places))
+        emit_trace("decisions", decisions=decisions,
+                   status="incomplete" if errors else "complete", validationErrors=errors,
+                   evidenceStatus="model_reported_not_verified")
+    return places
+
+
+def emit_trace(stage: str, **fields) -> None:
+    """평가용 opt-in 진단. 전체 자막·미디어·키는 기록하지 않는다."""
+    if os.environ.get("PIPELINE_TRACE") == "1":
+        print("TROVA_EXTRACTION_TRACE:" + json.dumps(
+            {"stage": stage, **fields}, ensure_ascii=False), file=sys.stderr)
+
+
+def trace_selection(candidates: list, places: list[dict], audit: bool = False) -> None:
+    names = [p.get("name") for p in places if isinstance(p, dict) and isinstance(p.get("name"), str)]
+    normalize = lambda name: "".join(name.split())
+    final_names = {normalize(name) for name in names}
+    # 철자 보정도 unmatched에 포함된다. 실제 제외나 제외 사유로 단정하지 않는다.
+    unmatched = [name for name in candidates if isinstance(name, str) and normalize(name) not in final_names]
+    emit_trace("filter", names=names, unmatchedCandidates=unmatched,
+               reasonAvailability="see_decisions_trace" if audit else "not_returned_by_model")
+
+
 def extract_places(
     transcript: str | None = None,
     audio_path: Path | None = None,
@@ -436,18 +522,17 @@ def extract_places(
         transcript, audio_path, frame_paths, model, api_key, video_uri=video_uri, post_description=post_description,
         photo_post=photo_post,
     )
+    emit_trace("collect", candidates=candidates, isPlaceContent=is_place_content,
+               inputMode="youtube" if video_uri else "photo" if photo_post else "file",
+               hasTranscript=bool(transcript), hasDescription=bool(post_description))
     if not is_place_content:
         # 제품 광고·요리·일상처럼 장소를 소개하지 않는 콘텐츠 — 2차(거르기)를 부르지 않는다(Gemini 1번 절약, #206).
         raise SystemExit(f"{NOT_PLACE_CONTENT_MARKER} 장소를 소개하는 콘텐츠가 아님 (후보 {len(candidates)}개)")
 
+    audit = os.environ.get("PIPELINE_FILTER_AUDIT") == "1"
+
     def _parse(text: str) -> list[dict]:
-        try:
-            places = json.loads(text)
-        except json.JSONDecodeError:
-            raise ValueError(f"유효한 JSON이 아님: {text[:500]}")
-        if not isinstance(places, list):
-            raise ValueError(f"응답이 배열이 아님: {text[:500]}")
-        return places
+        return parse_filter(text, len(candidates), audit)
 
     # 텍스트가 하나도 없으면(자막·설명 없음) 미디어 없이 고를 근거가 없어 평소대로 보낸다. 사진 게시물은 사진 자체가 1차 정보
     # (코스표·꿀팁이 사진에만 적힘)라 플래그와 무관하게 사진을 다시 보낸다.
@@ -458,10 +543,11 @@ def extract_places(
     if text_only:
         print("[extract_places] 선별 호출은 자막·설명·1차 후보만으로 (PIPELINE_FILTER_TEXT_ONLY=1)", file=sys.stderr)
     parts = build_parts(
-        transcript, None if text_only else audio_path, None if text_only else frame_paths, prompt=FILTER_PROMPT,
+        transcript, None if text_only else audio_path, None if text_only else frame_paths, prompt=FILTER_PROMPT + (FILTER_AUDIT_PROMPT if audit else ""),
         candidates=candidates, video_uri=video_uri, post_description=post_description, photo_post=photo_post,
     )
     places = call_gemini_with_repair(parts, model, api_key, "extract_places.filter", _parse)
+    trace_selection(candidates, places, audit=audit)
     return _normalize_video_notes(_normalize_name_candidates(_normalize_day_fields(places)))
 
 
