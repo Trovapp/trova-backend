@@ -1,0 +1,110 @@
+{
+  "recordedAt": "2026-10-31T07:42:13.065498+00:00",
+  "issue": 266,
+  "baseCommit": "005ac63cef72aa51548fec5d72de640a115b9a60",
+  "frozenPrHeads": {
+    "262": "ff095d5af64efe15cfb244c9e680fd3a533c80f7",
+    "263": "086c4b568649ac07674afd4d31aa2a41f413893d",
+    "265": "a913296a0ccdc8fa070efd9250b71ae7efc8b89b"
+  },
+  "integrationMethod": "git diff --binary from common base; git apply --3way --index; two append-only conflicts in docs/experience-notes.md resolved by preserving both PR additions",
+  "sourceFilesEqualToPrHeads": {
+    "262": 12,
+    "263": 8,
+    "265": 3
+  },
+  "productCodeModifiedBeyondPrHeads": false,
+  "fullBuild": {
+    "tests": 951,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "pythonTests": {
+    "pipeline": 48,
+    "provider": 3,
+    "failures": 0
+  },
+  "nodeScoringRegressionChecks": "passed",
+  "offlinePromptfooReplay": {
+    "cases": 10,
+    "stats": {
+      "successes": 3,
+      "failures": 7,
+      "errors": 0
+    },
+    "legacyCaseScoresUnchanged": true,
+    "strictMeans": {
+      "recall": 0.6637121212121213,
+      "precision": 0.6417857142857143
+    },
+    "realApiCalls": 0
+  },
+  "strictRescoreCoverage": {
+    "cases": 10,
+    "totalCases": 10,
+    "unscorableCases": 0,
+    "status": "complete"
+  },
+  "optInTests": {
+    "localQueueBenchmark": [
+      {
+        "name": "com.trova.backend.queue.ShareJobKafkaRoundTripTest",
+        "tests": "1",
+        "skipped": "0",
+        "failures": "0",
+        "errors": "0",
+        "timestamp": "2026-10-31T07:40:45.006Z",
+        "hostname": "gimtaehyeong-ui-MacBookPro.local",
+        "time": "2.026"
+      }
+    ],
+    "lateAckMockDispatchReproduction": [
+      {
+        "name": "com.trova.backend.queue.KafkaShareJobQueueTest",
+        "tests": "1",
+        "skipped": "0",
+        "failures": "0",
+        "errors": "0",
+        "timestamp": "2026-10-31T07:41:02.408Z",
+        "hostname": "gimtaehyeong-ui-MacBookPro.local",
+        "time": "0.644"
+      }
+    ],
+    "actualKafkaProcessRecovery": [
+      {
+        "name": "com.trova.backend.queue.ShareJobProcessRecoveryTest",
+        "tests": "1",
+        "skipped": "0",
+        "failures": "0",
+        "errors": "0",
+        "timestamp": "2026-10-31T07:41:19.338Z",
+        "hostname": "gimtaehyeong-ui-MacBookPro.local",
+        "time": "16.838"
+      }
+    ]
+  },
+  "combinedLocalQueue": {
+    "async": {
+      "n": 20,
+      "medianMs": 0.074375,
+      "p90NearestRankMs": 0.146
+    },
+    "kafka": {
+      "n": 20,
+      "medianMs": 6.95275,
+      "p90NearestRankMs": 7.4775
+    }
+  },
+  "historicalArtifactsPreserved": true,
+  "newRealApiCalls": 0,
+  "githubMergePerformed": false,
+  "productionDeploymentPerformed": false,
+  "limits": [
+    "Local embedded Kafka, file H2, separate Spring worker JVM and Python fixture; no HTTP/Supabase/Aiven/Gemini end-to-end verification",
+    "Single service/JVM duplicate exclusion; no distributed exactly-once or partial-save recovery guarantee",
+    "Late ACK mock diagnostic still observes two dispatch routes; actual service integration verifies one pipeline and saved row",
+    "JVM SIGKILL does not run finally; process recovery test is not a global temporary-file cleanup assertion",
+    "Local queue samples mock extraction and repository; not whole-system or before/after speed measurements"
+  ]
+}

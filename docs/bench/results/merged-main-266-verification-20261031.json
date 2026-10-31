@@ -1,0 +1,28 @@
+{
+  "mainCommit": "4307b79ace781dec36b26bff8cb5df83995a041e",
+  "fullCleanBuild": {
+    "tests": 951,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "sourceMatchesCombinedCommit": "3fa9bbb",
+  "recoveryTest": [
+    {
+      "name": "com.trova.backend.queue.ShareJobProcessRecoveryTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-31T07:54:33.943Z",
+      "hostname": "gimtaehyeong-ui-MacBookPro.local",
+      "time": "17.846"
+    }
+  ],
+  "mergedPrCommits": {
+    "262": "4d37e62",
+    "263": "ac6c949",
+    "265": "4307b79"
+  },
+  "deployed": false
+}
