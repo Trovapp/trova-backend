@@ -61,6 +61,25 @@ class ApiCallLogServiceTest {
     }
 
     @Test
+    void 시도_횟수와_재시도_대기는_따로_저장하고_없으면_null이다() {
+        // #257: latencyMs는 대기를 포함한 전체라, 느린 영상인지 분당 한도 대기인지 waitedMs로 나눠 본다.
+        String stderr = """
+                TROVA_API_LOG:{"provider":"gemini","operation":"extract_places.collect","latencyMs":23400,"success":true,"attempts":3,"waitedMs":15000}
+                TROVA_API_LOG:{"provider":"kakao","operation":"keyword_search","latencyMs":120,"success":true}
+                """;
+
+        apiCallLogService.recordFromStderr(stderr, 15L);
+
+        ArgumentCaptor<ApiCallLog> captor = ArgumentCaptor.forClass(ApiCallLog.class);
+        verify(apiCallLogRepository, times(2)).save(captor.capture());
+        List<ApiCallLog> saved = captor.getAllValues();
+        assertThat(saved.get(0).getAttempts()).isEqualTo(3);
+        assertThat(saved.get(0).getWaitedMs()).isEqualTo(15000L);
+        assertThat(saved.get(1).getAttempts()).isNull();
+        assertThat(saved.get(1).getWaitedMs()).isNull();
+    }
+
+    @Test
     void 마커_줄이_여러개면_각각_저장한다() {
         String stderr = """
                 TROVA_API_LOG:{"provider":"gemini","operation":"extract_places.collect","latencyMs":800,"success":true}

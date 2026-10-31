@@ -6,6 +6,7 @@ YouTube가 2025년 하반기부터 PO Token 검증을 강화하면서 쿠키 없
 """
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -15,6 +16,10 @@ from pathlib import Path
 SUB_LANGS = "ko,en"
 MAX_ATTEMPTS = 4
 RETRY_BASE_DELAY = 20.0  # 유튜브 자체 요청 속도 제한(429) 대응 — 넉넉하게 대기
+# 403(PO Token)·429 재시도에 브라우저 로그인 쿠키를 쓸지(예: "chrome"). 운영 서버에는 브라우저가 없어 쿠키 시도가 항상
+# 실패하는데도 그 전에 20초를 쉬고 있었다(#257 D). 비우면(기본) 쿠키 없이 돌고, 403은 기다리지 않고 바로 실패한다.
+# 켜면 다른 사용자가 보낸 주소도 이 맥의 개인 로그인 세션으로 조회하게 되므로 개발자 혼자 쓰는 로컬에서만 켠다(공용 서버 금지).
+BROWSER_COOKIES = os.environ.get("PIPELINE_BROWSER_COOKIES", "").strip()
 # 짧은 변 720 이하 중 가장 좋은 화질을 고른다(#7). 프레임은 가로 512px로 줄여 쓰므로(frames.py) 그 이상은 필요 없다 —
 # 기본값은 쇼츠를 4K(84MB)로 받아 다운로드·프레임 추출이 느렸다. 정렬 조건이라 720 이하가 없어도 실패하지 않는다
 # (높이 필터 "height<=480"은 세로 360x640만 주는 릴스에서 형식 없음으로 실패했다).
@@ -50,7 +55,7 @@ def download(url: str, out_dir: Path) -> dict:
     for attempt in range(MAX_ATTEMPTS):
         # 첫 시도 이후로는 항상 쿠키를 붙인다 — 로그인된 요청이 403(PO Token)과
         # 429(속도 제한) 둘 다에 대해 더 관대하게 처리되는 걸 실측으로 확인함.
-        args = base_args if attempt == 0 else ["--cookies-from-browser", "chrome", *base_args]
+        args = base_args if attempt == 0 or not BROWSER_COOKIES else ["--cookies-from-browser", BROWSER_COOKIES, *base_args]
         result = _run_yt_dlp(args)
         if result.returncode == 0:
             break
@@ -58,6 +63,9 @@ def download(url: str, out_dir: Path) -> dict:
         rate_limited = "429" in result.stderr
         blocked = "403" in result.stderr
         if not (rate_limited or blocked) or attempt == MAX_ATTEMPTS - 1:
+            break
+        if blocked and not rate_limited and not BROWSER_COOKIES:
+            print("[download] 403 (PO Token 요구) — 브라우저 쿠키가 없어 재시도하지 않음", file=sys.stderr)
             break
 
         delay = RETRY_BASE_DELAY * (2 ** attempt)
@@ -92,8 +100,8 @@ def get_title(url: str) -> str | None:
     막지 않게 한다.
     """
     result = _run_yt_dlp(["--get-title", "--", url])
-    if result.returncode != 0 and "403" in result.stderr:
-        result = _run_yt_dlp(["--cookies-from-browser", "chrome", "--get-title", "--", url])
+    if result.returncode != 0 and "403" in result.stderr and BROWSER_COOKIES:
+        result = _run_yt_dlp(["--cookies-from-browser", BROWSER_COOKIES, "--get-title", "--", url])
     if result.returncode != 0:
         print(f"[download] 제목 가져오기 실패(무시하고 진행): {result.stderr[-500:]}", file=sys.stderr)
         return None

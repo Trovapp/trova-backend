@@ -32,6 +32,13 @@ class DailyQuotaMarkerTest {
     }
 
     @Test
+    void 파이프라인_스크립트와_서버의_볼_수_없는_게시물_표식이_같다() throws Exception {
+        String script = Files.readString(Path.of("pipeline-test/run_pipeline.py"));
+
+        assertThat(script).contains("SOURCE_UNAVAILABLE_MARKER = \"" + PipelineRunner.SOURCE_UNAVAILABLE_MARKER + "\"");
+    }
+
+    @Test
     void 파이프라인_스크립트와_서버의_장소_소개_아님_표식이_같다() throws Exception {
         String script = Files.readString(Path.of("pipeline-test/extract_places.py"));
 

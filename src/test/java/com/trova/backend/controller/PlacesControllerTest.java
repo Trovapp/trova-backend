@@ -530,6 +530,19 @@ class PlacesControllerTest {
     }
 
     @Test
+    void 비공개나_삭제된_게시물로_실패한_작업은_failureReason이_SOURCE_UNAVAILABLE다() throws Exception {
+        User me = userRepository.save(new User("google", "unavail1", "비공개유저", null));
+        ProcessingJob job = processingJobRepository.save(
+                new ProcessingJob(me, "https://www.instagram.com/reel/ua1/", SourcePlatform.INSTAGRAM));
+        job.markFailed(ProcessingJob.SOURCE_UNAVAILABLE_MESSAGE);
+        processingJobRepository.save(job);
+
+        mockMvc.perform(get("/api/places/pending").with(loginAs("unavail1", "비공개유저")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].failureReason").value("SOURCE_UNAVAILABLE"));
+    }
+
+    @Test
     void 장소를_소개하지_않는_영상으로_실패한_작업은_failureReason이_NOT_PLACE_CONTENT다() throws Exception {
         User me = userRepository.save(new User("google", "notplace1", "광고유저", null));
         ProcessingJob job = processingJobRepository.save(

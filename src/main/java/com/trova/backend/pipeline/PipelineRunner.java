@@ -31,6 +31,8 @@ public class PipelineRunner {
     public static final String NO_MEDIA_MARKER = "NO_MEDIA";
     // 장소를 소개하지 않는 콘텐츠(#206) — extract_places.py NOT_PLACE_CONTENT_MARKER와 같아야 한다.
     public static final String NOT_PLACE_CONTENT_MARKER = "NOT_PLACE_CONTENT";
+    // 비공개·삭제·로그인 필요라 다시 해도 받을 수 없는 게시물·영상(#257) — run_pipeline.py SOURCE_UNAVAILABLE_MARKER와 같아야 한다.
+    public static final String SOURCE_UNAVAILABLE_MARKER = "SOURCE_UNAVAILABLE";
     private static final long PROGRESS_POLL_MILLIS = 500;
     private static final long STDOUT_JOIN_TIMEOUT_MILLIS = 30_000;
 

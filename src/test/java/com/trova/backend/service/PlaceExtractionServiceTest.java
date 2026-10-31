@@ -194,6 +194,19 @@ class PlaceExtractionServiceTest {
     }
 
     @Test
+    void 비공개나_삭제된_게시물이면_정해진_문구로_기록한다() {
+        // #257: 비공개·삭제·로그인 필요는 다시 해도 같아 앱이 [다시 시도] 대신 이유를 보여준다.
+        Long jobId = 8L;
+        when(lifecycleService.markProcessing(jobId)).thenReturn("https://www.instagram.com/reel/x/");
+        when(pipelineRunner.run(eq("https://www.instagram.com/reel/x/"), eq(jobId), any())).thenThrow(new PipelineException(
+                "파이프라인 실행 실패(exit=1): SOURCE_UNAVAILABLE 볼 수 없는 게시물(로그인 필요): ERROR: login required"));
+
+        placeExtractionService.process(jobId);
+
+        verify(lifecycleService).markAnalysisFailed(jobId, ProcessingJob.SOURCE_UNAVAILABLE_MESSAGE);
+    }
+
+    @Test
     void 장소를_소개하지_않는_콘텐츠면_정해진_문구로_기록한다() {
         // #206: 제품 광고·요리·일상 — 다시 해도 같아 앱이 [다시 시도] 대신 이유를 보여준다.
         Long jobId = 8L;

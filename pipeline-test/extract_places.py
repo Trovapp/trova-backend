@@ -226,6 +226,9 @@ RETRY_BASE_DELAY = 5.0  # 무료 티어 RPM 제한 대응 — 429/일시 오류 
 # 지수 증가·Retry-After 헤더 대기의 상한(#7). 없으면 5번째 시도 전 40초를 쉬고, 헤더가 큰 값을 주면 그만큼 그대로 쉬어
 # 서버의 파이프라인 제한 시간(PipelineRunner, 5분)을 대기만으로 잡아먹을 수 있다. 분당 한도 안내(retryDelay)는 위 60초 상한을 따른다.
 MAX_RETRY_DELAY = 30.0
+# 2차(선별) 호출에 오디오·프레임을 다시 올리지 않고 자막·게시물 설명·1차 후보만 보낸다(#257 B). 같은 미디어를 두 번 올리는
+# 비용을 줄이려는 실험이라 정확도 영향을 평가 세트(eval/place-extract)로 전후 비교한 뒤에만 켠다. 기본은 끔.
+FILTER_TEXT_ONLY = os.environ.get("PIPELINE_FILTER_TEXT_ONLY") == "1"
 
 API_LOG_MARKER = "TROVA_API_LOG:"
 
@@ -233,6 +236,7 @@ API_LOG_MARKER = "TROVA_API_LOG:"
 def _log_api_call(
     operation: str, started_at: float, success: bool,
     payload: dict | None = None, error: str | None = None,
+    attempts: int = 1, waited_ms: int = 0,
 ) -> None:
     """포트폴리오용 트래픽/비용 근거 기록 — 호출 1건당 지연시간·토큰·성공여부를
     stderr에 한 줄로 남긴다(Java Runner가 파싱해서 DB에 저장). stdout의 JSON
@@ -242,6 +246,10 @@ def _log_api_call(
         "operation": operation,
         "latencyMs": round((time.monotonic() - started_at) * 1000),
         "success": success,
+        # 429·일시 오류로 몇 번 시도했고 그 사이 얼마나 기다렸는지(#257 A). latencyMs는 대기를 포함한 전체라,
+        # 느린 영상인지 분당 한도 대기인지는 waitedMs로 나눠 본다.
+        "attempts": attempts,
+        "waitedMs": waited_ms,
     }
     if error is not None:
         entry["errorMessage"] = error[:500]
@@ -291,6 +299,7 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
 
     started_at = time.monotonic()
     last_detail = ""
+    waited_ms = 0
     for attempt in range(MAX_ATTEMPTS):
         request = urllib.request.Request(
             url, data=body, headers={"Content-Type": "application/json", "x-goog-api-key": api_key}, method="POST"
@@ -298,7 +307,7 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
         try:
             with urllib.request.urlopen(request, timeout=120) as response:
                 payload = json.loads(response.read().decode("utf-8"))
-                _log_api_call(operation, started_at, True, payload=payload)
+                _log_api_call(operation, started_at, True, payload=payload, attempts=attempt + 1, waited_ms=waited_ms)
                 return payload
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")
@@ -306,14 +315,16 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
 
             # 429(요청 초과) 또는 5xx(서버 일시 오류)만 재시도. 그 외 4xx는 재시도해도 소용없음.
             if exc.code != 429 and not (500 <= exc.code < 600):
-                _log_api_call(operation, started_at, False, error=f"Gemini API error {exc.code}: {detail[:500]}")
+                _log_api_call(operation, started_at, False, error=f"Gemini API error {exc.code}: {detail[:500]}",
+                              attempts=attempt + 1, waited_ms=waited_ms)
                 raise SystemExit(f"Gemini API error {exc.code}: {detail[:500]}")
 
             suggested = None
             if exc.code == 429:
                 daily, suggested = _quota_info(detail)
                 if daily:
-                    _log_api_call(operation, started_at, False, error=f"Gemini 하루 한도 소진: {detail[:300]}")
+                    _log_api_call(operation, started_at, False, error=f"Gemini 하루 한도 소진: {detail[:300]}",
+                                  attempts=attempt + 1, waited_ms=waited_ms)
                     raise SystemExit(f"{DAILY_QUOTA_MARKER} Gemini 하루 한도 소진: {detail[:300]}")
 
             if attempt < MAX_ATTEMPTS - 1:
@@ -329,6 +340,7 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
                     f"({attempt + 2}/{MAX_ATTEMPTS})",
                     file=sys.stderr,
                 )
+                waited_ms += round(delay * 1000)
                 time.sleep(delay)
         except (urllib.error.URLError, TimeoutError) as exc:
             last_detail = str(exc)
@@ -339,9 +351,11 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
                     f"({attempt + 2}/{MAX_ATTEMPTS})",
                     file=sys.stderr,
                 )
+                waited_ms += round(delay * 1000)
                 time.sleep(delay)
 
-    _log_api_call(operation, started_at, False, error=f"{MAX_ATTEMPTS}번 시도 후 실패: {last_detail[:500]}")
+    _log_api_call(operation, started_at, False, error=f"{MAX_ATTEMPTS}번 시도 후 실패: {last_detail[:500]}",
+                  attempts=MAX_ATTEMPTS, waited_ms=waited_ms)
     raise SystemExit(f"Gemini API 요청이 {MAX_ATTEMPTS}번 시도 후 실패: {last_detail[:500]}")
 
 
@@ -435,9 +449,17 @@ def extract_places(
             raise ValueError(f"응답이 배열이 아님: {text[:500]}")
         return places
 
+    # 텍스트가 하나도 없으면(자막·설명 없음) 미디어 없이 고를 근거가 없어 평소대로 보낸다. 사진 게시물은 사진 자체가 1차 정보
+    # (코스표·꿀팁이 사진에만 적힘)라 플래그와 무관하게 사진을 다시 보낸다.
+    text_only = bool(
+        FILTER_TEXT_ONLY and not video_uri and not photo_post
+        and (transcript or post_description) and (audio_path or frame_paths)
+    )
+    if text_only:
+        print("[extract_places] 선별 호출은 자막·설명·1차 후보만으로 (PIPELINE_FILTER_TEXT_ONLY=1)", file=sys.stderr)
     parts = build_parts(
-        transcript, audio_path, frame_paths, prompt=FILTER_PROMPT, candidates=candidates, video_uri=video_uri,
-        post_description=post_description, photo_post=photo_post,
+        transcript, None if text_only else audio_path, None if text_only else frame_paths, prompt=FILTER_PROMPT,
+        candidates=candidates, video_uri=video_uri, post_description=post_description, photo_post=photo_post,
     )
     places = call_gemini_with_repair(parts, model, api_key, "extract_places.filter", _parse)
     return _normalize_video_notes(_normalize_name_candidates(_normalize_day_fields(places)))
