@@ -42,7 +42,7 @@ class HttpExpoPushClientTest {
                  {"status":"error","details":{"error":"DeviceNotRegistered"}},
                  {"status":"ok","id":"last"}]}
                 """;
-        assertThat(HttpExpoPushClient.parseTickets(body)).containsExactly("error", "error", "error", "fallback", "DeviceNotRegistered", null);
+        assertThat(HttpExpoPushClient.parseTickets(body)).containsExactly("error", "error", "error", "error", "DeviceNotRegistered", null);
     }
 
     @Test
@@ -50,6 +50,16 @@ class HttpExpoPushClientTest {
         for (String body : Arrays.asList("", "not-json", "null", "[]", "{}", "{\"data\":null}")) {
             assertThat(HttpExpoPushClient.parseTickets(body)).isEmpty();
         }
+    }
+
+    @Test
+    void 오류_설명만으로는_기기_등록_해제_코드를_만들지_않는다() {
+        String body = """
+                {"data":[{"status":"error","message":"DeviceNotRegistered"},
+                 {"status":"error","details":{"error":{}},"message":"DeviceNotRegistered"},
+                 {"status":"error","details":{"error":"DeviceNotRegistered"},"message":"description"}]}
+                """;
+        assertThat(HttpExpoPushClient.parseTickets(body)).containsExactly("error", "error", "DeviceNotRegistered");
     }
 
 }

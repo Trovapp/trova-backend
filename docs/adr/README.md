@@ -61,3 +61,4 @@
 | [0024](0024-single-jvm-analysis-exclusion.md) | 단일 JVM의 중복 분석은 선행 완료를 기다린 뒤 DB 상태를 재확인 | 확정 | 2026-10-31 |
 | [0025](0025-replan-admission-quota.md) | 재구성 새 접수는 기존 장소 요청 한도에 포함하고 단일 JVM에서 직렬화 | 확정 | 2026-10-31 |
 | [0026](0026-admin-action-atomic-audit.md) | 관리자 DB 변경과 실행 감사는 함께 커밋하고 큐 전달은 커밋 뒤에 | 확정 | 2026-10-31 |
+| [0027](0027-place-details-single-flight.md) | 같은 장소의 진행 중 상세 생성을 단일 JVM에서 공유 | 확정 | 2026-10-31 |

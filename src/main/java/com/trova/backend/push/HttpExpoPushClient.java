@@ -58,8 +58,8 @@ public class HttpExpoPushClient implements ExpoPushClient {
                 errors.add(null);
             } else if ("error".equals(status)) {
                 String code = textOrNull(ticket.path("details").path("error"));
-                String message = textOrNull(ticket.path("message"));
-                errors.add(code != null ? code : message != null ? message : "error");
+                // 설명은 기기 삭제 코드가 아니며 토큰 등이 포함될 수 있어 전달하지 않는다.
+                errors.add(code != null ? code : "error");
             } else {
                 // 순서를 유지해야 뒤의 성공/등록 해제 티켓이 다른 기기에 적용되지 않는다.
                 errors.add("InvalidTicket");
@@ -67,6 +67,7 @@ public class HttpExpoPushClient implements ExpoPushClient {
         }
         return errors;
     }
+
     private static String textOrNull(JsonNode value) {
         return value.isTextual() && !value.asText().isBlank() ? value.asText() : null;
     }

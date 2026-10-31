@@ -129,17 +129,18 @@ class ExpoPushServiceTest {
         when(repository.findByUserId(7L)).thenReturn(List.of(
                 token(1, "ExponentPushToken[a1234567890]"), token(2, "ExponentPushToken[b1234567890]"),
                 token(3, "ExponentPushToken[c1234567890]"), token(4, "ExponentPushToken[d1234567890]"),
-                token(5, "ExponentPushToken[e1234567890]")));
+                token(5, "ExponentPushToken[e1234567890]"), token(6, "ExponentPushToken[f1234567890]")));
         String body = """
                 {"data":[{}, {"status":"ok","id":"valid"}, null,
-                 {"status":"error","details":{"error":"DeviceNotRegistered"}}, {"status":"unknown"}]}
+                 {"status":"error","details":{"error":"DeviceNotRegistered"}}, {"status":"unknown"},
+                 {"status":"error","message":"DeviceNotRegistered"}]}
                 """;
         client.answers.add(new ExpoPushClient.Response(200, HttpExpoPushClient.parseTickets(body)));
         PushNotificationService.Result result = service.sendToUser(7L, "draft", message);
-        assertThat(result).isEqualTo(new PushNotificationService.Result(1, 1, 3));
+        assertThat(result).isEqualTo(new PushNotificationService.Result(1, 1, 4));
         verify(repository).markSuccess(eq(2L), eq(7L), any());
         verify(repository).deleteByIdAndUserId(4L, 7L);
-        for (long id : new long[]{1, 3, 5}) {
+        for (long id : new long[]{1, 3, 5, 6}) {
             verify(repository, never()).markSuccess(eq(id), eq(7L), any());
             verify(repository, never()).deleteByIdAndUserId(id, 7L);
         }

@@ -1,0 +1,17 @@
+{
+  "baseHead": "c6e3c2ec203e6dbc97f418c52ebdcfcf3f2c22dd",
+  "negativeControl": {
+    "tests": 13,
+    "failures": 3,
+    "errors": 0,
+    "skipped": 0
+  },
+  "issue": "Free-form message must not become the DeviceNotRegistered machine code; known code only from details.error",
+  "externalApiCalls": 0,
+  "reviewedBuildWithPr279": {
+    "tests": 981,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  }
+}
