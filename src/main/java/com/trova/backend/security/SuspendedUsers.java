@@ -45,6 +45,20 @@ public class SuspendedUsers implements SmartInitializingSingleton {
         ids.add(userId);
     }
 
+    /** 실패한 DB/감사 트랜잭션이 메모리에만 정지를 남기지 않도록 커밋 뒤 반영한다. */
+    public void addAfterCommit(Long userId) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            add(userId);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                add(userId);
+            }
+        });
+    }
+
     public void remove(Long userId) {
         ids.remove(userId);
     }
