@@ -1,0 +1,1041 @@
+{
+  "evalId": "eval-0PV-2026-10-31T03:59:43",
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-31T03:59:43.786Z",
+    "prompts": [
+      {
+        "id": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "raw": "URL:{{url}}",
+        "label": "URL:{{url}}",
+        "provider": "exec: python3 provider.py",
+        "metrics": {
+          "score": 0,
+          "testPassCount": 0,
+          "testFailCount": 0,
+          "testErrorCount": 10,
+          "assertPassCount": 0,
+          "assertFailCount": 0,
+          "totalLatencyMs": 0,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "namedScoreWeights": {},
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0,
+        "error": "Error: Command failed: python3 provider.py URL:https://www.youtube.com/shorts/8vmpPuFwQ94 {\"config\":{\"basePath\":\"/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/eval/place-extract\"},\"env\":{}} {\"vars\":{\"url\":\"https://www.youtube.com/shorts/8vmpPuFwQ94\",\"expected\":\"[\\\"가야랜드\\\", \\\"밀양돼지국밥\\\", \\\"수로왕릉\\\", \\\"명월카페\\\", \\\"만리향\\\", \\\"연지공원\\\"]\",\"__evalId\":\"eval-0PV-2026-10-31T03:59:43\",\"__evalStepId\":\"test-0-prompt-0-repeat-0\",\"__repeatIndex\":0},\"prompt\":{\"raw\":\"URL:{{url}}\",\"label\":\"URL:{{url}}\",\"config\":{},\"template\":\"URL:{{url}}\"},\"test\":{\"description\":\"1-youtube_shorts-김해 당일치기\",\"vars\":{\"url\":\"https://www.youtube.com/shorts/8vmpPuFwQ94\",\"expected\":\"[\\\"가야랜드\\\", \\\"밀양돼지국밥\\\", \\\"수로왕릉\\\", \\\"명월카페\\\", \\\"만리향\\\", \\\"연지공원\\\"]\"},\"assert\":[{\"type\":\"javascript\",\"metric\":\"recall\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"},{\"type\":\"javascript\",\"metric\":\"precision\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"}],\"options\":{},\"metadata\":{}},\"repeatIndex\":0,\"testIdx\":0,\"evaluationId\":\"eval-0PV-2026-10-31T03:59:43\"}\n[pipeline] 제목: '부산만 가기엔 아까운 김해 당일치기로 노는법💫'\nTROVA_PROGRESS:{\"title\": \"부산만 가기엔 아까운 김해 당일치기로 노는법💫\"}\n[pipeline] Gemini 호출(유튜브 링크 직접)\nTROVA_API_LOG:{\"provider\": \"gemini\", \"operation\": \"extract_places.collect\", \"latencyMs\": 176, \"success\": false, \"attempts\": 1, \"waitedMs\": 0, \"errorMessage\": \"Gemini API error 401: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 401,\\n    \\\"message\\\": \\\"API key not valid. Please pass a valid API key.\\\",\\n    \\\"status\\\": \\\"UNAUTHENTICATED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.ErrorInfo\\\",\\n        \\\"reason\\\": \\\"ACCESS_TOKEN_TYPE_UNSUPPORTED\\\",\\n        \\\"metadata\\\": {\\n          \\\"service\\\": \\\"generativelanguage.googleapis.com\\\",\\n          \\\"method\\\": \\\"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\\\"\\n        }\\n      }\\n    ]\\n  }\\n}\\n\"}\nGemini API error 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"UNAUTHENTICATED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_TYPE_UNSUPPORTED\",\n        \"metadata\": {\n          \"service\": \"generativelanguage.googleapis.com\",\n          \"method\": \"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\"\n        }\n      }\n    ]\n  }\n}\n\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1125:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)",
+        "gradingResult": null,
+        "id": "0df4628d-94f2-4d12-98ce-0aee7b85f49f",
+        "latencyMs": 0,
+        "namedScores": {},
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/8vmpPuFwQ94",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "1-youtube_shorts-김해 당일치기",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/8vmpPuFwQ94",
+            "expected": "[\"가야랜드\",\"밀양돼지국밥\",\"수로왕릉\",\"명월카페\",\"만리향\",\"연지공원\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/8vmpPuFwQ94",
+          "expected": "[\"가야랜드\",\"밀양돼지국밥\",\"수로왕릉\",\"명월카페\",\"만리향\",\"연지공원\"]"
+        },
+        "metadata": {
+          "errorContext": {
+            "providerId": "exec: python3 provider.py",
+            "providerLabel": ""
+          }
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "Error: Command failed: python3 provider.py URL:https://www.youtube.com/shorts/ppCfDrwbHMk {\"config\":{\"basePath\":\"/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/eval/place-extract\"},\"env\":{}} {\"vars\":{\"url\":\"https://www.youtube.com/shorts/ppCfDrwbHMk\",\"expected\":\"[\\\"하평해변\\\", \\\"파닭김밥\\\", \\\"어달삼거리\\\", \\\"어달항\\\", \\\"카페어달\\\", \\\"논골담길\\\", \\\"등대쉼터\\\", \\\"등대그집\\\", \\\"비비소\\\", \\\"해랑전망대\\\"]\",\"__evalId\":\"eval-0PV-2026-10-31T03:59:43\",\"__evalStepId\":\"test-1-prompt-0-repeat-0\",\"__repeatIndex\":0},\"prompt\":{\"raw\":\"URL:{{url}}\",\"label\":\"URL:{{url}}\",\"config\":{},\"template\":\"URL:{{url}}\"},\"test\":{\"description\":\"2-youtube_shorts-묵호 노는법\",\"vars\":{\"url\":\"https://www.youtube.com/shorts/ppCfDrwbHMk\",\"expected\":\"[\\\"하평해변\\\", \\\"파닭김밥\\\", \\\"어달삼거리\\\", \\\"어달항\\\", \\\"카페어달\\\", \\\"논골담길\\\", \\\"등대쉼터\\\", \\\"등대그집\\\", \\\"비비소\\\", \\\"해랑전망대\\\"]\"},\"assert\":[{\"type\":\"javascript\",\"metric\":\"recall\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"},{\"type\":\"javascript\",\"metric\":\"precision\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"}],\"options\":{},\"metadata\":{}},\"repeatIndex\":0,\"testIdx\":1,\"evaluationId\":\"eval-0PV-2026-10-31T03:59:43\"}\n[pipeline] 제목: '요즘 동해에서 떠오르는 묵호에서 노는법'\nTROVA_PROGRESS:{\"title\": \"요즘 동해에서 떠오르는 묵호에서 노는법\"}\n[pipeline] Gemini 호출(유튜브 링크 직접)\nTROVA_API_LOG:{\"provider\": \"gemini\", \"operation\": \"extract_places.collect\", \"latencyMs\": 173, \"success\": false, \"attempts\": 1, \"waitedMs\": 0, \"errorMessage\": \"Gemini API error 401: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 401,\\n    \\\"message\\\": \\\"API key not valid. Please pass a valid API key.\\\",\\n    \\\"status\\\": \\\"UNAUTHENTICATED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.ErrorInfo\\\",\\n        \\\"reason\\\": \\\"ACCESS_TOKEN_TYPE_UNSUPPORTED\\\",\\n        \\\"metadata\\\": {\\n          \\\"method\\\": \\\"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\\\",\\n          \\\"service\\\": \\\"generativelanguage.googleapis.com\\\"\\n        }\\n      }\\n    ]\\n  }\\n}\\n\"}\nGemini API error 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"UNAUTHENTICATED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_TYPE_UNSUPPORTED\",\n        \"metadata\": {\n          \"method\": \"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\",\n          \"service\": \"generativelanguage.googleapis.com\"\n        }\n      }\n    ]\n  }\n}\n\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1125:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)",
+        "gradingResult": null,
+        "id": "60541a88-d6f2-46e0-8f32-b8b8297bc467",
+        "latencyMs": 0,
+        "namedScores": {},
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/ppCfDrwbHMk",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "2-youtube_shorts-묵호 노는법",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/ppCfDrwbHMk",
+            "expected": "[\"하평해변\",\"파닭김밥\",\"어달삼거리\",\"어달항\",\"카페어달\",\"논골담길\",\"등대쉼터\",\"등대그집\",\"비비소\",\"해랑전망대\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/ppCfDrwbHMk",
+          "expected": "[\"하평해변\",\"파닭김밥\",\"어달삼거리\",\"어달항\",\"카페어달\",\"논골담길\",\"등대쉼터\",\"등대그집\",\"비비소\",\"해랑전망대\"]"
+        },
+        "metadata": {
+          "errorContext": {
+            "providerId": "exec: python3 provider.py",
+            "providerLabel": ""
+          }
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "Error: Command failed: python3 provider.py URL:https://www.youtube.com/shorts/xl2s78K2luM {\"config\":{\"basePath\":\"/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/eval/place-extract\"},\"env\":{}} {\"vars\":{\"url\":\"https://www.youtube.com/shorts/xl2s78K2luM\",\"expected\":\"[\\\"트로페오비토리아\\\", \\\"작은피자집\\\", \\\"서울시립남서울미술관\\\", \\\"꿈꾸는크루아상\\\", \\\"도쿄빙수\\\", \\\"아트나인&잇나인\\\"]\",\"__evalId\":\"eval-0PV-2026-10-31T03:59:43\",\"__evalStepId\":\"test-2-prompt-0-repeat-0\",\"__repeatIndex\":0},\"prompt\":{\"raw\":\"URL:{{url}}\",\"label\":\"URL:{{url}}\",\"config\":{},\"template\":\"URL:{{url}}\"},\"test\":{\"description\":\"3-youtube_shorts-사당에서 노는법\",\"vars\":{\"url\":\"https://www.youtube.com/shorts/xl2s78K2luM\",\"expected\":\"[\\\"트로페오비토리아\\\", \\\"작은피자집\\\", \\\"서울시립남서울미술관\\\", \\\"꿈꾸는크루아상\\\", \\\"도쿄빙수\\\", \\\"아트나인&잇나인\\\"]\"},\"assert\":[{\"type\":\"javascript\",\"metric\":\"recall\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"},{\"type\":\"javascript\",\"metric\":\"precision\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"}],\"options\":{},\"metadata\":{}},\"repeatIndex\":0,\"testIdx\":2,\"evaluationId\":\"eval-0PV-2026-10-31T03:59:43\"}\n[pipeline] 제목: '만남의 장소 1순위 사당에서 노는법'\nTROVA_PROGRESS:{\"title\": \"만남의 장소 1순위 사당에서 노는법\"}\n[pipeline] Gemini 호출(유튜브 링크 직접)\nTROVA_API_LOG:{\"provider\": \"gemini\", \"operation\": \"extract_places.collect\", \"latencyMs\": 163, \"success\": false, \"attempts\": 1, \"waitedMs\": 0, \"errorMessage\": \"Gemini API error 401: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 401,\\n    \\\"message\\\": \\\"API key not valid. Please pass a valid API key.\\\",\\n    \\\"status\\\": \\\"UNAUTHENTICATED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.ErrorInfo\\\",\\n        \\\"reason\\\": \\\"ACCESS_TOKEN_TYPE_UNSUPPORTED\\\",\\n        \\\"metadata\\\": {\\n          \\\"method\\\": \\\"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\\\",\\n          \\\"service\\\": \\\"generativelanguage.googleapis.com\\\"\\n        }\\n      }\\n    ]\\n  }\\n}\\n\"}\nGemini API error 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"UNAUTHENTICATED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_TYPE_UNSUPPORTED\",\n        \"metadata\": {\n          \"method\": \"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\",\n          \"service\": \"generativelanguage.googleapis.com\"\n        }\n      }\n    ]\n  }\n}\n\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1125:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)",
+        "gradingResult": null,
+        "id": "b0914ca0-32f8-4c07-8b1a-cba25dc380d5",
+        "latencyMs": 0,
+        "namedScores": {},
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/xl2s78K2luM",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "3-youtube_shorts-사당에서 노는법",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/xl2s78K2luM",
+            "expected": "[\"트로페오비토리아\",\"작은피자집\",\"서울시립남서울미술관\",\"꿈꾸는크루아상\",\"도쿄빙수\",\"아트나인&잇나인\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 2,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/xl2s78K2luM",
+          "expected": "[\"트로페오비토리아\",\"작은피자집\",\"서울시립남서울미술관\",\"꿈꾸는크루아상\",\"도쿄빙수\",\"아트나인&잇나인\"]"
+        },
+        "metadata": {
+          "errorContext": {
+            "providerId": "exec: python3 provider.py",
+            "providerLabel": ""
+          }
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "Error: Command failed: python3 provider.py URL:https://www.youtube.com/shorts/uwPOCSjh3ZA {\"config\":{\"basePath\":\"/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/eval/place-extract\"},\"env\":{}} {\"vars\":{\"url\":\"https://www.youtube.com/shorts/uwPOCSjh3ZA\",\"expected\":\"[\\\"임페리아\\\", \\\"후르셰다사마르칸트\\\", \\\"안산다문화음식거리\\\", \\\"미쉐\\\", \\\"마리나베이커리\\\"]\",\"__evalId\":\"eval-0PV-2026-10-31T03:59:43\",\"__evalStepId\":\"test-3-prompt-0-repeat-0\",\"__repeatIndex\":0},\"prompt\":{\"raw\":\"URL:{{url}}\",\"label\":\"URL:{{url}}\",\"config\":{},\"template\":\"URL:{{url}}\"},\"test\":{\"description\":\"4-youtube_shorts-안산에서 노는법\",\"vars\":{\"url\":\"https://www.youtube.com/shorts/uwPOCSjh3ZA\",\"expected\":\"[\\\"임페리아\\\", \\\"후르셰다사마르칸트\\\", \\\"안산다문화음식거리\\\", \\\"미쉐\\\", \\\"마리나베이커리\\\"]\"},\"assert\":[{\"type\":\"javascript\",\"metric\":\"recall\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"},{\"type\":\"javascript\",\"metric\":\"precision\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"}],\"options\":{},\"metadata\":{}},\"repeatIndex\":0,\"testIdx\":3,\"evaluationId\":\"eval-0PV-2026-10-31T03:59:43\"}\n[pipeline] 제목: '별게 다 있는 안산에서 노는법ㄷㄷ'\nTROVA_PROGRESS:{\"title\": \"별게 다 있는 안산에서 노는법ㄷㄷ\"}\n[pipeline] Gemini 호출(유튜브 링크 직접)\nTROVA_API_LOG:{\"provider\": \"gemini\", \"operation\": \"extract_places.collect\", \"latencyMs\": 168, \"success\": false, \"attempts\": 1, \"waitedMs\": 0, \"errorMessage\": \"Gemini API error 401: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 401,\\n    \\\"message\\\": \\\"API key not valid. Please pass a valid API key.\\\",\\n    \\\"status\\\": \\\"UNAUTHENTICATED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.ErrorInfo\\\",\\n        \\\"reason\\\": \\\"ACCESS_TOKEN_TYPE_UNSUPPORTED\\\",\\n        \\\"metadata\\\": {\\n          \\\"method\\\": \\\"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\\\",\\n          \\\"service\\\": \\\"generativelanguage.googleapis.com\\\"\\n        }\\n      }\\n    ]\\n  }\\n}\\n\"}\nGemini API error 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"UNAUTHENTICATED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_TYPE_UNSUPPORTED\",\n        \"metadata\": {\n          \"method\": \"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\",\n          \"service\": \"generativelanguage.googleapis.com\"\n        }\n      }\n    ]\n  }\n}\n\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1125:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)",
+        "gradingResult": null,
+        "id": "30f4126f-01cd-45f3-9ae0-031d611779d0",
+        "latencyMs": 0,
+        "namedScores": {},
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/uwPOCSjh3ZA",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "4-youtube_shorts-안산에서 노는법",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/uwPOCSjh3ZA",
+            "expected": "[\"임페리아\",\"후르셰다사마르칸트\",\"안산다문화음식거리\",\"미쉐\",\"마리나베이커리\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 3,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/uwPOCSjh3ZA",
+          "expected": "[\"임페리아\",\"후르셰다사마르칸트\",\"안산다문화음식거리\",\"미쉐\",\"마리나베이커리\"]"
+        },
+        "metadata": {
+          "errorContext": {
+            "providerId": "exec: python3 provider.py",
+            "providerLabel": ""
+          }
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "Error: Command failed: python3 provider.py URL:https://www.youtube.com/shorts/NvdrCwcTnlE {\"config\":{\"basePath\":\"/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/eval/place-extract\"},\"env\":{}} {\"vars\":{\"url\":\"https://www.youtube.com/shorts/NvdrCwcTnlE\",\"expected\":\"[]\",\"__evalId\":\"eval-0PV-2026-10-31T03:59:43\",\"__evalStepId\":\"test-4-prompt-0-repeat-0\",\"__repeatIndex\":0},\"prompt\":{\"raw\":\"URL:{{url}}\",\"label\":\"URL:{{url}}\",\"config\":{},\"template\":\"URL:{{url}}\"},\"test\":{\"description\":\"5-youtube_shorts-부산여행 40초 요약\",\"vars\":{\"url\":\"https://www.youtube.com/shorts/NvdrCwcTnlE\",\"expected\":\"[]\"},\"assert\":[{\"type\":\"javascript\",\"metric\":\"recall\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"},{\"type\":\"javascript\",\"metric\":\"precision\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"}],\"options\":{},\"metadata\":{}},\"repeatIndex\":0,\"testIdx\":4,\"evaluationId\":\"eval-0PV-2026-10-31T03:59:43\"}\n[pipeline] 제목: '부산여행 40초 요약'\nTROVA_PROGRESS:{\"title\": \"부산여행 40초 요약\"}\n[pipeline] Gemini 호출(유튜브 링크 직접)\nTROVA_API_LOG:{\"provider\": \"gemini\", \"operation\": \"extract_places.collect\", \"latencyMs\": 164, \"success\": false, \"attempts\": 1, \"waitedMs\": 0, \"errorMessage\": \"Gemini API error 401: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 401,\\n    \\\"message\\\": \\\"API key not valid. Please pass a valid API key.\\\",\\n    \\\"status\\\": \\\"UNAUTHENTICATED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.ErrorInfo\\\",\\n        \\\"reason\\\": \\\"ACCESS_TOKEN_TYPE_UNSUPPORTED\\\",\\n        \\\"metadata\\\": {\\n          \\\"method\\\": \\\"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\\\",\\n          \\\"service\\\": \\\"generativelanguage.googleapis.com\\\"\\n        }\\n      }\\n    ]\\n  }\\n}\\n\"}\nGemini API error 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"UNAUTHENTICATED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_TYPE_UNSUPPORTED\",\n        \"metadata\": {\n          \"method\": \"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\",\n          \"service\": \"generativelanguage.googleapis.com\"\n        }\n      }\n    ]\n  }\n}\n\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1125:16)\n    at Socket.<anonymous> (node:internal/child_process:497:11)\n    at Socket.emit (node:events:509:20)\n    at Pipe.<anonymous> (node:net:355:12)",
+        "gradingResult": null,
+        "id": "a61b88b4-1fe2-4505-b84d-dd06593c4f73",
+        "latencyMs": 0,
+        "namedScores": {},
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/NvdrCwcTnlE",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "5-youtube_shorts-부산여행 40초 요약",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/NvdrCwcTnlE",
+            "expected": "[]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 4,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/NvdrCwcTnlE",
+          "expected": "[]"
+        },
+        "metadata": {
+          "errorContext": {
+            "providerId": "exec: python3 provider.py",
+            "providerLabel": ""
+          }
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "Error: Command failed: python3 provider.py URL:https://www.youtube.com/shorts/tX7P33Gv0dU {\"config\":{\"basePath\":\"/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/eval/place-extract\"},\"env\":{}} {\"vars\":{\"url\":\"https://www.youtube.com/shorts/tX7P33Gv0dU\",\"expected\":\"[\\\"카츠키친 전포점\\\", \\\"이바바커피\\\", \\\"해운대역\\\", \\\"광안리\\\", \\\"해변포차\\\", \\\"광안리 썰스데이파티\\\", \\\"타이카텐푸라&마츠도 해리단길점\\\", \\\"코오리마찌 해리단길점\\\", \\\"해운대 메인거리 & 시장\\\", \\\"개미집 해운대역점\\\", \\\"해운대 T1 베이스캠프\\\"]\",\"__evalId\":\"eval-0PV-2026-10-31T03:59:43\",\"__evalStepId\":\"test-5-prompt-0-repeat-0\",\"__repeatIndex\":0},\"prompt\":{\"raw\":\"URL:{{url}}\",\"label\":\"URL:{{url}}\",\"config\":{},\"template\":\"URL:{{url}}\"},\"test\":{\"description\":\"6-youtube_shorts-부산 2박3일 요약\",\"vars\":{\"url\":\"https://www.youtube.com/shorts/tX7P33Gv0dU\",\"expected\":\"[\\\"카츠키친 전포점\\\", \\\"이바바커피\\\", \\\"해운대역\\\", \\\"광안리\\\", \\\"해변포차\\\", \\\"광안리 썰스데이파티\\\", \\\"타이카텐푸라&마츠도 해리단길점\\\", \\\"코오리마찌 해리단길점\\\", \\\"해운대 메인거리 & 시장\\\", \\\"개미집 해운대역점\\\", \\\"해운대 T1 베이스캠프\\\"]\"},\"assert\":[{\"type\":\"javascript\",\"metric\":\"recall\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"},{\"type\":\"javascript\",\"metric\":\"precision\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"}],\"options\":{},\"metadata\":{}},\"repeatIndex\":0,\"testIdx\":5,\"evaluationId\":\"eval-0PV-2026-10-31T03:59:43\"}\n[pipeline] 제목: '친구랑 부산 여행 2박 3일 요약 Vlog 🌊🤍 #브이로그 #브이로그쇼츠 #vlog #여행브이로그 #부산여행 #광안리어방포차 #해운대모래축제 #부산맛집'\nTROVA_PROGRESS:{\"title\": \"친구랑 부산 여행 2박 3일 요약 Vlog 🌊🤍 #브이로그 #브이로그쇼츠 #vlog #여행브이로그 #부산여행 #광안리어방포차 #해운대모래축제 #부산맛집\"}\n[pipeline] Gemini 호출(유튜브 링크 직접)\nTROVA_API_LOG:{\"provider\": \"gemini\", \"operation\": \"extract_places.collect\", \"latencyMs\": 177, \"success\": false, \"attempts\": 1, \"waitedMs\": 0, \"errorMessage\": \"Gemini API error 401: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 401,\\n    \\\"message\\\": \\\"API key not valid. Please pass a valid API key.\\\",\\n    \\\"status\\\": \\\"UNAUTHENTICATED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.ErrorInfo\\\",\\n        \\\"reason\\\": \\\"ACCESS_TOKEN_TYPE_UNSUPPORTED\\\",\\n        \\\"metadata\\\": {\\n          \\\"method\\\": \\\"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\\\",\\n          \\\"service\\\": \\\"generativelanguage.googleapis.com\\\"\\n        }\\n      }\\n    ]\\n  }\\n}\\n\"}\nGemini API error 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"UNAUTHENTICATED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_TYPE_UNSUPPORTED\",\n        \"metadata\": {\n          \"method\": \"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\",\n          \"service\": \"generativelanguage.googleapis.com\"\n        }\n      }\n    ]\n  }\n}\n\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1125:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)",
+        "gradingResult": null,
+        "id": "d6721e50-51e6-4b1a-932c-184f97cf7fd4",
+        "latencyMs": 0,
+        "namedScores": {},
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/tX7P33Gv0dU",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "6-youtube_shorts-부산 2박3일 요약",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/tX7P33Gv0dU",
+            "expected": "[\"카츠키친 전포점\",\"이바바커피\",\"해운대역\",\"광안리\",\"해변포차\",\"광안리 썰스데이파티\",\"타이카텐푸라&마츠도 해리단길점\",\"코오리마찌 해리단길점\",\"해운대 메인거리 & 시장\",\"개미집 해운대역점\",\"해운대 T1 베이스캠프\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 5,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/tX7P33Gv0dU",
+          "expected": "[\"카츠키친 전포점\",\"이바바커피\",\"해운대역\",\"광안리\",\"해변포차\",\"광안리 썰스데이파티\",\"타이카텐푸라&마츠도 해리단길점\",\"코오리마찌 해리단길점\",\"해운대 메인거리 & 시장\",\"개미집 해운대역점\",\"해운대 T1 베이스캠프\"]"
+        },
+        "metadata": {
+          "errorContext": {
+            "providerId": "exec: python3 provider.py",
+            "providerLabel": ""
+          }
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "Error: Command failed: python3 provider.py URL:https://www.youtube.com/shorts/-yD__roX08g {\"config\":{\"basePath\":\"/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/eval/place-extract\"},\"env\":{}} {\"vars\":{\"url\":\"https://www.youtube.com/shorts/-yD__roX08g\",\"expected\":\"[\\\"삼양해수욕장\\\", \\\"함덕해수욕장\\\", \\\"김녕해수욕장\\\", \\\"세화해수욕장\\\", \\\"표선해수욕장\\\", \\\"색달해수욕장\\\", \\\"화순금모래해수욕장\\\", \\\"판포포구\\\", \\\"협재해수욕장\\\", \\\"이호테우해수욕장\\\"]\",\"__evalId\":\"eval-0PV-2026-10-31T03:59:43\",\"__evalStepId\":\"test-6-prompt-0-repeat-0\",\"__repeatIndex\":0},\"prompt\":{\"raw\":\"URL:{{url}}\",\"label\":\"URL:{{url}}\",\"config\":{},\"template\":\"URL:{{url}}\"},\"test\":{\"description\":\"7-youtube_shorts-제주 해수욕장 10곳\",\"vars\":{\"url\":\"https://www.youtube.com/shorts/-yD__roX08g\",\"expected\":\"[\\\"삼양해수욕장\\\", \\\"함덕해수욕장\\\", \\\"김녕해수욕장\\\", \\\"세화해수욕장\\\", \\\"표선해수욕장\\\", \\\"색달해수욕장\\\", \\\"화순금모래해수욕장\\\", \\\"판포포구\\\", \\\"협재해수욕장\\\", \\\"이호테우해수욕장\\\"]\"},\"assert\":[{\"type\":\"javascript\",\"metric\":\"recall\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"},{\"type\":\"javascript\",\"metric\":\"precision\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"}],\"options\":{},\"metadata\":{}},\"repeatIndex\":0,\"testIdx\":6,\"evaluationId\":\"eval-0PV-2026-10-31T03:59:43\"}\n[pipeline] 제목: '🏝️제주도 여름 필수 코스! 대표 해수욕장 10곳 소개🌟 #shorts'\nTROVA_PROGRESS:{\"title\": \"🏝️제주도 여름 필수 코스! 대표 해수욕장 10곳 소개🌟 #shorts\"}\n[pipeline] Gemini 호출(유튜브 링크 직접)\nTROVA_API_LOG:{\"provider\": \"gemini\", \"operation\": \"extract_places.collect\", \"latencyMs\": 165, \"success\": false, \"attempts\": 1, \"waitedMs\": 0, \"errorMessage\": \"Gemini API error 401: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 401,\\n    \\\"message\\\": \\\"API key not valid. Please pass a valid API key.\\\",\\n    \\\"status\\\": \\\"UNAUTHENTICATED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.ErrorInfo\\\",\\n        \\\"reason\\\": \\\"ACCESS_TOKEN_TYPE_UNSUPPORTED\\\",\\n        \\\"metadata\\\": {\\n          \\\"service\\\": \\\"generativelanguage.googleapis.com\\\",\\n          \\\"method\\\": \\\"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\\\"\\n        }\\n      }\\n    ]\\n  }\\n}\\n\"}\nGemini API error 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"UNAUTHENTICATED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_TYPE_UNSUPPORTED\",\n        \"metadata\": {\n          \"service\": \"generativelanguage.googleapis.com\",\n          \"method\": \"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\"\n        }\n      }\n    ]\n  }\n}\n\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1125:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)",
+        "gradingResult": null,
+        "id": "d776899f-ed7b-4663-925e-c8ca8dd35c3f",
+        "latencyMs": 0,
+        "namedScores": {},
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/-yD__roX08g",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "7-youtube_shorts-제주 해수욕장 10곳",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/-yD__roX08g",
+            "expected": "[\"삼양해수욕장\",\"함덕해수욕장\",\"김녕해수욕장\",\"세화해수욕장\",\"표선해수욕장\",\"색달해수욕장\",\"화순금모래해수욕장\",\"판포포구\",\"협재해수욕장\",\"이호테우해수욕장\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 6,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/-yD__roX08g",
+          "expected": "[\"삼양해수욕장\",\"함덕해수욕장\",\"김녕해수욕장\",\"세화해수욕장\",\"표선해수욕장\",\"색달해수욕장\",\"화순금모래해수욕장\",\"판포포구\",\"협재해수욕장\",\"이호테우해수욕장\"]"
+        },
+        "metadata": {
+          "errorContext": {
+            "providerId": "exec: python3 provider.py",
+            "providerLabel": ""
+          }
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "Error: Command failed: python3 provider.py URL:https://www.youtube.com/shorts/IMfvv-P5CXY {\"config\":{\"basePath\":\"/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/eval/place-extract\"},\"env\":{}} {\"vars\":{\"url\":\"https://www.youtube.com/shorts/IMfvv-P5CXY\",\"expected\":\"[\\\"우진해장국\\\", \\\"삼무국수\\\", \\\"제주당\\\", \\\"금오름\\\", \\\"성이시돌목장\\\", \\\"봄빛코티지\\\", \\\"신창풍차해안\\\", \\\"돈어길\\\", \\\"오설록\\\", \\\"곶자왈도립공원\\\", \\\"한라산아래첫마을\\\", \\\"중문고등어쌈밥\\\", \\\"화순한가네식당\\\", \\\"용머리해안\\\", \\\"송악산\\\", \\\"미영이네\\\", \\\"순천미향\\\", \\\"뚱보아저씨\\\", \\\"협재해수욕장\\\", \\\"호텔샌드\\\", \\\"한림칼국수\\\", \\\"동문시장\\\", \\\"빽다방 제주사수점\\\", \\\"제주공항\\\"]\",\"__evalId\":\"eval-0PV-2026-10-31T03:59:43\",\"__evalStepId\":\"test-7-prompt-0-repeat-0\",\"__repeatIndex\":0},\"prompt\":{\"raw\":\"URL:{{url}}\",\"label\":\"URL:{{url}}\",\"config\":{},\"template\":\"URL:{{url}}\"},\"test\":{\"description\":\"8-youtube_shorts-제주 서쪽 2박3일\",\"vars\":{\"url\":\"https://www.youtube.com/shorts/IMfvv-P5CXY\",\"expected\":\"[\\\"우진해장국\\\", \\\"삼무국수\\\", \\\"제주당\\\", \\\"금오름\\\", \\\"성이시돌목장\\\", \\\"봄빛코티지\\\", \\\"신창풍차해안\\\", \\\"돈어길\\\", \\\"오설록\\\", \\\"곶자왈도립공원\\\", \\\"한라산아래첫마을\\\", \\\"중문고등어쌈밥\\\", \\\"화순한가네식당\\\", \\\"용머리해안\\\", \\\"송악산\\\", \\\"미영이네\\\", \\\"순천미향\\\", \\\"뚱보아저씨\\\", \\\"협재해수욕장\\\", \\\"호텔샌드\\\", \\\"한림칼국수\\\", \\\"동문시장\\\", \\\"빽다방 제주사수점\\\", \\\"제주공항\\\"]\"},\"assert\":[{\"type\":\"javascript\",\"metric\":\"recall\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"},{\"type\":\"javascript\",\"metric\":\"precision\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"}],\"options\":{},\"metadata\":{}},\"repeatIndex\":0,\"testIdx\":7,\"evaluationId\":\"eval-0PV-2026-10-31T03:59:43\"}\n[pipeline] 제목: '🏝 떠먹여 주는 2박 3일 제주도 서쪽 여행 코스'\nTROVA_PROGRESS:{\"title\": \"🏝 떠먹여 주는 2박 3일 제주도 서쪽 여행 코스\"}\n[pipeline] Gemini 호출(유튜브 링크 직접)\nTROVA_API_LOG:{\"provider\": \"gemini\", \"operation\": \"extract_places.collect\", \"latencyMs\": 167, \"success\": false, \"attempts\": 1, \"waitedMs\": 0, \"errorMessage\": \"Gemini API error 401: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 401,\\n    \\\"message\\\": \\\"API key not valid. Please pass a valid API key.\\\",\\n    \\\"status\\\": \\\"UNAUTHENTICATED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.ErrorInfo\\\",\\n        \\\"reason\\\": \\\"ACCESS_TOKEN_TYPE_UNSUPPORTED\\\",\\n        \\\"metadata\\\": {\\n          \\\"service\\\": \\\"generativelanguage.googleapis.com\\\",\\n          \\\"method\\\": \\\"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\\\"\\n        }\\n      }\\n    ]\\n  }\\n}\\n\"}\nGemini API error 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"UNAUTHENTICATED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_TYPE_UNSUPPORTED\",\n        \"metadata\": {\n          \"service\": \"generativelanguage.googleapis.com\",\n          \"method\": \"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\"\n        }\n      }\n    ]\n  }\n}\n\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1125:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)",
+        "gradingResult": null,
+        "id": "d90ebf54-7056-4687-a561-efe5803c6a2e",
+        "latencyMs": 0,
+        "namedScores": {},
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/IMfvv-P5CXY",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "8-youtube_shorts-제주 서쪽 2박3일",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/IMfvv-P5CXY",
+            "expected": "[\"우진해장국\",\"삼무국수\",\"제주당\",\"금오름\",\"성이시돌목장\",\"봄빛코티지\",\"신창풍차해안\",\"돈어길\",\"오설록\",\"곶자왈도립공원\",\"한라산아래첫마을\",\"중문고등어쌈밥\",\"화순한가네식당\",\"용머리해안\",\"송악산\",\"미영이네\",\"순천미향\",\"뚱보아저씨\",\"협재해수욕장\",\"호텔샌드\",\"한림칼국수\",\"동문시장\",\"빽다방 제주사수점\",\"제주공항\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 7,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/IMfvv-P5CXY",
+          "expected": "[\"우진해장국\",\"삼무국수\",\"제주당\",\"금오름\",\"성이시돌목장\",\"봄빛코티지\",\"신창풍차해안\",\"돈어길\",\"오설록\",\"곶자왈도립공원\",\"한라산아래첫마을\",\"중문고등어쌈밥\",\"화순한가네식당\",\"용머리해안\",\"송악산\",\"미영이네\",\"순천미향\",\"뚱보아저씨\",\"협재해수욕장\",\"호텔샌드\",\"한림칼국수\",\"동문시장\",\"빽다방 제주사수점\",\"제주공항\"]"
+        },
+        "metadata": {
+          "errorContext": {
+            "providerId": "exec: python3 provider.py",
+            "providerLabel": ""
+          }
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "Error: Command failed: python3 provider.py URL:https://www.youtube.com/shorts/wMBpwZ9GTRA {\"config\":{\"basePath\":\"/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/eval/place-extract\"},\"env\":{}} {\"vars\":{\"url\":\"https://www.youtube.com/shorts/wMBpwZ9GTRA\",\"expected\":\"[\\\"대포해안주상절리대\\\", \\\"정방폭포\\\", \\\"천지연폭포\\\", \\\"엉또폭포\\\", \\\"쇠소깍\\\", \\\"황우지해안\\\", \\\"소천지\\\", \\\"서귀포치유의숲\\\", \\\"약천사\\\", \\\"중문색달해수욕장\\\"]\",\"__evalId\":\"eval-0PV-2026-10-31T03:59:43\",\"__evalStepId\":\"test-8-prompt-0-repeat-0\",\"__repeatIndex\":0},\"prompt\":{\"raw\":\"URL:{{url}}\",\"label\":\"URL:{{url}}\",\"config\":{},\"template\":\"URL:{{url}}\"},\"test\":{\"description\":\"9-youtube_shorts-서귀포 BEST 10\",\"vars\":{\"url\":\"https://www.youtube.com/shorts/wMBpwZ9GTRA\",\"expected\":\"[\\\"대포해안주상절리대\\\", \\\"정방폭포\\\", \\\"천지연폭포\\\", \\\"엉또폭포\\\", \\\"쇠소깍\\\", \\\"황우지해안\\\", \\\"소천지\\\", \\\"서귀포치유의숲\\\", \\\"약천사\\\", \\\"중문색달해수욕장\\\"]\"},\"assert\":[{\"type\":\"javascript\",\"metric\":\"recall\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"},{\"type\":\"javascript\",\"metric\":\"precision\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"}],\"options\":{},\"metadata\":{}},\"repeatIndex\":0,\"testIdx\":8,\"evaluationId\":\"eval-0PV-2026-10-31T03:59:43\"}\n[pipeline] 제목: '제주 서귀포 여행 필수 코스 BEST 10 🌊 (주상절리부터 중문해수욕장까지 완벽 정리)  #travel #제주여행 #제주도'\nTROVA_PROGRESS:{\"title\": \"제주 서귀포 여행 필수 코스 BEST 10 🌊 (주상절리부터 중문해수욕장까지 완벽 정리)  #travel #제주여행 #제주도\"}\n[pipeline] Gemini 호출(유튜브 링크 직접)\nTROVA_API_LOG:{\"provider\": \"gemini\", \"operation\": \"extract_places.collect\", \"latencyMs\": 176, \"success\": false, \"attempts\": 1, \"waitedMs\": 0, \"errorMessage\": \"Gemini API error 401: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 401,\\n    \\\"message\\\": \\\"API key not valid. Please pass a valid API key.\\\",\\n    \\\"status\\\": \\\"UNAUTHENTICATED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.ErrorInfo\\\",\\n        \\\"reason\\\": \\\"ACCESS_TOKEN_TYPE_UNSUPPORTED\\\",\\n        \\\"metadata\\\": {\\n          \\\"method\\\": \\\"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\\\",\\n          \\\"service\\\": \\\"generativelanguage.googleapis.com\\\"\\n        }\\n      }\\n    ]\\n  }\\n}\\n\"}\nGemini API error 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"UNAUTHENTICATED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_TYPE_UNSUPPORTED\",\n        \"metadata\": {\n          \"method\": \"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\",\n          \"service\": \"generativelanguage.googleapis.com\"\n        }\n      }\n    ]\n  }\n}\n\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1125:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)",
+        "gradingResult": null,
+        "id": "098f5d90-fda8-4c3d-a5a4-be3a56c954e6",
+        "latencyMs": 0,
+        "namedScores": {},
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/wMBpwZ9GTRA",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "9-youtube_shorts-서귀포 BEST 10",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/wMBpwZ9GTRA",
+            "expected": "[\"대포해안주상절리대\",\"정방폭포\",\"천지연폭포\",\"엉또폭포\",\"쇠소깍\",\"황우지해안\",\"소천지\",\"서귀포치유의숲\",\"약천사\",\"중문색달해수욕장\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 8,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/wMBpwZ9GTRA",
+          "expected": "[\"대포해안주상절리대\",\"정방폭포\",\"천지연폭포\",\"엉또폭포\",\"쇠소깍\",\"황우지해안\",\"소천지\",\"서귀포치유의숲\",\"약천사\",\"중문색달해수욕장\"]"
+        },
+        "metadata": {
+          "errorContext": {
+            "providerId": "exec: python3 provider.py",
+            "providerLabel": ""
+          }
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "Error: Command failed: python3 provider.py URL:https://www.youtube.com/shorts/GYisCxtX7sc {\"config\":{\"basePath\":\"/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/eval/place-extract\"},\"env\":{}} {\"vars\":{\"url\":\"https://www.youtube.com/shorts/GYisCxtX7sc\",\"expected\":\"[\\\"테라로사커피공장 강릉점\\\"]\",\"__evalId\":\"eval-0PV-2026-10-31T03:59:43\",\"__evalStepId\":\"test-9-prompt-0-repeat-0\",\"__repeatIndex\":0},\"prompt\":{\"raw\":\"URL:{{url}}\",\"label\":\"URL:{{url}}\",\"config\":{},\"template\":\"URL:{{url}}\"},\"test\":{\"description\":\"10-youtube_shorts-테라로사 커피공장 본점\",\"vars\":{\"url\":\"https://www.youtube.com/shorts/GYisCxtX7sc\",\"expected\":\"[\\\"테라로사커피공장 강릉점\\\"]\"},\"assert\":[{\"type\":\"javascript\",\"metric\":\"recall\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"},{\"type\":\"javascript\",\"metric\":\"precision\",\"value\":\"const norm = s => String(s).replace(/\\\\s+/g, \\\"\\\");\\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\\\",\\\") || \\\"없음\\\"}` };\\n\"}],\"options\":{},\"metadata\":{}},\"repeatIndex\":0,\"testIdx\":9,\"evaluationId\":\"eval-0PV-2026-10-31T03:59:43\"}\n[pipeline] 제목: '강원도 꼭 가봐야 하는 커피 명소 - 인터스트리얼한 감성의 카페  강릉 테라로사 커피공장 본점 #강릉커피맛집 #강릉여행 #강릉카페'\nTROVA_PROGRESS:{\"title\": \"강원도 꼭 가봐야 하는 커피 명소 - 인터스트리얼한 감성의 카페  강릉 테라로사 커피공장 본점 #강릉커피맛집 #강릉여행 #강릉카페\"}\n[pipeline] Gemini 호출(유튜브 링크 직접)\nTROVA_API_LOG:{\"provider\": \"gemini\", \"operation\": \"extract_places.collect\", \"latencyMs\": 168, \"success\": false, \"attempts\": 1, \"waitedMs\": 0, \"errorMessage\": \"Gemini API error 401: {\\n  \\\"error\\\": {\\n    \\\"code\\\": 401,\\n    \\\"message\\\": \\\"API key not valid. Please pass a valid API key.\\\",\\n    \\\"status\\\": \\\"UNAUTHENTICATED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.ErrorInfo\\\",\\n        \\\"reason\\\": \\\"ACCESS_TOKEN_TYPE_UNSUPPORTED\\\",\\n        \\\"metadata\\\": {\\n          \\\"method\\\": \\\"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\\\",\\n          \\\"service\\\": \\\"generativelanguage.googleapis.com\\\"\\n        }\\n      }\\n    ]\\n  }\\n}\\n\"}\nGemini API error 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"API key not valid. Please pass a valid API key.\",\n    \"status\": \"UNAUTHENTICATED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_TYPE_UNSUPPORTED\",\n        \"metadata\": {\n          \"method\": \"google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent\",\n          \"service\": \"generativelanguage.googleapis.com\"\n        }\n      }\n    ]\n  }\n}\n\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1125:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)",
+        "gradingResult": null,
+        "id": "7cb0adab-01a0-4a3e-ad85-bc80268a8d92",
+        "latencyMs": 0,
+        "namedScores": {},
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/GYisCxtX7sc",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "10-youtube_shorts-테라로사 커피공장 본점",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/GYisCxtX7sc",
+            "expected": "[\"테라로사커피공장 강릉점\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 9,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/GYisCxtX7sc",
+          "expected": "[\"테라로사커피공장 강릉점\"]"
+        },
+        "metadata": {
+          "errorContext": {
+            "providerId": "exec: python3 provider.py",
+            "providerLabel": ""
+          }
+        },
+        "failureReason": 2
+      }
+    ],
+    "stats": {
+      "successes": 0,
+      "failures": 0,
+      "errors": 10,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 0,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0
+        },
+        "assertions": {
+          "total": 0,
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          }
+        }
+      },
+      "durationMs": 5180,
+      "evaluationDurationMs": 5180
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "장소 추출 회귀 — eval/extraction 정답 영상에서 장소 이름(Gemini 무료 티어, 영상당 Gemini 2회)",
+    "prompts": [
+      "URL:{{url}}"
+    ],
+    "providers": [
+      "exec: python3 provider.py"
+    ],
+    "tests": [
+      {
+        "description": "1-youtube_shorts-김해 당일치기",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/8vmpPuFwQ94",
+          "expected": "[\"가야랜드\",\"밀양돼지국밥\",\"수로왕릉\",\"명월카페\",\"만리향\",\"연지공원\"]"
+        }
+      },
+      {
+        "description": "2-youtube_shorts-묵호 노는법",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/ppCfDrwbHMk",
+          "expected": "[\"하평해변\",\"파닭김밥\",\"어달삼거리\",\"어달항\",\"카페어달\",\"논골담길\",\"등대쉼터\",\"등대그집\",\"비비소\",\"해랑전망대\"]"
+        }
+      },
+      {
+        "description": "3-youtube_shorts-사당에서 노는법",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/xl2s78K2luM",
+          "expected": "[\"트로페오비토리아\",\"작은피자집\",\"서울시립남서울미술관\",\"꿈꾸는크루아상\",\"도쿄빙수\",\"아트나인&잇나인\"]"
+        }
+      },
+      {
+        "description": "4-youtube_shorts-안산에서 노는법",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/uwPOCSjh3ZA",
+          "expected": "[\"임페리아\",\"후르셰다사마르칸트\",\"안산다문화음식거리\",\"미쉐\",\"마리나베이커리\"]"
+        }
+      },
+      {
+        "description": "5-youtube_shorts-부산여행 40초 요약",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/NvdrCwcTnlE",
+          "expected": "[]"
+        }
+      },
+      {
+        "description": "6-youtube_shorts-부산 2박3일 요약",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/tX7P33Gv0dU",
+          "expected": "[\"카츠키친 전포점\",\"이바바커피\",\"해운대역\",\"광안리\",\"해변포차\",\"광안리 썰스데이파티\",\"타이카텐푸라&마츠도 해리단길점\",\"코오리마찌 해리단길점\",\"해운대 메인거리 & 시장\",\"개미집 해운대역점\",\"해운대 T1 베이스캠프\"]"
+        }
+      },
+      {
+        "description": "7-youtube_shorts-제주 해수욕장 10곳",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/-yD__roX08g",
+          "expected": "[\"삼양해수욕장\",\"함덕해수욕장\",\"김녕해수욕장\",\"세화해수욕장\",\"표선해수욕장\",\"색달해수욕장\",\"화순금모래해수욕장\",\"판포포구\",\"협재해수욕장\",\"이호테우해수욕장\"]"
+        }
+      },
+      {
+        "description": "8-youtube_shorts-제주 서쪽 2박3일",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/IMfvv-P5CXY",
+          "expected": "[\"우진해장국\",\"삼무국수\",\"제주당\",\"금오름\",\"성이시돌목장\",\"봄빛코티지\",\"신창풍차해안\",\"돈어길\",\"오설록\",\"곶자왈도립공원\",\"한라산아래첫마을\",\"중문고등어쌈밥\",\"화순한가네식당\",\"용머리해안\",\"송악산\",\"미영이네\",\"순천미향\",\"뚱보아저씨\",\"협재해수욕장\",\"호텔샌드\",\"한림칼국수\",\"동문시장\",\"빽다방 제주사수점\",\"제주공항\"]"
+        }
+      },
+      {
+        "description": "9-youtube_shorts-서귀포 BEST 10",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/wMBpwZ9GTRA",
+          "expected": "[\"대포해안주상절리대\",\"정방폭포\",\"천지연폭포\",\"엉또폭포\",\"쇠소깍\",\"황우지해안\",\"소천지\",\"서귀포치유의숲\",\"약천사\",\"중문색달해수욕장\"]"
+        }
+      },
+      {
+        "description": "10-youtube_shorts-테라로사 커피공장 본점",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/GYisCxtX7sc",
+          "expected": "[\"테라로사커피공장 강릉점\"]"
+        }
+      }
+    ],
+    "env": {},
+    "sharing": false,
+    "defaultTest": {
+      "assert": [
+        {
+          "type": "javascript",
+          "metric": "recall",
+          "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+        },
+        {
+          "type": "javascript",
+          "metric": "precision",
+          "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+        }
+      ],
+      "vars": {},
+      "options": {},
+      "metadata": {}
+    },
+    "outputPath": [
+      "/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/docs/eval/eval-place-extract-cases/20261031-125942.json"
+    ],
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {}
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.123.1",
+    "nodeVersion": "v26.5.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-31T03:59:48.983Z",
+    "evaluationCreatedAt": "2026-10-31T03:59:43.786Z"
+  },
+  "vars": [
+    "url",
+    "expected"
+  ],
+  "runtimeOptions": {
+    "eventSource": "cli",
+    "showProgressBar": true,
+    "repeat": 1,
+    "delay": 6000,
+    "maxConcurrency": 1,
+    "cache": true
+  }
+}

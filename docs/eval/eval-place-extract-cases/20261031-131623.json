@@ -1,0 +1,2393 @@
+{
+  "evalId": "eval-6er-2026-10-31T04:16:25",
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-31T04:16:25.100Z",
+    "prompts": [
+      {
+        "id": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "raw": "URL:{{url}}",
+        "label": "URL:{{url}}",
+        "provider": "exec: python3 provider.py",
+        "metrics": {
+          "score": 6.921969696969698,
+          "testPassCount": 3,
+          "testFailCount": 7,
+          "testErrorCount": 0,
+          "assertPassCount": 7,
+          "assertFailCount": 13,
+          "totalLatencyMs": 5,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 10,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          },
+          "namedScores": {
+            "recall": 7.027272727272728,
+            "precision": 6.816666666666666
+          },
+          "namedScoresCount": {
+            "recall": 10,
+            "precision": 10
+          },
+          "namedScoreWeights": {
+            "recall": 10,
+            "precision": 10
+          },
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {
+            "recall": 1,
+            "precision": 1
+          },
+          "namedScoreWeights": {
+            "recall": 1,
+            "precision": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "맞힘 6/6, 빠짐 없음",
+              "assertion": {
+                "type": "javascript",
+                "metric": "recall",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "오탐 0개: 없음",
+              "assertion": {
+                "type": "javascript",
+                "metric": "precision",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            }
+          ]
+        },
+        "id": "7c498b63-a386-43e7-8038-4f435e82c688",
+        "latencyMs": 3,
+        "namedScores": {
+          "recall": 1,
+          "precision": 1
+        },
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/8vmpPuFwQ94",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "response": {
+          "output": "[\"가야랜드\", \"밀양돼지국밥\", \"수로왕릉\", \"명월카페\", \"만리향\", \"연지공원\"]",
+          "cached": true,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "1-youtube_shorts-김해 당일치기",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/8vmpPuFwQ94",
+            "expected": "[\"가야랜드\",\"밀양돼지국밥\",\"수로왕릉\",\"명월카페\",\"만리향\",\"연지공원\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "incurredTokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/8vmpPuFwQ94",
+          "expected": "[\"가야랜드\",\"밀양돼지국밥\",\"수로왕릉\",\"명월카페\",\"만리향\",\"연지공원\"]"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "error": "오탐 2개: 중앙시장,묵호항",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.675,
+          "reason": "오탐 2개: 중앙시장,묵호항",
+          "namedScores": {
+            "recall": 0.6,
+            "precision": 0.75
+          },
+          "namedScoreWeights": {
+            "recall": 1,
+            "precision": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.6,
+              "reason": "맞힘 6/10, 빠짐 파닭김밥,등대쉼터,등대그집,해랑전망대",
+              "assertion": {
+                "type": "javascript",
+                "metric": "recall",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            },
+            {
+              "pass": false,
+              "score": 0.75,
+              "reason": "오탐 2개: 중앙시장,묵호항",
+              "assertion": {
+                "type": "javascript",
+                "metric": "precision",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            }
+          ]
+        },
+        "id": "a3f63ebd-8011-41c1-9379-f6602160f2f5",
+        "latencyMs": 0,
+        "namedScores": {
+          "recall": 0.6,
+          "precision": 0.75
+        },
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/ppCfDrwbHMk",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "response": {
+          "output": "[\"하평해변\", \"중앙시장\", \"어달삼거리\", \"어달항\", \"카페어달\", \"묵호항\", \"논골담길\", \"비비소\"]",
+          "cached": true,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          }
+        },
+        "score": 0.675,
+        "success": false,
+        "testCase": {
+          "description": "2-youtube_shorts-묵호 노는법",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/ppCfDrwbHMk",
+            "expected": "[\"하평해변\",\"파닭김밥\",\"어달삼거리\",\"어달항\",\"카페어달\",\"논골담길\",\"등대쉼터\",\"등대그집\",\"비비소\",\"해랑전망대\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "incurredTokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/ppCfDrwbHMk",
+          "expected": "[\"하평해변\",\"파닭김밥\",\"어달삼거리\",\"어달항\",\"카페어달\",\"논골담길\",\"등대쉼터\",\"등대그집\",\"비비소\",\"해랑전망대\"]"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "오탐 1개: 사당역",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.9285714285714286,
+          "reason": "오탐 1개: 사당역",
+          "namedScores": {
+            "recall": 1,
+            "precision": 0.8571428571428571
+          },
+          "namedScoreWeights": {
+            "recall": 1,
+            "precision": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "맞힘 6/6, 빠짐 없음",
+              "assertion": {
+                "type": "javascript",
+                "metric": "recall",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            },
+            {
+              "pass": false,
+              "score": 0.8571428571428571,
+              "reason": "오탐 1개: 사당역",
+              "assertion": {
+                "type": "javascript",
+                "metric": "precision",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            }
+          ]
+        },
+        "id": "50b61184-3f26-42ab-a262-e058892dca7f",
+        "latencyMs": 0,
+        "namedScores": {
+          "recall": 1,
+          "precision": 0.8571428571428571
+        },
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/xl2s78K2luM",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "response": {
+          "output": "[\"사당역\", \"트로페오비토리아\", \"작은피자집\", \"서울시립남서울미술관\", \"꿈꾸는크루아상\", \"도쿄빙수\", \"아트나인\"]",
+          "cached": true,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          }
+        },
+        "score": 0.9285714285714286,
+        "success": false,
+        "testCase": {
+          "description": "3-youtube_shorts-사당에서 노는법",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/xl2s78K2luM",
+            "expected": "[\"트로페오비토리아\",\"작은피자집\",\"서울시립남서울미술관\",\"꿈꾸는크루아상\",\"도쿄빙수\",\"아트나인&잇나인\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 2,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "incurredTokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/xl2s78K2luM",
+          "expected": "[\"트로페오비토리아\",\"작은피자집\",\"서울시립남서울미술관\",\"꿈꾸는크루아상\",\"도쿄빙수\",\"아트나인&잇나인\"]"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "오탐 2개: 안산역,후르세다사마르칸트",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.7333333333333334,
+          "reason": "오탐 2개: 안산역,후르세다사마르칸트",
+          "namedScores": {
+            "recall": 0.8,
+            "precision": 0.6666666666666666
+          },
+          "namedScoreWeights": {
+            "recall": 1,
+            "precision": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.8,
+              "reason": "맞힘 4/5, 빠짐 후르셰다사마르칸트",
+              "assertion": {
+                "type": "javascript",
+                "metric": "recall",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            },
+            {
+              "pass": false,
+              "score": 0.6666666666666666,
+              "reason": "오탐 2개: 안산역,후르세다사마르칸트",
+              "assertion": {
+                "type": "javascript",
+                "metric": "precision",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            }
+          ]
+        },
+        "id": "2b688adc-2b81-4a55-a746-bc21537c0b16",
+        "latencyMs": 0,
+        "namedScores": {
+          "recall": 0.8,
+          "precision": 0.6666666666666666
+        },
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/uwPOCSjh3ZA",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "response": {
+          "output": "[\"안산역\", \"임페리아\", \"후르세다사마르칸트\", \"안산다문화음식거리\", \"미쉐\", \"마리나베이커리\"]",
+          "cached": true,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          }
+        },
+        "score": 0.7333333333333334,
+        "success": false,
+        "testCase": {
+          "description": "4-youtube_shorts-안산에서 노는법",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/uwPOCSjh3ZA",
+            "expected": "[\"임페리아\",\"후르셰다사마르칸트\",\"안산다문화음식거리\",\"미쉐\",\"마리나베이커리\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 3,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "incurredTokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/uwPOCSjh3ZA",
+          "expected": "[\"임페리아\",\"후르셰다사마르칸트\",\"안산다문화음식거리\",\"미쉐\",\"마리나베이커리\"]"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "오탐 1개: Busan",
+        "gradingResult": {
+          "pass": false,
+          "score": 0,
+          "reason": "오탐 1개: Busan",
+          "namedScores": {
+            "recall": 0,
+            "precision": 0
+          },
+          "namedScoreWeights": {
+            "recall": 1,
+            "precision": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "목적지 없음 영상 — 출력 1곳",
+              "assertion": {
+                "type": "javascript",
+                "metric": "recall",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "오탐 1개: Busan",
+              "assertion": {
+                "type": "javascript",
+                "metric": "precision",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            }
+          ]
+        },
+        "id": "61e6262e-4948-488b-bc8c-07d30ff05938",
+        "latencyMs": 0,
+        "namedScores": {
+          "recall": 0,
+          "precision": 0
+        },
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/NvdrCwcTnlE",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "response": {
+          "output": "[\"Busan\"]",
+          "cached": true,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          }
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "5-youtube_shorts-부산여행 40초 요약",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/NvdrCwcTnlE",
+            "expected": "[]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 4,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "incurredTokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/NvdrCwcTnlE",
+          "expected": "[]"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "오탐 5개: SRT기차안,부산역,이버비커피전포점,타이기텐푸라&마초도해리단길점,해운대바다",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.6850649350649352,
+          "reason": "오탐 5개: SRT기차안,부산역,이버비커피전포점,타이기텐푸라&마초도해리단길점,해운대바다",
+          "namedScores": {
+            "recall": 0.7272727272727273,
+            "precision": 0.6428571428571429
+          },
+          "namedScoreWeights": {
+            "recall": 1,
+            "precision": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.7272727272727273,
+              "reason": "맞힘 8/11, 빠짐 이바바커피,해변포차,타이카텐푸라&마츠도해리단길점",
+              "assertion": {
+                "type": "javascript",
+                "metric": "recall",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            },
+            {
+              "pass": false,
+              "score": 0.6428571428571429,
+              "reason": "오탐 5개: SRT기차안,부산역,이버비커피전포점,타이기텐푸라&마초도해리단길점,해운대바다",
+              "assertion": {
+                "type": "javascript",
+                "metric": "precision",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            }
+          ]
+        },
+        "id": "2dfa4dea-f3a8-4535-b33b-c5c4d8faaa5b",
+        "latencyMs": 0,
+        "namedScores": {
+          "recall": 0.7272727272727273,
+          "precision": 0.6428571428571429
+        },
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/tX7P33Gv0dU",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "response": {
+          "output": "[\"SRT기차안\", \"부산역\", \"카츠키친전포점\", \"이버비커피전포점\", \"해운대역\", \"광안리어방축제\", \"광안리썰스데이파티\", \"해운대역거리\", \"타이기텐푸라&마초도해리단길점\", \"코오리마찌해리단길점\", \"해운대메인거리&시장구경\", \"해운대바다\", \"개미집해운대역점\", \"해운대T1베이스캠프\"]",
+          "cached": true,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          }
+        },
+        "score": 0.6850649350649352,
+        "success": false,
+        "testCase": {
+          "description": "6-youtube_shorts-부산 2박3일 요약",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/tX7P33Gv0dU",
+            "expected": "[\"카츠키친 전포점\",\"이바바커피\",\"해운대역\",\"광안리\",\"해변포차\",\"광안리 썰스데이파티\",\"타이카텐푸라&마츠도 해리단길점\",\"코오리마찌 해리단길점\",\"해운대 메인거리 & 시장\",\"개미집 해운대역점\",\"해운대 T1 베이스캠프\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 5,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "incurredTokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/tX7P33Gv0dU",
+          "expected": "[\"카츠키친 전포점\",\"이바바커피\",\"해운대역\",\"광안리\",\"해변포차\",\"광안리 썰스데이파티\",\"타이카텐푸라&마츠도 해리단길점\",\"코오리마찌 해리단길점\",\"해운대 메인거리 & 시장\",\"개미집 해운대역점\",\"해운대 T1 베이스캠프\"]"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "오탐 1개: 화순금모래해변",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.9,
+          "reason": "오탐 1개: 화순금모래해변",
+          "namedScores": {
+            "recall": 0.9,
+            "precision": 0.9
+          },
+          "namedScoreWeights": {
+            "recall": 1,
+            "precision": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.9,
+              "reason": "맞힘 9/10, 빠짐 화순금모래해수욕장",
+              "assertion": {
+                "type": "javascript",
+                "metric": "recall",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            },
+            {
+              "pass": false,
+              "score": 0.9,
+              "reason": "오탐 1개: 화순금모래해변",
+              "assertion": {
+                "type": "javascript",
+                "metric": "precision",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            }
+          ]
+        },
+        "id": "f02a824c-5e53-4007-a2a6-1fe2fea0e11a",
+        "latencyMs": 1,
+        "namedScores": {
+          "recall": 0.9,
+          "precision": 0.9
+        },
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/-yD__roX08g",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "response": {
+          "output": "[\"삼양해수욕장\", \"함덕해수욕장\", \"김녕해수욕장\", \"세화해수욕장\", \"표선해수욕장\", \"색달해수욕장\", \"화순금모래해변\", \"판포포구\", \"협재해수욕장\", \"이호테우해수욕장\"]",
+          "cached": true,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          }
+        },
+        "score": 0.9,
+        "success": false,
+        "testCase": {
+          "description": "7-youtube_shorts-제주 해수욕장 10곳",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/-yD__roX08g",
+            "expected": "[\"삼양해수욕장\",\"함덕해수욕장\",\"김녕해수욕장\",\"세화해수욕장\",\"표선해수욕장\",\"색달해수욕장\",\"화순금모래해수욕장\",\"판포포구\",\"협재해수욕장\",\"이호테우해수욕장\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 6,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "incurredTokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/-yD__roX08g",
+          "expected": "[\"삼양해수욕장\",\"함덕해수욕장\",\"김녕해수욕장\",\"세화해수욕장\",\"표선해수욕장\",\"색달해수욕장\",\"화순금모래해수욕장\",\"판포포구\",\"협재해수욕장\",\"이호테우해수욕장\"]"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {
+            "recall": 1,
+            "precision": 1
+          },
+          "namedScoreWeights": {
+            "recall": 1,
+            "precision": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "맞힘 24/24, 빠짐 없음",
+              "assertion": {
+                "type": "javascript",
+                "metric": "recall",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "오탐 0개: 없음",
+              "assertion": {
+                "type": "javascript",
+                "metric": "precision",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            }
+          ]
+        },
+        "id": "e3e2ed9f-5f9f-4edd-b32e-d0b7ec646dce",
+        "latencyMs": 0,
+        "namedScores": {
+          "recall": 1,
+          "precision": 1
+        },
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/IMfvv-P5CXY",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "response": {
+          "output": "[\"우진해장국\", \"삼무국수\", \"제주당\", \"금오름\", \"성이시돌목장\", \"봄빛코티지\", \"신창풍차해안\", \"돈어길\", \"오설록\", \"곶자왈도립공원\", \"한라산아래첫마을\", \"중문고등어쌈밥\", \"화순한가네식당\", \"용머리해안\", \"송악산\", \"미영이네\", \"순천미향\", \"뚱보아저씨\", \"협재해수욕장\", \"카페호텔샌드\", \"한림칼국수\", \"동문시장\", \"빽다방제주사수점\", \"제주공항\"]",
+          "cached": true,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "8-youtube_shorts-제주 서쪽 2박3일",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/IMfvv-P5CXY",
+            "expected": "[\"우진해장국\",\"삼무국수\",\"제주당\",\"금오름\",\"성이시돌목장\",\"봄빛코티지\",\"신창풍차해안\",\"돈어길\",\"오설록\",\"곶자왈도립공원\",\"한라산아래첫마을\",\"중문고등어쌈밥\",\"화순한가네식당\",\"용머리해안\",\"송악산\",\"미영이네\",\"순천미향\",\"뚱보아저씨\",\"협재해수욕장\",\"호텔샌드\",\"한림칼국수\",\"동문시장\",\"빽다방 제주사수점\",\"제주공항\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 7,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "incurredTokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/IMfvv-P5CXY",
+          "expected": "[\"우진해장국\",\"삼무국수\",\"제주당\",\"금오름\",\"성이시돌목장\",\"봄빛코티지\",\"신창풍차해안\",\"돈어길\",\"오설록\",\"곶자왈도립공원\",\"한라산아래첫마을\",\"중문고등어쌈밥\",\"화순한가네식당\",\"용머리해안\",\"송악산\",\"미영이네\",\"순천미향\",\"뚱보아저씨\",\"협재해수욕장\",\"호텔샌드\",\"한림칼국수\",\"동문시장\",\"빽다방 제주사수점\",\"제주공항\"]"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {
+            "recall": 1,
+            "precision": 1
+          },
+          "namedScoreWeights": {
+            "recall": 1,
+            "precision": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "맞힘 10/10, 빠짐 없음",
+              "assertion": {
+                "type": "javascript",
+                "metric": "recall",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "오탐 0개: 없음",
+              "assertion": {
+                "type": "javascript",
+                "metric": "precision",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            }
+          ]
+        },
+        "id": "5aa80650-bb84-4116-a957-bda32f5af348",
+        "latencyMs": 1,
+        "namedScores": {
+          "recall": 1,
+          "precision": 1
+        },
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/wMBpwZ9GTRA",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "response": {
+          "output": "[\"대포해안주상절리대\", \"쇠소깍\", \"황우지해안\", \"정방폭포\", \"약천사\", \"천지연폭포\", \"서귀포치유의숲\", \"엉또폭포\", \"소천지\", \"중문색달해수욕장\"]",
+          "cached": true,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "9-youtube_shorts-서귀포 BEST 10",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/wMBpwZ9GTRA",
+            "expected": "[\"대포해안주상절리대\",\"정방폭포\",\"천지연폭포\",\"엉또폭포\",\"쇠소깍\",\"황우지해안\",\"소천지\",\"서귀포치유의숲\",\"약천사\",\"중문색달해수욕장\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 8,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "incurredTokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/wMBpwZ9GTRA",
+          "expected": "[\"대포해안주상절리대\",\"정방폭포\",\"천지연폭포\",\"엉또폭포\",\"쇠소깍\",\"황우지해안\",\"소천지\",\"서귀포치유의숲\",\"약천사\",\"중문색달해수욕장\"]"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "error": "오탐 1개: 테라로사커피공장강릉본점",
+        "gradingResult": {
+          "pass": false,
+          "score": 0,
+          "reason": "오탐 1개: 테라로사커피공장강릉본점",
+          "namedScores": {
+            "recall": 0,
+            "precision": 0
+          },
+          "namedScoreWeights": {
+            "recall": 1,
+            "precision": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "맞힘 0/1, 빠짐 테라로사커피공장강릉점",
+              "assertion": {
+                "type": "javascript",
+                "metric": "recall",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "오탐 1개: 테라로사커피공장강릉본점",
+              "assertion": {
+                "type": "javascript",
+                "metric": "precision",
+                "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+              }
+            }
+          ]
+        },
+        "id": "0ecefd12-c20f-4181-8301-5f40ca9f7b68",
+        "latencyMs": 0,
+        "namedScores": {
+          "recall": 0,
+          "precision": 0
+        },
+        "prompt": {
+          "raw": "URL:https://www.youtube.com/shorts/GYisCxtX7sc",
+          "label": "URL:{{url}}",
+          "config": {}
+        },
+        "promptId": "b0e9cd0055ff756fceffced9672d9c48c46b1898806567d5e6c92deb101f93c2",
+        "promptIdx": 0,
+        "provider": {
+          "id": "exec: python3 provider.py",
+          "label": ""
+        },
+        "response": {
+          "output": "[\"테라로사커피공장강릉본점\"]",
+          "cached": true,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            },
+            "incurredTokenUsage": {
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "total": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              },
+              "assertions": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0,
+                  "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0
+                }
+              }
+            }
+          }
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "10-youtube_shorts-테라로사 커피공장 본점",
+          "vars": {
+            "url": "https://www.youtube.com/shorts/GYisCxtX7sc",
+            "expected": "[\"테라로사커피공장 강릉점\"]"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "metric": "recall",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            },
+            {
+              "type": "javascript",
+              "metric": "precision",
+              "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 9,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "incurredTokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          }
+        },
+        "vars": {
+          "url": "https://www.youtube.com/shorts/GYisCxtX7sc",
+          "expected": "[\"테라로사커피공장 강릉점\"]"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      }
+    ],
+    "stats": {
+      "successes": 3,
+      "failures": 7,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 10,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0
+        },
+        "assertions": {
+          "total": 0,
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          }
+        },
+        "incurredTokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        }
+      },
+      "durationMs": 25,
+      "evaluationDurationMs": 25
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "장소 추출 회귀 — eval/extraction 정답 영상에서 장소 이름(Gemini 무료 티어, 영상당 Gemini 2회)",
+    "prompts": [
+      "URL:{{url}}"
+    ],
+    "providers": [
+      "exec: python3 provider.py"
+    ],
+    "tests": [
+      {
+        "description": "1-youtube_shorts-김해 당일치기",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/8vmpPuFwQ94",
+          "expected": "[\"가야랜드\",\"밀양돼지국밥\",\"수로왕릉\",\"명월카페\",\"만리향\",\"연지공원\"]"
+        }
+      },
+      {
+        "description": "2-youtube_shorts-묵호 노는법",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/ppCfDrwbHMk",
+          "expected": "[\"하평해변\",\"파닭김밥\",\"어달삼거리\",\"어달항\",\"카페어달\",\"논골담길\",\"등대쉼터\",\"등대그집\",\"비비소\",\"해랑전망대\"]"
+        }
+      },
+      {
+        "description": "3-youtube_shorts-사당에서 노는법",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/xl2s78K2luM",
+          "expected": "[\"트로페오비토리아\",\"작은피자집\",\"서울시립남서울미술관\",\"꿈꾸는크루아상\",\"도쿄빙수\",\"아트나인&잇나인\"]"
+        }
+      },
+      {
+        "description": "4-youtube_shorts-안산에서 노는법",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/uwPOCSjh3ZA",
+          "expected": "[\"임페리아\",\"후르셰다사마르칸트\",\"안산다문화음식거리\",\"미쉐\",\"마리나베이커리\"]"
+        }
+      },
+      {
+        "description": "5-youtube_shorts-부산여행 40초 요약",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/NvdrCwcTnlE",
+          "expected": "[]"
+        }
+      },
+      {
+        "description": "6-youtube_shorts-부산 2박3일 요약",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/tX7P33Gv0dU",
+          "expected": "[\"카츠키친 전포점\",\"이바바커피\",\"해운대역\",\"광안리\",\"해변포차\",\"광안리 썰스데이파티\",\"타이카텐푸라&마츠도 해리단길점\",\"코오리마찌 해리단길점\",\"해운대 메인거리 & 시장\",\"개미집 해운대역점\",\"해운대 T1 베이스캠프\"]"
+        }
+      },
+      {
+        "description": "7-youtube_shorts-제주 해수욕장 10곳",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/-yD__roX08g",
+          "expected": "[\"삼양해수욕장\",\"함덕해수욕장\",\"김녕해수욕장\",\"세화해수욕장\",\"표선해수욕장\",\"색달해수욕장\",\"화순금모래해수욕장\",\"판포포구\",\"협재해수욕장\",\"이호테우해수욕장\"]"
+        }
+      },
+      {
+        "description": "8-youtube_shorts-제주 서쪽 2박3일",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/IMfvv-P5CXY",
+          "expected": "[\"우진해장국\",\"삼무국수\",\"제주당\",\"금오름\",\"성이시돌목장\",\"봄빛코티지\",\"신창풍차해안\",\"돈어길\",\"오설록\",\"곶자왈도립공원\",\"한라산아래첫마을\",\"중문고등어쌈밥\",\"화순한가네식당\",\"용머리해안\",\"송악산\",\"미영이네\",\"순천미향\",\"뚱보아저씨\",\"협재해수욕장\",\"호텔샌드\",\"한림칼국수\",\"동문시장\",\"빽다방 제주사수점\",\"제주공항\"]"
+        }
+      },
+      {
+        "description": "9-youtube_shorts-서귀포 BEST 10",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/wMBpwZ9GTRA",
+          "expected": "[\"대포해안주상절리대\",\"정방폭포\",\"천지연폭포\",\"엉또폭포\",\"쇠소깍\",\"황우지해안\",\"소천지\",\"서귀포치유의숲\",\"약천사\",\"중문색달해수욕장\"]"
+        }
+      },
+      {
+        "description": "10-youtube_shorts-테라로사 커피공장 본점",
+        "vars": {
+          "url": "https://www.youtube.com/shorts/GYisCxtX7sc",
+          "expected": "[\"테라로사커피공장 강릉점\"]"
+        }
+      }
+    ],
+    "env": {},
+    "sharing": false,
+    "defaultTest": {
+      "assert": [
+        {
+          "type": "javascript",
+          "metric": "recall",
+          "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nif (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };\nconst hit = exp.filter(x => got.some(g => same(g, x))).length;\nreturn { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(\",\") || \"없음\"}` };\n"
+        },
+        {
+          "type": "javascript",
+          "metric": "precision",
+          "value": "const norm = s => String(s).replace(/\\s+/g, \"\");\nconst same = (a, b) => a === b || a.includes(b) || b.includes(a);\nconst got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);\nconst ok = got.filter(g => exp.some(x => same(g, x))).length;\nreturn { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(\",\") || \"없음\"}` };\n"
+        }
+      ],
+      "vars": {},
+      "options": {},
+      "metadata": {}
+    },
+    "outputPath": [
+      "/Users/gimtaehyeong/orca/workspaces/trova-backend/perf/docs/eval/eval-place-extract-cases/20261031-131623.json"
+    ],
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {}
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.123.1",
+    "nodeVersion": "v26.5.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-10-31T04:16:25.135Z",
+    "evaluationCreatedAt": "2026-10-31T04:16:25.100Z"
+  },
+  "vars": [
+    "url",
+    "expected"
+  ],
+  "runtimeOptions": {
+    "eventSource": "cli",
+    "showProgressBar": true,
+    "repeat": 1,
+    "delay": 6000,
+    "maxConcurrency": 1,
+    "cache": true
+  }
+}
