@@ -2035,3 +2035,9 @@
 - 사용자 "차례대로" 승인으로 Kafka→async→Kafka의 동일 운영 코드·동일 영상 비교를 실행했다. 총 11건 성공, 워밍업 제외 각 n=4. 시작 대기 중앙값 async 135ms·Kafka 574ms, 전체 완료 22.197초·21.755초. async의 전송 재시도 대기 15초가 섞여 전체 속도 이득은 단정하지 않는다.
 - 영구 환경 파일은 유지하고 임시 EnvironmentFile만 사용했다. 원래 Kafka 복구·임시 파일 제거·JAR 해시 동일·경로 일치 확인. 생성 장소 66개·초안 1개를 백업 후 정리, 잔여 0.
 - 늦은 ACK 가정에서 async 1회+Kafka 1회 진입을 로컬 제어 시나리오로 재현했다. 실제 중복 API/저장 시험은 아니며 #261에 해결 과제로 남겼다.
+
+### PR #262 리뷰 후속
+- 기존 통과 기준을 바꾸던 strict 별도 assertion을 legacy 결과의 namedScores로 분리했다. weight=0은 해당 promptfoo 버전에서 진단값도 0으로 만들어 사용하지 않는다. 저장된 10개 echo 재생에서 각 사례의 기존 pass/score/recall/precision과 전체 3/10을 그대로 확인했다.
+- rescore는 사례별 오류와 유효 표본 수를 분리하고, 유효 표본 0은 null 평균·종료 코드 2로 표시한다. 기존 valid 10개 strict 평균은 유지했다.
+- NOT_PLACE_CONTENT는 정상 빈 예측으로 평가하되 인증·속도/소스·미디어 오류를 숨기지 않는다. provider 회귀 3개와 CLI/Node 검사를 추가했다. 성능 문서와 원본 값·해석 한계도 재확인했다.
+- 리뷰 후 Java build 932개 중 930 통과·실패/오류 0·명시 실행용 2개 skip. Python 48+provider 3개, Node/CLI 검사와 promptfoo 오프라인 재생 통과. 성능 원본의 표본·중앙값·경로·복구·정리를 재계산 확인했다. API 호출 0회.

@@ -82,4 +82,4 @@ Spring AI 2의 정상 요청 속도 개선은 현재 입증되지 않았고, 호
 
 ## 검증
 
-전체 Gradle build 통과(931 tests 중 930 통과, 실패/오류 0, 명시 실행용 큐 벤치마크 1개 기본 skip). 큐 벤치마크는 별도 opt-in 실행으로 통과했다. Python 48개 테스트·Node 채점 검사·diff whitespace 검사 통과. 결과 파일에 현재 사용 키가 포함되지 않았는지 확인했다.
+전체 Gradle build 통과(932 tests 중 930 통과, 실패/오류 0, 명시 실행용 큐 벤치마크와 ACK 재현 2개 기본 skip). 두 시나리오는 각각 별도 opt-in 실행으로 통과했다. Python 48개 테스트·Node 채점 검사·diff whitespace 검사 통과. 결과 파일에 현재 사용 키가 포함되지 않았는지 확인했다.

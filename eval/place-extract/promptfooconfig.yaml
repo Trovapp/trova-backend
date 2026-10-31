@@ -9,27 +9,10 @@ defaultTest:
   assert:
     - type: javascript
       metric: recall
-      value: |
-        const norm = s => String(s).replace(/\s+/g, "");
-        const same = (a, b) => a === b || a.includes(b) || b.includes(a);
-        const got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);
-        if (exp.length === 0) return { pass: got.length === 0, score: got.length === 0 ? 1 : 0, reason: `목적지 없음 영상 — 출력 ${got.length}곳` };
-        const hit = exp.filter(x => got.some(g => same(g, x))).length;
-        return { pass: hit === exp.length, score: hit / exp.length, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.some(g => same(g, x))).join(",") || "없음"}` };
+      value: file://scoring.cjs:legacyRecall
     - type: javascript
       metric: precision
-      value: |
-        const norm = s => String(s).replace(/\s+/g, "");
-        const same = (a, b) => a === b || a.includes(b) || b.includes(a);
-        const got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);
-        const ok = got.filter(g => exp.some(x => same(g, x))).length;
-        return { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(",") || "없음"}` };
-    - type: javascript
-      metric: strict_recall
-      value: file://scoring.cjs:recall
-    - type: javascript
-      metric: strict_precision
-      value: file://scoring.cjs:precision
+      value: file://scoring.cjs:legacyPrecision
 tests:  # 아래는 build_config.py가 만든다 — 손으로 고치지 말 것
   - description: "1-youtube_shorts-김해 당일치기"
     vars: {url: "https://www.youtube.com/shorts/8vmpPuFwQ94", expected: "[\"가야랜드\", \"밀양돼지국밥\", \"수로왕릉\", \"명월카페\", \"만리향\", \"연지공원\"]"}
