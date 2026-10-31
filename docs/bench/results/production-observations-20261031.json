@@ -1,0 +1,105 @@
+{
+  "recordedAt": "2026-10-31T14:33:34.386814+09:00",
+  "metricsSnapshotAt": "2026-10-31T14:31:16.523314+09:00",
+  "environment": "Oracle E2.1.Micro production; read-only journal and Prometheus",
+  "jobs": [
+    {
+      "jobId": 87,
+      "startedAt": "2026-10-30T11:37:03.772+09:00",
+      "url": "https://www.youtube.com/shorts/H1bCCd1vDCA",
+      "path": "kafka",
+      "extractionFinishedAt": "2026-10-30T11:37:13.999+09:00",
+      "doneAt": "2026-10-30T11:37:18.283+09:00",
+      "processingSeconds": 14.511,
+      "extractionSeconds": 10.227
+    },
+    {
+      "jobId": 88,
+      "startedAt": "2026-10-30T11:48:29.821+09:00",
+      "url": "https://www.youtube.com/shorts/YS4z0NqKkyw",
+      "path": "async-fallback",
+      "extractionFinishedAt": "2026-10-30T11:48:40.778+09:00",
+      "doneAt": "2026-10-30T11:48:44.588+09:00",
+      "processingSeconds": 14.767,
+      "extractionSeconds": 10.957
+    },
+    {
+      "jobId": 91,
+      "startedAt": "2026-10-30T15:06:03.867+09:00",
+      "url": "https://www.youtube.com/shorts/H1bCCd1vDCA",
+      "queueWaitMs": 3867,
+      "path": "kafka",
+      "extractionFinishedAt": "2026-10-30T15:06:12.589+09:00",
+      "doneAt": "2026-10-30T15:06:17.565+09:00",
+      "processingSeconds": 13.698,
+      "extractionSeconds": 8.722
+    },
+    {
+      "jobId": 92,
+      "startedAt": "2026-10-30T15:07:51.397+09:00",
+      "url": "https://www.youtube.com/shorts/YS4z0NqKkyw",
+      "queueWaitMs": 1192,
+      "path": "kafka",
+      "extractionFinishedAt": "2026-10-30T15:07:59.720+09:00",
+      "doneAt": "2026-10-30T15:08:04.767+09:00",
+      "processingSeconds": 13.37,
+      "extractionSeconds": 8.323
+    },
+    {
+      "jobId": 93,
+      "startedAt": "2026-10-31T13:18:15.077+09:00",
+      "url": "https://www.youtube.com/shorts/8vmpPuFwQ94",
+      "queueWaitMs": 2076,
+      "path": "kafka",
+      "extractionFinishedAt": "2026-10-31T13:18:24.863+09:00",
+      "doneAt": "2026-10-31T13:18:28.674+09:00",
+      "processingSeconds": 13.597,
+      "extractionSeconds": 9.786
+    }
+  ],
+  "metrics": [
+    "gen_ai_client_operation_seconds_count{application=\"trova-backend\",error=\"none\",gen_ai_operation_name=\"chat\",gen_ai_request_model=\"gemini-3.5-flash-lite\",gen_ai_response_model=\"gemini-3.5-flash-lite\",gen_ai_system=\"google_genai\"} 1",
+    "gen_ai_client_operation_seconds_sum{application=\"trova-backend\",error=\"none\",gen_ai_operation_name=\"chat\",gen_ai_request_model=\"gemini-3.5-flash-lite\",gen_ai_response_model=\"gemini-3.5-flash-lite\",gen_ai_system=\"google_genai\"} 4.011088554",
+    "trova_queue_fallback_total{application=\"trova-backend\"} 0.0",
+    "trova_queue_wait_seconds_bucket{application=\"trova-backend\",path=\"kafka\",le=\"0.1\"} 0",
+    "trova_queue_wait_seconds_bucket{application=\"trova-backend\",path=\"kafka\",le=\"0.5\"} 0",
+    "trova_queue_wait_seconds_bucket{application=\"trova-backend\",path=\"kafka\",le=\"1.0\"} 0",
+    "trova_queue_wait_seconds_bucket{application=\"trova-backend\",path=\"kafka\",le=\"5.0\"} 1",
+    "trova_queue_wait_seconds_bucket{application=\"trova-backend\",path=\"kafka\",le=\"30.0\"} 1",
+    "trova_queue_wait_seconds_bucket{application=\"trova-backend\",path=\"kafka\",le=\"300.0\"} 1",
+    "trova_queue_wait_seconds_bucket{application=\"trova-backend\",path=\"kafka\",le=\"+Inf\"} 1",
+    "trova_queue_wait_seconds_count{application=\"trova-backend\",path=\"kafka\"} 1",
+    "trova_queue_wait_seconds_sum{application=\"trova-backend\",path=\"kafka\"} 2.076"
+  ],
+  "dependencyPresence": {
+    "97fc866": {
+      "springAiDependency": false,
+      "kafkaDependency": false
+    },
+    "0e472f4": {
+      "springAiDependency": true,
+      "kafkaDependency": true
+    },
+    "1666fee": {
+      "springAiDependency": false,
+      "kafkaDependency": true
+    },
+    "15c1406": {
+      "springAiDependency": true,
+      "kafkaDependency": true
+    },
+    "2b1b56e": {
+      "springAiDependency": true,
+      "kafkaDependency": true
+    },
+    "005ac63": {
+      "springAiDependency": true,
+      "kafkaDependency": true
+    }
+  },
+  "limitations": [
+    "Jobs 87 and 88 used different videos.",
+    "Kafka normal async baseline has not been measured in production.",
+    "Metrics are cumulative since the current process started; n=1 cannot support p50/p90."
+  ]
+}

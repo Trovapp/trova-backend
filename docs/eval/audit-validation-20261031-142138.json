@@ -1,0 +1,772 @@
+{
+  "scope": "3 YouTube cases, baseline vs audit; model evidence not independently verified; no population-level quality claim",
+  "results": [
+    {
+      "video_no": "2",
+      "title": "묵호 노는법",
+      "url": "https://www.youtube.com/shorts/ppCfDrwbHMk",
+      "audit": false,
+      "expected": [
+        "하평해변",
+        "파닭김밥",
+        "어달삼거리",
+        "어달항",
+        "카페어달",
+        "논골담길",
+        "등대쉼터",
+        "등대그집",
+        "비비소",
+        "해랑전망대"
+      ],
+      "names": [
+        "하평해변",
+        "중앙시장",
+        "어달삼거리",
+        "어달항",
+        "카페어달",
+        "논골담길",
+        "비비소",
+        "해란상만대"
+      ],
+      "seconds": 19.495,
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "동해",
+            "묵호",
+            "묵호역",
+            "하평해변",
+            "중앙시장",
+            "어달삼거리",
+            "어달항",
+            "카페어달",
+            "묵호항",
+            "논골담길",
+            "비비소",
+            "해란상만대"
+          ],
+          "isPlaceContent": true,
+          "inputMode": "youtube",
+          "hasTranscript": false,
+          "hasDescription": false
+        },
+        {
+          "stage": "filter",
+          "names": [
+            "하평해변",
+            "중앙시장",
+            "어달삼거리",
+            "어달항",
+            "카페어달",
+            "논골담길",
+            "비비소",
+            "해란상만대"
+          ],
+          "unmatchedCandidates": [
+            "동해",
+            "묵호",
+            "묵호역",
+            "묵호항"
+          ],
+          "reasonAvailability": "not_returned_by_model"
+        }
+      ],
+      "api_calls": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "latencyMs": 9175,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5629,
+          "responseTokens": 108,
+          "totalTokens": 5737
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "latencyMs": 10121,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6605,
+          "responseTokens": 1040,
+          "totalTokens": 7645
+        }
+      ],
+      "strict": {
+        "recall": 0.6,
+        "precision": 0.75,
+        "missing": [
+          "파닭김밥",
+          "등대쉼터",
+          "등대그집",
+          "해랑전망대"
+        ],
+        "hits": 6
+      },
+      "candidateCount": 12,
+      "decisionCount": 0
+    },
+    {
+      "video_no": "2",
+      "title": "묵호 노는법",
+      "url": "https://www.youtube.com/shorts/ppCfDrwbHMk",
+      "audit": true,
+      "expected": [
+        "하평해변",
+        "파닭김밥",
+        "어달삼거리",
+        "어달항",
+        "카페어달",
+        "논골담길",
+        "등대쉼터",
+        "등대그집",
+        "비비소",
+        "해랑전망대"
+      ],
+      "names": [
+        "하평해변",
+        "중앙시장",
+        "어달삼거리",
+        "어달항",
+        "카페어달",
+        "논골담길"
+      ],
+      "seconds": 21.188,
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "동해",
+            "묵호",
+            "KTX",
+            "하평해변",
+            "중앙시장",
+            "어달삼거리",
+            "어달항",
+            "카페어달",
+            "묵호항",
+            "논골담길"
+          ],
+          "isPlaceContent": true,
+          "inputMode": "youtube",
+          "hasTranscript": false,
+          "hasDescription": false
+        },
+        {
+          "stage": "decisions",
+          "decisions": [
+            {
+              "candidateIndex": 0,
+              "reason": "영상의 배경 및 주제로만 언급된 광역 도시명이므로 제외",
+              "evidence": "요즘 동해에서 떠오르는 MZ 여행지임"
+            },
+            {
+              "candidateIndex": 1,
+              "reason": "여행지 목적지이자 콘텐츠의 중심 지역이므로 포함",
+              "evidence": "묵호 당일치기 코스야"
+            },
+            {
+              "candidateIndex": 2,
+              "reason": "이동수단으로만 스쳐 지나가며 환승/도착 맥락으로 언급되었으므로 제외",
+              "evidence": "일단 KTX는 바다뷰 직관석인 A열로 예약해서..."
+            },
+            {
+              "candidateIndex": 3,
+              "reason": "해변 관광지로 구체적 장소에 해당하여 포함",
+              "evidence": "1 하평해변 - 바다 옆 철길이 펼쳐져 있는 하평해변에 가서"
+            },
+            {
+              "candidateIndex": 4,
+              "reason": "시장의 상점이 아닌 시장 전체로 구체적 장소에 해당하여 포함",
+              "evidence": "2 파닭김밥 - 밥 먹으러 중앙시장에 가자"
+            },
+            {
+              "candidateIndex": 5,
+              "reason": "거리 및 산책 명소로 구체적 장소에 해당하여 포함",
+              "evidence": "3 어달삼거리 - 삼거리에 내려서 쭉 걸을 거야"
+            },
+            {
+              "candidateIndex": 6,
+              "reason": "항구 및 방파제 관광지로 구체적 장소에 해당하여 포함",
+              "evidence": "4 어달항 - 알록달록한 방파제에서 사진도 찍고"
+            },
+            {
+              "candidateIndex": 7,
+              "reason": "카페 상호명으로 구체적 장소에 해당하여 포함",
+              "evidence": "5 카페어달 - 어달항이 1열로 보이는 카페 가서"
+            },
+            {
+              "candidateIndex": 8,
+              "reason": "항구 자체이나 전망대 및 주변 관광의 핵심 목적지로 소개되어 포함",
+              "evidence": "이제 묵호항을 내려다볼 수 있는 논골담길을 갈 건데"
+            },
+            {
+              "candidateIndex": 9,
+              "reason": "벽화마을 산책로 및 관광지로 구체적 장소에 해당하여 포함",
+              "evidence": "6 논골담길 - 전망대를 지나면 낭만 뒤집어지는 분식집이 하나 있거든?"
+            }
+          ],
+          "evidenceStatus": "model_reported_not_verified"
+        },
+        {
+          "stage": "filter",
+          "names": [
+            "하평해변",
+            "중앙시장",
+            "어달삼거리",
+            "어달항",
+            "카페어달",
+            "논골담길"
+          ],
+          "unmatchedCandidates": [
+            "동해",
+            "묵호",
+            "KTX",
+            "묵호항"
+          ],
+          "reasonAvailability": "not_returned_by_model"
+        }
+      ],
+      "api_calls": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "latencyMs": 8870,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5629,
+          "responseTokens": 91,
+          "totalTokens": 5720
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "latencyMs": 12035,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6743,
+          "responseTokens": 1345,
+          "totalTokens": 8088
+        }
+      ],
+      "strict": {
+        "recall": 0.5,
+        "precision": 0.8333333333333334,
+        "missing": [
+          "파닭김밥",
+          "등대쉼터",
+          "등대그집",
+          "비비소",
+          "해랑전망대"
+        ],
+        "hits": 5
+      },
+      "candidateCount": 10,
+      "decisionCount": 10
+    },
+    {
+      "video_no": "3",
+      "title": "사당에서 노는법",
+      "url": "https://www.youtube.com/shorts/xl2s78K2luM",
+      "audit": false,
+      "expected": [
+        "트로페오비토리아",
+        "작은피자집",
+        "서울시립남서울미술관",
+        "꿈꾸는크루아상",
+        "도쿄빙수",
+        "아트나인&잇나인"
+      ],
+      "names": [
+        "트로페오비토리아",
+        "작은피자집",
+        "서울시립남서울미술관",
+        "꿈꾸는크루아상",
+        "도쿄빙수",
+        "메가박스 아트나인"
+      ],
+      "seconds": 26.839,
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "사당",
+            "사당역",
+            "총신대입구",
+            "남태령",
+            "트로페오비토리아",
+            "작은피자집",
+            "서울시립남서울미술관",
+            "구 벨기에 영사관",
+            "이수역",
+            "꿈꾸는크루아상",
+            "도쿄빙수",
+            "메가박스",
+            "아트나인",
+            "잇나인"
+          ],
+          "isPlaceContent": true,
+          "inputMode": "youtube",
+          "hasTranscript": false,
+          "hasDescription": false
+        },
+        {
+          "stage": "filter",
+          "names": [
+            "트로페오비토리아",
+            "작은피자집",
+            "서울시립남서울미술관",
+            "꿈꾸는크루아상",
+            "도쿄빙수",
+            "메가박스 아트나인"
+          ],
+          "unmatchedCandidates": [
+            "사당",
+            "사당역",
+            "총신대입구",
+            "남태령",
+            "구 벨기에 영사관",
+            "이수역",
+            "메가박스",
+            "아트나인",
+            "잇나인"
+          ],
+          "reasonAvailability": "not_returned_by_model"
+        }
+      ],
+      "api_calls": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "latencyMs": 8918,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 4725,
+          "responseTokens": 139,
+          "totalTokens": 4864
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "latencyMs": 17720,
+          "success": true,
+          "attempts": 2,
+          "waitedMs": 5000,
+          "promptTokens": 5728,
+          "responseTokens": 795,
+          "totalTokens": 6523
+        }
+      ],
+      "strict": {
+        "recall": 0.8333333333333334,
+        "precision": 0.8333333333333334,
+        "missing": [
+          "아트나인&잇나인"
+        ],
+        "hits": 5
+      },
+      "candidateCount": 14,
+      "decisionCount": 0
+    },
+    {
+      "video_no": "3",
+      "title": "사당에서 노는법",
+      "url": "https://www.youtube.com/shorts/xl2s78K2luM",
+      "audit": true,
+      "expected": [
+        "트로페오비토리아",
+        "작은피자집",
+        "서울시립남서울미술관",
+        "꿈꾸는크루아상",
+        "도쿄빙수",
+        "아트나인&잇나인"
+      ],
+      "names": [
+        "트로페오비토리아",
+        "작은피자집",
+        "서울시립남서울미술관",
+        "꿈꾸는크루아상",
+        "도쿄빙수",
+        "아트나인"
+      ],
+      "seconds": 28.444,
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "사당",
+            "사당역",
+            "총신대입구",
+            "남태령",
+            "트로페오비토리아",
+            "작은피자집",
+            "서울시립남서울미술관",
+            "꿈꾸는크루아상",
+            "도쿄빙수",
+            "메가박스",
+            "아트나인",
+            "잇나인"
+          ],
+          "isPlaceContent": true,
+          "inputMode": "youtube",
+          "hasTranscript": false,
+          "hasDescription": false
+        },
+        {
+          "stage": "decisions",
+          "decisions": [
+            {
+              "candidateIndex": 0,
+              "reason": "제외: 교통 시설이자 대중교통역으로만 언급됨",
+              "evidence": "사당역 5분 거리"
+            },
+            {
+              "candidateIndex": 1,
+              "reason": "제외: 교통 시설로만 언급됨",
+              "evidence": "사당역 5분 거리"
+            },
+            {
+              "candidateIndex": 2,
+              "reason": "제외: 환승 및 경유지",
+              "evidence": "총신대입구"
+            },
+            {
+              "candidateIndex": 3,
+              "reason": "제외: 경유지",
+              "evidence": "남태령"
+            },
+            {
+              "candidateIndex": 4,
+              "reason": "포함: 레이싱 게임방으로 직접 소개됨",
+              "evidence": "1 트로페오비토리아"
+            },
+            {
+              "candidateIndex": 5,
+              "reason": "포함: 피자 식당으로 소개됨",
+              "evidence": "2 작은피자집"
+            },
+            {
+              "candidateIndex": 6,
+              "reason": "포함: 미술관 관광지로 소개됨",
+              "evidence": "3 서울시립남서울미술관"
+            },
+            {
+              "candidateIndex": 7,
+              "reason": "포함: 빵집 상점으로 소개됨",
+              "evidence": "4 꿈꾸는크루아상"
+            },
+            {
+              "candidateIndex": 8,
+              "reason": "포함: 빙수 카페로 소개됨",
+              "evidence": "5 도쿄빙수"
+            },
+            {
+              "candidateIndex": 9,
+              "reason": "제외: 아트나인 테라스 영화관과 동일한 복합 공간으로 아트나인 항목에 통합 설명",
+              "evidence": "메가박스"
+            },
+            {
+              "candidateIndex": 10,
+              "reason": "포함: 테라스 영화관으로 소개됨",
+              "evidence": "6 아트나인&잇나인"
+            },
+            {
+              "candidateIndex": 11,
+              "reason": "포함: 아트나인과 함께 묶여 소개됨",
+              "evidence": "6 아트나인&잇나인"
+            }
+          ],
+          "evidenceStatus": "model_reported_not_verified"
+        },
+        {
+          "stage": "filter",
+          "names": [
+            "트로페오비토리아",
+            "작은피자집",
+            "서울시립남서울미술관",
+            "꿈꾸는크루아상",
+            "도쿄빙수",
+            "아트나인"
+          ],
+          "unmatchedCandidates": [
+            "사당",
+            "사당역",
+            "총신대입구",
+            "남태령",
+            "메가박스",
+            "잇나인"
+          ],
+          "reasonAvailability": "not_returned_by_model"
+        }
+      ],
+      "api_calls": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "latencyMs": 16825,
+          "success": true,
+          "attempts": 2,
+          "waitedMs": 5000,
+          "promptTokens": 4725,
+          "responseTokens": 122,
+          "totalTokens": 4847
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "latencyMs": 11438,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5866,
+          "responseTokens": 1345,
+          "totalTokens": 7211
+        }
+      ],
+      "strict": {
+        "recall": 0.8333333333333334,
+        "precision": 0.8333333333333334,
+        "missing": [
+          "아트나인&잇나인"
+        ],
+        "hits": 5
+      },
+      "candidateCount": 12,
+      "decisionCount": 12
+    },
+    {
+      "video_no": "6",
+      "title": "부산 2박3일 요약",
+      "url": "https://www.youtube.com/shorts/tX7P33Gv0dU",
+      "audit": false,
+      "expected": [
+        "카츠키친 전포점",
+        "이바바커피",
+        "해운대역",
+        "광안리",
+        "해변포차",
+        "광안리 썰스데이파티",
+        "타이카텐푸라&마츠도 해리단길점",
+        "코오리마찌 해리단길점",
+        "해운대 메인거리 & 시장",
+        "개미집 해운대역점",
+        "해운대 T1 베이스캠프"
+      ],
+      "names": [
+        "SRT 기차안",
+        "부산역",
+        "카츠키친 전포점",
+        "이바비커피 전포점",
+        "해운대역",
+        "광안리 어방 축제",
+        "광안리 썰스데이파티",
+        "해운대역 거리",
+        "타이거텐푸라&마초도 해리단길점",
+        "코오리마찌 해리단길점",
+        "해운대 메인 거리",
+        "해운대 바다",
+        "숙소",
+        "개미집 해운대역점",
+        "해운대 T1 베이스캠프",
+        "해운대 바다",
+        "부산역",
+        "SRT 기차안"
+      ],
+      "seconds": 20.06,
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "광안리",
+            "부산",
+            "SRT 기차안",
+            "부산역",
+            "카츠키친 전포점",
+            "이바비커피 전포점",
+            "해운대역",
+            "광안리 어방 축제",
+            "광안리 썰스데이파티",
+            "숙소",
+            "해운대역 거리",
+            "타이거텐푸라&마초도 해리단길점",
+            "코오리마찌 해리단길점",
+            "해운대 메인 거리",
+            "해운대 바다",
+            "개미집 해운대역점",
+            "해운대 T1 베이스캠프"
+          ],
+          "isPlaceContent": true,
+          "inputMode": "youtube",
+          "hasTranscript": false,
+          "hasDescription": false
+        },
+        {
+          "stage": "filter",
+          "names": [
+            "SRT 기차안",
+            "부산역",
+            "카츠키친 전포점",
+            "이바비커피 전포점",
+            "해운대역",
+            "광안리 어방 축제",
+            "광안리 썰스데이파티",
+            "해운대역 거리",
+            "타이거텐푸라&마초도 해리단길점",
+            "코오리마찌 해리단길점",
+            "해운대 메인 거리",
+            "해운대 바다",
+            "숙소",
+            "개미집 해운대역점",
+            "해운대 T1 베이스캠프",
+            "해운대 바다",
+            "부산역",
+            "SRT 기차안"
+          ],
+          "unmatchedCandidates": [
+            "광안리",
+            "부산"
+          ],
+          "reasonAvailability": "not_returned_by_model"
+        }
+      ],
+      "api_calls": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "latencyMs": 8513,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 2731,
+          "responseTokens": 196,
+          "totalTokens": 2927
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "latencyMs": 11365,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 3784,
+          "responseTokens": 2053,
+          "totalTokens": 5837
+        }
+      ],
+      "strict": {
+        "recall": 0.5454545454545454,
+        "precision": 0.3333333333333333,
+        "missing": [
+          "이바바커피",
+          "광안리",
+          "해변포차",
+          "타이카텐푸라&마츠도해리단길점",
+          "해운대메인거리&시장"
+        ],
+        "hits": 6
+      },
+      "candidateCount": 17,
+      "decisionCount": 0
+    },
+    {
+      "video_no": "6",
+      "title": "부산 2박3일 요약",
+      "url": "https://www.youtube.com/shorts/tX7P33Gv0dU",
+      "audit": true,
+      "expected": [
+        "카츠키친 전포점",
+        "이바바커피",
+        "해운대역",
+        "광안리",
+        "해변포차",
+        "광안리 썰스데이파티",
+        "타이카텐푸라&마츠도 해리단길점",
+        "코오리마찌 해리단길점",
+        "해운대 메인거리 & 시장",
+        "개미집 해운대역점",
+        "해운대 T1 베이스캠프"
+      ],
+      "error": "self-repair 재질의 이후에도 실패: 후보 번호가 누락되거나 중복되었습니다",
+      "seconds": 31.455,
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "광안리",
+            "부산",
+            "SRT기차안",
+            "부산역",
+            "카츠키친 전포점",
+            "이바비커피 전포점",
+            "해운대역",
+            "광안리 어방 축제",
+            "광안리 썰스데이파티",
+            "해운대역 거리",
+            "타이거텐푸라&마초도 해리단길점",
+            "코오리마찌 해리단길점",
+            "해운대 메인 거리 & 시장 구경",
+            "해운대 바다 뷰",
+            "숙소",
+            "개미집 해운대역점",
+            "해운대 T1 베이스캠프"
+          ],
+          "isPlaceContent": true,
+          "inputMode": "youtube",
+          "hasTranscript": false,
+          "hasDescription": false
+        }
+      ],
+      "api_calls": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "latencyMs": 7249,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 2731,
+          "responseTokens": 201,
+          "totalTokens": 2932
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "latencyMs": 12917,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 3941,
+          "responseTokens": 2173,
+          "totalTokens": 6114
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter.repair",
+          "latencyMs": 11027,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6167,
+          "responseTokens": 1961,
+          "totalTokens": 8128
+        }
+      ],
+      "candidateCount": 17,
+      "decisionCount": 0
+    }
+  ],
+  "totalHttpAttempts": 15,
+  "notes": [
+    "Audit shape success is not semantic agreement with final names.",
+    "Mode runs recollect candidates independently; differences include nondeterminism.",
+    "One audit extraction failed after one repair; excluded from successful-only score averages.",
+    "Original traces predate reasonAvailability metadata fix; decisions records are authoritative about availability."
+  ]
+}

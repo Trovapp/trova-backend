@@ -1,0 +1,215 @@
+{
+  "environment" : "local Mac, embedded Kafka, 2 partitions/concurrency 2, async application pool, serial handoff",
+  "scope" : "delivery only; mocked repository/extraction; no DB, network Aiven, Gemini, load or restart test",
+  "results" : [ {
+    "milliseconds" : 8.216708,
+    "path" : "async",
+    "round" : 0,
+    "warmup" : true
+  }, {
+    "milliseconds" : 481.383833,
+    "path" : "kafka",
+    "round" : 0,
+    "warmup" : true
+  }, {
+    "milliseconds" : 6.34,
+    "path" : "kafka",
+    "round" : 1,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.241375,
+    "path" : "async",
+    "round" : 1,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.077125,
+    "path" : "async",
+    "round" : 2,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.284208,
+    "path" : "kafka",
+    "round" : 2,
+    "warmup" : false
+  }, {
+    "milliseconds" : 5.709875,
+    "path" : "kafka",
+    "round" : 3,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.083875,
+    "path" : "async",
+    "round" : 3,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.044125,
+    "path" : "async",
+    "round" : 4,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.694,
+    "path" : "kafka",
+    "round" : 4,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.6505,
+    "path" : "kafka",
+    "round" : 5,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.061166,
+    "path" : "async",
+    "round" : 5,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.05275,
+    "path" : "async",
+    "round" : 6,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.777125,
+    "path" : "kafka",
+    "round" : 6,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.721042,
+    "path" : "kafka",
+    "round" : 7,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.067709,
+    "path" : "async",
+    "round" : 7,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.046458,
+    "path" : "async",
+    "round" : 8,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.762875,
+    "path" : "kafka",
+    "round" : 8,
+    "warmup" : false
+  }, {
+    "milliseconds" : 5.531833,
+    "path" : "kafka",
+    "round" : 9,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.056834,
+    "path" : "async",
+    "round" : 9,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.052959,
+    "path" : "async",
+    "round" : 10,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.658334,
+    "path" : "kafka",
+    "round" : 10,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.798542,
+    "path" : "kafka",
+    "round" : 11,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.065208,
+    "path" : "async",
+    "round" : 11,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.042,
+    "path" : "async",
+    "round" : 12,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.615375,
+    "path" : "kafka",
+    "round" : 12,
+    "warmup" : false
+  }, {
+    "milliseconds" : 5.544708,
+    "path" : "kafka",
+    "round" : 13,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.049833,
+    "path" : "async",
+    "round" : 13,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.051292,
+    "path" : "async",
+    "round" : 14,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.644708,
+    "path" : "kafka",
+    "round" : 14,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.62075,
+    "path" : "kafka",
+    "round" : 15,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.061375,
+    "path" : "async",
+    "round" : 15,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.035625,
+    "path" : "async",
+    "round" : 16,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.732584,
+    "path" : "kafka",
+    "round" : 16,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.649084,
+    "path" : "kafka",
+    "round" : 17,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.057833,
+    "path" : "async",
+    "round" : 17,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.037542,
+    "path" : "async",
+    "round" : 18,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.390541,
+    "path" : "kafka",
+    "round" : 18,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.587542,
+    "path" : "kafka",
+    "round" : 19,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.059792,
+    "path" : "async",
+    "round" : 19,
+    "warmup" : false
+  }, {
+    "milliseconds" : 0.034041,
+    "path" : "async",
+    "round" : 20,
+    "warmup" : false
+  }, {
+    "milliseconds" : 6.590625,
+    "path" : "kafka",
+    "round" : 20,
+    "warmup" : false
+  } ]
+}
