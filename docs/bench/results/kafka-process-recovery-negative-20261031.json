@@ -1,0 +1,7 @@
+{
+  "exitCode": 1,
+  "failures": [
+    "org.opentest4j.AssertionFailedError: \nexpected: 1L\n but was: 2L"
+  ],
+  "scope": "same opt-in real-broker/JVM fixture with processing exclusion temporarily removed; SUT restored afterward; expected failure is two pipeline processes instead of one"
+}
