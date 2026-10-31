@@ -4,11 +4,11 @@ import com.trova.backend.admin.AiDashboardService;
 import com.trova.backend.admin.FailureReason;
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
-import com.trova.backend.queue.ShareJobQueue;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.security.SuspendedUsers;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.task.TaskRejectedException;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
@@ -26,16 +26,16 @@ public class RetryJobAction implements AdminActionHandler {
             EnumSet.of(FailureReason.AI_QUOTA, FailureReason.SOURCE_RATE_LIMITED, FailureReason.STALE);
 
     private final ProcessingJobRepository jobRepository;
-    private final ShareJobQueue shareJobQueue;
+    private final AdminRetryJobDispatcher dispatcher;
     private final AiDashboardService aiDashboardService;
     private final SuspendedUsers suspendedUsers;
     private final long geminiAlert;
 
-    public RetryJobAction(ProcessingJobRepository jobRepository, ShareJobQueue shareJobQueue,
+    public RetryJobAction(ProcessingJobRepository jobRepository, AdminRetryJobDispatcher dispatcher,
                           AiDashboardService aiDashboardService, SuspendedUsers suspendedUsers,
                           @Value("${app.admin.dashboard.gemini-alert:800}") long geminiAlert) {
         this.jobRepository = jobRepository;
-        this.shareJobQueue = shareJobQueue;
+        this.dispatcher = dispatcher;
         this.aiDashboardService = aiDashboardService;
         this.suspendedUsers = suspendedUsers;
         this.geminiAlert = geminiAlert;
@@ -55,7 +55,7 @@ public class RetryJobAction implements AdminActionHandler {
     }
 
     /**
-     * 트랜잭션으로 감싸지 않는다 — 새 작업 저장이 커밋된 뒤에 비동기 처리가 작업을 읽어야 한다(SharesController와 같은 방식).
+     * 조치 트랜잭션 안에서는 생성·감사 커밋 뒤에 전달한다. 직접 호출은 저장 커밋 뒤 즉시 전달한다.
      */
     @Override
     public String execute(Long targetId, Long adminUserId) {
@@ -63,12 +63,18 @@ public class RetryJobAction implements AdminActionHandler {
         checkGeminiUsage();
         ProcessingJob newJob = jobRepository.save(
                 new ProcessingJob(job.getUser(), job.getSourceUrl(), job.getSourcePlatform()));
-        try {
-            shareJobQueue.enqueue(newJob.getId());
-        } catch (TaskRejectedException e) {
-            // 남기면 아무도 처리하지 않는 PENDING 작업이 된다(#31).
-            jobRepository.delete(newJob);
-            throw AdminActionException.conflict("서버가 바빠요. 잠시 뒤 다시 해 주세요.");
+        Long newJobId = newJob.getId();
+        Long targetUserId = job.getUser().getId();
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    dispatcher.enqueue(newJobId, targetId, targetUserId, adminUserId);
+                }
+            });
+        } else {
+            // 핸들러를 직접 호출한 경우도 repository.save의 커밋 이후다.
+            dispatcher.enqueue(newJobId, targetId, targetUserId, adminUserId);
         }
         return "새 작업 #" + newJob.getId();
     }

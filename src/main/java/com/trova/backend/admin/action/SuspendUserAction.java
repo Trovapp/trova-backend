@@ -44,9 +44,8 @@ public class SuspendUserAction implements AdminActionHandler {
         int keys = keyCount(user);
         user.suspend();
         shareKeyService.revoke(user.getId());
-        // 트랜잭션이 끝나기 전에 메모리 목록에 넣는다. 커밋이 실패해 되돌려져도 메모리에만 남는 것은
-        // "다음 요청 401"이라 안전한 쪽이고, 서버를 다시 띄우면 DB 기준으로 다시 채워진다.
-        suspendedUsers.add(user.getId());
+        // DB와 감사 기록이 커밋된 뒤 정지를 반영한다(ADR 0026).
+        suspendedUsers.addAfterCommit(user.getId());
         return "정지·단축어 키 " + keys + "개 삭제";
     }
 
