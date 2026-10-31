@@ -1,0 +1,24 @@
+{
+  "sourceCommit": "b473f2b035a71f3ad43df8ed0584f3df1c8a1a61",
+  "reviewedSourceEqualToPr281Head": "e8d8739",
+  "fullBuild": {
+    "tests": 985,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "recoveryTest": [
+    {
+      "name": "com.trova.backend.queue.ShareJobProcessRecoveryTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-31T17:07:01.199Z",
+      "hostname": "gimtaehyeong-ui-MacBookPro.local",
+      "time": "17.103"
+    }
+  ],
+  "pythonChanged": false,
+  "pythonRetest": "not repeated; source unchanged and runtime hash checked"
+}

@@ -1,0 +1,143 @@
+{
+  "sourceCommit": "b473f2b035a71f3ad43df8ed0584f3df1c8a1a61",
+  "release": "main-b473f2b-20261101-020844",
+  "startedAt": "2026-11-01T02:08:46.860615+09:00",
+  "beforeHashes": {
+    "app.jar": "5b2ce3ea17ae1379f0cc5e62f4752a381fe124368a6c4b32bec145b641d0e8fd"
+  },
+  "expectedHashes": {
+    "app.jar": "ded293aa679a44335eaf72df1679e67767d40b63d790095fc2fa499f119478b3"
+  },
+  "unchangedRuntimeFiles": {
+    "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77"
+  },
+  "backupDirectory": "/opt/trova-backend/releases/main-b473f2b-20261101-020844/previous",
+  "deployed": true,
+  "rollback": false,
+  "checks": {
+    "predeployAuthenticatedRead": 200,
+    "unauthenticatedShare": 401,
+    "unauthenticatedAutoDraft": 401,
+    "unauthenticatedPlacesAndNoSessionCookie": true,
+    "cachedDetailsRead": {
+      "placeId": 143,
+      "httpStatus": 200,
+      "cacheEligibilityVerified": true
+    }
+  },
+  "smoke": {
+    "jobId": 106,
+    "httpStatus": 202,
+    "status": "DONE",
+    "createdAt": "2026-11-01 02:11:25.505533",
+    "analysisFinishedAt": "2026-11-01 02:11:39.956985",
+    "titlePresent": true,
+    "titleHasNoReplacementCharacter": true,
+    "titleContainsHangul": true,
+    "savedPlaces": 6,
+    "apiCalls": [
+      {
+        "operation": "extract_places.collect",
+        "success": true,
+        "attempts": 1,
+        "waitedMs": 0
+      },
+      {
+        "operation": "extract_places.filter",
+        "success": true,
+        "attempts": 1,
+        "waitedMs": 0
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "keyword_search",
+        "success": true,
+        "attempts": null,
+        "waitedMs": null
+      },
+      {
+        "operation": "select_place_match",
+        "success": true,
+        "attempts": 1,
+        "waitedMs": 0
+      }
+    ],
+    "observedQueuePath": "kafka"
+  },
+  "cleanup": {
+    "draftsDeleted": 1,
+    "placesDeleted": 6,
+    "privateBackup": "/Users/gimtaehyeong/.config/devflow/trova/prod-release-282-backup-20261101-020844.json",
+    "jobAndApiLogsKept": true,
+    "residualPlaces": 0,
+    "residualDrafts": 0
+  },
+  "inFlightBeforeSwap": [
+    0,
+    0,
+    0
+  ],
+  "swap": {
+    "swapped": true,
+    "backupDirectory": "/opt/trova-backend/releases/main-b473f2b-20261101-020844/previous"
+  },
+  "healthSeconds": 105.899,
+  "runtime": {
+    "hashes": {
+      "app.jar": "ded293aa679a44335eaf72df1679e67767d40b63d790095fc2fa499f119478b3"
+    },
+    "service": "active",
+    "selectedFlags": {
+      "APP_QUEUE_TYPE": "kafka",
+      "PIPELINE_TRACE": "",
+      "PIPELINE_FILTER_AUDIT": "",
+      "PIPELINE_FILTER_TEXT_ONLY": ""
+    },
+    "unchangedRuntimeFiles": {
+      "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77"
+    }
+  },
+  "baseChecksPassed": true,
+  "preSmokeChecksPassed": true,
+  "geminiRowsBeforeSmoke": 4,
+  "finishedAt": "2026-11-01T02:11:44.408027+09:00",
+  "finalRuntimeAndBackupCheck": {
+    "runtimeHashes": {
+      "app.jar": "ded293aa679a44335eaf72df1679e67767d40b63d790095fc2fa499f119478b3",
+      "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77"
+    },
+    "backupHashes": {
+      "app.jar": "5b2ce3ea17ae1379f0cc5e62f4752a381fe124368a6c4b32bec145b641d0e8fd"
+    },
+    "service": "active"
+  }
+}
