@@ -1964,3 +1964,33 @@
 - 운영 호출이 쌓이면 `gen_ai_client_operation_seconds` 중앙값·실패율 기록.
 - 테스트로 생긴 실패 초안 2개와 확인용 초안 1개(저장 안 함)가 사용자 계정(운영)에 남았다.
 
+
+## 2026-10-31 영상·게시물 가져오기 파이프라인 속도·정확도 점검과 개선 (#257, PR #258, 앱 #114·PR #115)
+
+### 범위
+- 사용자: "성능 부분도 다시 봐줘. 영상이나 게시물을 정확하고 빠르게 가져오는 성능. 마지막으로 했던 성능 보고 어떻게 하면 오류없이 올릴수 있을지 봐줘", "너가 다 진행해줘".
+- 점검 결과와 추천은 `docs/bench/advice/pipeline-fetch-20261031.md`(운영 30일 수치·로컬 재측정·추천 A~E).
+
+### 방법 비교
+| 항목 | 방법 | 결정 |
+|---|---|---|
+| 429 대기와 느린 영상 구분 | 로그로 추정 / 호출 기록에 시도·대기 열 추가 | 열 추가(`attempts`·`waited_ms`) — latencyMs는 그대로 전체, 대기만 따로 |
+| 미디어 두 번 올리기(B) | Files API 한 번 올려 참조 / 2차 호출은 텍스트만 / 그대로 | 텍스트만을 **플래그로**(기본 끔) — 정확도 영향을 평가 세트로 전후 비교한 뒤 결정 |
+| 정확도 측정(C) | 손으로 몇 개 확인 / evalflow 세트 | evalflow(쇼츠 10개, 재현율·정밀도). 정답은 파이프라인 출력에서 옮긴 "초안"으로 표시, 사용자 확인 전까지 회귀만 잼 |
+| 유튜브 쿠키 재시도(D) | 그대로 / 서버에서만 끔 / 환경 변수 | 환경 변수 `PIPELINE_BROWSER_COOKIES`(비우면 끔) — 서버엔 크롬이 없어 403 때 20초만 낭비했다 |
+| 인스타 실패 구분(E) | 한 문구 / 비공개·삭제·로그인 구분 | 구분(`SOURCE_UNAVAILABLE`) — 앱이 "다시 시도" 대신 이유를 보여줌. "rate-limit reached" 문구는 속도 제한 쪽 |
+
+### 한 것
+- 파이썬: `extract_places.py`(attempts·waitedMs 기록, `PIPELINE_FILTER_TEXT_ONLY`), `download.py`(`PIPELINE_BROWSER_COOKIES`), `run_pipeline.py`(`SOURCE_UNAVAILABLE`, 속도 제한 문구 보강). 테스트 `test_download.py`·`test_unavailable.py`.
+- 자바: `ApiCallLog.attempts`·`waited_ms`(새 열, JPA 자동 추가), `ApiCallLogService` 파싱, `ProcessingJob.SOURCE_UNAVAILABLE_MESSAGE`, `PlaceExtractionService` 분기, `PlacesController failureReason=SOURCE_UNAVAILABLE`, 관리자 `FailureReason.SOURCE_UNAVAILABLE`.
+- 평가 세트: `eval/place-extract/`(promptfoo 설정·제공자·README), `~/.config/evalflow/trova-backend.json`(maxCalls 30, 호출 간격 6초).
+- 앱(PR #115): 분석 화면·영상 기록 실패 카드에 "볼 수 없는 게시물이에요" 안내, 다시 시도 숨김.
+
+### 확인
+- **로컬(Mac)**: `./gradlew build` 테스트 929개 통과, 파이썬 unittest 22개 통과. 로컬 서버 + 개발 DB에서 유튜브 쇼츠 3개 공유 → 완료 8·17·9초(제주 해수욕장 10곳 전부 좌표, 테라로사 1곳 맞음, 부산 브이로그는 부산역 1곳만 — 누락 의심).
+- **운영 DB 최근 30일**(읽기만): 유튜브 완료 11건 중앙값 44.1초·p90 184.2초, Gemini 후보 수집 중앙값 3.1초·p90 36.1초, 선별 중앙값 4.3초·p90 21.2초. 인스타 실패 2건은 429가 아닌 받기 실패.
+- 평가 세트 실행: 로컬 키 파일이 옛 키(401)라 아직 못 돌림 — 키 복사 뒤 `eval.sh run place-extract --label before`.
+
+### 남은 것
+- 평가 세트 before 실행 → 정답 초안 채우기 → 사용자 확인 → B 플래그 켜고 after 비교.
+- 운영에 쌓이면 `api_call_logs.waited_ms`로 p90의 원인(대기 vs 느린 영상) 확정, 필요하면 서버·파이썬 호출의 분당 한도 공동 관리.
