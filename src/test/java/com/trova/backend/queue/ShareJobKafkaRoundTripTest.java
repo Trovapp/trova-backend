@@ -105,4 +105,52 @@ class ShareJobKafkaRoundTripTest {
             verify(context.getBean(PlaceExtractionService.class), never()).process(42L);
         }
     }
+
+    /** 명시적으로 실행할 때만 기록하는 로컬 전달 지연 비교. DB·Gemini·운영 브로커를 쓰지 않는다. */
+    @Test
+    @org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable(named = "TROVA_RUN_QUEUE_BENCH", matches = "1")
+    void 로컬_async와_Kafka_전달_지연을_비교한다(EmbeddedKafkaBroker broker) throws Exception {
+        java.util.concurrent.atomic.AtomicLong started = new java.util.concurrent.atomic.AtomicLong();
+        java.util.concurrent.BlockingQueue<Long> arrivals = new java.util.concurrent.LinkedBlockingQueue<>();
+        org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor executor =
+                (org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor) new com.trova.backend.config.AsyncConfig().pipelineTaskExecutor();
+        java.util.List<Map<String, Object>> samples = new java.util.ArrayList<>();
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+            context.getEnvironment().getPropertySources().addFirst(new MapPropertySource("embedded-kafka",
+                    Map.of("spring.embedded.kafka.brokers", broker.getBrokersAsString())));
+            context.register(Config.class);
+            context.refresh();
+            PlaceExtractionService extraction = context.getBean(PlaceExtractionService.class);
+            org.mockito.Mockito.doAnswer(invocation -> {
+                arrivals.add(System.nanoTime() - started.get());
+                return null;
+            }).when(extraction).processNow(42L, QueuePath.KAFKA);
+            org.mockito.Mockito.doAnswer(invocation -> {
+                arrivals.add(System.nanoTime() - started.get());
+                return null;
+            }).when(extraction).process(42L);
+            KafkaShareJobQueue kafka = context.getBean(KafkaShareJobQueue.class);
+            for (int round = 0; round <= 20; round++) {
+                java.util.List<String> order = round % 2 == 0 ? java.util.List.of("async", "kafka") : java.util.List.of("kafka", "async");
+                for (String path : order) {
+                    started.set(System.nanoTime());
+                    if (path.equals("kafka")) kafka.enqueue(42L);
+                    else executor.execute(() -> extraction.process(42L));
+                    Long latency = arrivals.poll(30, java.util.concurrent.TimeUnit.SECONDS);
+                    org.assertj.core.api.Assertions.assertThat(latency).as("전달 완료").isNotNull();
+                    samples.add(Map.of("path", path, "round", round, "warmup", round == 0, "milliseconds", latency / 1_000_000.0));
+                }
+            }
+            java.nio.file.Path output = java.nio.file.Path.of("docs/bench/results/local-queue-latency-20261031.json");
+            java.nio.file.Files.createDirectories(output.getParent());
+            new com.fasterxml.jackson.databind.ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(output.toFile(), Map.of(
+                    "environment", "local Mac, embedded Kafka, 2 partitions/concurrency 2, async application pool, serial handoff",
+                    "scope", "delivery only; mocked repository/extraction; no DB, network Aiven, Gemini, load or restart test",
+                    "results", samples));
+            verify(extraction, org.mockito.Mockito.times(21)).process(42L);
+            verify(extraction, org.mockito.Mockito.times(21)).processNow(42L, QueuePath.KAFKA);
+        } finally {
+            executor.shutdown();
+        }
+    }
 }

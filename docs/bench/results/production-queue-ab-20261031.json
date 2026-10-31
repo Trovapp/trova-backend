@@ -1,0 +1,511 @@
+{
+  "environment": "production Oracle E2.1.Micro + Aiven; current same JAR/Python; sequential K-A-K blocks; same URL; auto drafts left enabled",
+  "startedAt": "2026-10-31T14:50:40.213972+09:00",
+  "url": "https://www.youtube.com/shorts/8vmpPuFwQ94",
+  "results": [
+    {
+      "block": "K1",
+      "mode": "kafka",
+      "round": 0,
+      "warmup": true,
+      "jobId": 94,
+      "requestMs": 981.379,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:50:45.444048",
+      "analysisFinishedAt": "2026-10-31 14:50:57.025688",
+      "apiObservedSeconds": 13.984,
+      "createdToAnalysisDoneSeconds": 11.582,
+      "rssKiBAfterDrafts": 398156,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 3720,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 3903,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 1153,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "kafka",
+      "queueWaitMs": 402,
+      "processingSeconds": 11.18
+    },
+    {
+      "block": "K1",
+      "mode": "kafka",
+      "round": 1,
+      "warmup": false,
+      "jobId": 95,
+      "requestMs": 504.463,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:51:08.287127",
+      "analysisFinishedAt": "2026-10-31 14:51:28.573138",
+      "apiObservedSeconds": 21.782,
+      "createdToAnalysisDoneSeconds": 20.286,
+      "rssKiBAfterDrafts": 400488,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 2810,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 13874,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 887,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "kafka",
+      "queueWaitMs": 279,
+      "processingSeconds": 20.007
+    },
+    {
+      "block": "K1",
+      "mode": "kafka",
+      "round": 2,
+      "warmup": false,
+      "jobId": 96,
+      "requestMs": 1173.26,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:51:37.162259",
+      "analysisFinishedAt": "2026-10-31 14:51:48.957338",
+      "apiObservedSeconds": 13.962,
+      "createdToAnalysisDoneSeconds": 11.795,
+      "rssKiBAfterDrafts": 401788,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 3700,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 3832,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 1041,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "kafka",
+      "queueWaitMs": 1031,
+      "processingSeconds": 10.764
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "round": 0,
+      "warmup": true,
+      "jobId": 97,
+      "requestMs": 1803.226,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:53:38.463265",
+      "analysisFinishedAt": "2026-10-31 14:53:50.610764",
+      "apiObservedSeconds": 14.588,
+      "createdToAnalysisDoneSeconds": 12.147,
+      "rssKiBAfterDrafts": 385108,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 2778,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 3879,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 1131,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "async",
+      "queueWaitMs": 538,
+      "processingSeconds": 11.609
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "round": 1,
+      "warmup": false,
+      "jobId": 98,
+      "requestMs": 563.236,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:53:59.263452",
+      "analysisFinishedAt": "2026-10-31 14:54:10.060348",
+      "apiObservedSeconds": 11.271,
+      "createdToAnalysisDoneSeconds": 10.797,
+      "rssKiBAfterDrafts": 389236,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 3100,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 4119,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 784,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "async",
+      "queueWaitMs": 148,
+      "processingSeconds": 10.649
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "round": 2,
+      "warmup": false,
+      "jobId": 99,
+      "requestMs": 418.811,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:54:17.672424",
+      "analysisFinishedAt": "2026-10-31 14:54:36.013900",
+      "apiObservedSeconds": 19.578,
+      "createdToAnalysisDoneSeconds": 18.341,
+      "rssKiBAfterDrafts": 391204,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 2880,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 4461,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 8474,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "async",
+      "queueWaitMs": 135,
+      "processingSeconds": 18.206
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "round": 3,
+      "warmup": false,
+      "jobId": 100,
+      "requestMs": 377.068,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:54:44.364760",
+      "analysisFinishedAt": "2026-10-31 14:55:10.419176",
+      "apiObservedSeconds": 28.115,
+      "createdToAnalysisDoneSeconds": 26.054,
+      "rssKiBAfterDrafts": 388540,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 8238,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 8287,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 5618,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "async",
+      "queueWaitMs": 135,
+      "processingSeconds": 25.919
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "round": 4,
+      "warmup": false,
+      "jobId": 101,
+      "requestMs": 381.852,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:55:19.614835",
+      "analysisFinishedAt": "2026-10-31 14:56:06.505735",
+      "apiObservedSeconds": 47.248,
+      "createdToAnalysisDoneSeconds": 46.891,
+      "rssKiBAfterDrafts": 390264,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 28290,
+          "success": true,
+          "attempts": 3,
+          "waitedMs": 15000
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 9416,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 6367,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "async",
+      "queueWaitMs": 135,
+      "processingSeconds": 46.756
+    },
+    {
+      "block": "K2",
+      "mode": "kafka",
+      "round": 0,
+      "warmup": true,
+      "jobId": 102,
+      "requestMs": 4107.594,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:58:20.663002",
+      "analysisFinishedAt": "2026-10-31 14:58:50.563485",
+      "apiObservedSeconds": 31.79,
+      "createdToAnalysisDoneSeconds": 29.9,
+      "rssKiBAfterDrafts": 406104,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 7424,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 9324,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 6737,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "kafka",
+      "queueWaitMs": 2896,
+      "processingSeconds": 27.004
+    },
+    {
+      "block": "K2",
+      "mode": "kafka",
+      "round": 1,
+      "warmup": false,
+      "jobId": 103,
+      "requestMs": 1164.039,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:59:01.157504",
+      "analysisFinishedAt": "2026-10-31 14:59:28.399777",
+      "apiObservedSeconds": 28.982,
+      "createdToAnalysisDoneSeconds": 27.242,
+      "rssKiBAfterDrafts": 402360,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 6981,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 10147,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 6581,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "kafka",
+      "queueWaitMs": 820,
+      "processingSeconds": 26.422
+    },
+    {
+      "block": "K2",
+      "mode": "kafka",
+      "round": 2,
+      "warmup": false,
+      "jobId": 104,
+      "requestMs": 502.099,
+      "status": "DONE",
+      "createdAt": "2026-10-31 14:59:37.344309",
+      "analysisFinishedAt": "2026-10-31 15:00:00.567704",
+      "apiObservedSeconds": 23.853,
+      "createdToAnalysisDoneSeconds": 23.223,
+      "rssKiBAfterDrafts": 402792,
+      "geminiCalls": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 9322,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 8738,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        },
+        {
+          "operation": "select_place_match",
+          "latencyMs": 2400,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ],
+      "observedPath": "kafka",
+      "queueWaitMs": 328,
+      "processingSeconds": 22.895
+    }
+  ],
+  "transitions": [
+    {
+      "to": "async",
+      "healthSeconds": 94.207
+    },
+    {
+      "to": "kafka-original",
+      "healthSeconds": 120.181
+    }
+  ],
+  "cleanup": {
+    "draftsDeleted": 1,
+    "placesDeleted": 66,
+    "jobIds": [
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104
+    ],
+    "privateBackup": "/Users/gimtaehyeong/.config/devflow/trova/prod-ab-260-backup-20261031-150010.json",
+    "placesRemaining": 0,
+    "draftsRemaining": 0
+  },
+  "restored": true,
+  "jarHashBefore": "08e88164b433ad08c85b2674621941bb3a4acf0a10cb15b05fe0daec446f8e84",
+  "originalQueueType": "kafka",
+  "jarHashAfter": "08e88164b433ad08c85b2674621941bb3a4acf0a10cb15b05fe0daec446f8e84",
+  "finishedAt": "2026-10-31T15:00:13.045327+09:00",
+  "summary": {
+    "async": {
+      "n": 4,
+      "queueWaitMsMedian": 135.0,
+      "requestMsMedian": 400.332,
+      "processingSecondsMedian": 22.062,
+      "createdToAnalysisDoneSecondsMedian": 22.197,
+      "rssKiBAfterDraftsMedian": 389750.0,
+      "httpAttempts": 14,
+      "waitedMs": 15000
+    },
+    "kafka": {
+      "n": 4,
+      "queueWaitMsMedian": 574.0,
+      "requestMsMedian": 834.251,
+      "processingSecondsMedian": 21.451,
+      "createdToAnalysisDoneSecondsMedian": 21.755,
+      "rssKiBAfterDraftsMedian": 402074.0,
+      "httpAttempts": 12,
+      "waitedMs": 0
+    }
+  },
+  "limitations": [
+    "K-A-K blocks, not randomized; n=4 per mode; one URL, no load",
+    "First run per block excluded; JVM process/restarts differ",
+    "Gemini processing dominates total latency; no causal end-to-end speed claim",
+    "RSS sampled after drafts settle, not isolated dependency overhead",
+    "New DONE processing job records retained as measurement evidence; generated places/draft backed up and removed"
+  ]
+}

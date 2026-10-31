@@ -7,6 +7,7 @@ PIPELINE_FILTER_TEXT_ONLY=1 같은 실험 플래그도 환경 변수로 그대�
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import tempfile
@@ -16,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "pipeline-test"))
 
 import run_pipeline  # noqa: E402
+from extract_places import NOT_PLACE_CONTENT_MARKER  # noqa: E402
 
 
 def main() -> None:
@@ -23,8 +25,17 @@ def main() -> None:
     url = prompt.split("URL:", 1)[-1].strip()
     if not url:
         raise SystemExit("URL이 없습니다")
+    os.environ["PIPELINE_TRACE"] = "1"
     with tempfile.TemporaryDirectory(prefix="trova-eval-") as work:
-        result = run_pipeline.run(url, Path(work))
+        try:
+            result = run_pipeline.run(url, Path(work))
+        except SystemExit as error:
+            message = str(error)
+            if message != NOT_PLACE_CONTENT_MARKER and not message.startswith(NOT_PLACE_CONTENT_MARKER + " "):
+                raise
+            # 장소 비소개 판정은 빈 예측이다. 기대 장소가 있으면 recall로 감점한다.
+            # 인증·속도 제한·미디어/소스 오류는 실행 오류로 그대로 남긴다.
+            result = {"places": []}
     names = [re.sub(r"\s+", "", p.get("name") or "") for p in result.get("places", [])]
     print(json.dumps([n for n in names if n], ensure_ascii=False))
 

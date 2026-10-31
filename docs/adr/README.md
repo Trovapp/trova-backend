@@ -58,3 +58,4 @@
 | [0022](0022-pipeline-regression-eval-evalflow.md) | 장소 추출 회귀 측정은 evalflow 세트로, 정답은 eval/extraction/answers.csv 한 곳에서 생성 | 확정 | 2026-10-31 |
 
 | [0023](0023-worktree-explicit-db-env.md) | 워크트리 루트 DB 환경은 자동 복사하지 않고 명시적으로 준비한다 | 확정 | 2026-10-31 |
+| [0024](0024-single-jvm-analysis-exclusion.md) | 단일 JVM의 중복 분석은 선행 완료를 기다린 뒤 DB 상태를 재확인 | 확정 | 2026-10-31 |
