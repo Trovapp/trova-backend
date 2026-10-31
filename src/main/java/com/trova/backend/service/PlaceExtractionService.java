@@ -38,6 +38,18 @@ public class PlaceExtractionService {
     // 이 값 미만이면 Gemini가 이름 자체를 확신하지 못했다고 보고 검증 대상에 포함한다.
     private static final double LOW_CONFIDENCE_THRESHOLD = 0.5;
 
+    // 운영은 단일 JVM(ADR 0024). 늦은 Kafka 수신은 선행 async가 끝날 때까지 기다려야
+    // 처리 중인 메시지의 오프셋을 먼저 확정하지 않는다. 고정 버킷으로 잠금 보관량을 제한한다.
+    private final Object[] processingLocks = createProcessingLocks();
+
+    private static Object[] createProcessingLocks() {
+        Object[] locks = new Object[256];
+        for (int i = 0; i < locks.length; i++) {
+            locks[i] = new Object();
+        }
+        return locks;
+    }
+
     private final ProcessingJobLifecycleService lifecycleService;
     private final PipelineRunner pipelineRunner;
     private final KakaoGeocodingService kakaoGeocodingService;
@@ -83,10 +95,20 @@ public class PlaceExtractionService {
      * 같은 작업을 다시 받으므로, @Async를 거치지 않고 이걸 부른다.
      */
     public void processNow(Long jobId, QueuePath path) {
+        synchronized (processingLocks[Math.floorMod(jobId.hashCode(), processingLocks.length)]) {
+            processSerially(jobId, path);
+        }
+    }
+
+    private void processSerially(Long jobId, QueuePath path) {
         try {
+            String sourceUrl = lifecycleService.startAnalysis(jobId);
+            if (sourceUrl == null) {
+                log.info("ProcessingJob {} 중복 분석 건너뜀(완료·실패·삭제)", jobId);
+                return;
+            }
             // 작업이 만들어진 뒤 여기까지 기다린 시간(#249) — 대기열 경로별로 비교한다.
             long waitMs = queueWaitMetrics.record(jobId, path);
-            String sourceUrl = lifecycleService.markProcessing(jobId);
             log.info("ProcessingJob {} 파이프라인 시작({}, 대기 {}ms): {}", jobId, path.tag(), waitMs, sourceUrl);
 
             lifecycleService.updateStage(jobId, ProcessingStage.EXTRACTING);
