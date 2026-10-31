@@ -2110,3 +2110,13 @@
 - #262 → #263 → #265 squash 머지 완료, 최종 main 4307b79. 후속 PR의 작업 기록 충돌은 기존 기록과 추가 기록을 모두 보존했고 커밋 전 build 통과.
 - main 코드와 로컬 조합 3fa9bbb의 src/pipeline-test/eval 동일 확인. clean build 951 tests 중 948 통과·실패/오류0·opt-in3skip. 실제 Kafka/별도 JVM 재시작 opt-in 1개 다시 통과·skip0. 기존 원본은 유지하고 merged-main-266 접두사로 새 결과 보관.
 - 운영 배포는 실행하지 않았다. 배포 계획 및 나머지 영역 상세 검토는 #267에서 이어간다.
+
+
+## 2026-10-31 배포 계획과 관리자·추천·푸시·재구성 추가 점검 (#267)
+
+- 사용자 "진행해줘 순서대로"에 따라 세 PR 머지·main 검증 다음으로 배포 계획과 나머지 핵심 경계를 검토했다. 기준 소스 main 4307b79. 실제 운영 배포는 범위에 포함하지 않았다.
+- 기존 deploy.sh는 JAR 한 파일만 전송/백업/복구하는 것을 확인했다. 이번 Python 변경은 extract_places.py 하나이므로 JAR와 함께 보관/교체/복원하는 계획과 이전/새 해시 manifest를 작성했다. 로컬 build/release/4307b79 및 /private/tmp/trova-release-4307b79.tgz 준비, 원격 전송은 안 함.
+- 운영은 읽기만 확인: active/running·health UP·Kafka 유지, 분석/초안/재구성 진행 중 각각0. 점검 시점 값이므로 배포 직전 재확인 필요. 잠자기 복구 계속 보류.
+- 우선 수정: 재구성 진입점의 장소 호출 한도 누락, 관리자 조치 커밋 후 감사 저장 실패 시 조치만 남는 경계. 후속 개선: 동일 재구성 동시 제출 2개 작업, 같은 장소 동시 캐시 미스의 상세 API 2회, 잘못된 Expo 티켓의 성공 판정.
+- 외부 API/저장소를 mock한 실제 컨트롤러·서비스/파서 probe와 Spring 트랜잭션+H2 fixture로 5개 현 동작 재현. 원하는 동작을 고정하는 정상 회귀 테스트가 아니므로 docs/reviews/probes에 보관하고 실행용 src/test 임시 복사본은 제거했다. 제품 수정/실제 외부 호출/운영 데이터 변경 없음.
+- 임시 probe 제거 후 ./gradlew build -q는 기존951개 중948통과·실패/오류0·opt-in3skip. 추가 재현5개도 별도실행 통과. 상세 docs/reviews/extended-code-review-20261031.md, deployment-plan-4307b79-20261031.md 및 JSON 근거. 전수 감사나 다중 JVM/실제 외부 응답 검증을 주장하지 않는다.

@@ -1,0 +1,25 @@
+{
+  "commit": "4307b79ace781dec36b26bff8cb5df83995a041e",
+  "scope": "Review witnesses of current behavior, not desired regression contracts; external API/repository boundaries mocked except explicit Spring transaction + H2 fixture",
+  "tests": 5,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "cases": [
+    "감사_저장이_실패해도_앞서_커밋한_관리자_조치는_남는다()",
+    "상태가_없거나_알수없는_Expo_티켓을_성공으로_해석한다()",
+    "같은_재구성을_동시에_조회하면_서로_다른_작업을_둘_만든다()",
+    "같은_장소의_동시_캐시_미스는_상세_API를_두번_부른다()",
+    "장소_한도를_소진해도_재구성은_202로_접수된다()"
+  ],
+  "realExternalApiCalls": 0,
+  "productionCodeChanges": false,
+  "reproduce": "Copy docs/reviews/probes/ExtendedReviewProbeTest.java to src/test/java/com/trova/backend/reviews/, run ./gradlew test --tests *ExtendedReviewProbeTest, remove the temporary copy before normal build",
+  "observations": {
+    "replanQuotaExhaustedStillAccepted": true,
+    "sameReplanConcurrentNewJobs": 2,
+    "committedFixtureActionRowsAfterAuditFailure": 1,
+    "unknownExpoTicketStatusesParsedAsSuccess": 3,
+    "samePlaceConcurrentCacheMissDetailsCalls": 2
+  }
+}
