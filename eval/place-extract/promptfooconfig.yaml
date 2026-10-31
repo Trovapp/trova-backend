@@ -1,0 +1,43 @@
+# 영상 장소 추출 정확도(evalflow) — 정답 대비 재현율·정밀도. 실행: evalflow eval 스킬(`eval.sh run place-extract --label before|after`).
+# 정답(expected)은 사람이 확인한 것만 믿는다. "초안"으로 표시된 정답은 파이프라인 출력에서 옮긴 것이라 사용자 확인 전까지는
+# "같은 입력에서 결과가 바뀌었는가(회귀)"만 잰다. 이름은 공백을 뺀 뒤 비교한다.
+description: 유튜브 쇼츠 10개에서 장소 이름 추출(Gemini 무료 티어, 영상당 Gemini 2회)
+prompts: ["URL:{{url}}"]
+providers: ["exec: python3 provider.py"]
+defaultTest:
+  assert:
+    - type: javascript
+      metric: recall
+      value: |
+        const norm = s => String(s).replace(/\s+/g, "");
+        const got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);
+        const hit = exp.filter(x => got.includes(x)).length;
+        return { pass: hit === exp.length, score: exp.length ? hit / exp.length : 1, reason: `맞힘 ${hit}/${exp.length}, 빠짐 ${exp.filter(x => !got.includes(x)).join(",") || "없음"}` };
+    - type: javascript
+      metric: precision
+      value: |
+        const norm = s => String(s).replace(/\s+/g, "");
+        const got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);
+        const ok = got.filter(x => exp.includes(x)).length;
+        return { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(x => !exp.includes(x)).join(",") || "없음"}` };
+tests:
+  - description: 부산-민콩이네 브이로그(초안)
+    vars: {url: "https://www.youtube.com/shorts/YrN-JLPp0wg", expected: '[]'}
+  - description: 부산-NvdrCwcTnlE(초안)
+    vars: {url: "https://www.youtube.com/shorts/NvdrCwcTnlE", expected: '[]'}
+  - description: 제주-해수욕장 10곳(초안)
+    vars: {url: "https://www.youtube.com/shorts/-yD__roX08g", expected: '[]'}
+  - description: 제주-nbTZNiFcif0(초안)
+    vars: {url: "https://www.youtube.com/shorts/nbTZNiFcif0", expected: '[]'}
+  - description: 서울-45fEeutPgSc(초안)
+    vars: {url: "https://www.youtube.com/shorts/45fEeutPgSc", expected: '[]'}
+  - description: 서울-4fe0FhzGdcE(초안)
+    vars: {url: "https://www.youtube.com/shorts/4fe0FhzGdcE", expected: '[]'}
+  - description: 강릉-테라로사(초안)
+    vars: {url: "https://www.youtube.com/shorts/GYisCxtX7sc", expected: '[]'}
+  - description: 강릉-HfSbvpLPEqM(초안)
+    vars: {url: "https://www.youtube.com/shorts/HfSbvpLPEqM", expected: '[]'}
+  - description: 전주-LBRXg7Zxlr0(초안)
+    vars: {url: "https://www.youtube.com/shorts/LBRXg7Zxlr0", expected: '[]'}
+  - description: 전주-m--pASyRfDE(초안)
+    vars: {url: "https://www.youtube.com/shorts/m--pASyRfDE", expected: '[]'}

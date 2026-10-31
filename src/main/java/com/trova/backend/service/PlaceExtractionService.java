@@ -180,6 +180,9 @@ public class PlaceExtractionService {
             } else if (message.contains(PipelineRunner.NO_MEDIA_MARKER)) {
                 // 사진 게시물에서 사진도 설명도 못 받음(#196) — 다시 해도 같다.
                 lifecycleService.markAnalysisFailed(jobId, ProcessingJob.NO_MEDIA_MESSAGE);
+            } else if (message.contains(PipelineRunner.SOURCE_UNAVAILABLE_MARKER)) {
+                // 비공개·삭제·로그인 필요(#257) — 다시 해도 같다.
+                lifecycleService.markAnalysisFailed(jobId, ProcessingJob.SOURCE_UNAVAILABLE_MESSAGE);
             } else {
                 lifecycleService.markAnalysisFailed(jobId, e.getMessage());
             }

@@ -80,6 +80,39 @@ PLACEHOLDER_TITLE = re.compile(r"^(video|reel|post|photo) by\s", re.IGNORECASE)
 SOURCE_RATE_LIMIT_MARKER = "SOURCE_RATE_LIMITED"
 # 게시물에서 영상도 사진도 받지 못함(#196) — 다시 해도 같아 서버가 안내 문구로 바꾼다.
 NO_MEDIA_MARKER = "NO_MEDIA"
+# 비공개·삭제·로그인 필요처럼 다시 해도 받을 수 없는 게시물·영상(#257 E) — 서버(PipelineRunner)가 같은 문자열로 구분해
+# 앱이 "다시 시도" 대신 "볼 수 없는 게시물"로 안내한다. 운영 실패 2건이 429가 아닌데 한 문구로 뭉쳐 있었다.
+SOURCE_UNAVAILABLE_MARKER = "SOURCE_UNAVAILABLE"
+UNAVAILABLE_PATTERNS = (
+    ("login required", "로그인 필요"),
+    ("requested content is not available", "볼 수 없는 게시물"),
+    ("this post is private", "비공개"),
+    ("private video", "비공개"),
+    ("private", "비공개"),
+    ("no longer available", "삭제됨"),
+    ("has been removed", "삭제됨"),
+    ("video unavailable", "볼 수 없는 영상"),
+    ("not available", "볼 수 없는 게시물"),
+    ("http error 404", "없는 게시물"),
+    ("does not exist", "없는 게시물"),
+    ("unsupported url", "지원하지 않는 주소"),
+)
+
+
+def unavailable_reason(stderr: str) -> str | None:
+    """yt-dlp 오류 중 다시 시도해도 같은 것(비공개·삭제·로그인 필요)을 한국어 이유로 돌려준다. 모르면 None."""
+    low = (stderr or "").lower()
+    for needle, reason in UNAVAILABLE_PATTERNS:
+        if needle in low:
+            return reason
+    return None
+
+
+def _unavailable_exit(stderr: str, what: str) -> SystemExit | None:
+    reason = unavailable_reason(stderr)
+    if reason is None:
+        return None
+    return SystemExit(f"{SOURCE_UNAVAILABLE_MARKER} {what}({reason}): {(stderr or '')[-300:]}")
 
 
 def instagram_fetch(url: str, out_dir: Path) -> tuple[Path | None, str | None, str | None, list[str]]:
@@ -99,11 +132,14 @@ def instagram_fetch(url: str, out_dir: Path) -> tuple[Path | None, str | None, s
         capture_output=True, text=True, timeout=240,
     )
     if result.returncode != 0:
-        if "429" in result.stderr or "Too Many Requests" in result.stderr:
+        if "429" in result.stderr or "Too Many Requests" in result.stderr or "rate-limit reached" in result.stderr:
             raise SystemExit(f"{SOURCE_RATE_LIMIT_MARKER} 인스타그램이 요청을 막음(429): {result.stderr[-300:]}")
         if "No video formats found" in result.stderr:
             # 사진 게시물(#196) — 받기 모드에선 사진 항목 정보가 비어 나온다. 정보만 한 번 더 받는다(사진 게시물만 요청 2번).
             return _photo_post_info(url)
+        unavailable = _unavailable_exit(result.stderr, "볼 수 없는 게시물")
+        if unavailable is not None:
+            raise unavailable
         raise SystemExit(f"yt-dlp 다운로드 실패:\n{result.stderr[-2000:]}")
     info = json.loads(result.stdout)
     videos = sorted(
@@ -132,8 +168,11 @@ def _photo_post_info(url: str) -> tuple[None, str | None, str | None, list[str]]
         capture_output=True, text=True, timeout=120,
     )
     if result.returncode != 0:
-        if "429" in result.stderr or "Too Many Requests" in result.stderr:
+        if "429" in result.stderr or "Too Many Requests" in result.stderr or "rate-limit reached" in result.stderr:
             raise SystemExit(f"{SOURCE_RATE_LIMIT_MARKER} 인스타그램이 요청을 막음(429): {result.stderr[-300:]}")
+        unavailable = _unavailable_exit(result.stderr, "볼 수 없는 게시물")
+        if unavailable is not None:
+            raise unavailable
         raise SystemExit(f"{NO_MEDIA_MARKER} 게시물 정보를 받지 못했습니다: {result.stderr[-500:]}")
     info = json.loads(result.stdout)
     title, description = _title_and_description(info)
@@ -185,7 +224,13 @@ def run_download(url: str, work_dir: Path, title: str | None = None, timer: Stag
     else:
         print(f"[pipeline] 다운로드 중: {url}", file=sys.stderr)
         with timer.stage("download"):
-            info = download.download(url, work_dir / "download")
+            try:
+                info = download.download(url, work_dir / "download")
+            except SystemExit as exc:
+                unavailable = _unavailable_exit(str(exc), "볼 수 없는 영상")
+                if unavailable is not None:
+                    raise unavailable from exc
+                raise
         video_path = info["video_path"]
         caption_path = info["caption_path"]
 

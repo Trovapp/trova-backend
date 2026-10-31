@@ -16,6 +16,7 @@ class FailureReasonTest {
         assertThat(FailureReason.classify(OrphanedJobRecoveryService.STALE_MESSAGE)).isEqualTo(FailureReason.STALE);
         assertThat(FailureReason.classify(ProcessingJob.NO_MEDIA_MESSAGE)).isEqualTo(FailureReason.NO_MEDIA);
         assertThat(FailureReason.classify(ProcessingJob.NOT_PLACE_CONTENT_MESSAGE)).isEqualTo(FailureReason.NOT_PLACE_CONTENT);
+        assertThat(FailureReason.classify(ProcessingJob.SOURCE_UNAVAILABLE_MESSAGE)).isEqualTo(FailureReason.SOURCE_UNAVAILABLE);
     }
 
     @Test

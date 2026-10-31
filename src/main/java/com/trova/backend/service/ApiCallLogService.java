@@ -72,9 +72,18 @@ public class ApiCallLogService {
             String provider, String operation, Long jobId, long latencyMs, boolean success,
             String errorMessage, Integer promptTokens, Integer responseTokens, Integer totalTokens
     ) {
+        record(provider, operation, jobId, latencyMs, success, errorMessage, promptTokens, responseTokens, totalTokens, null, null);
+    }
+
+    /** attempts·waitedMs: 파이프라인 Gemini 호출의 시도 횟수와 재시도 대기 합(#257). 모르면 null. */
+    public void record(
+            String provider, String operation, Long jobId, long latencyMs, boolean success,
+            String errorMessage, Integer promptTokens, Integer responseTokens, Integer totalTokens,
+            Integer attempts, Long waitedMs
+    ) {
         apiCallLogRepository.save(new ApiCallLog(
                 provider, operation, jobId, latencyMs, success, errorMessage,
-                promptTokens, responseTokens, totalTokens));
+                promptTokens, responseTokens, totalTokens).withRetry(attempts, waitedMs));
 
         Timer.builder("trova.api_call")
                 .tag("provider", provider)
@@ -104,7 +113,8 @@ public class ApiCallLogService {
                 LogLinePayload payload = MAPPER.readValue(json, LogLinePayload.class);
                 record(
                         payload.provider(), payload.operation(), jobId, payload.latencyMs(), payload.success(),
-                        payload.errorMessage(), payload.promptTokens(), payload.responseTokens(), payload.totalTokens());
+                        payload.errorMessage(), payload.promptTokens(), payload.responseTokens(), payload.totalTokens(),
+                        payload.attempts(), payload.waitedMs());
             } catch (Exception e) {
                 log.warn("API 호출 로그 줄 파싱 실패, 건너뜁니다: {}", json, e);
             }
@@ -113,7 +123,7 @@ public class ApiCallLogService {
 
     private record LogLinePayload(
             String provider, String operation, long latencyMs, boolean success, String errorMessage,
-            Integer promptTokens, Integer responseTokens, Integer totalTokens
+            Integer promptTokens, Integer responseTokens, Integer totalTokens, Integer attempts, Long waitedMs
     ) {
     }
 }

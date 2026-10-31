@@ -82,7 +82,7 @@ public class PlacesController {
             // 분석이 끝나기 전에 파이프라인이 먼저 찾은 장소 이름(#51). 아직 없으면 빈 배열.
             List<String> foundPlaceNames,
             // 실패 이유 코드. 장소를 못 찾았으면 NO_PLACES(#55), Gemini 하루 한도 소진이면 AI_QUOTA(#63),
-            // 인스타그램 속도 제한이면 SOURCE_RATE_LIMITED(#65), 그 외 null.
+            // 인스타그램 속도 제한이면 SOURCE_RATE_LIMITED(#65), 비공개·삭제·로그인 필요면 SOURCE_UNAVAILABLE(#257), 그 외 null.
             String failureReason
     ) {
         static PendingJobResponse from(ProcessingJob job, List<String> foundPlaceNames) {
@@ -98,6 +98,7 @@ public class PlacesController {
                             : job.isAiQuotaFailure() ? "AI_QUOTA"
                             : job.isSourceRateLimitFailure() ? "SOURCE_RATE_LIMITED"
                             : job.isNoMediaFailure() ? "NO_MEDIA"
+                            : job.isSourceUnavailableFailure() ? "SOURCE_UNAVAILABLE"
                             : job.isNotPlaceContentFailure() ? "NOT_PLACE_CONTENT" : null
             );
         }

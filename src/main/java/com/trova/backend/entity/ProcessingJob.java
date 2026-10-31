@@ -19,6 +19,8 @@ public class ProcessingJob {
     public static final String NO_MEDIA_MESSAGE = "게시물에서 영상이나 사진을 받지 못했어요";
     // 제품 광고·요리·일상처럼 장소를 소개하지 않는 콘텐츠(#206) — 다시 해도 같다.
     public static final String NOT_PLACE_CONTENT_MESSAGE = "여행·맛집을 소개하는 영상이 아닌 것 같아요";
+    // 비공개·삭제·로그인 필요라 받을 수 없는 게시물·영상(#257) — 다시 해도 같아 앱이 "다시 시도" 대신 이유를 보여준다.
+    public static final String SOURCE_UNAVAILABLE_MESSAGE = "볼 수 없는 게시물이에요 (비공개·삭제·로그인 필요)";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -143,6 +145,7 @@ public class ProcessingJob {
     public boolean isNotPlaceContentFailure() { return status == JobStatus.FAILED && NOT_PLACE_CONTENT_MESSAGE.equals(errorMessage); }
     public boolean isNoMediaFailure() { return status == JobStatus.FAILED && NO_MEDIA_MESSAGE.equals(errorMessage); }
     public boolean isSourceRateLimitFailure() { return status == JobStatus.FAILED && SOURCE_RATE_LIMIT_MESSAGE.equals(errorMessage); }
+    public boolean isSourceUnavailableFailure() { return status == JobStatus.FAILED && SOURCE_UNAVAILABLE_MESSAGE.equals(errorMessage); }
     public int getRetryCount() { return retryCount; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

@@ -47,6 +47,14 @@ public class ApiCallLog {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // Gemini 호출이 429·일시 오류로 몇 번 시도했고 그 사이 얼마나 기다렸는지(#257). latencyMs는 대기를 포함한 전체라
+    // "느린 영상"과 "분당 한도 대기"를 나누려면 waitedMs를 뺀다. 파이프라인(stderr 기록)에서만 채우고 나머지는 null.
+    @Column
+    private Integer attempts;
+
+    @Column(name = "waited_ms")
+    private Long waitedMs;
+
     protected ApiCallLog() {
     }
 
@@ -66,7 +74,15 @@ public class ApiCallLog {
         this.createdAt = LocalDateTime.now();
     }
 
+    public ApiCallLog withRetry(Integer attempts, Long waitedMs) {
+        this.attempts = attempts;
+        this.waitedMs = waitedMs;
+        return this;
+    }
+
     public Long getId() { return id; }
+    public Integer getAttempts() { return attempts; }
+    public Long getWaitedMs() { return waitedMs; }
     public String getProvider() { return provider; }
     public String getOperation() { return operation; }
     public Long getJobId() { return jobId; }
