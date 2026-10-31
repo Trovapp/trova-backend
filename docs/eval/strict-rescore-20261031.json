@@ -1,0 +1,152 @@
+{
+  "scope": "AI raw names before geocoding; strict exact match; no aliases approved",
+  "cases": 10,
+  "recall": 0.6637121212121212,
+  "precision": 0.6417857142857143,
+  "results": [
+    {
+      "case": "1-youtube_shorts-김해 당일치기",
+      "recall": 1,
+      "precision": 1,
+      "missing": [],
+      "hits": 6,
+      "possibleAliases": []
+    },
+    {
+      "case": "2-youtube_shorts-묵호 노는법",
+      "recall": 0.6,
+      "precision": 0.75,
+      "missing": [
+        "파닭김밥",
+        "등대쉼터",
+        "등대그집",
+        "해랑전망대"
+      ],
+      "hits": 6,
+      "possibleAliases": []
+    },
+    {
+      "case": "3-youtube_shorts-사당에서 노는법",
+      "recall": 0.8333333333333334,
+      "precision": 0.7142857142857143,
+      "missing": [
+        "아트나인&잇나인"
+      ],
+      "hits": 5,
+      "possibleAliases": [
+        {
+          "expected": "아트나인&잇나인",
+          "observed": "아트나인",
+          "status": "needs_human_review"
+        }
+      ]
+    },
+    {
+      "case": "4-youtube_shorts-안산에서 노는법",
+      "recall": 0.8,
+      "precision": 0.6666666666666666,
+      "missing": [
+        "후르셰다사마르칸트"
+      ],
+      "hits": 4,
+      "possibleAliases": []
+    },
+    {
+      "case": "5-youtube_shorts-부산여행 40초 요약",
+      "recall": 0,
+      "precision": 0,
+      "missing": [],
+      "hits": 0,
+      "possibleAliases": []
+    },
+    {
+      "case": "6-youtube_shorts-부산 2박3일 요약",
+      "recall": 0.5454545454545454,
+      "precision": 0.42857142857142855,
+      "missing": [
+        "이바바커피",
+        "광안리",
+        "해변포차",
+        "타이카텐푸라&마츠도해리단길점",
+        "해운대메인거리&시장"
+      ],
+      "hits": 6,
+      "possibleAliases": [
+        {
+          "expected": "해운대역",
+          "observed": "해운대역거리",
+          "status": "needs_human_review"
+        },
+        {
+          "expected": "해운대역",
+          "observed": "개미집해운대역점",
+          "status": "needs_human_review"
+        },
+        {
+          "expected": "광안리",
+          "observed": "광안리어방축제",
+          "status": "needs_human_review"
+        },
+        {
+          "expected": "광안리",
+          "observed": "광안리썰스데이파티",
+          "status": "needs_human_review"
+        },
+        {
+          "expected": "해운대 메인거리 & 시장",
+          "observed": "해운대메인거리&시장구경",
+          "status": "needs_human_review"
+        },
+        {
+          "expected": "개미집 해운대역점",
+          "observed": "해운대역",
+          "status": "needs_human_review"
+        }
+      ]
+    },
+    {
+      "case": "7-youtube_shorts-제주 해수욕장 10곳",
+      "recall": 0.9,
+      "precision": 0.9,
+      "missing": [
+        "화순금모래해수욕장"
+      ],
+      "hits": 9,
+      "possibleAliases": []
+    },
+    {
+      "case": "8-youtube_shorts-제주 서쪽 2박3일",
+      "recall": 0.9583333333333334,
+      "precision": 0.9583333333333334,
+      "missing": [
+        "호텔샌드"
+      ],
+      "hits": 23,
+      "possibleAliases": [
+        {
+          "expected": "호텔샌드",
+          "observed": "카페호텔샌드",
+          "status": "needs_human_review"
+        }
+      ]
+    },
+    {
+      "case": "9-youtube_shorts-서귀포 BEST 10",
+      "recall": 1,
+      "precision": 1,
+      "missing": [],
+      "hits": 10,
+      "possibleAliases": []
+    },
+    {
+      "case": "10-youtube_shorts-테라로사 커피공장 본점",
+      "recall": 0,
+      "precision": 0,
+      "missing": [
+        "테라로사커피공장강릉점"
+      ],
+      "hits": 0,
+      "possibleAliases": []
+    }
+  ]
+}

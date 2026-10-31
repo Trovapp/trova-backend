@@ -1,0 +1,18 @@
+allprojects {
+    afterEvaluate {
+        tasks.register('compileClientLatencyBench', JavaCompile) {
+            source = fileTree('docs/bench/scripts') { include 'ClientLatencyBench.java' }
+            classpath = sourceSets.main.runtimeClasspath
+            destinationDirectory = layout.buildDirectory.dir('clientLatencyBench')
+            options.encoding = 'UTF-8'
+            options.release = 21
+            dependsOn tasks.named('classes')
+        }
+        tasks.register('clientLatencyBench', JavaExec) {
+            dependsOn tasks.named('compileClientLatencyBench')
+            classpath = files(layout.buildDirectory.dir('clientLatencyBench')) + sourceSets.main.runtimeClasspath
+            mainClass = 'com.trova.backend.bench.ClientLatencyBench'
+            args project.findProperty('benchOutput') ?: 'docs/bench/results/client-latency-20261031.json'
+        }
+    }
+}

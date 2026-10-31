@@ -111,4 +111,41 @@ class KafkaShareJobQueueTest {
 
         assertThatThrownBy(() -> queue.enqueue(42L)).isInstanceOf(TaskRejectedException.class);
     }
+
+    /** 전송 ACK 지연 시나리오 재현. 실제 브로커·DB·Gemini·저장은 실행하지 않는다. */
+    @Test
+    @org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable(named = "TROVA_REPRODUCE_LATE_ACK", matches = "1")
+    void 전송_대기_시간초과_후_늦은_메시지가_두_실행경로에_진입한다() throws Exception {
+        class DelayedAck extends CompletableFuture<SendResult<String, String>> {
+            @Override
+            public SendResult<String, String> get(long timeout, java.util.concurrent.TimeUnit unit)
+                    throws java.util.concurrent.TimeoutException {
+                throw new java.util.concurrent.TimeoutException("controlled late ack");
+            }
+        }
+        DelayedAck ack = new DelayedAck();
+        when(kafkaTemplate.send(KafkaShareJobQueue.TOPIC, "42", "42")).thenReturn(ack);
+        queue.enqueue(42L);
+        verify(extraction).process(42L);
+        assertThat(ack.isCancelled()).isFalse();
+
+        boolean acceptedLate = ack.complete(mock(SendResult.class));
+        com.trova.backend.entity.ProcessingJob job = mock(com.trova.backend.entity.ProcessingJob.class);
+        when(job.getStatus()).thenReturn(com.trova.backend.entity.JobStatus.PROCESSING);
+        com.trova.backend.repository.ProcessingJobRepository repository = mock(com.trova.backend.repository.ProcessingJobRepository.class);
+        when(repository.findById(42L)).thenReturn(java.util.Optional.of(job));
+        // async가 진행 중인 동안 도착한 브로커 메시지를 리스너에 전달한다.
+        new ShareJobListener(repository, extraction).onMessage("42");
+        verify(extraction).processNow(42L, QueuePath.KAFKA);
+        assertThat(acceptedLate).isTrue();
+        assertThat(fallbacks()).isEqualTo(1);
+
+        java.nio.file.Path output = java.nio.file.Path.of("docs/bench/results/kafka-late-ack-reproduction-20261031.json");
+        java.nio.file.Files.createDirectories(output.getParent());
+        new com.fasterxml.jackson.databind.ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(output.toFile(), java.util.Map.of(
+                "scenario", "controlled ACK timeout, async fallback in progress, then late Kafka delivery",
+                "lateAckAccepted", acceptedLate, "asyncDispatches", 1, "kafkaDispatches", 1,
+                "statusAtLateDelivery", "PROCESSING",
+                "scope", "real queue/listener branches with mocked future/repository/extraction; duplicate execution entry, not actual duplicate Gemini calls or saved rows"));
+    }
 }

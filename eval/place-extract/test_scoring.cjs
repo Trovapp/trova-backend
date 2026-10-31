@@ -1,0 +1,13 @@
+const assert = require('node:assert/strict');
+const {score} = require('./scoring.cjs');
+const run = (got, expected) => score(JSON.stringify(got), {vars:{expected:JSON.stringify(expected)}});
+assert.equal(run(['해운대역'], ['해운대']).recall, 0);
+assert.equal(run(['테라로사커피공장'], ['테라로사커피공장강릉점']).recall, 0);
+assert.equal(run(['가야랜드', '가야랜드'], ['가야랜드']).precision, 0.5);
+assert.equal(run(['가야랜드'], ['가야랜드','가야랜드']).recall, 0.5);
+assert.equal(run(['가야 랜드'], ['가야랜드']).recall, 1);
+assert.equal(run([], []).recall, 1);
+assert.equal(run(['부산'], []).recall, 0);
+assert.throws(() => run([''], []));
+assert.throws(() => run([null], []));
+console.log('scoring regression checks passed');

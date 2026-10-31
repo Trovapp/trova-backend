@@ -1,0 +1,77 @@
+{
+  "prompt" : "다음 JSON 객체만 반환하세요: {\"ok\":true}",
+  "model" : "gemini-3.5-flash-lite",
+  "scope" : "healthy single-attempt client latency; round 0 excluded as warmup; n=4 per client",
+  "results" : [ {
+    "client" : "rest",
+    "warmup" : true,
+    "round" : 0,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 2819.854708
+  }, {
+    "client" : "spring-ai",
+    "warmup" : true,
+    "round" : 0,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 2453.901292
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 1,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 2812.695333
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 1,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 2697.6905
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 2,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 6110.459958
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 2,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 4109.134291
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 3,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 4290.019917
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 3,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 3359.98075
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 4,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 3953.307583
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 4,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 3163.955459
+  } ],
+  "environment" : "local Mac; no server/DB/queue; sequential alternating order"
+}

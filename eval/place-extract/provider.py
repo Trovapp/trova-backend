@@ -7,6 +7,7 @@ PIPELINE_FILTER_TEXT_ONLY=1 같은 실험 플래그도 환경 변수로 그대�
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import tempfile
@@ -23,6 +24,7 @@ def main() -> None:
     url = prompt.split("URL:", 1)[-1].strip()
     if not url:
         raise SystemExit("URL이 없습니다")
+    os.environ["PIPELINE_TRACE"] = "1"
     with tempfile.TemporaryDirectory(prefix="trova-eval-") as work:
         result = run_pipeline.run(url, Path(work))
     names = [re.sub(r"\s+", "", p.get("name") or "") for p in result.get("places", [])]

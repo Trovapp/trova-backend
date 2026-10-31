@@ -24,6 +24,12 @@ defaultTest:
         const got = JSON.parse(output).map(norm); const exp = JSON.parse(context.vars.expected).map(norm);
         const ok = got.filter(g => exp.some(x => same(g, x))).length;
         return { pass: ok === got.length, score: got.length ? ok / got.length : 1, reason: `오탐 ${got.length - ok}개: ${got.filter(g => !exp.some(x => same(g, x))).join(",") || "없음"}` };
+    - type: javascript
+      metric: strict_recall
+      value: file://scoring.cjs:recall
+    - type: javascript
+      metric: strict_precision
+      value: file://scoring.cjs:precision
 tests:  # 아래는 build_config.py가 만든다 — 손으로 고치지 말 것
   - description: "1-youtube_shorts-김해 당일치기"
     vars: {url: "https://www.youtube.com/shorts/8vmpPuFwQ94", expected: "[\"가야랜드\", \"밀양돼지국밥\", \"수로왕릉\", \"명월카페\", \"만리향\", \"연지공원\"]"}
