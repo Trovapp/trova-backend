@@ -1,0 +1,794 @@
+{
+  "scope": "New 2026-11-01 experiment only; no pooling of historical samples",
+  "sourceSha256": {
+    "client-latency-expanded-20261101.json": "818d3fad0a7d8c326acbf5fcdefd54a71b225c39e25cbbd59aa678f3c6346538",
+    "production-queue-expanded-20261101.json": "62a7f68e48d236f71acd9a0124677b200a750716246d1baebf24f9e6b6a69341"
+  },
+  "client": {
+    "rest": {
+      "latencyMs": {
+        "n": 20,
+        "median": 913.172771,
+        "mean": 2798.4678271499997,
+        "min": 602.431125,
+        "q25": 759.61421925,
+        "q75": 1104.07603075,
+        "max": 15385.114042
+      },
+      "successes": 20,
+      "totalRecordedTokens": 404
+    },
+    "spring-ai": {
+      "latencyMs": {
+        "n": 20,
+        "median": 719.332771,
+        "mean": 2423.5803895,
+        "min": 544.857584,
+        "q25": 633.10358325,
+        "q75": 1031.0335415,
+        "max": 15154.689959
+      },
+      "successes": 20,
+      "totalRecordedTokens": 404
+    },
+    "pairedSpringMinusRestMs": {
+      "medianPairedDifference": -136.10370850000004,
+      "bootstrapMedianCentral95": [
+        -311.3220215,
+        12.639291999999955
+      ],
+      "seed": 288,
+      "resamples": 5000,
+      "interpretation": "Conditional descriptive paired bootstrap; time correlations/backend variation unmodelled, not causal system effect",
+      "observedDifferences": [
+        -95.79262500000004,
+        -54.515083000000004,
+        -1618.3679589999992,
+        -9146.208417,
+        380.398416,
+        119.214291,
+        -213.24070899999992,
+        3254.559750999999,
+        3224.6297080000004,
+        -1665.5834999999997,
+        -239.988292,
+        -355.353293,
+        -498.3237909999999,
+        -425.50695799999994,
+        66.0514169999999,
+        -267.29075,
+        -40.77283299999999,
+        -176.41479200000003,
+        323.204875,
+        -68.44820900000002
+      ]
+    }
+  },
+  "production": {
+    "async": {
+      "queueWaitMs": {
+        "n": 6,
+        "median": 234.5,
+        "mean": 256.1666666666667,
+        "min": 229,
+        "q25": 231.25,
+        "q75": 240.75,
+        "max": 366
+      },
+      "requestMs": {
+        "n": 6,
+        "median": 388.13599999999997,
+        "mean": 442.65483333333333,
+        "min": 378.616,
+        "q25": 384.65925,
+        "q75": 439.05625,
+        "max": 661.511
+      },
+      "processingSeconds": {
+        "n": 6,
+        "median": 11.688738,
+        "mean": 11.807179333333334,
+        "min": 9.960593,
+        "q25": 10.84208725,
+        "q75": 12.49783175,
+        "max": 14.177607
+      },
+      "createdToAnalysisDoneSeconds": {
+        "n": 6,
+        "median": 11.919238,
+        "mean": 12.063346,
+        "min": 10.202593,
+        "q25": 11.17383725,
+        "q75": 12.72908175,
+        "max": 14.414607
+      },
+      "rssKiBAfterDrafts": {
+        "n": 6,
+        "median": 328072.0,
+        "mean": 321384.6666666667,
+        "min": 269308,
+        "q25": 286419.0,
+        "q75": 349349.0,
+        "max": 373880
+      },
+      "geminiLatencyMsByOperation": {
+        "extract_places.collect": {
+          "n": 6,
+          "median": 2879.5,
+          "mean": 3195.3333333333335,
+          "min": 2343,
+          "q25": 2807.0,
+          "q75": 3072.75,
+          "max": 5150
+        },
+        "extract_places.filter": {
+          "n": 6,
+          "median": 4223.5,
+          "mean": 4361.5,
+          "min": 3883,
+          "q25": 4044.0,
+          "q75": 4716.5,
+          "max": 4974
+        },
+        "select_place_match": {
+          "n": 6,
+          "median": 1033.5,
+          "mean": 1045.5,
+          "min": 1001,
+          "q25": 1017.75,
+          "q75": 1056.0,
+          "max": 1129
+        },
+        "verify_places": {
+          "n": 2,
+          "median": 687.0,
+          "mean": 687,
+          "min": 638,
+          "q25": 662.5,
+          "q75": 711.5,
+          "max": 736
+        }
+      },
+      "perJobGeminiLogLatencySumMs": {
+        "n": 6,
+        "median": 8648.0,
+        "mean": 8831.333333333334,
+        "min": 7405,
+        "q25": 8058.5,
+        "q75": 9307.25,
+        "max": 10898
+      },
+      "jobIds": [
+        113,
+        114,
+        115,
+        116,
+        117,
+        118
+      ],
+      "geminiLogicalLogRows": 20,
+      "knownAttempts": 20,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    "kafka": {
+      "queueWaitMs": {
+        "n": 6,
+        "median": 440.0,
+        "mean": 692.1666666666666,
+        "min": 380,
+        "q25": 395.5,
+        "q75": 839.25,
+        "max": 1540
+      },
+      "requestMs": {
+        "n": 6,
+        "median": 636.4425,
+        "mean": 814.6703333333334,
+        "min": 474.743,
+        "q25": 529.99575,
+        "q75": 950.1795,
+        "max": 1591.122
+      },
+      "processingSeconds": {
+        "n": 6,
+        "median": 12.0598175,
+        "mean": 12.174452333333333,
+        "min": 10.420808,
+        "q25": 11.094212500000001,
+        "q75": 12.8259975,
+        "max": 14.652536000000001
+      },
+      "createdToAnalysisDoneSeconds": {
+        "n": 6,
+        "median": 12.7613175,
+        "mean": 12.866619,
+        "min": 10.800808,
+        "q25": 11.6719625,
+        "q75": 13.2214975,
+        "max": 16.192536
+      },
+      "rssKiBAfterDrafts": {
+        "n": 6,
+        "median": 307808.0,
+        "mean": 316376.6666666667,
+        "min": 261780,
+        "q25": 271364.0,
+        "q75": 356495.0,
+        "max": 388924
+      },
+      "geminiLatencyMsByOperation": {
+        "extract_places.collect": {
+          "n": 6,
+          "median": 3084.5,
+          "mean": 3155.1666666666665,
+          "min": 2269,
+          "q25": 2520.0,
+          "q75": 3641.5,
+          "max": 4334
+        },
+        "extract_places.filter": {
+          "n": 6,
+          "median": 4686.5,
+          "mean": 4607.833333333333,
+          "min": 3909,
+          "q25": 4625.5,
+          "q75": 4716.0,
+          "max": 5034
+        },
+        "select_place_match": {
+          "n": 6,
+          "median": 1051.5,
+          "mean": 1040,
+          "min": 896,
+          "q25": 940.75,
+          "q75": 1098.5,
+          "max": 1223
+        },
+        "verify_places": {
+          "n": 3,
+          "median": 676,
+          "mean": 649.6666666666666,
+          "min": 548,
+          "q25": 612.0,
+          "q75": 700.5,
+          "max": 725
+        }
+      },
+      "perJobGeminiLogLatencySumMs": {
+        "n": 6,
+        "median": 8975.0,
+        "mean": 9127.833333333334,
+        "min": 7878,
+        "q25": 8197.5,
+        "q75": 9544.0,
+        "max": 11267
+      },
+      "jobIds": [
+        109,
+        110,
+        111,
+        120,
+        121,
+        122
+      ],
+      "geminiLogicalLogRows": 21,
+      "knownAttempts": 21,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    }
+  },
+  "productionPaired": {
+    "queueWaitMs": {
+      "medianPairedKafkaMinusAsync": 177.5,
+      "videoClusterResampleMedianCentral95": [
+        128.025,
+        833.7999999999994
+      ],
+      "orderedClusterDraws": 27,
+      "videoClusters": 3,
+      "pairs": 6,
+      "observedPairedDifferences": [
+        {
+          "videoId": "8vmpPuFwQ94",
+          "repetition": 1,
+          "difference": 81
+        },
+        {
+          "videoId": "8vmpPuFwQ94",
+          "repetition": 2,
+          "difference": 138
+        },
+        {
+          "videoId": "H1bCCd1vDCA",
+          "repetition": 1,
+          "difference": 204
+        },
+        {
+          "videoId": "H1bCCd1vDCA",
+          "repetition": 2,
+          "difference": 151
+        },
+        {
+          "videoId": "YS4z0NqKkyw",
+          "repetition": 1,
+          "difference": 1309
+        },
+        {
+          "videoId": "YS4z0NqKkyw",
+          "repetition": 2,
+          "difference": 733
+        }
+      ]
+    },
+    "requestMs": {
+      "medianPairedKafkaMinusAsync": 208.44400000000002,
+      "videoClusterResampleMedianCentral95": [
+        77.81750000000002,
+        747.0163499999994
+      ],
+      "orderedClusterDraws": 27,
+      "videoClusters": 3,
+      "pairs": 6,
+      "observedPairedDifferences": [
+        {
+          "videoId": "8vmpPuFwQ94",
+          "repetition": 1,
+          "difference": -102.79399999999998
+        },
+        {
+          "videoId": "8vmpPuFwQ94",
+          "repetition": 2,
+          "difference": 325.742
+        },
+        {
+          "videoId": "H1bCCd1vDCA",
+          "repetition": 1,
+          "difference": 64.48900000000003
+        },
+        {
+          "videoId": "H1bCCd1vDCA",
+          "repetition": 2,
+          "difference": 91.14600000000002
+        },
+        {
+          "videoId": "YS4z0NqKkyw",
+          "repetition": 1,
+          "difference": 1203.276
+        },
+        {
+          "videoId": "YS4z0NqKkyw",
+          "repetition": 2,
+          "difference": 650.2339999999999
+        }
+      ]
+    },
+    "processingSeconds": {
+      "medianPairedKafkaMinusAsync": 0.6713969999999989,
+      "videoClusterResampleMedianCentral95": [
+        0.1277542000000002,
+        1.0460589999999987
+      ],
+      "orderedClusterDraws": 27,
+      "videoClusters": 3,
+      "pairs": 6,
+      "observedPairedDifferences": [
+        {
+          "videoId": "8vmpPuFwQ94",
+          "repetition": 1,
+          "difference": 0.26137300000000074
+        },
+        {
+          "videoId": "8vmpPuFwQ94",
+          "repetition": 2,
+          "difference": 0.4602149999999998
+        },
+        {
+          "videoId": "H1bCCd1vDCA",
+          "repetition": 1,
+          "difference": 1.2095389999999995
+        },
+        {
+          "videoId": "H1bCCd1vDCA",
+          "repetition": 2,
+          "difference": 0.882578999999998
+        },
+        {
+          "videoId": "YS4z0NqKkyw",
+          "repetition": 1,
+          "difference": 2.000300000000001
+        },
+        {
+          "videoId": "YS4z0NqKkyw",
+          "repetition": 2,
+          "difference": -2.610368000000001
+        }
+      ]
+    },
+    "createdToAnalysisDoneSeconds": {
+      "medianPairedKafkaMinusAsync": 0.8158969999999997,
+      "videoClusterResampleMedianCentral95": [
+        0.470294,
+        1.2235589999999998
+      ],
+      "orderedClusterDraws": 27,
+      "videoClusters": 3,
+      "pairs": 6,
+      "observedPairedDifferences": [
+        {
+          "videoId": "8vmpPuFwQ94",
+          "repetition": 1,
+          "difference": 0.34237300000000026
+        },
+        {
+          "videoId": "8vmpPuFwQ94",
+          "repetition": 2,
+          "difference": 0.5982149999999997
+        },
+        {
+          "videoId": "H1bCCd1vDCA",
+          "repetition": 1,
+          "difference": 1.413539
+        },
+        {
+          "videoId": "H1bCCd1vDCA",
+          "repetition": 2,
+          "difference": 1.0335789999999996
+        },
+        {
+          "videoId": "YS4z0NqKkyw",
+          "repetition": 1,
+          "difference": 3.3093000000000004
+        },
+        {
+          "videoId": "YS4z0NqKkyw",
+          "repetition": 2,
+          "difference": -1.8773680000000006
+        }
+      ]
+    },
+    "rssKiBAfterDrafts": {
+      "medianPairedKafkaMinusAsync": -20264.0,
+      "videoClusterResampleMedianCentral95": [
+        -20264.0,
+        2234.1999999999944
+      ],
+      "orderedClusterDraws": 27,
+      "videoClusters": 3,
+      "pairs": 6,
+      "observedPairedDifferences": [
+        {
+          "videoId": "8vmpPuFwQ94",
+          "repetition": 1,
+          "difference": -106760
+        },
+        {
+          "videoId": "8vmpPuFwQ94",
+          "repetition": 2,
+          "difference": 114572
+        },
+        {
+          "videoId": "H1bCCd1vDCA",
+          "repetition": 1,
+          "difference": -49428
+        },
+        {
+          "videoId": "H1bCCd1vDCA",
+          "repetition": 2,
+          "difference": 8900
+        },
+        {
+          "videoId": "YS4z0NqKkyw",
+          "repetition": 1,
+          "difference": -92844
+        },
+        {
+          "videoId": "YS4z0NqKkyw",
+          "repetition": 2,
+          "difference": 95512
+        }
+      ]
+    }
+  },
+  "productionPerVideo": {
+    "8vmpPuFwQ94": {
+      "async": {
+        "queueWaitMs": {
+          "n": 2,
+          "median": 304.0,
+          "mean": 304,
+          "min": 242,
+          "q25": 273.0,
+          "q75": 335.0,
+          "max": 366
+        },
+        "requestMs": {
+          "n": 2,
+          "median": 524.9685,
+          "mean": 524.9685,
+          "min": 388.426,
+          "q25": 456.69725,
+          "q75": 593.23975,
+          "max": 661.511
+        },
+        "processingSeconds": {
+          "n": 2,
+          "median": 10.317878499999999,
+          "mean": 10.317878499999999,
+          "min": 9.960593,
+          "q25": 10.13923575,
+          "q75": 10.49652125,
+          "max": 10.675164
+        },
+        "createdToAnalysisDoneSeconds": {
+          "n": 2,
+          "median": 10.621878500000001,
+          "mean": 10.621878500000001,
+          "min": 10.202593,
+          "q25": 10.41223575,
+          "q75": 10.83152125,
+          "max": 11.041164
+        },
+        "rssKiBAfterDrafts": {
+          "n": 2,
+          "median": 324116.0,
+          "mean": 324116,
+          "min": 274352,
+          "q25": 299234.0,
+          "q75": 348998.0,
+          "max": 373880
+        }
+      },
+      "kafka": {
+        "queueWaitMs": {
+          "n": 2,
+          "median": 413.5,
+          "mean": 413.5,
+          "min": 380,
+          "q25": 396.75,
+          "q75": 430.25,
+          "max": 447
+        },
+        "requestMs": {
+          "n": 2,
+          "median": 636.4425,
+          "mean": 636.4425,
+          "min": 558.717,
+          "q25": 597.57975,
+          "q75": 675.30525,
+          "max": 714.168
+        },
+        "processingSeconds": {
+          "n": 2,
+          "median": 10.678672500000001,
+          "mean": 10.678672500000001,
+          "min": 10.420808,
+          "q25": 10.54974025,
+          "q75": 10.807604750000001,
+          "max": 10.936537000000001
+        },
+        "createdToAnalysisDoneSeconds": {
+          "n": 2,
+          "median": 11.0921725,
+          "mean": 11.0921725,
+          "min": 10.800808,
+          "q25": 10.94649025,
+          "q75": 11.23785475,
+          "max": 11.383537
+        },
+        "rssKiBAfterDrafts": {
+          "n": 2,
+          "median": 328022.0,
+          "mean": 328022,
+          "min": 267120,
+          "q25": 297571.0,
+          "q75": 358473.0,
+          "max": 388924
+        }
+      }
+    },
+    "H1bCCd1vDCA": {
+      "async": {
+        "queueWaitMs": {
+          "n": 2,
+          "median": 230.5,
+          "mean": 230.5,
+          "min": 229,
+          "q25": 229.75,
+          "q75": 231.25,
+          "max": 232
+        },
+        "requestMs": {
+          "n": 2,
+          "median": 419.765,
+          "mean": 419.765,
+          "min": 383.597,
+          "q25": 401.681,
+          "q75": 437.849,
+          "max": 455.933
+        },
+        "processingSeconds": {
+          "n": 2,
+          "median": 11.688738,
+          "mean": 11.688738,
+          "min": 11.342857,
+          "q25": 11.515797500000001,
+          "q75": 11.8616785,
+          "max": 12.034619000000001
+        },
+        "createdToAnalysisDoneSeconds": {
+          "n": 2,
+          "median": 11.919238,
+          "mean": 11.919238,
+          "min": 11.571857,
+          "q25": 11.7455475,
+          "q75": 12.0929285,
+          "max": 12.266619
+        },
+        "rssKiBAfterDrafts": {
+          "n": 2,
+          "median": 328072.0,
+          "mean": 328072,
+          "min": 322620,
+          "q25": 325346.0,
+          "q75": 330798.0,
+          "max": 333524
+        }
+      },
+      "kafka": {
+        "queueWaitMs": {
+          "n": 2,
+          "median": 408.0,
+          "mean": 408,
+          "min": 383,
+          "q25": 395.5,
+          "q75": 420.5,
+          "max": 433
+        },
+        "requestMs": {
+          "n": 2,
+          "median": 497.5825,
+          "mean": 497.5825,
+          "min": 474.743,
+          "q25": 486.16275,
+          "q75": 509.00225,
+          "max": 520.422
+        },
+        "processingSeconds": {
+          "n": 2,
+          "median": 12.734797,
+          "mean": 12.734797,
+          "min": 12.552396,
+          "q25": 12.6435965,
+          "q75": 12.8259975,
+          "max": 12.917197999999999
+        },
+        "createdToAnalysisDoneSeconds": {
+          "n": 2,
+          "median": 13.142797,
+          "mean": 13.142797,
+          "min": 12.985396,
+          "q25": 13.0640965,
+          "q75": 13.2214975,
+          "max": 13.300198
+        },
+        "rssKiBAfterDrafts": {
+          "n": 2,
+          "median": 307808.0,
+          "mean": 307808,
+          "min": 284096,
+          "q25": 295952.0,
+          "q75": 319664.0,
+          "max": 331520
+        }
+      }
+    },
+    "YS4z0NqKkyw": {
+      "async": {
+        "queueWaitMs": {
+          "n": 2,
+          "median": 234.0,
+          "mean": 234,
+          "min": 231,
+          "q25": 232.5,
+          "q75": 235.5,
+          "max": 237
+        },
+        "requestMs": {
+          "n": 2,
+          "median": 383.231,
+          "mean": 383.231,
+          "min": 378.616,
+          "q25": 380.9235,
+          "q75": 385.5385,
+          "max": 387.846
+        },
+        "processingSeconds": {
+          "n": 2,
+          "median": 13.4149215,
+          "mean": 13.4149215,
+          "min": 12.652236,
+          "q25": 13.03357875,
+          "q75": 13.79626425,
+          "max": 14.177607
+        },
+        "createdToAnalysisDoneSeconds": {
+          "n": 2,
+          "median": 13.6489215,
+          "mean": 13.6489215,
+          "min": 12.883236,
+          "q25": 13.26607875,
+          "q75": 14.03176425,
+          "max": 14.414607
+        },
+        "rssKiBAfterDrafts": {
+          "n": 2,
+          "median": 311966.0,
+          "mean": 311966,
+          "min": 269308,
+          "q25": 290637.0,
+          "q75": 333295.0,
+          "max": 354624
+        }
+      },
+      "kafka": {
+        "queueWaitMs": {
+          "n": 2,
+          "median": 1255.0,
+          "mean": 1255,
+          "min": 970,
+          "q25": 1112.5,
+          "q75": 1397.5,
+          "max": 1540
+        },
+        "requestMs": {
+          "n": 2,
+          "median": 1309.9859999999999,
+          "mean": 1309.9859999999999,
+          "min": 1028.85,
+          "q25": 1169.418,
+          "q75": 1450.554,
+          "max": 1591.122
+        },
+        "processingSeconds": {
+          "n": 2,
+          "median": 13.1098875,
+          "mean": 13.1098875,
+          "min": 11.567238999999999,
+          "q25": 12.33856325,
+          "q75": 13.88121175,
+          "max": 14.652536000000001
+        },
+        "createdToAnalysisDoneSeconds": {
+          "n": 2,
+          "median": 14.3648875,
+          "mean": 14.3648875,
+          "min": 12.537239,
+          "q25": 13.45106325,
+          "q75": 15.27871175,
+          "max": 16.192536
+        },
+        "rssKiBAfterDrafts": {
+          "n": 2,
+          "median": 313300.0,
+          "mean": 313300,
+          "min": 261780,
+          "q25": 287540.0,
+          "q75": 339060.0,
+          "max": 364820
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Client tiny JSON prompt, same identifier not pinned provider backend revision, local Mac only",
+    "Production n=6/mode, 3 videos x 2 repeats, K-A-K blocks not randomized; process restart/cache/time confounding",
+    "Cluster resampling range is descriptive with 3 clusters/27 outcomes; no general population interval or causal significance claim",
+    "Processing seconds derived from DB analysis completion minus logged queue wait; excludes draft completion",
+    "No production p90/failure-rate/throughput/general reliability estimate; original REST server not redeployed",
+    "Retry logs do not expose all wire attempts; missing counts remain unknown; no forced broker outage",
+    "Historical n=4, deployment smoke, and warmups excluded from new summaries"
+  ]
+}

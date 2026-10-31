@@ -19,6 +19,11 @@ import java.util.Map;
 /** 두 클라이언트의 정상 JSON 요청 비교. 서버·DB·대기열은 실행하지 않는다. */
 public class ClientLatencyBench {
     public static void main(String[] args) throws Exception {
+        int samples = args.length > 1 ? Integer.parseInt(args[1]) : 4;
+        int pauseMillis = args.length > 2 ? Integer.parseInt(args[2]) : 6_000;
+        if (samples < 1 || samples > 40 || pauseMillis < 6_000) {
+            throw new IllegalArgumentException("samples must be 1..40; pause must be >= 6000ms");
+        }
         String key = System.getenv("TROVA_BENCH_KEY");
         if (key == null || key.isBlank()) throw new IllegalStateException("TROVA_BENCH_KEY required");
         ObjectMapper mapper = new ObjectMapper();
@@ -35,7 +40,7 @@ public class ClientLatencyBench {
         GoogleGenAiChatOptions options = GoogleGenAiChatOptions.builder().model(SpringAiConfig.MODEL)
                 .temperature(0.1).responseMimeType("application/json").build();
         List<Map<String, Object>> rows = new ArrayList<>();
-        for (int round = 0; round < 5; round++) {
+        for (int round = 0; round <= samples; round++) {
             // 순서 편향을 줄이기 위해 라운드마다 먼저 호출하는 클라이언트를 바꾼다.
             List<String> order = round % 2 == 0 ? List.of("rest", "spring-ai") : List.of("spring-ai", "rest");
             for (String implementation : order) {
@@ -65,6 +70,10 @@ public class ClientLatencyBench {
                     // 예외 메시지 대신 클래스명만 기록해 자격 정보 노출을 피한다.
                     row.put("success", false);
                     row.put("errorType", error.getClass().getSimpleName());
+                    for (Throwable cause = error; cause != null; cause = cause.getCause()) {
+                        if (cause instanceof com.google.genai.errors.ApiException api) row.put("httpStatus", api.code());
+                        if (cause instanceof org.springframework.web.client.HttpStatusCodeException http) row.put("httpStatus", http.getStatusCode().value());
+                    }
                 }
                 row.put("milliseconds", (System.nanoTime() - start) / 1_000_000.0);
                 rows.add(row);
@@ -73,10 +82,15 @@ public class ClientLatencyBench {
                 mapper.writerWithDefaultPrettyPrinter().writeValue(output.toFile(), Map.of(
                         "environment", "local Mac; no server/DB/queue; sequential alternating order",
                         "model", SpringAiConfig.MODEL, "prompt", text,
-                        "scope", "healthy single-attempt client latency; round 0 excluded as warmup; n=4 per client",
+                        "scope", "client invocations; application/library retries disabled; round 0 excluded as warmup",
+                        "samplesPerClient", samples, "pauseMillis", pauseMillis,
+                        "wireAttemptsObserved", false,
                         "results", rows));
                 System.out.println(implementation + " round=" + round + " success=" + row.get("success") + " ms=" + row.get("milliseconds"));
-                Thread.sleep(6_000);
+                if (!Boolean.TRUE.equals(row.get("success"))) {
+                    throw new IllegalStateException("Benchmark stopped after failed request; partial result saved");
+                }
+                Thread.sleep(pauseMillis);
             }
         }
     }

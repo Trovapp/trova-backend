@@ -1,0 +1,35 @@
+{
+  "sourceCommit": "40fe231f146d9b79dcf2b77fb406e6d75452fdf8",
+  "localOS": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+  "capturedAt": "2026-11-01T04:36:56.556234+09:00",
+  "sha256": {
+    "docs/bench/scripts/ClientLatencyBench.java": "2998f45dee75f1564fb780127ac30a97375074fe6b6b7fd28cb26a4f138b5e72",
+    "docs/bench/scripts/client-latency.init.gradle": "8d2b4a637e2ec898c238c2d9813a29c9a2ebbed232348085cedfaff62a719434",
+    "docs/bench/scripts/production_queue_bench.py": "7fd6e3869b0d5dd2b254157ccc9234af230c853ac321af789b2bc2fd2f541acc",
+    "docs/bench/scripts/analyze_expanded_comparison.py": "2ff03b3339daa62d15b3240b9c2f1a0caa9ba39f704b6e1b7a59cd5997d22381",
+    "build/clientLatencyBench/com/trova/backend/bench/ClientLatencyBench.class": "ba138d1542e378f22da5d7f6ef58f116aeb86c49ac2426bbc77139cc04f738a9",
+    "docs/bench/scripts/test_production_queue_bench.py": "52edac5d96c6ebe3ce6b47d771a6ae4381a700cbb2c33e52a3c2e6898ac4c22f"
+  },
+  "measurementOrder": [
+    "local Java client comparison",
+    "offline recovery checks",
+    "production K-A-K queue comparison",
+    "analysis and full build"
+  ],
+  "noRootEnv": true,
+  "offlineRecoveryChecks": {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0
+  },
+  "journalUtcTimestampVerified": true,
+  "productionHarnessReadyAt": "2026-11-01T04:37:35.652396+09:00",
+  "fullBuild": {
+    "tests": 1010,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "finalizedAt": "2026-11-01T04:53:04.574883+09:00",
+  "javaVersion": "openjdk version \"25.0.1\" 2025-10-21 LTS"
+}
