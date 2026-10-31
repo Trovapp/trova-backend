@@ -2080,3 +2080,17 @@
 - 예외 주입 테스트 2개를 추가했고 이전 helper의 negative control에서는 모두 실패했다. 실제 OS 권한을 바꾸거나 종료 거부 프로세스를 만든 것은 아니다.
 - 보존 로그에 stdout/stderr 경로를 추가했다. 상세: docs/reviews/pr-265-review-20261031.md.
 - 리뷰 수정 후 이번 main 기반 브랜치 전체 빌드 937 tests 통과(실패/오류/skip 0), diff 검사 통과. PR #265에 반영하며 자동 머지·배포하지 않는다.
+
+## 2026-10-31 PR #262·#263·#265 조합 검증 (#266)
+
+- main 005ac63 위에 ff095d5·086c4b5·a913296의 변경을 로컬 통합 브랜치에서 합쳤다. 충돌은 experience-notes의 끝에 추가한 기록 두 곳뿐이며 각 PR의 내용을 모두 보존했다. 제품/테스트/평가 파일이 원본 PR 커밋과 일치함을 확인했고 별도 제품 코드 변경은 없었다.
+- 전체 build 951 tests 중 948 통과, 실패·오류 0, opt-in 3 skip. 해당 3개는 순차 명시 실행에서 각각 통과했다. Python 48+3개, Node 회귀 검사, 실제 promptfoo 설정의 오프라인 10건 재생·엄격 재채점 통과. 기존 사례별 점수/통과 여부와 3/10 합격은 유지됐다.
+- 실제 Kafka/별도 JVM/H2/Python 조합에서 강제 종료 후 PROCESSING 재수신·저장 1·offset 1, DONE 중복은 재분석 없이 offset 2, async 선행 중 Kafka 중복은 완료 전 offset 2 유지·완료 후 3 및 파이프라인/저장 각 1회를 확인했다. 작업자 JVM 종료 확인.
+- 벤치마크 고정 출력은 combined-266 접두사로 따로 저장하고 역사적 원본은 복원했다. 새 API 호출·GitHub 머지·운영 배포 없음. 운영 Aiven/Supabase/Gemini 전체 검증·다중 JVM/부분 저장 복구 보장은 아니며 잠자기 복구는 계속 보류한다.
+- 상세와 frozen head/실행 집계: docs/reviews/combined-pr-verification-20261031.md, docs/bench/results/combined-266-verification-20261031.json. 통합 브랜치는 로컬 재현용이며 원본 PR 대신 머지하지 않는다.
+
+
+### #266 사용자 승인 후 실제 머지·main 검증
+- #262 → #263 → #265 squash 머지 완료, 최종 main 4307b79. 후속 PR의 작업 기록 충돌은 기존 기록과 추가 기록을 모두 보존했고 커밋 전 build 통과.
+- main 코드와 로컬 조합 3fa9bbb의 src/pipeline-test/eval 동일 확인. clean build 951 tests 중 948 통과·실패/오류0·opt-in3skip. 실제 Kafka/별도 JVM 재시작 opt-in 1개 다시 통과·skip0. 기존 원본은 유지하고 merged-main-266 접두사로 새 결과 보관.
+- 운영 배포는 실행하지 않았다. 배포 계획 및 나머지 영역 상세 검토는 #267에서 이어간다.
