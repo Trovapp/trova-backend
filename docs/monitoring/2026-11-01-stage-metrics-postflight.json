@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-11-01T23:39:30.123639+09:00",
+  "stageTimerCount": 24,
+  "executionTimerCount": 4,
+  "allNewCountsZero": true,
+  "histogramEnabled": false,
+  "productionTarget": "up",
+  "grafanaPanelCount": 16,
+  "newPanels": [
+    {
+      "title": "⑤ 후보 선택·검증·저장 평균 시간",
+      "seriesCount": 0
+    },
+    {
+      "title": "⑥ 분석 실행 평균 — 대기·일정 생성 제외",
+      "seriesCount": 0
+    },
+    {
+      "title": "실패한 단계의 평균 경과 시간",
+      "seriesCount": 0
+    },
+    {
+      "title": "분석 실행 결과별 증가량",
+      "seriesCount": 4
+    }
+  ],
+  "newAiRequestSubmitted": false,
+  "productionLoadTestExecuted": false
+}
