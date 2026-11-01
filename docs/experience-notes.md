@@ -2213,3 +2213,9 @@
 - 새 completeAnalysis가 외부호출종료후작업행을잠그고PROCESSING/analysis미완료를재확인, 기존미완료부분결과교체·새장소전체·DONE을한트랜잭션으로커밋한다. 중간실패시삭제/첫행/상태모두롤백. 완료/실패재호출보존,완료직전종료시자동초안시작안함. 기존단일JVM/큐/시도정책유지(ADR0029).
 - 전체build1016중1013통과·실패/오류0·기존opt-in3skip, 실제Kafka/별도JVM/H2/Python복구opt-in1개및새통합5개추가통과. 기존복구원본보존·새원본별도보관. SIGKILL을DBcommit중간에주입한것은아니며다중JVM외부exactly-once는보장하지않는다.
 - docs/reviews/analysis-finalization-negative-20261101.json,validation및docs/bench/results/analysis-finalization-recovery-20261101.json. 외부실제API/운영변경없음,머지/배포전.
+
+## 2026-11-01 영업시간 진행 요청 공유 (#132)
+
+- 사용자가 Google 정책 확인 후 권장안인 동시 요청 공유를 선택했다. 90일/사용자간 영구 응답 캐시는 추가하지 않고 동일 name/좌표의 진행 요청만 한JVM에서공유했다(ADR0030). 기존SavedPlace저장정책까지허용됨을주장하지않으며별도정책검토대상이다.
+- owner만외부조회/API로그/호출수1,대기자는0이며각자의매칭/저장은독립적이다. 완료/실패/Error후future제거로후속독립재시도가능,대기인터럽트는플래그보존·owner취소없음. 저장실패를HTTP실패로다시기록하지않도록경계를분리했다.
+- 원래서비스그대로실행한동시성negative6개중5실패,수정후새6+기존5통과. 전체build1016중1013통과·실패/오류0·기존opt-in3skip. 동시동일조회1회/다른좌표병렬/실패공유와독립재시도/인터럽트/개별저장실패/Error해제검증. 실제Google/운영변경없음,순차요청이나다중JVM의중복감소는보장하지않는다.

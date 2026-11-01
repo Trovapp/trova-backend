@@ -1,0 +1,7 @@
+{
+  "scope": "unmodified original service, fake Google and owned Java threads, no real APIs",
+  "tests": 6,
+  "failures": 5,
+  "errors": 0,
+  "skipped": 0
+}
