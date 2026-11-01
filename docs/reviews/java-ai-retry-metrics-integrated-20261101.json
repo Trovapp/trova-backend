@@ -1,0 +1,16 @@
+{
+  "fullBuild": {
+    "tests": 1028,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "initialIntegrationFailure": {
+    "test": "AdminWebExchangeServerTest",
+    "type": "IOException/EOF before HTTP headers",
+    "runtimeCodeChangedToPass": false
+  },
+  "focusedUnchangedRerun": "passed",
+  "fullUnchangedRerun": "passed",
+  "scope": "All merged atomic-finalization and in-flight hours changes included"
+}
