@@ -16,6 +16,9 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 일정 에이전트의 휴무 확인용 영업시간(#106). 영상 장소는 Google 장소와 연결돼 있지 않아서, 이름 + 좌표 근처(300m)로
@@ -32,6 +35,10 @@ public class OpeningHoursService {
     private final GooglePlacesApiClient googlePlacesApiClient;
     private final SavedPlaceRepository savedPlaceRepository;
     private final ApiCallLogService apiCallLogService;
+    private final ConcurrentHashMap<HoursQuery, CompletableFuture<GooglePlacesHoursResponse>> inFlight = new ConcurrentHashMap<>();
+
+    private record HoursQuery(String name, double latitude, double longitude) { }
+
 
     public OpeningHoursService(GooglePlacesApiClient googlePlacesApiClient, SavedPlaceRepository savedPlaceRepository,
                                ApiCallLogService apiCallLogService) {
@@ -47,13 +54,26 @@ public class OpeningHoursService {
             if (place.getHoursCheckedAt() != null || place.getLatitude() == null || place.getLongitude() == null) {
                 continue;
             }
-            calls++;
-            long start = System.currentTimeMillis();
+            HoursQuery query = new HoursQuery(place.getPlaceName(), place.getLatitude(), place.getLongitude());
+            CompletableFuture<GooglePlacesHoursResponse> owned = new CompletableFuture<>();
+            CompletableFuture<GooglePlacesHoursResponse> shared = inFlight.putIfAbsent(query, owned);
+            boolean owner = shared == null;
+            if (owner) calls++;
             try {
-                GooglePlacesHoursResponse response = googlePlacesApiClient.searchTextWithHours(
-                        place.getPlaceName(), place.getLatitude(), place.getLongitude(), MATCH_RADIUS_METERS);
-                apiCallLogService.record("google-places", "text-search-hours", null,
-                        System.currentTimeMillis() - start, true, null, null, null, null);
+                GooglePlacesHoursResponse response;
+                if (owner) {
+                    try {
+                        response = fetch(query);
+                        owned.complete(response);
+                    } catch (RuntimeException | Error error) {
+                        owned.completeExceptionally(error);
+                        throw error;
+                    } finally {
+                        inFlight.remove(query, owned);
+                    }
+                } else {
+                    response = shared.get();
+                }
                 Optional<GooglePlacesHoursResponse.Place> nearest = nearest(place, response);
                 String periods = nearest.map(GooglePlacesHoursResponse.Place::regularOpeningHours)
                         .map(GooglePlacesHoursResponse.OpeningHours::periods)
@@ -62,13 +82,33 @@ public class OpeningHoursService {
                         .orElse(null);
                 place.applyOpeningHours(nearest.map(GooglePlacesHoursResponse.Place::id).orElse(null), periods);
                 savedPlaceRepository.save(place);
-            } catch (Exception e) {
-                apiCallLogService.record("google-places", "text-search-hours", null,
-                        System.currentTimeMillis() - start, false, e.getMessage(), null, null, null);
-                log.warn("영업시간 조회 실패(savedPlaceId={}) — 다음에 다시 시도한다", place.getId(), e);
+            } catch (InterruptedException error) {
+                Thread.currentThread().interrupt();
+                log.warn("영업시간 조회 대기 중단(savedPlaceId={})", place.getId());
+                break;
+            } catch (ExecutionException error) {
+                log.warn("공유 영업시간 조회 실패(savedPlaceId={}) — 다음에 다시 시도한다", place.getId(), error.getCause());
+            } catch (RuntimeException error) {
+                log.warn("영업시간 조회/저장 실패(savedPlaceId={}) — 다음에 다시 시도한다", place.getId(), error);
             }
         }
         return calls;
+    }
+
+    private GooglePlacesHoursResponse fetch(HoursQuery query) {
+        long start = System.currentTimeMillis();
+        GooglePlacesHoursResponse response;
+        try {
+            response = googlePlacesApiClient.searchTextWithHours(
+                    query.name(), query.latitude(), query.longitude(), MATCH_RADIUS_METERS);
+        } catch (RuntimeException error) {
+            apiCallLogService.record("google-places", "text-search-hours", null,
+                    System.currentTimeMillis() - start, false, error.getMessage(), null, null, null);
+            throw error;
+        }
+        apiCallLogService.record("google-places", "text-search-hours", null,
+                System.currentTimeMillis() - start, true, null, null, null, null);
+        return response;
     }
 
     static Optional<GooglePlacesHoursResponse.Place> nearest(SavedPlace place, GooglePlacesHoursResponse response) {
