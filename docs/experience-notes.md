@@ -2214,6 +2214,12 @@
 - 전체build1016중1013통과·실패/오류0·기존opt-in3skip, 실제Kafka/별도JVM/H2/Python복구opt-in1개및새통합5개추가통과. 기존복구원본보존·새원본별도보관. SIGKILL을DBcommit중간에주입한것은아니며다중JVM외부exactly-once는보장하지않는다.
 - docs/reviews/analysis-finalization-negative-20261101.json,validation및docs/bench/results/analysis-finalization-recovery-20261101.json. 외부실제API/운영변경없음,머지/배포전.
 
+## 2026-11-01 영업시간 진행 요청 공유 (#132)
+
+- 사용자가 Google 정책 확인 후 권장안인 동시 요청 공유를 선택했다. 90일/사용자간 영구 응답 캐시는 추가하지 않고 동일 name/좌표의 진행 요청만 한JVM에서공유했다(ADR0030). 기존SavedPlace저장정책까지허용됨을주장하지않으며별도정책검토대상이다.
+- owner만외부조회/API로그/호출수1,대기자는0이며각자의매칭/저장은독립적이다. 완료/실패/Error후future제거로후속독립재시도가능,대기인터럽트는플래그보존·owner취소없음. 저장실패를HTTP실패로다시기록하지않도록경계를분리했다.
+- 원래서비스그대로실행한동시성negative6개중5실패,수정후새6+기존5통과. 전체build1016중1013통과·실패/오류0·기존opt-in3skip. 동시동일조회1회/다른좌표병렬/실패공유와독립재시도/인터럽트/개별저장실패/Error해제검증. 실제Google/운영변경없음,순차요청이나다중JVM의중복감소는보장하지않는다.
+
 ## 2026-11-01 Java AI 시도·대기 계측 (#294)
 
 - 기존ChatModel호출상한3/2·4초대기/4xx비재시도/429·5xx재시도는유지하면서실제호출수와단조시계로잰대기경과시간을ApiCallLog attempts/waited_ms에기록했다. 중단된대기의일부시간도포함하며인터럽트플래그유지.
