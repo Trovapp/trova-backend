@@ -1,0 +1,304 @@
+{
+  "model" : "gemini-3.5-flash-lite",
+  "pauseMillis" : 8000,
+  "samplesPerClient" : 20,
+  "environment" : "local Mac; no server/DB/queue; sequential alternating order",
+  "prompt" : "다음 JSON 객체만 반환하세요: {\"ok\":true}",
+  "scope" : "client invocations; application/library retries disabled; round 0 excluded as warmup",
+  "wireAttemptsObserved" : false,
+  "results" : [ {
+    "client" : "rest",
+    "warmup" : true,
+    "round" : 0,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 2047.27325
+  }, {
+    "client" : "spring-ai",
+    "warmup" : true,
+    "round" : 0,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 1212.296958
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 1,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 544.857584
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 1,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 640.650209
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 2,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 790.961375
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 2,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 736.446292
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 3,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 13766.746083
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 3,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 15385.114042
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 4,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 12677.266875
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 4,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 3531.058458
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 5,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 1051.038791
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 5,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 670.640375
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 6,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 905.150834
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 6,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 1024.365125
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 7,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 616.254583
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 7,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 829.495292
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 8,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 11900.130208
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 8,
+    "tokens" : 24,
+    "success" : true,
+    "milliseconds" : 15154.689959
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 9,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 4241.955041
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 9,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 1017.325333
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 10,
+    "tokens" : 24,
+    "success" : true,
+    "milliseconds" : 2282.665083
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 10,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 617.081583
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 11,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 655.131375
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 11,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 895.119667
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 12,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 1006.451834
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 12,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 651.098541
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 13,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 582.46175
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 13,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 1080.785541
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 14,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 1063.951208
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 14,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 638.44425
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 15,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 695.004792
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 15,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 628.953375
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 16,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 1173.9475
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 16,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 906.65675
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 17,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 880.421875
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 17,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 921.194708
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 18,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 726.4545
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 18,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 550.039708
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 19,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 925.636
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 19,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 602.431125
+  }, {
+    "client" : "rest",
+    "warmup" : false,
+    "round" : 20,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 770.667459
+  }, {
+    "client" : "spring-ai",
+    "warmup" : false,
+    "round" : 20,
+    "tokens" : 20,
+    "success" : true,
+    "milliseconds" : 702.21925
+  } ]
+}

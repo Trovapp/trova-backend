@@ -1,0 +1,2163 @@
+{
+  "startedAt": "2026-11-01T04:37:35.760811+09:00",
+  "sourceCommit": "40fe231f146d9b79dcf2b77fb406e6d75452fdf8",
+  "results": [
+    {
+      "block": "K1",
+      "mode": "kafka",
+      "videoId": "8vmpPuFwQ94",
+      "repetition": 0,
+      "warmup": true,
+      "jobId": 108,
+      "requestMs": 1107.469,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:37:40.429899",
+      "analysisFinishedAt": "2026-11-01 04:37:55.976646",
+      "createdToAnalysisDoneSeconds": 15.546747,
+      "observedPath": "kafka",
+      "queueWaitMs": 806,
+      "rssKiBAfterDrafts": 277072,
+      "pid": 265853,
+      "processingSeconds": 14.740746999999999,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 4509,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5354,
+          "responseTokens": 86
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 5932,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6314,
+          "responseTokens": 759
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 720,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 719,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 722,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 721,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 813,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 722,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1041,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1929,
+          "responseTokens": 95
+        }
+      ]
+    },
+    {
+      "block": "K1",
+      "mode": "kafka",
+      "videoId": "H1bCCd1vDCA",
+      "repetition": 1,
+      "warmup": false,
+      "jobId": 109,
+      "requestMs": 520.422,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:38:09.628323",
+      "analysisFinishedAt": "2026-11-01 04:38:22.613719",
+      "createdToAnalysisDoneSeconds": 12.985396,
+      "observedPath": "kafka",
+      "queueWaitMs": 433,
+      "rssKiBAfterDrafts": 284096,
+      "pid": 265853,
+      "processingSeconds": 12.552396,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 3810,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6180,
+          "responseTokens": 162
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 4614,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 7204,
+          "responseTokens": 1135
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 198,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 201,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 199,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 194,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 194,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 205,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 200,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 205,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 68,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 68,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 65,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1018,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 2198,
+          "responseTokens": 165
+        }
+      ]
+    },
+    {
+      "block": "K1",
+      "mode": "kafka",
+      "videoId": "YS4z0NqKkyw",
+      "repetition": 1,
+      "warmup": false,
+      "jobId": 110,
+      "requestMs": 1591.122,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:38:43.009861",
+      "analysisFinishedAt": "2026-11-01 04:38:59.202397",
+      "createdToAnalysisDoneSeconds": 16.192536,
+      "observedPath": "kafka",
+      "queueWaitMs": 1540,
+      "rssKiBAfterDrafts": 261780,
+      "pid": 265853,
+      "processingSeconds": 14.652536000000001,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 4334,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5171,
+          "responseTokens": 79
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 5034,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6128,
+          "responseTokens": 903
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 231,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 235,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 236,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 234,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 238,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 241,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 249,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 197,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1223,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1402,
+          "responseTokens": 95
+        },
+        {
+          "provider": "gemini",
+          "operation": "verify_places",
+          "success": true,
+          "latencyMs": 676,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 305,
+          "responseTokens": 23
+        }
+      ]
+    },
+    {
+      "block": "K1",
+      "mode": "kafka",
+      "videoId": "8vmpPuFwQ94",
+      "repetition": 1,
+      "warmup": false,
+      "jobId": 111,
+      "requestMs": 558.717,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:39:10.715175",
+      "analysisFinishedAt": "2026-11-01 04:39:22.098712",
+      "createdToAnalysisDoneSeconds": 11.383537,
+      "observedPath": "kafka",
+      "queueWaitMs": 447,
+      "rssKiBAfterDrafts": 267120,
+      "pid": 265853,
+      "processingSeconds": 10.936537000000001,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 2349,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5354,
+          "responseTokens": 86
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 4660,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6314,
+          "responseTokens": 813
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 203,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 198,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 196,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 201,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 197,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 200,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1085,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1929,
+          "responseTokens": 95
+        }
+      ]
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "videoId": "8vmpPuFwQ94",
+      "repetition": 0,
+      "warmup": true,
+      "jobId": 112,
+      "requestMs": 2631.205,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:41:23.807505",
+      "analysisFinishedAt": "2026-11-01 04:41:37.142896",
+      "createdToAnalysisDoneSeconds": 13.335391,
+      "observedPath": "async",
+      "queueWaitMs": 856,
+      "rssKiBAfterDrafts": 371496,
+      "pid": 267286,
+      "processingSeconds": 12.479391,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 3135,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5354,
+          "responseTokens": 86
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 4258,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6314,
+          "responseTokens": 804
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1015,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1015,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1016,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1016,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1014,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1020,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1156,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1929,
+          "responseTokens": 95
+        }
+      ]
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "videoId": "8vmpPuFwQ94",
+      "repetition": 1,
+      "warmup": false,
+      "jobId": 113,
+      "requestMs": 661.511,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:41:51.796245",
+      "analysisFinishedAt": "2026-11-01 04:42:02.837409",
+      "createdToAnalysisDoneSeconds": 11.041164,
+      "observedPath": "async",
+      "queueWaitMs": 366,
+      "rssKiBAfterDrafts": 373880,
+      "pid": 267286,
+      "processingSeconds": 10.675164,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 2828,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5354,
+          "responseTokens": 86
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 4131,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6314,
+          "responseTokens": 804
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 180,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 181,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 285,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 285,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 278,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 280,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1017,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1929,
+          "responseTokens": 95
+        }
+      ]
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "videoId": "YS4z0NqKkyw",
+      "repetition": 1,
+      "warmup": false,
+      "jobId": 114,
+      "requestMs": 387.846,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:42:18.298164",
+      "analysisFinishedAt": "2026-11-01 04:42:31.181400",
+      "createdToAnalysisDoneSeconds": 12.883236,
+      "observedPath": "async",
+      "queueWaitMs": 231,
+      "rssKiBAfterDrafts": 354624,
+      "pid": 267286,
+      "processingSeconds": 12.652236,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 2800,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5171,
+          "responseTokens": 79
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 4974,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6128,
+          "responseTokens": 865
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 202,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 298,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 197,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 306,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 387,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 387,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 391,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 185,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1001,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1402,
+          "responseTokens": 95
+        },
+        {
+          "provider": "gemini",
+          "operation": "verify_places",
+          "success": true,
+          "latencyMs": 638,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 305,
+          "responseTokens": 23
+        }
+      ]
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "videoId": "H1bCCd1vDCA",
+      "repetition": 1,
+      "warmup": false,
+      "jobId": 115,
+      "requestMs": 455.933,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:42:46.865249",
+      "analysisFinishedAt": "2026-11-01 04:42:58.437106",
+      "createdToAnalysisDoneSeconds": 11.571857,
+      "observedPath": "async",
+      "queueWaitMs": 229,
+      "rssKiBAfterDrafts": 333524,
+      "pid": 267286,
+      "processingSeconds": 11.342857,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 2931,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6180,
+          "responseTokens": 162
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 4316,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 7204,
+          "responseTokens": 1127
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 214,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 213,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 306,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 306,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 313,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 312,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 311,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 306,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 104,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 100,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 101,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1059,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 2198,
+          "responseTokens": 165
+        }
+      ]
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "videoId": "H1bCCd1vDCA",
+      "repetition": 2,
+      "warmup": false,
+      "jobId": 116,
+      "requestMs": 383.597,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:43:13.713059",
+      "analysisFinishedAt": "2026-11-01 04:43:25.979678",
+      "createdToAnalysisDoneSeconds": 12.266619,
+      "observedPath": "async",
+      "queueWaitMs": 232,
+      "rssKiBAfterDrafts": 322620,
+      "pid": 267286,
+      "processingSeconds": 12.034619000000001,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 3120,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6180,
+          "responseTokens": 143
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 4850,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 7189,
+          "responseTokens": 1173
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 365,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 368,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 380,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 365,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 368,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 450,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 460,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 458,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 66,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 63,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 67,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1020,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 2198,
+          "responseTokens": 165
+        }
+      ]
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "videoId": "YS4z0NqKkyw",
+      "repetition": 2,
+      "warmup": false,
+      "jobId": 117,
+      "requestMs": 378.616,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:43:40.499980",
+      "analysisFinishedAt": "2026-11-01 04:43:54.914587",
+      "createdToAnalysisDoneSeconds": 14.414607,
+      "observedPath": "async",
+      "queueWaitMs": 237,
+      "rssKiBAfterDrafts": 269308,
+      "pid": 267286,
+      "processingSeconds": 14.177607,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 5150,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5171,
+          "responseTokens": 79
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 3883,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6128,
+          "responseTokens": 803
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 384,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 384,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 383,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 384,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 397,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 406,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 474,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 65,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1129,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1402,
+          "responseTokens": 95
+        },
+        {
+          "provider": "gemini",
+          "operation": "verify_places",
+          "success": true,
+          "latencyMs": 736,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 305,
+          "responseTokens": 23
+        }
+      ]
+    },
+    {
+      "block": "A",
+      "mode": "async",
+      "videoId": "8vmpPuFwQ94",
+      "repetition": 2,
+      "warmup": false,
+      "jobId": 118,
+      "requestMs": 388.426,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:44:08.510312",
+      "analysisFinishedAt": "2026-11-01 04:44:18.712905",
+      "createdToAnalysisDoneSeconds": 10.202593,
+      "observedPath": "async",
+      "queueWaitMs": 242,
+      "rssKiBAfterDrafts": 274352,
+      "pid": 267286,
+      "processingSeconds": 9.960593,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 2343,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5354,
+          "responseTokens": 86
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 4015,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6314,
+          "responseTokens": 799
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 255,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 249,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 342,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 355,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 354,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 452,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1047,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1929,
+          "responseTokens": 95
+        }
+      ]
+    },
+    {
+      "block": "K2",
+      "mode": "kafka",
+      "videoId": "8vmpPuFwQ94",
+      "repetition": 0,
+      "warmup": true,
+      "jobId": 119,
+      "requestMs": 5162.832,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:46:25.062397",
+      "analysisFinishedAt": "2026-11-01 04:46:38.706036",
+      "createdToAnalysisDoneSeconds": 13.643639,
+      "observedPath": "kafka",
+      "queueWaitMs": 2347,
+      "rssKiBAfterDrafts": 394540,
+      "pid": 268047,
+      "processingSeconds": 11.296639,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 2535,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5354,
+          "responseTokens": 86
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 3887,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6314,
+          "responseTokens": 829
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1074,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1076,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1071,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1063,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1066,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1184,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1017,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1929,
+          "responseTokens": 95
+        }
+      ]
+    },
+    {
+      "block": "K2",
+      "mode": "kafka",
+      "videoId": "8vmpPuFwQ94",
+      "repetition": 2,
+      "warmup": false,
+      "jobId": 120,
+      "requestMs": 714.168,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:46:53.860622",
+      "analysisFinishedAt": "2026-11-01 04:47:04.661430",
+      "createdToAnalysisDoneSeconds": 10.800808,
+      "observedPath": "kafka",
+      "queueWaitMs": 380,
+      "rssKiBAfterDrafts": 388924,
+      "pid": 268047,
+      "processingSeconds": 10.420808,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 2269,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5354,
+          "responseTokens": 86
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 4713,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6314,
+          "responseTokens": 806
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 205,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 203,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 205,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 205,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 201,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 302,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 896,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1929,
+          "responseTokens": 95
+        }
+      ]
+    },
+    {
+      "block": "K2",
+      "mode": "kafka",
+      "videoId": "YS4z0NqKkyw",
+      "repetition": 2,
+      "warmup": false,
+      "jobId": 121,
+      "requestMs": 1028.85,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:47:26.972251",
+      "analysisFinishedAt": "2026-11-01 04:47:39.509490",
+      "createdToAnalysisDoneSeconds": 12.537239,
+      "observedPath": "kafka",
+      "queueWaitMs": 970,
+      "rssKiBAfterDrafts": 364820,
+      "pid": 268047,
+      "processingSeconds": 11.567238999999999,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 3136,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5171,
+          "responseTokens": 79
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 3909,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6128,
+          "responseTokens": 856
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 171,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 161,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 177,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 255,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 252,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 257,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 354,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 80,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 915,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1402,
+          "responseTokens": 95
+        },
+        {
+          "provider": "gemini",
+          "operation": "verify_places",
+          "success": true,
+          "latencyMs": 548,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 304,
+          "responseTokens": 23
+        }
+      ]
+    },
+    {
+      "block": "K2",
+      "mode": "kafka",
+      "videoId": "H1bCCd1vDCA",
+      "repetition": 2,
+      "warmup": false,
+      "jobId": 122,
+      "requestMs": 474.743,
+      "status": "DONE",
+      "createdAt": "2026-11-01 04:47:55.710425",
+      "analysisFinishedAt": "2026-11-01 04:48:09.010623",
+      "createdToAnalysisDoneSeconds": 13.300198,
+      "observedPath": "kafka",
+      "queueWaitMs": 383,
+      "rssKiBAfterDrafts": 331520,
+      "pid": 268047,
+      "processingSeconds": 12.917197999999999,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 3033,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6180,
+          "responseTokens": 151
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 4717,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 7195,
+          "responseTokens": 1156
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 210,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 213,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 216,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 219,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 314,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 315,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 303,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 309,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 101,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 65,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 72,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 84,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1103,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1987,
+          "responseTokens": 141
+        },
+        {
+          "provider": "gemini",
+          "operation": "verify_places",
+          "success": true,
+          "latencyMs": 725,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 309,
+          "responseTokens": 24
+        }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "to": "async",
+      "healthSeconds": 82.395
+    },
+    {
+      "to": "kafka-original",
+      "removedOwnedFiles": true,
+      "healthSeconds": 86.059
+    }
+  ],
+  "cleanup": {
+    "jobIds": [
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122
+    ],
+    "draftsDeleted": 1,
+    "placesDeleted": 114,
+    "residualDrafts": 0,
+    "residualPlaces": 0,
+    "privateBackup": "/Users/gimtaehyeong/.config/devflow/trova/trova-bench-288-5ab7211ca687-outputs.json",
+    "jobAndApiLogsKept": true
+  },
+  "restored": true,
+  "errors": [],
+  "localClientInvocations": 42,
+  "scope": "production same JAR/Python, serial K-A-K, 3 videos, n=6 per mode; 3 warmups",
+  "temporaryDropIn": "/run/systemd/system/trova-backend.service.d/90-trova-bench-288-5ab7211ca687.conf",
+  "before": {
+    "service": "active",
+    "queueType": "kafka",
+    "autoDraftEnabled": "true",
+    "quotaSharesPerDay": 20,
+    "dropInPaths": "",
+    "jarSha256": "f820ab28d6ba3e66fa7b8b2abbf9fb26f3a899d4409eb4390911383b5ed0e910",
+    "pythonHashes": {
+      "extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+      "run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+      "generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+      "verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+      "select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+      "tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+      "summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+    },
+    "rssKiB": 269856,
+    "pid": 265853,
+    "diagnosticFlags": {
+      "PIPELINE_TRACE": "",
+      "PIPELINE_FILTER_AUDIT": "",
+      "PIPELINE_FILTER_TEXT_ONLY": ""
+    }
+  },
+  "sharesBefore": 2,
+  "harnessSha256": "7fd6e3869b0d5dd2b254157ccc9234af230c853ac321af789b2bc2fd2f541acc",
+  "preflightInFlight": [
+    0,
+    0,
+    0
+  ],
+  "lastBudgetCheck": {
+    "knownAttempts": 46,
+    "unknownAttemptRows": 1,
+    "guardEstimateIncludingLocal": 91
+  },
+  "unconfirmedSubmissionPossible": false,
+  "after": {
+    "service": "active",
+    "queueType": "kafka",
+    "autoDraftEnabled": "true",
+    "quotaSharesPerDay": 20,
+    "dropInPaths": "",
+    "jarSha256": "f820ab28d6ba3e66fa7b8b2abbf9fb26f3a899d4409eb4390911383b5ed0e910",
+    "pythonHashes": {
+      "extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+      "run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+      "generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+      "verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+      "select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+      "tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+      "summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+    },
+    "rssKiB": 279288,
+    "pid": 268047,
+    "diagnosticFlags": {
+      "PIPELINE_TRACE": "",
+      "PIPELINE_FILTER_AUDIT": "",
+      "PIPELINE_FILTER_TEXT_ONLY": ""
+    }
+  },
+  "finalJournalWarnErrorLevelEntries": {},
+  "apiWindowRows": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "rows": 15,
+      "failedRows": 0,
+      "knownAttempts": 15,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": "0"
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "rows": 15,
+      "failedRows": 0,
+      "knownAttempts": 15,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": "0"
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "rows": 15,
+      "failedRows": 0,
+      "knownAttempts": 15,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": "0"
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "rows": 1,
+      "failedRows": 0,
+      "knownAttempts": null,
+      "unknownAttemptRows": 1,
+      "knownWaitedMs": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "verify_places",
+      "rows": 5,
+      "failedRows": 0,
+      "knownAttempts": 5,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": "0"
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "rows": 119,
+      "failedRows": 0,
+      "knownAttempts": null,
+      "unknownAttemptRows": 119,
+      "knownWaitedMs": null
+    }
+  ],
+  "sharesAfter": 17,
+  "complete": true,
+  "finalInFlight": [
+    0,
+    0,
+    0
+  ],
+  "finishedAt": "2026-11-01T04:48:33.033477+09:00"
+}

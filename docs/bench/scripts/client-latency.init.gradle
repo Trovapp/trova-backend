@@ -12,7 +12,9 @@ allprojects {
             dependsOn tasks.named('compileClientLatencyBench')
             classpath = files(layout.buildDirectory.dir('clientLatencyBench')) + sourceSets.main.runtimeClasspath
             mainClass = 'com.trova.backend.bench.ClientLatencyBench'
-            args project.findProperty('benchOutput') ?: 'docs/bench/results/client-latency-20261031.json'
+            args(project.findProperty('benchOutput') ?: 'docs/bench/results/client-latency-20261031.json',
+                    project.findProperty('benchSamples') ?: '4',
+                    project.findProperty('benchPauseMillis') ?: '6000')
         }
     }
 }

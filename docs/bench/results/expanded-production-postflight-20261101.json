@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-11-01T04:49:49.880909+09:00",
+  "server": {
+    "service": "active",
+    "queueType": "kafka",
+    "dropInPaths": "",
+    "jarUnchanged": true,
+    "pythonUnchanged": true,
+    "ownedWorkDirsRemaining": 0,
+    "temporaryBenchFilesRemaining": 0
+  },
+  "backupMode": "0o600",
+  "health": {
+    "groups": [
+      "liveness",
+      "readiness"
+    ],
+    "status": "UP"
+  },
+  "unauthenticatedPlacesStatus": 401,
+  "noSessionCookie": true
+}
