@@ -20,7 +20,7 @@ class RepeatBench(Bench):
         for field in ['temporaryDropIn','transitions','restored']:
             self.result.pop(field,None)
         self.result.update(scope='One public video; current Kafka+Spring AI runtime; one preparation plus six measured repetitions; no historic pooling or adoption-effect claim',
-                           runtimeConfigurationChanged=False, cleanups=[], phase='preflight',
+                           runtimeConfigurationChanged=False, providerRemainingQuotaKnown=False, cleanups=[], phase='preflight',
                            harnessSha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
 
     def share_count(self):
@@ -35,6 +35,8 @@ class RepeatBench(Bench):
         state=self.state()
         assert state['service']=='active' and state['queueType']=='kafka' and not state['dropInPaths'],'runtime_configuration_changed'
         assert state['jarSha256']==self.args.expected_jar_sha256,'jar_changed'
+        assert state['pid']==self.result['before']['pid'],'server_restarted'
+        assert state['quotaSharesPerDay']==20,'quota_policy_changed'
         assert state['pythonHashes']==self.result['before']['pythonHashes'],'python_changed'
         assert state['diagnosticFlags']==self.result['before']['diagnosticFlags'],'diagnostics_changed'
         assert state['autoDraftEnabled']==self.result['before']['autoDraftEnabled'],'auto_draft_changed'

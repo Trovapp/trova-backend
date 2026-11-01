@@ -7,7 +7,7 @@
     "skipped": 3
   },
   "offlineOperatorTests": {
-    "tests": 25,
+    "tests": 26,
     "failures": 0,
     "errors": 0
   },
@@ -25,5 +25,6 @@
     "serverRestarts": 0,
     "runtimeConfigChanges": 0
   },
-  "registration": "separate private manifest/launchd registration receipt; this file does not assert registration succeeded"
+  "registration": "separate private manifest/launchd registration receipt; this file does not assert registration succeeded",
+  "sameRuntimePidGuard": "A restart with the same artifact also stops new submissions"
 }

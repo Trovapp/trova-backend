@@ -19,7 +19,7 @@ class RepeatControlTest(unittest.TestCase):
         b=RepeatBench.__new__(RepeatBench)
         b.args=SimpleNamespace(expected_jar_sha256='jar',submission_deadline='2100-01-01T00:00:00+09:00')
         root=Path(__file__).resolve().parents[3]
-        state={'service':'active','queueType':'kafka','dropInPaths':'','jarSha256':'jar','autoDraftEnabled':'true','quotaSharesPerDay':20,
+        state={'pid':1,'service':'active','queueType':'kafka','dropInPaths':'','jarSha256':'jar','autoDraftEnabled':'true','quotaSharesPerDay':20,
                'diagnosticFlags':{},'pythonHashes':{n:hashlib.sha256((root/'pipeline-test'/n).read_bytes()).hexdigest() for n in SCRIPT_NAMES}}
         b.result={'results':[],'errors':[],'phase':'preflight','cleanups':[]}
         b.state=Mock(return_value=state);b.share_count=Mock(return_value=0);b.active_counts=Mock(return_value=[0,0,0])
@@ -75,6 +75,11 @@ class RepeatControlTest(unittest.TestCase):
         with patch.object(Bench,'measure') as measure:
             with self.assertRaisesRegex(AssertionError,'unexpected_jar'):b.run()
         measure.assert_not_called()
+
+    def test_같은버전이라도_서버가_재시작됐으면_멈춘다(self):
+        b=self.fixture();before=dict(b.state.return_value);b.result['before']=before
+        b.state.return_value=dict(before,pid=2)
+        with self.assertRaisesRegex(AssertionError,'server_restarted'):RepeatBench.verify_runtime(b)
 
 
 class CleanupTest(unittest.TestCase):
