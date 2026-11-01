@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-11-01T11:57:58.351135+09:00",
+  "sourceMainCommit": "0c811cd7593d99937d0ae5c619939d95970f6d57",
+  "sourcePr289Merged": true,
+  "pdf": "trova-performance-comparison-20261101.pdf",
+  "sha256": "bd68d9df34e729e48a4cd3c9cbcffca86a31693dd0ccc878ff25ec5de75e0387",
+  "bytes": 271330,
+  "pages": 6,
+  "koreanExtraction": true,
+  "signedValuesVerified": true,
+  "primaryNumbersVerified": true,
+  "textWithinPageMargins": true,
+  "sourceLinks": 8,
+  "allPagesVisuallyReviewed": true,
+  "fullBuild": {
+    "tests": 1010,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "exportTools": {
+    "reportlab": "5.1.0",
+    "matplotlib": "3.11.2",
+    "pymupdf": "2.0"
+  },
+  "newExternalApiCalls": 0,
+  "productionChanges": false
+}

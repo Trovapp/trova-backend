@@ -1,5 +1,7 @@
 # REST·Spring AI 2 및 운영 async·Kafka 확대 비교 (#288)
 
+> 공유용 문서: [기존 방식·Spring AI 2·Kafka 비교 PDF (6쪽)](reports/trova-performance-comparison-20261101.pdf). [생성·검수 안내](reports/README.md).
+
 표본을 늘린 이번 실험에서도 전체 서비스의 속도 개선을 입증하지는 못했다. Java의 짧은 JSON 요청은 Spring AI 2 중앙값이 작았지만 짝지은 재표집 범위에 0이 포함됐다. 운영에서는 Kafka 전달 지연이 추가됐으며, 전체 분석 시간에는 LLM 응답과 검증 분기 차이가 섞였다.
 
 과거 표본은 합치지 않았다. Java는 각 20회, 운영은 영상 3종을 경로별 2회씩 측정했다. Java 클라이언트와 Python 영상 추출은 별도이며, 최초 REST 서버·Spring AI 서버·Kafka 서버 세 빌드를 같은 조건으로 비교한 실험은 아니다.
