@@ -75,7 +75,7 @@ public class ApiCallLogService {
         record(provider, operation, jobId, latencyMs, success, errorMessage, promptTokens, responseTokens, totalTokens, null, null);
     }
 
-    /** attempts·waitedMs: 파이프라인 Gemini 호출의 시도 횟수와 재시도 대기 합(#257). 모르면 null. */
+    /** attempts·waitedMs: 파이프라인/Java Gemini 호출의 시도 횟수와 재시도 대기 합(#257). 모르면 null. */
     public void record(
             String provider, String operation, Long jobId, long latencyMs, boolean success,
             String errorMessage, Integer promptTokens, Integer responseTokens, Integer totalTokens,
