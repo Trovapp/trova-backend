@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-11-01T14:31:51.018383+09:00",
+  "providerQuotaRemainingKnown": false,
+  "additionalAttemptBudget": 60,
+  "plannedLocalRequests": 60,
+  "plannedProductionJobsIncludingWarmup": 0,
+  "sources": {
+    "development": {
+      "rows": 0,
+      "attemptsKnownRows": 0,
+      "knownAttemptSum": 0,
+      "failedRows": 0
+    },
+    "production": {
+      "rows": 63,
+      "attemptsKnownRows": 59,
+      "knownAttemptSum": 59,
+      "failedRows": 0
+    }
+  },
+  "testUserSharesToday": 17,
+  "differentConnectionTargets": true,
+  "sameGeminiKey": true
+}

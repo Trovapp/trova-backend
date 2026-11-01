@@ -27,6 +27,7 @@ def main():
     assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()==args.source_commit
     assert not subprocess.check_output(['git','status','--porcelain','--','src','pipeline-test','build.gradle'],cwd=root,text=True).strip()
     baseline=json.loads(Path(args.baseline).read_text())['before']
+    assert baseline['jarSha256']==args.expected_jar_sha256,'Expected baseline JAR mismatch'
     old={'app.jar':baseline['jarSha256'],'pipeline-test/extract_places.py':baseline['pythonHashes']['extract_places.py']}
     unchanged={'pipeline-test/'+name:sha for name,sha in baseline['pythonHashes'].items() if name!='extract_places.py'}
     contents={'app.jar':(root/'build/libs/trova-backend-0.0.1-SNAPSHOT.jar').read_bytes(),

@@ -78,6 +78,29 @@ public class ProcessingJobLifecycleService {
     @Transactional
     public void savePlace(Long jobId, ExtractedPlace extracted, GeocodingResult geocoded) {
         ProcessingJob job = getJob(jobId);
+        savedPlaceRepository.save(createPlace(job, extracted, geocoded));
+    }
+
+    /** 외부 호출이 모두 끝난 뒤, 미완료 부분 결과 교체와 완료 상태를 함께 커밋한다. */
+    @Transactional
+    public boolean completeAnalysis(Long jobId, List<ExtractedPlace> extracted, List<GeocodingResult> geocoded) {
+        if (extracted.isEmpty() || extracted.size() != geocoded.size()) {
+            throw new IllegalArgumentException("분석 결과와 지오코딩 결과의 크기가 일치해야 합니다");
+        }
+        ProcessingJob job = processingJobRepository.findForAnalysisCompletion(jobId)
+                .orElseThrow(() -> new IllegalStateException("ProcessingJob을 찾을 수 없습니다: " + jobId));
+        if (job.getStatus() != JobStatus.PROCESSING || job.getAnalysisStatus() != null) {
+            return false;
+        }
+        savedPlaceRepository.deleteAll(savedPlaceRepository.findByProcessingJob(job));
+        for (int i = 0; i < extracted.size(); i++) {
+            savedPlaceRepository.save(createPlace(job, extracted.get(i), geocoded.get(i)));
+        }
+        job.markAnalysisDone();
+        return true;
+    }
+
+    private SavedPlace createPlace(ProcessingJob job, ExtractedPlace extracted, GeocodingResult geocoded) {
         // 카카오 검색으로 실제 존재가 확인된 이름(matchedName)이 있으면 그걸 우선한다 —
         // Gemini가 읽어낸 이름이 오탈자였어도 카카오 DB의 정확한 상호명으로 보정된다.
         String placeName = geocoded.matchedName() != null ? geocoded.matchedName() : extracted.name();
@@ -98,7 +121,7 @@ public class ProcessingJobLifecycleService {
                 geocoded.kakaoPlaceUrl()
         );
         place.applyVideoNotes(extracted.videoNotes());
-        savedPlaceRepository.save(place);
+        return place;
     }
 
     @Transactional

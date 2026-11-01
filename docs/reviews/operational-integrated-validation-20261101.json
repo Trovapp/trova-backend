@@ -1,0 +1,26 @@
+{
+  "fullBuild": {
+    "tests": 1028,
+    "passed": 1025,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "actualKafkaProcessRecovery": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "pythonRules": {
+    "tests": 54,
+    "passed": 54
+  },
+  "operatorChecks": {
+    "tests": 11,
+    "passed": 11,
+    "environment": "existing psycopg operator venv"
+  },
+  "initialOperatorInvocation": "System Python had no psycopg; rerun with documented operator venv, no dependency or source changes",
+  "scope": "All approved fixes and duplicate-read removal integrated; production after measurement pending"
+}

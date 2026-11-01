@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.LongSupplier;
 
 /**
  * 요청·응답 형식과 읽기 제한(20초)은 SpringAiConfig의 ChatModel이 맡고(#243), 여기는 재시도·호출 기록만 한다.
@@ -36,6 +38,7 @@ public class GeminiJsonClientImpl implements GeminiJsonClient {
     private final ChatModel chatModel;
     private final ApiCallLogService apiCallLogService;
     private final Sleeper sleeper;
+    private final LongSupplier nanoTime;
 
     interface Sleeper {
         void sleep(long millis) throws InterruptedException;
@@ -47,36 +50,52 @@ public class GeminiJsonClientImpl implements GeminiJsonClient {
     }
 
     GeminiJsonClientImpl(ChatModel chatModel, ApiCallLogService apiCallLogService, Sleeper sleeper) {
+        this(chatModel, apiCallLogService, sleeper, System::nanoTime);
+    }
+
+    GeminiJsonClientImpl(ChatModel chatModel, ApiCallLogService apiCallLogService, Sleeper sleeper, LongSupplier nanoTime) {
         this.chatModel = chatModel;
         this.apiCallLogService = apiCallLogService;
         this.sleeper = sleeper;
+        this.nanoTime = nanoTime;
     }
 
     @Override
     public Optional<String> generateJson(String prompt, String operation) {
         long start = System.currentTimeMillis();
         String lastError = null;
+        int attempts = 0;
+        long waitedNanos = 0;
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            ChatResponse response;
+            attempts++;
             try {
-                ChatResponse response = chatModel.call(new Prompt(prompt, JSON_OPTIONS));
-                Usage usage = response == null ? null : response.getMetadata().getUsage();
-                apiCallLogService.record("gemini", operation, null, System.currentTimeMillis() - start, true, null,
-                        usage == null ? null : usage.getPromptTokens(),
-                        usage == null ? null : usage.getCompletionTokens(),
-                        usage == null ? null : usage.getTotalTokens());
-                return text(response);
-            } catch (Exception e) {
-                Integer status = statusCode(e);
-                lastError = status != null ? "Gemini " + status : e.getClass().getSimpleName() + ": " + e.getMessage();
-                // 상태 코드가 없는 오류(시간 초과·연결 끊김)는 예전처럼 다시 시도하고, 4xx는 다시 보내도 같아서 멈춘다(429만 예외).
+                response = chatModel.call(new Prompt(prompt, JSON_OPTIONS));
+            } catch (Exception error) {
+                Integer status = statusCode(error);
+                lastError = status != null ? "Gemini " + status : error.getClass().getSimpleName() + ": " + error.getMessage();
                 boolean retryable = status == null || status == 429 || status >= 500;
-                if (!retryable || attempt == MAX_ATTEMPTS - 1 || !pause(attempt)) {
-                    break;
+                if (!retryable || attempt == MAX_ATTEMPTS - 1) break;
+                boolean resumed;
+                long waitStart = nanoTime.getAsLong();
+                try {
+                    resumed = pause(attempt);
+                } finally {
+                    waitedNanos += Math.max(0, nanoTime.getAsLong() - waitStart);
                 }
+                if (!resumed) break;
+                continue;
             }
+            Usage usage = response == null ? null : response.getMetadata().getUsage();
+            // 기록 저장 실패는 모델 호출 오류가 아니므로 이미 성공한 외부 호출을 다시 보내지 않는다.
+            apiCallLogService.record("gemini", operation, null, System.currentTimeMillis() - start, true, null,
+                    usage == null ? null : usage.getPromptTokens(),
+                    usage == null ? null : usage.getCompletionTokens(),
+                    usage == null ? null : usage.getTotalTokens(), attempts, TimeUnit.NANOSECONDS.toMillis(waitedNanos));
+            return text(response);
         }
         apiCallLogService.record("gemini", operation, null, System.currentTimeMillis() - start, false, lastError,
-                null, null, null);
+                null, null, null, attempts, TimeUnit.NANOSECONDS.toMillis(waitedNanos));
         log.warn("Gemini JSON 생성 실패(operation={}): {}", operation, lastError);
         return Optional.empty();
     }

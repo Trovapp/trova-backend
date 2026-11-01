@@ -1,0 +1,36 @@
+{
+  "scope": "Pre-geocoding names; conditional 10-case experiment, no historical pooling",
+  "scores": {
+    "before": {
+      "cases": 10,
+      "strictRecall": 0.7495454545454545,
+      "strictPrecision": 0.7395238095238095,
+      "legacyRecall": 0.7885606060606061,
+      "legacyPrecision": 0.7817857142857143,
+      "emptyGoldFalsePositives": 0
+    },
+    "after": {
+      "cases": 10,
+      "strictRecall": 0.6437121212121212,
+      "strictPrecision": 0.6491666666666667,
+      "legacyRecall": 0.7827272727272727,
+      "legacyPrecision": 0.8033333333333333,
+      "emptyGoldFalsePositives": 1
+    }
+  },
+  "candidateAdopted": false,
+  "reason": [
+    "strictRecall decreased",
+    "strictPrecision decreased",
+    "legacyRecall decreased",
+    "empty-gold false positives increased",
+    "no strict metric improvement"
+  ],
+  "attemptsStarted": {
+    "before": 22,
+    "after": 20
+  },
+  "transportErrorsRetained": 1,
+  "newDeterministicGuard": "limited exact broad-region/interior labels, business/address context preserved; separate production component replay and unit checks, no full-population accuracy claim",
+  "rawSha256": "d3bba0d0dfc9f920a0615a81dd007c8c6a66cabf96ff4cd5bad6c2f25726dc5d"
+}

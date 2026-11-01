@@ -1,0 +1,19 @@
+{
+  "recordedAt" : "2026-11-01T05:29:41.697735Z",
+  "environment" : "local embedded Kafka; separate worker JVMs; real Spring/JPA/file H2/Python boundary; no HTTP server or Supabase; external API fixture",
+  "killedWhileProcessingAndUncommitted" : true,
+  "persistedProcessingJobLoaded" : true,
+  "restart" : {
+    "savedPlaces" : 1,
+    "pipelineAttemptsIncludingKilled" : 2,
+    "offsetAfterDoneDuplicate" : 2,
+    "offsetAfterCompletion" : 1
+  },
+  "concurrent" : {
+    "savedPlaces" : 1,
+    "pipelineAttempts" : 1,
+    "offsetAfterCompletion" : 3,
+    "heldOffsetBeforeCompletion" : 2
+  },
+  "workerJvmsExited" : true
+}

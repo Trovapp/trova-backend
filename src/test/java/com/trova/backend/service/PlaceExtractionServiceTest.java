@@ -71,6 +71,7 @@ class PlaceExtractionServiceTest {
     void setUp() {
         // 기본은 호출한 스레드에서 바로 실행 — 동시 실행 자체를 보는 테스트만 실제 스레드 풀로 따로 만든다.
         placeExtractionService = serviceWith(Runnable::run);
+        org.mockito.Mockito.lenient().when(lifecycleService.completeAnalysis(any(), any(), any())).thenReturn(true);
     }
 
     private PlaceExtractionService serviceWith(Executor geocodingTaskExecutor) {
@@ -101,8 +102,7 @@ class PlaceExtractionServiceTest {
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.SELECTING);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.VERIFYING);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.SAVING);
-        order.verify(lifecycleService).savePlace(any(), any(), any());
-        order.verify(lifecycleService).markAnalysisDone(jobId);
+        order.verify(lifecycleService).completeAnalysis(eq(jobId), any(), any());
         verify(autoDraftService).startFor(jobId);
     }
 
@@ -154,8 +154,7 @@ class PlaceExtractionServiceTest {
 
         verify(lifecycleService).setTitle(jobId, "그냥 일상 브이로그");
         verify(lifecycleService).markAnalysisFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
-        verify(lifecycleService, never()).markAnalysisDone(any());
-        verify(lifecycleService, never()).savePlace(any(), any(), any());
+        verify(lifecycleService, never()).completeAnalysis(any(), any(), any());
         verify(kakaoGeocodingService, never()).searchCandidates(any(), any(), any(), anyLong());
     }
 
@@ -291,7 +290,22 @@ class PlaceExtractionServiceTest {
 
         placeExtractionService.process(jobId);
 
-        verify(lifecycleService).markAnalysisDone(jobId);
+        verify(lifecycleService).completeAnalysis(eq(jobId), any(), any());
+        verify(lifecycleService, never()).markAnalysisFailed(any(), any());
+    }
+
+    @Test
+    void 완료_직전_작업이_종료됐으면_자동_초안을_시작하지_않는다() {
+        Long jobId = 999L;
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://youtu.be/stopped"));
+        ExtractedPlace place = new ExtractedPlace("해운대", "부산", "attraction", 0.9, null, null, List.of("해운대"));
+        when(pipelineRunner.run(eq("https://youtu.be/stopped"), eq(jobId), any()))
+                .thenReturn(new PipelineOutput("부산", List.of(place)));
+        when(kakaoGeocodingService.searchCandidates(any(), any(), any(), eq(jobId)))
+                .thenReturn(GeocodingResult.coordinatesOnly(35.1, 129.1));
+        when(lifecycleService.completeAnalysis(eq(jobId), any(), any())).thenReturn(false);
+        placeExtractionService.process(jobId);
+        verify(autoDraftService, never()).startFor(jobId);
         verify(lifecycleService, never()).markAnalysisFailed(any(), any());
     }
 }
