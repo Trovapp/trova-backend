@@ -1,0 +1,10 @@
+{
+  "fullBuild": {
+    "tests": 1028,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "runtimeSource": "fff19cd",
+  "reportOnlyChanges": true
+}

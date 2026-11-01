@@ -1,0 +1,105 @@
+{
+  "startedAt": "2026-11-01T16:59:40.333867+09:00",
+  "sourceCommit": "92c94c9939711e574474693de605bf0ba22d50ef",
+  "results": [],
+  "transitions": [],
+  "cleanup": {},
+  "restored": false,
+  "errors": [],
+  "localClientInvocations": 0,
+  "scope": "Paired JAR/extract_places.py deployment, no queue/env/schema changes",
+  "temporaryDropIn": "/run/systemd/system/trova-backend.service.d/90-trova-bench-288-edc1aae116bb.conf",
+  "release": "operational-296-92c94c9939-20261101-165940",
+  "beforeHashes": {
+    "app.jar": "f820ab28d6ba3e66fa7b8b2abbf9fb26f3a899d4409eb4390911383b5ed0e910",
+    "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77"
+  },
+  "expectedHashes": {
+    "app.jar": "394ba70011cb7f5a1612c5f293aeb63890352babbe3f88c1ebce9fd9b760f88a",
+    "pipeline-test/extract_places.py": "12fd5d7e3b0013e72df87cf3ceb11009b5a487d939d74d3cb0297972778dae9f"
+  },
+  "unchangedHashes": {
+    "pipeline-test/run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+    "pipeline-test/generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+    "pipeline-test/verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+    "pipeline-test/select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+    "pipeline-test/tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+    "pipeline-test/summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+  },
+  "backupDirectory": "/opt/trova-backend/releases/operational-296-92c94c9939-20261101-165940/previous",
+  "rollback": false,
+  "deployed": true,
+  "before": {
+    "service": "active",
+    "queueType": "kafka",
+    "autoDraftEnabled": "true",
+    "quotaSharesPerDay": 20,
+    "dropInPaths": "",
+    "jarSha256": "f820ab28d6ba3e66fa7b8b2abbf9fb26f3a899d4409eb4390911383b5ed0e910",
+    "pythonHashes": {
+      "extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+      "run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+      "generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+      "verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+      "select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+      "tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+      "summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+    },
+    "rssKiB": 269708,
+    "pid": 268047,
+    "diagnosticFlags": {
+      "PIPELINE_TRACE": "",
+      "PIPELINE_FILTER_AUDIT": "",
+      "PIPELINE_FILTER_TEXT_ONLY": ""
+    }
+  },
+  "preflightInFlight": [
+    0,
+    0,
+    0
+  ],
+  "inFlightBeforeSwap": [
+    0,
+    0,
+    0
+  ],
+  "swap": {
+    "swapped": true,
+    "hashes": {
+      "app.jar": "394ba70011cb7f5a1612c5f293aeb63890352babbe3f88c1ebce9fd9b760f88a",
+      "pipeline-test/extract_places.py": "12fd5d7e3b0013e72df87cf3ceb11009b5a487d939d74d3cb0297972778dae9f"
+    }
+  },
+  "healthSeconds": 102.697,
+  "after": {
+    "service": "active",
+    "queueType": "kafka",
+    "autoDraftEnabled": "true",
+    "quotaSharesPerDay": 20,
+    "dropInPaths": "",
+    "jarSha256": "394ba70011cb7f5a1612c5f293aeb63890352babbe3f88c1ebce9fd9b760f88a",
+    "pythonHashes": {
+      "extract_places.py": "12fd5d7e3b0013e72df87cf3ceb11009b5a487d939d74d3cb0297972778dae9f",
+      "run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+      "generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+      "verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+      "select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+      "tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+      "summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+    },
+    "rssKiB": 409188,
+    "pid": 272291,
+    "diagnosticFlags": {
+      "PIPELINE_TRACE": "",
+      "PIPELINE_FILTER_AUDIT": "",
+      "PIPELINE_FILTER_TEXT_ONLY": ""
+    }
+  },
+  "unauthenticated401NoCookie": true,
+  "finalInFlight": [
+    0,
+    0,
+    0
+  ],
+  "finishedAt": "2026-11-01T17:02:16.528499+09:00"
+}

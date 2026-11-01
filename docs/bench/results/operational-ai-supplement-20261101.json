@@ -1,0 +1,51 @@
+{
+  "scope": "Owned backup draft metadata and window-only Java AI logs; no job attribution for null-job logs; no new external calls",
+  "phases": {
+    "before": {
+      "sourceSha256": "11277b853fc42bd269fea6ebd5d30d3d49b52b3de1b99a81d0a5c8b1d1b0cb65",
+      "jobId": 123,
+      "ownedDrafts": [
+        {
+          "id": 26,
+          "status": "READY",
+          "createdAt": "2026-11-01T16:46:02.675372",
+          "updatedAt": "2026-11-01T16:46:09.202215",
+          "createdToLastUpdateSeconds": 6.526843,
+          "timingLimit": "Last update is not an explicit generation-finished timestamp"
+        }
+      ],
+      "javaAiWindowLogs": [
+        {
+          "operation": "trip-plan.draft",
+          "success": true,
+          "latencyMs": 4021,
+          "attempts": null,
+          "waitedMs": null
+        }
+      ]
+    },
+    "after": {
+      "sourceSha256": "9de0b386d7cd01f7d645c88bfc9915d3761a48145aae8238d227a0c57dc0795d",
+      "jobId": 124,
+      "ownedDrafts": [
+        {
+          "id": 27,
+          "status": "READY",
+          "createdAt": "2026-11-01T17:02:58.366690",
+          "updatedAt": "2026-11-01T17:03:05.488434",
+          "createdToLastUpdateSeconds": 7.121744,
+          "timingLimit": "Last update is not an explicit generation-finished timestamp"
+        }
+      ],
+      "javaAiWindowLogs": [
+        {
+          "operation": "trip-plan.draft",
+          "success": true,
+          "latencyMs": 5406,
+          "attempts": 1,
+          "waitedMs": 0
+        }
+      ]
+    }
+  }
+}

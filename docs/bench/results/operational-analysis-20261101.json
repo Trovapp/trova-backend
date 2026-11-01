@@ -1,0 +1,16 @@
+{
+  "scope": "One same-video production pair; post-restart after sample; no speed proof",
+  "beforeJob": 123,
+  "afterJob": 124,
+  "beforeSeconds": 11.88373,
+  "afterSeconds": 16.745467,
+  "differenceSeconds": 4.8617370000000015,
+  "queueDifferenceMs": 1743,
+  "geminiLoggedLatencySumBeforeMs": 7904,
+  "geminiLoggedLatencySumAfterMs": 10460,
+  "geminiLogicalRowsEach": 3,
+  "savedPlaceNamesEqual": true,
+  "speedImprovementProven": false,
+  "newRegressionProven": false,
+  "reason": "n=1, server restart and AI response variation, several fixes bundled; no isolated SQL-stage timing or first-warm request control"
+}
