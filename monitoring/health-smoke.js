@@ -1,9 +1,13 @@
-// 연결/기본 응답 관찰 전용. 영상 분석·DB 업무 API의 처리량을 측정하지 않는다.
+// 제한된 GET 관찰: 기본 health, MODE=places는 테스트 계정의 장소 목록.
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import exec from 'k6/execution';
 
 const requests = Number(__ENV.REQUESTS || 30);
+const mode = __ENV.MODE || 'health';
+if (!['health', 'places'].includes(mode)) throw new Error('Unsupported read-only mode');
+if (mode === 'places' && !__ENV.READ_TOKEN) throw new Error('READ_TOKEN required for places');
+const path = mode === 'health' ? '/actuator/health' : '/api/places';
 if (!Number.isInteger(requests) || requests < 1 || requests > 30) {
     throw new Error('REQUESTS must be an integer from 1 to 30');
 }
@@ -39,7 +43,7 @@ export const options = {
         iterations: [`count==${requests}`],
     },
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(90)', 'p(95)'],
-    tags: { experiment: 'trova-health-smoke', target: __ENV.TARGET },
+    tags: { experiment: 'trova-read-smoke', target: __ENV.TARGET, mode },
 };
 
 export function setup() {
@@ -59,20 +63,25 @@ export default function () {
             || exec.instance.currentTestRunDuration >= 60000) {
         exec.test.abort('Workload cap reached');
     }
-    const response = http.get(`${origin}/actuator/health`, {
+    const headers = { 'User-Agent': 'trova-monitoring-read-smoke/1' };
+    if (mode === 'places') headers.Authorization = `Bearer ${__ENV.READ_TOKEN}`;
+    const response = http.get(`${origin}${path}`, {
         timeout: '3s',
         redirects: 0,
-        headers: { 'User-Agent': 'trova-monitoring-health-smoke/1' },
-        tags: { name: 'GET /actuator/health' },
+        headers,
+        tags: { name: `GET ${path}` },
     });
     let up = false;
     try {
-        up = response.status === 200 && response.json('status') === 'UP';
+        const body = response.json();
+        up = response.status === 200 && (mode === 'health' ? body.status === 'UP'
+            : Array.isArray(body) && body.every(place => typeof place.id === 'number'
+                && typeof place.placeName === 'string'));
     } catch (_) {
         // HTML, malformed JSON, and empty bodies are unhealthy for this experiment.
     }
-    check(response, { 'health is HTTP 200 and UP': () => up });
-    if (!up) exec.test.abort('Health failed; no retry and no further requests');
+    check(response, { 'HTTP 200 and expected response shape': () => up });
+    if (!up) exec.test.abort('Read check failed; no retry and no further requests');
     if (response.timings.duration >= 2000) exec.test.abort('Single response reached 2 seconds');
     sleep(1);
 }

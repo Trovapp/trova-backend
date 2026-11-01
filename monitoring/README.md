@@ -106,11 +106,12 @@ docker run --rm --entrypoint /bin/promtool -v "$PWD/monitoring:/work:ro" -w /wor
 
 ### 준비된 헬스체크 스크립트
 
-`health-smoke.js`는 운영 주소를 고정한 GET `/actuator/health` 전용이다. 인증 토큰을 사용하지 않으며
-영상 분석이나 저장 API를 호출하지 않는다. 기본 동시 1명/최대 30건/60초, 요청 사이 1초 대기,
+`health-smoke.js`는 운영 주소를 고정한 읽기 관찰 스크립트다. 기본 GET `/actuator/health`는 인증 없이,
+`MODE=places`는 단기 테스트 토큰으로 GET `/api/places`만 호출한다. 영상 분석이나 저장 API는 호출하지 않는다.
+기본 동시 1명/최대 30건/60초, 요청 사이 1초 대기,
 요청 타임아웃 3초다. 외부 API 무료 한도를 소비하는 실험이 아니다.
 
-- 200 + JSON `status=UP`이 아니면 즉시 중단. 리다이렉트·재시도 없음.
+- health는 200 + JSON `status=UP`, places는 200 + 장소 목록 형태가 아니면 즉시 중단. 리다이렉트·재시도 없음.
 - 단일 응답 2초 이상이면 중단, p95 1초 이상은 10초 이후 threshold 평가에서 중단.
 - 설정된 전체 반복을 끝내지 못하면 실패로 기록한다. 중단 결과를 정상 완료로 표현하지 않는다.
 - CLI로 동시성/반복 수를 덮어쓰면 시작 전에 거부한다. 요청 수는 1~30만 허용한다.
@@ -118,7 +119,7 @@ docker run --rm --entrypoint /bin/promtool -v "$PWD/monitoring:/work:ro" -w /wor
 - 수치는 실측 SLO가 아닌 초기 중단 기준이다. 이 테스트로 최대 처리량을 주장하지 않는다.
 
 아래는 **향후 운영 실행용**이다. 실행 직전에 서버/수집 상태, 진행 작업, 다른 측정 여부를 확인한다.
-현재 작업에서는 아래 명령을 실행하지 않았다.
+2026-11-02에는 자원 감시 실행기를 통해 실행했고 결과는 아래 기록에 남겼다.
 
 ```bash
 # 결과 파일은 매 실행마다 새 경로로 지정한다. 실행 전/후 시각도 기록한다.
@@ -135,6 +136,26 @@ python3 -m unittest discover -s monitoring -p 'test_health_smoke.py' -v
 실제 k6로 성공 시 요청 상한, 500/200 DOWN/잘못된 JSON/302에서 한 번 후 중단,
 느린 응답 중단, 잘못된 대상·상한 초과·CLI 부하 덮어쓰기 시 네트워크 요청 0건을 확인한다.
 단일 영상 관찰과 이 스크립트 실행은 시간을 분리해 지표가 섞이지 않게 한다.
+
+### 자원 감시를 포함한 실행과 실제 결과
+
+2026-11-02 관찰에서 스왑 읽기 한 페이지만 늘어도 중단하던 초기 기준은 무부하 상태에도 반응했다.
+이후 실행에는 여유 메모리 100MiB 미만, 새 swap-out, swap-in 속도 1MiB/s 이상,
+memory PSI some avg10 1% 이상을 임시 중단 기준으로 사용한다. HTTP 제한은 그대로다.
+이는 서비스 SLO나 입증된 안전 용량이 아니다. 운영 수집이나 SSH 관찰이 실패해도 중단한다.
+
+```bash
+python3 monitoring/run_observed_smoke.py --run-production --mode health \
+  --host ubuntu@서버주소 --ssh-key 비밀키경로 --output /tmp/새실행명
+# places 모드에는 --token-file 비공개단기테스트토큰파일 이 추가로 필요하다.
+```
+
+출력 디렉터리가 이미 있으면 덮어쓰지 않는다. 토큰 발급/계정 선택은 실행기가 하지 않는다.
+원시 k6 로그에 토큰이나 응답 본문을 추가하지 않는다. 실험 후 임시 토큰 파일을 정리한다.
+
+[실제 결과·그래프 해석](../docs/monitoring/2026-11-02-read-smoke.md): health 30건 완료,
+places 18건에서 자원 기준으로 중단. 특정 앱 코드 병목은 미확정이며 성능 개선률을 주장하지 않는다.
+[실험용 Grafana](http://localhost:3300/d/trova-read-smoke)는 기존 대시보드가 제외하던 health 요청도 표시한다.
 
 
 ### Java 단계별 계측 (ADR 0033)

@@ -1,0 +1,199 @@
+{
+  "uid": "trova-read-smoke",
+  "title": "Trova 저부하 테스트",
+  "tags": [
+    "trova",
+    "learning"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "description": "헬스체크와 장소 목록의 반복 조회를 관찰합니다. 기존 API 대시보드는 actuator를 제외하므로 헬스체크 요청을 여기서 별도로 표시합니다.",
+  "panels": [
+    {
+      "id": 1,
+      "title": "대상별 요청/초",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "description": "1분 이동 구간으로 계산합니다. 30초 실험보다 창이 길어 시작/종료가 완만하게 보입니다. 헬스체크에는 운영 상태 확인 요청도 섞일 수 있습니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job,uri) (rate(http_server_requests_seconds_count{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"}[1m])) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{uri}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "대상별 서버 평균 응답 시간",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "description": "서버 측 평균. Mac의 k6 측정은 네트워크/프록시 구간도 포함하며 별도 결과 파일에서 봅니다. p95가 아닙니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job,uri) (rate(http_server_requests_seconds_sum{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"}[1m])) / (sum by(job,uri) (rate(http_server_requests_seconds_count{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"}[1m])) > 0) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{uri}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Java CPU 사용률",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "description": "15초 수집 표본. 짧은 CPU 피크를 놓칠 수 있습니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "process_cpu_usage{job=\"trova-prod\"} and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "Java"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "JVM 힙 사용량",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "description": "Java 객체 메모리이며 서버 전체 여유 메모리와 다릅니다. 감소는 GC와 양립하지만 이 그래프만으로 GC 원인을 확정하지 않습니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job) (jvm_memory_used_bytes{job=\"trova-prod\",area=\"heap\"}) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "heap"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "DB 활성 연결",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "description": "순간 활성 연결 수. 짧은 쿼리는 15초 사이에 끝날 수 있습니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "hikaricp_connections_active{job=\"trova-prod\"} and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{pool}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "DB 연결 대기",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "description": "연결을 기다리는 스레드 수. 0은 관측 표본에서 대기를 못 봤다는 뜻입니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "hikaricp_connections_pending{job=\"trova-prod\"} and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{pool}}"
+        }
+      ]
+    }
+  ]
+}

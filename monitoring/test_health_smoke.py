@@ -36,7 +36,8 @@ class HealthSmokeTest(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         env = {k: v for k, v in os.environ.items() if not k.startswith('K6_')}
-        env.update(TARGET='local', FIXTURE_PORT=str(server.server_port), REQUESTS='3')
+        env.update(TARGET='local', FIXTURE_PORT=str(server.server_port), REQUESTS='3', MODE='health')
+        env.pop('READ_TOKEN', None)
         env.pop('RUN_PRODUCTION', None)
         env.update(overrides or {})
         try:
@@ -77,6 +78,24 @@ class HealthSmokeTest(unittest.TestCase):
 
     def test_missing_target_rejected(self):
         result, paths = self.run_case(overrides={'TARGET': ''})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(paths, [])
+
+    def test_places_uses_only_read_endpoint(self):
+        result, paths = self.run_case(body=b'[{"id":1,"placeName":"fixture"}]',
+                                      overrides={'MODE': 'places', 'READ_TOKEN': 'fixture-token'})
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(paths, ['/api/places'] * 3)
+        self.assertNotIn('fixture-token', result.stdout + result.stderr)
+
+    def test_places_rejects_unexpected_body(self):
+        result, paths = self.run_case(body=b'{"status":"UP"}',
+                                      overrides={'MODE': 'places', 'READ_TOKEN': 'fixture-token'})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(paths, ['/api/places'])
+
+    def test_places_without_token_makes_no_request(self):
+        result, paths = self.run_case(overrides={'MODE': 'places'})
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(paths, [])
 
