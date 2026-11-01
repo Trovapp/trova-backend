@@ -1,0 +1,31 @@
+{
+  "scope": "Preparation only; real repeated production shares not yet executed",
+  "fullBuild": {
+    "tests": 1028,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "offlineOperatorTests": {
+    "tests": 28,
+    "failures": 0,
+    "errors": 0
+  },
+  "initialFixtureIssue": "Two cleanup test fixtures used Mock instead of MagicMock for context managers; corrected before passing run",
+  "actualProductionCallsToday": {
+    "newShareSubmissions": 0,
+    "newAiCalls": 0,
+    "readOnlyPreflight": true
+  },
+  "productionShareQuotaUsed": 19,
+  "repeatPlanned": {
+    "preparation": 1,
+    "measured": 6,
+    "queueMode": "kafka",
+    "serverRestarts": 0,
+    "runtimeConfigChanges": 0
+  },
+  "registration": "separate private manifest/launchd registration receipt; this file does not assert registration succeeded",
+  "sameRuntimePidGuard": "A restart with the same artifact also stops new submissions",
+  "cleanupGuards": "Detected approved drafts or test places already linked into trips are preserved, not deleted"
+}
