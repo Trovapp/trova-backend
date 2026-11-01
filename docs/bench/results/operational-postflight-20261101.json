@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-11-01T17:05:17.811421+09:00",
+  "scope": "Read-only after deployment and owned output cleanup",
+  "runtime": {
+    "service": "active",
+    "queueType": "kafka",
+    "autoDraftEnabled": "true",
+    "quotaSharesPerDay": 20,
+    "dropInPaths": "",
+    "jarSha256": "394ba70011cb7f5a1612c5f293aeb63890352babbe3f88c1ebce9fd9b760f88a",
+    "pythonHashes": {
+      "extract_places.py": "12fd5d7e3b0013e72df87cf3ceb11009b5a487d939d74d3cb0297972778dae9f",
+      "run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+      "generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+      "verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+      "select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+      "tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+      "summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+    },
+    "rssKiB": 344196,
+    "pid": 272291,
+    "diagnosticFlags": {
+      "PIPELINE_TRACE": "",
+      "PIPELINE_FILTER_AUDIT": "",
+      "PIPELINE_FILTER_TEXT_ONLY": ""
+    },
+    "observedPath": "kafka",
+    "queueWaitMs": 2637,
+    "warnErrorLevelEntries": {}
+  },
+  "inFlight": [
+    0,
+    0,
+    0
+  ],
+  "testUserSharesToday": 19,
+  "jobs": [
+    {
+      "id": 123,
+      "status": "DONE",
+      "analysisStatus": "DONE"
+    },
+    {
+      "id": 124,
+      "status": "DONE",
+      "analysisStatus": "DONE"
+    }
+  ],
+  "health": {
+    "groups": [
+      "liveness",
+      "readiness"
+    ],
+    "status": "UP"
+  }
+}

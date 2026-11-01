@@ -1,0 +1,13 @@
+{
+  "scope": "Saved production evidence, no new requests",
+  "sources": {
+    "operational-before-20261101.json": "11277b853fc42bd269fea6ebd5d30d3d49b52b3de1b99a81d0a5c8b1d1b0cb65",
+    "operational-after-20261101.json": "9de0b386d7cd01f7d645c88bfc9915d3761a48145aae8238d227a0c57dc0795d",
+    "production-queue-expanded-20261101.json": "62a7f68e48d236f71acd9a0124677b200a750716246d1baebf24f9e6b6a69341",
+    "client-latency-expanded-20261101.json": "818d3fad0a7d8c326acbf5fcdefd54a71b225c39e25cbbd59aa678f3c6346538",
+    "operational-ai-supplement-20261101.json": "fb8a4f98526889034ecb163a96246659fa172ec9956cb209a015580aad87869b"
+  },
+  "pdfSha256": "2c250d8e4964c1e059ca90f3f365aaf0b6262f7c2e6aec6a2ae7098278babcc0",
+  "observedDifferenceSeconds": 4.8617370000000015,
+  "speedImprovementProven": false
+}

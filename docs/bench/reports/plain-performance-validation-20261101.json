@@ -1,0 +1,12 @@
+{
+  "pages": 3,
+  "sha256": "2c250d8e4964c1e059ca90f3f365aaf0b6262f7c2e6aec6a2ae7098278babcc0",
+  "bytes": 117183,
+  "koreanTextAndRequiredNumbers": "passed",
+  "textBounds": "passed",
+  "visualReview": "3 pages rendered; final operating Java numbers and table reviewed",
+  "oldDetailedPdfPreserved": true,
+  "downloadCopyMatches": true,
+  "downloadPath": "/Users/gimtaehyeong/Downloads/Trova_쉬운성능설명_운영전후_2026-11-01.pdf",
+  "newApiCallsForPdf": 0
+}
