@@ -1,0 +1,18 @@
+{
+  "fullBuild": {
+    "tests": 1016,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "newTests": 6,
+  "externalApiCalls": 0,
+  "cases": [
+    "first success",
+    "third success",
+    "exhausted retries",
+    "measured vs requested wait",
+    "partial interrupted wait",
+    "logging failure does not call model again"
+  ]
+}

@@ -15,13 +15,17 @@ import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,7 +54,7 @@ class GeminiJsonClientImplTest {
 
         assertThat(client.generateJson("p", "trip-plan.test")).contains("{\"days\": 2}");
         assertThat(sleeps).containsExactly(2_000L);
-        verify(logs).record(eq("gemini"), eq("trip-plan.test"), isNull(), anyLong(), eq(true), isNull(), eq(120), eq(8), eq(128));
+        verify(logs).record(eq("gemini"), eq("trip-plan.test"), isNull(), anyLong(), eq(true), isNull(), eq(120), eq(8), eq(128), eq(2), anyLong());
         ArgumentCaptor<Prompt> prompt = ArgumentCaptor.forClass(Prompt.class);
         verify(chatModel, times(2)).call(prompt.capture());
         GoogleGenAiChatOptions options = (GoogleGenAiChatOptions) prompt.getValue().getOptions();
@@ -69,7 +73,7 @@ class GeminiJsonClientImplTest {
         assertThat(client.generateJson("p", "trip-plan.test")).isEmpty();
         assertThat(sleeps).isEmpty();
         verify(chatModel, times(1)).call(any(Prompt.class));
-        verify(logs).record(eq("gemini"), eq("trip-plan.test"), isNull(), anyLong(), eq(false), eq("Gemini 400"), isNull(), isNull(), isNull());
+        verify(logs).record(eq("gemini"), eq("trip-plan.test"), isNull(), anyLong(), eq(false), eq("Gemini 400"), isNull(), isNull(), isNull(), eq(1), eq(0L));
     }
 
     @Test
@@ -88,5 +92,80 @@ class GeminiJsonClientImplTest {
     void 대기_시간은_30초를_넘지_않는다() {
         // 상한 확인: 2초 × 2^n 이 30초를 넘는 회차에서도 30초
         assertThat(Math.min(GeminiJsonClientImpl.MAX_DELAY_MS, GeminiJsonClientImpl.BASE_DELAY_MS * (1L << 5))).isEqualTo(30_000L);
+    }
+
+    @Test
+    void 첫_성공은_시도1회와_대기0으로_기록한다() {
+        ChatModel model = mock(ChatModel.class);
+        ApiCallLogService logs = mock(ApiCallLogService.class);
+        when(model.call(any(Prompt.class))).thenReturn(ok("{}"));
+        GeminiJsonClientImpl client = new GeminiJsonClientImpl(model, logs, millis -> { throw new AssertionError("no wait"); }, () -> 0);
+        assertThat(client.generateJson("p", "test")).contains("{}");
+        verify(logs).record(eq("gemini"), eq("test"), isNull(), anyLong(), eq(true), isNull(), eq(120), eq(8), eq(128), eq(1), eq(0L));
+    }
+
+    @Test
+    void 세번째_성공은_실제_시도수와_누적_대기를_함께_기록한다() {
+        ChatModel model = mock(ChatModel.class);
+        ApiCallLogService logs = mock(ApiCallLogService.class);
+        when(model.call(any(Prompt.class))).thenThrow(gemini(503)).thenThrow(gemini(429)).thenReturn(ok("{}"));
+        AtomicLong clock = new AtomicLong();
+        GeminiJsonClientImpl client = new GeminiJsonClientImpl(model, logs,
+                millis -> clock.addAndGet(TimeUnit.MILLISECONDS.toNanos(millis)), clock::get);
+        assertThat(client.generateJson("p", "test")).contains("{}");
+        verify(model,times(3)).call(any(Prompt.class));
+        verify(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(true),isNull(),eq(120),eq(8),eq(128),eq(3),eq(6000L));
+    }
+
+    @Test
+    void 최종_실패도_실제_시도수와_대기를_기록한다() {
+        ChatModel model=mock(ChatModel.class);
+        ApiCallLogService logs=mock(ApiCallLogService.class);
+        when(model.call(any(Prompt.class))).thenThrow(gemini(503));
+        AtomicLong clock=new AtomicLong();
+        GeminiJsonClientImpl client=new GeminiJsonClientImpl(model,logs,
+                millis->clock.addAndGet(TimeUnit.MILLISECONDS.toNanos(millis)),clock::get);
+        assertThat(client.generateJson("p","test")).isEmpty();
+        verify(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(false),eq("Gemini 503"),isNull(),isNull(),isNull(),eq(3),eq(6000L));
+    }
+
+    @Test
+    void 요청한_대기가_아니라_실제로_지난_시간을_기록한다() {
+        ChatModel model=mock(ChatModel.class);
+        ApiCallLogService logs=mock(ApiCallLogService.class);
+        when(model.call(any(Prompt.class))).thenThrow(gemini(429)).thenReturn(ok("{}"));
+        AtomicLong clock=new AtomicLong();
+        GeminiJsonClientImpl client=new GeminiJsonClientImpl(model,logs,
+                millis->clock.addAndGet(TimeUnit.MILLISECONDS.toNanos(1250)),clock::get);
+        client.generateJson("p","test");
+        verify(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(true),isNull(),eq(120),eq(8),eq(128),eq(2),eq(1250L));
+    }
+
+    @Test
+    void 대기_인터럽트는_일부_대기시간을_기록하고_다시_호출하지_않는다() {
+        ChatModel model=mock(ChatModel.class);
+        ApiCallLogService logs=mock(ApiCallLogService.class);
+        when(model.call(any(Prompt.class))).thenThrow(gemini(429));
+        AtomicLong clock=new AtomicLong();
+        GeminiJsonClientImpl client=new GeminiJsonClientImpl(model,logs,millis->{
+            clock.addAndGet(TimeUnit.MILLISECONDS.toNanos(750));throw new InterruptedException("fixture");
+        },clock::get);
+        try {
+            assertThat(client.generateJson("p","test")).isEmpty();
+            assertThat(Thread.currentThread().isInterrupted()).isTrue();
+            verify(model,times(1)).call(any(Prompt.class));
+            verify(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(false),eq("Gemini 429"),isNull(),isNull(),isNull(),eq(1),eq(750L));
+        } finally { Thread.interrupted(); }
+    }
+
+    @Test
+    void 성공_후_기록저장이_실패해도_모델을_다시_호출하지_않는다() {
+        ChatModel model=mock(ChatModel.class);
+        ApiCallLogService logs=mock(ApiCallLogService.class);
+        when(model.call(any(Prompt.class))).thenReturn(ok("{}"));
+        doThrow(new IllegalStateException("log fixture")).when(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(true),isNull(),eq(120),eq(8),eq(128),eq(1),eq(0L));
+        GeminiJsonClientImpl client=new GeminiJsonClientImpl(model,logs,millis->{throw new AssertionError("no retry");},()->0);
+        assertThatThrownBy(()->client.generateJson("p","test")).isInstanceOf(IllegalStateException.class).hasMessage("log fixture");
+        verify(model,times(1)).call(any(Prompt.class));
     }
 }
