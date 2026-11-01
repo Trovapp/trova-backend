@@ -135,7 +135,7 @@ class KafkaShareJobQueueTest {
         com.trova.backend.repository.ProcessingJobRepository repository = mock(com.trova.backend.repository.ProcessingJobRepository.class);
         when(repository.findById(42L)).thenReturn(java.util.Optional.of(job));
         // async가 진행 중인 동안 도착한 브로커 메시지를 리스너에 전달한다.
-        new ShareJobListener(repository, extraction).onMessage("42");
+        new ShareJobListener(extraction).onMessage("42");
         verify(extraction).processNow(42L, QueuePath.KAFKA);
         assertThat(acceptedLate).isTrue();
         assertThat(fallbacks()).isEqualTo(1);

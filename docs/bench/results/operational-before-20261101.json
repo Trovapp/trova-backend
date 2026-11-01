@@ -1,0 +1,214 @@
+{
+  "startedAt": "2026-11-01T16:45:42.999865+09:00",
+  "sourceCommit": "bd196e107c4d668b70fa77b635bac81738fcc9c5",
+  "results": [
+    {
+      "block": "before",
+      "mode": "kafka",
+      "videoId": "8vmpPuFwQ94",
+      "repetition": 1,
+      "warmup": false,
+      "jobId": 123,
+      "requestMs": 1319.77,
+      "status": "DONE",
+      "createdAt": "2026-11-01 16:45:49.389527",
+      "analysisFinishedAt": "2026-11-01 16:46:01.273257",
+      "createdToAnalysisDoneSeconds": 11.88373,
+      "observedPath": "kafka",
+      "queueWaitMs": 894,
+      "rssKiBAfterDrafts": 315244,
+      "pid": 268047,
+      "processingSeconds": 10.98973,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 3151,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5354,
+          "responseTokens": 86
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 3700,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6314,
+          "responseTokens": 762
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 612,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 612,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 611,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 610,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 612,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 616,
+          "attempts": null,
+          "waitedMs": null,
+          "promptTokens": null,
+          "responseTokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1053,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1929,
+          "responseTokens": 95
+        }
+      ],
+      "savedPlaceNames": [
+        "가야랜드",
+        "밀양돼지국밥",
+        "수로왕릉",
+        "김해한옥체험관 복합문화공간 명월",
+        "만리향 만두",
+        "연지공원"
+      ]
+    }
+  ],
+  "transitions": [],
+  "cleanup": {
+    "jobIds": [
+      123
+    ],
+    "draftsDeleted": 1,
+    "placesDeleted": 6,
+    "residualDrafts": 0,
+    "residualPlaces": 0,
+    "privateBackup": "/Users/gimtaehyeong/.config/devflow/trova/trova-operational-296-before-4527fc101ff9-outputs.json",
+    "jobAndApiLogsKept": true
+  },
+  "restored": false,
+  "errors": [],
+  "localClientInvocations": 0,
+  "scope": "One production Kafka share per phase; functional/latency sample, not a speed proof",
+  "temporaryDropIn": "/run/systemd/system/trova-backend.service.d/90-trova-bench-288-4527fc101ff9.conf",
+  "phase": "before",
+  "harnessSha256": "6a9d8ccc5cc4cb98f81ed7e8cb7f23bb4f3d4f8be4b1075faaa9f7fad3d37f27",
+  "sharedHarnessSha256": "7fd6e3869b0d5dd2b254157ccc9234af230c853ac321af789b2bc2fd2f541acc",
+  "before": {
+    "service": "active",
+    "queueType": "kafka",
+    "autoDraftEnabled": "true",
+    "quotaSharesPerDay": 20,
+    "dropInPaths": "",
+    "jarSha256": "f820ab28d6ba3e66fa7b8b2abbf9fb26f3a899d4409eb4390911383b5ed0e910",
+    "pythonHashes": {
+      "extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+      "run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+      "generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+      "verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+      "select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+      "tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+      "summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+    },
+    "rssKiB": 225652,
+    "pid": 268047,
+    "diagnosticFlags": {
+      "PIPELINE_TRACE": "",
+      "PIPELINE_FILTER_AUDIT": "",
+      "PIPELINE_FILTER_TEXT_ONLY": ""
+    }
+  },
+  "sharesBefore": 17,
+  "preflightInFlight": [
+    0,
+    0,
+    0
+  ],
+  "lastBudgetCheck": {
+    "knownAttempts": 0,
+    "unknownAttemptRows": 0,
+    "guardEstimateIncludingLocal": 0
+  },
+  "unconfirmedSubmissionPossible": false,
+  "complete": true,
+  "after": {
+    "service": "active",
+    "queueType": "kafka",
+    "autoDraftEnabled": "true",
+    "quotaSharesPerDay": 20,
+    "dropInPaths": "",
+    "jarSha256": "f820ab28d6ba3e66fa7b8b2abbf9fb26f3a899d4409eb4390911383b5ed0e910",
+    "pythonHashes": {
+      "extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+      "run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+      "generate_itinerary.py": "b9e2b5b1f5e43a1b7e4c95044d5e2fcfe86ed012c2899d62bec4ff4678c550f1",
+      "verify_places.py": "78545db090440a8e87ae4884fb2e1e288c4edb3f9d6821dd08a7f2dc0c15d1bf",
+      "select_place_match.py": "75aa39a73dda323ade10e67ebbc14561b1b2c49e17b0819947a1ad7987085ce5",
+      "tag_places.py": "8b4045a5bb4ecb41a02f4469116b78214e24616bd9751a3146b64dc093a57ae4",
+      "summarize_reviews.py": "a2deaeb7ee3abfd5f7417b94157c531c3850d4e18350516d4b1372df062fb699"
+    },
+    "rssKiB": 295288,
+    "pid": 268047,
+    "diagnosticFlags": {
+      "PIPELINE_TRACE": "",
+      "PIPELINE_FILTER_AUDIT": "",
+      "PIPELINE_FILTER_TEXT_ONLY": ""
+    },
+    "observedPath": "kafka",
+    "queueWaitMs": 894,
+    "warnErrorLevelEntries": {}
+  },
+  "finalInFlight": [
+    0,
+    0,
+    0
+  ],
+  "finishedAt": "2026-11-01T16:46:26.259093+09:00"
+}

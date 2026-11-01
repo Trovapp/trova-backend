@@ -46,6 +46,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PlaceExtractionServiceTest {
 
+    private static ProcessingJobLifecycleService.AnalysisStart started(String url) {
+        return new ProcessingJobLifecycleService.AnalysisStart(url, java.time.LocalDateTime.of(2026, 11, 1, 0, 0));
+    }
+
     @Mock
     private ProcessingJobLifecycleService lifecycleService;
     @Mock
@@ -79,7 +83,7 @@ class PlaceExtractionServiceTest {
     void 정상_처리시_단계가_순서대로_기록된다() {
         Long jobId = 1L;
         ExtractedPlace extracted = new ExtractedPlace("해운대", "부산", "attraction", 0.95, null, null, List.of("해운대"));
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://youtu.be/x");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://youtu.be/x"));
         when(pipelineRunner.run(eq("https://youtu.be/x"), eq(jobId), any()))
                 .thenReturn(new PipelineOutput("부산 여행", List.of(extracted)));
         when(kakaoGeocodingService.searchCandidates(any(), any(), any(), anyLong()))
@@ -91,7 +95,7 @@ class PlaceExtractionServiceTest {
         placeExtractionService.process(jobId);
 
         InOrder order = inOrder(lifecycleService);
-        order.verify(lifecycleService).startAnalysis(jobId);
+        order.verify(lifecycleService).startAnalysisWithMetadata(jobId);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.EXTRACTING);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.GEOCODING);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.SELECTING);
@@ -105,13 +109,13 @@ class PlaceExtractionServiceTest {
     @Test
     void 파이프라인_실패시_단계_기록_없이_실패_처리된다() {
         Long jobId = 2L;
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://youtu.be/y");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://youtu.be/y"));
         when(pipelineRunner.run(eq("https://youtu.be/y"), eq(jobId), any())).thenThrow(new RuntimeException("파이프라인 오류"));
 
         placeExtractionService.process(jobId);
 
         InOrder order = inOrder(lifecycleService);
-        order.verify(lifecycleService).startAnalysis(jobId);
+        order.verify(lifecycleService).startAnalysisWithMetadata(jobId);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.EXTRACTING);
         order.verify(lifecycleService).markAnalysisFailed(jobId, "파이프라인 오류");
     }
@@ -120,7 +124,7 @@ class PlaceExtractionServiceTest {
     void 분석_중_받은_제목은_바로_저장하고_찾은_이름은_끝날_때까지만_보관한다() {
         // 앱 분석 화면이 끝나기 전에 제목·찾은 장소를 보여주기 위한 중간 결과(#51).
         Long jobId = 3L;
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://youtu.be/z");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://youtu.be/z"));
         List<List<String>> namesSeenDuringRun = new java.util.ArrayList<>();
         when(pipelineRunner.run(eq("https://youtu.be/z"), eq(jobId), any())).thenAnswer(inv -> {
             java.util.function.Consumer<PipelineProgress> onProgress = inv.getArgument(2);
@@ -142,7 +146,7 @@ class PlaceExtractionServiceTest {
     void 장소를_하나도_못_찾으면_완료가_아니라_장소_없음으로_실패_처리한다() {
         // DONE으로 끝내면 앱은 결과 화면에서 "해당 영상을 찾을 수 없어요"를 띄우고, 영상은 어디에도 남지 않았다(#55).
         Long jobId = 4L;
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://youtu.be/empty");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://youtu.be/empty"));
         when(pipelineRunner.run(eq("https://youtu.be/empty"), eq(jobId), any()))
                 .thenReturn(new PipelineOutput("그냥 일상 브이로그", List.of()));
 
@@ -159,7 +163,7 @@ class PlaceExtractionServiceTest {
     void Gemini_하루_한도_소진으로_실패하면_AI_한도_실패로_기록한다() {
         // 일반 실패로 두면 앱이 "다시 시도"를 보여주는데, 한도가 초기화되기 전엔 다시 해도 실패한다(#63).
         Long jobId = 5L;
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://youtu.be/q");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://youtu.be/q"));
         when(pipelineRunner.run(eq("https://youtu.be/q"), eq(jobId), any())).thenThrow(new PipelineException(
                 "파이프라인 실행 실패(exit=1): GEMINI_DAILY_QUOTA_EXCEEDED Gemini 하루 한도 소진: {...}"));
 
@@ -171,7 +175,7 @@ class PlaceExtractionServiceTest {
     @Test
     void 인스타그램_속도_제한으로_실패하면_정해진_문구로_기록한다() {
         Long jobId = 6L;
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://www.instagram.com/reel/x/");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://www.instagram.com/reel/x/"));
         when(pipelineRunner.run(eq("https://www.instagram.com/reel/x/"), eq(jobId), any())).thenThrow(new PipelineException(
                 "파이프라인 실행 실패(exit=1): SOURCE_RATE_LIMITED 인스타그램이 요청을 막음(429): ..."));
 
@@ -184,7 +188,7 @@ class PlaceExtractionServiceTest {
     void 게시물에서_영상도_사진도_받지_못하면_정해진_문구로_기록한다() {
         // #196: 다시 해도 같은 실패라 앱이 [다시 시도] 대신 이유를 보여준다.
         Long jobId = 7L;
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://www.instagram.com/p/x/");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://www.instagram.com/p/x/"));
         when(pipelineRunner.run(eq("https://www.instagram.com/p/x/"), eq(jobId), any())).thenThrow(new PipelineException(
                 "파이프라인 실행 실패(exit=1): NO_MEDIA 게시물에서 영상도 사진도 받지 못했습니다"));
 
@@ -197,7 +201,7 @@ class PlaceExtractionServiceTest {
     void 비공개나_삭제된_게시물이면_정해진_문구로_기록한다() {
         // #257: 비공개·삭제·로그인 필요는 다시 해도 같아 앱이 [다시 시도] 대신 이유를 보여준다.
         Long jobId = 8L;
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://www.instagram.com/reel/x/");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://www.instagram.com/reel/x/"));
         when(pipelineRunner.run(eq("https://www.instagram.com/reel/x/"), eq(jobId), any())).thenThrow(new PipelineException(
                 "파이프라인 실행 실패(exit=1): SOURCE_UNAVAILABLE 볼 수 없는 게시물(로그인 필요): ERROR: login required"));
 
@@ -210,7 +214,7 @@ class PlaceExtractionServiceTest {
     void 장소를_소개하지_않는_콘텐츠면_정해진_문구로_기록한다() {
         // #206: 제품 광고·요리·일상 — 다시 해도 같아 앱이 [다시 시도] 대신 이유를 보여준다.
         Long jobId = 8L;
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://www.instagram.com/reel/ad/");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://www.instagram.com/reel/ad/"));
         when(pipelineRunner.run(eq("https://www.instagram.com/reel/ad/"), eq(jobId), any())).thenThrow(new PipelineException(
                 "파이프라인 실행 실패(exit=1): NOT_PLACE_CONTENT 장소를 소개하는 콘텐츠가 아님 (후보 1개)"));
 
@@ -225,7 +229,7 @@ class PlaceExtractionServiceTest {
         Long jobId = 7L;
         ExtractedPlace a = new ExtractedPlace("수로왕릉", "김해", "attraction", 0.95, null, null, List.of("수로왕릉"));
         ExtractedPlace b = new ExtractedPlace("봉황동유적", "김해", "attraction", 0.95, null, null, List.of("봉황동유적"));
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://youtu.be/p");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://youtu.be/p"));
         when(pipelineRunner.run(eq("https://youtu.be/p"), eq(jobId), any()))
                 .thenReturn(new PipelineOutput("김해", List.of(a, b)));
         CountDownLatch bothStarted = new CountDownLatch(2);
@@ -254,7 +258,7 @@ class PlaceExtractionServiceTest {
         Long jobId = 8L;
         ExtractedPlace found = new ExtractedPlace("전주한옥마을", "전주", "attraction", 0.95, null, null, List.of("전주한옥마을"));
         ExtractedPlace missing = new ExtractedPlace("없는가게", "전주", "restaurant", 0.95, null, null, List.of("없는가게"));
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://youtu.be/j");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://youtu.be/j"));
         when(pipelineRunner.run(eq("https://youtu.be/j"), eq(jobId), any()))
                 .thenReturn(new PipelineOutput("전주", List.of(found, missing)));
         GeocodingResult hanok = GeocodingResult.coordinatesOnly(35.81, 127.15);
@@ -278,7 +282,7 @@ class PlaceExtractionServiceTest {
     void 자동_초안이_실패해도_분석은_완료로_남는다() {
         Long jobId = 9L;
         ExtractedPlace extracted = new ExtractedPlace("해운대", "부산", "attraction", 0.95, null, null, List.of("해운대"));
-        when(lifecycleService.startAnalysis(jobId)).thenReturn("https://youtu.be/x");
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://youtu.be/x"));
         when(pipelineRunner.run(eq("https://youtu.be/x"), eq(jobId), any()))
                 .thenReturn(new PipelineOutput("부산 여행", List.of(extracted)));
         when(kakaoGeocodingService.searchCandidates(any(), any(), any(), anyLong()))
