@@ -1,60 +1,49 @@
 package com.trova.backend.queue;
 
-import com.trova.backend.entity.JobStatus;
-import com.trova.backend.entity.ProcessingJob;
-import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.service.PlaceExtractionService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 
-import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class ShareJobListenerTest {
-
-    private final ProcessingJobRepository repository = mock(ProcessingJobRepository.class);
     private final PlaceExtractionService extraction = mock(PlaceExtractionService.class);
-    private final ShareJobListener listener = new ShareJobListener(repository, extraction);
+    private final ShareJobListener listener = new ShareJobListener(extraction);
 
-    private void jobWithStatus(JobStatus status) {
-        ProcessingJob job = mock(ProcessingJob.class);
-        when(job.getStatus()).thenReturn(status);
-        when(repository.findById(42L)).thenReturn(Optional.of(job));
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = JobStatus.class, names = {"PENDING", "PROCESSING"})
-    void 끝나지_않은_작업은_이_스레드에서_분석한다(JobStatus status) {
-        jobWithStatus(status);
-
+    @Test
+    void 상태확인을_분석서비스에_위임하고_동기_호출한다() {
         listener.onMessage("42");
-
         verify(extraction).processNow(42L, QueuePath.KAFKA);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = JobStatus.class, names = {"DONE", "FAILED"})
-    void 다시_받은_메시지가_끝난_작업이면_건너뛴다(JobStatus status) {
-        jobWithStatus(status);
-
-        listener.onMessage("42");
-
-        verify(extraction, never()).processNow(anyLong(), any());
+    @Test
+    void 잘못된_메시지는_분석을_시작하지_않는다() {
+        assertThatThrownBy(() -> listener.onMessage("invalid")).isInstanceOf(NumberFormatException.class);
+        verifyNoInteractions(extraction);
     }
 
     @Test
-    void 지워진_작업이면_건너뛴다() {
-        when(repository.findById(42L)).thenReturn(Optional.empty());
+    void 서비스_예외를_리스너_오류처리로_전파한다() {
+        doThrow(new IllegalStateException("fixture")).when(extraction).processNow(42L,QueuePath.KAFKA);
+        assertThatThrownBy(()->listener.onMessage("42")).isInstanceOf(IllegalStateException.class);
+    }
 
-        listener.onMessage("42");
-
-        verify(extraction, never()).processNow(anyLong(), any());
+    @Test
+    void 분석이_끝나기_전에_리스너가_돌아가지_않는다() throws Exception {
+        CountDownLatch entered=new CountDownLatch(1),release=new CountDownLatch(1);
+        doAnswer(inv->{entered.countDown();assertThat(release.await(3,TimeUnit.SECONDS)).isTrue();return null;})
+                .when(extraction).processNow(42L,QueuePath.KAFKA);
+        Thread thread=new Thread(()->listener.onMessage("42"));thread.start();
+        try {assertThat(entered.await(2,TimeUnit.SECONDS)).isTrue();assertThat(thread.isAlive()).isTrue();}
+        finally {release.countDown();thread.join(3000);}
+        assertThat(thread.isAlive()).isFalse();
     }
 }

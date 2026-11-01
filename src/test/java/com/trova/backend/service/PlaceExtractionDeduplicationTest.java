@@ -56,7 +56,11 @@ class PlaceExtractionDeduplicationTest {
         when(job.getStatus()).thenReturn(com.trova.backend.entity.JobStatus.PROCESSING);
         com.trova.backend.repository.ProcessingJobRepository repository = mock(com.trova.backend.repository.ProcessingJobRepository.class);
         when(repository.findById(42L)).thenReturn(java.util.Optional.of(job));
-        new com.trova.backend.queue.ShareJobListener(repository, service).onMessage("42");
+        new com.trova.backend.queue.ShareJobListener(service).onMessage("42");
+    }
+
+    private static ProcessingJobLifecycleService.AnalysisStart started(String url) {
+        return new ProcessingJobLifecycleService.AnalysisStart(url, java.time.LocalDateTime.of(2026, 11, 1, 0, 0));
     }
 
     @org.junit.jupiter.params.ParameterizedTest
@@ -68,7 +72,7 @@ class PlaceExtractionDeduplicationTest {
         CountDownLatch release = new CountDownLatch(1);
         CountDownLatch lateStarted = new CountDownLatch(1);
         AtomicBoolean done = new AtomicBoolean();
-        when(lifecycle.startAnalysis(42L)).thenAnswer(inv -> done.get() ? null : "https://youtu.be/x");
+        when(lifecycle.startAnalysisWithMetadata(42L)).thenAnswer(inv -> done.get() ? null : started("https://youtu.be/x"));
         when(geocoding.searchCandidates(any(), any(), any(), eq(42L))).thenReturn(GeocodingResult.empty());
         when(geocoding.resolveRegionFallback(any(), any(), any(), eq(42L))).thenReturn(GeocodingResult.empty());
         ExtractedPlace place = new ExtractedPlace("가야랜드", "김해", "attraction", 0.9, null, null, List.of("가야랜드"));
@@ -99,13 +103,13 @@ class PlaceExtractionDeduplicationTest {
         verify(pipeline, times(1)).run(any(), eq(42L), any());
         verify(lifecycle, times(1)).completeAnalysis(eq(42L), any(), any());
         verify(drafts, times(1)).startFor(42L);
-        verify(waitMetrics, times(1)).record(42L, firstPath);
+        verify(waitMetrics, times(1)).recordKnownCreatedAt(any(), eq(firstPath));
     }
 
     @Test
     void 이전_프로세스의_진행상태는_새_서비스에서_다시_처리할_수_있다() {
         // DB의 PROCESSING 복구 허용은 lifecycle 통합 테스트로 별도 확인한다.
-        when(lifecycle.startAnalysis(42L)).thenReturn("https://youtu.be/x");
+        when(lifecycle.startAnalysisWithMetadata(42L)).thenReturn(started("https://youtu.be/x"));
         when(pipeline.run(eq("https://youtu.be/x"), eq(42L), any())).thenReturn(new PipelineOutput("중단 후 재수신", List.of()));
         service().processNow(42L, QueuePath.KAFKA);
         verify(pipeline).run(any(), eq(42L), any());
@@ -113,11 +117,11 @@ class PlaceExtractionDeduplicationTest {
 
     @Test
     void 완료나_삭제로_시작을_거절하면_외부호출과_저장을_하지_않는다() {
-        when(lifecycle.startAnalysis(42L)).thenReturn(null);
+        when(lifecycle.startAnalysisWithMetadata(42L)).thenReturn(null);
         service().processNow(42L, QueuePath.KAFKA);
         verify(pipeline, never()).run(any(), any(), any());
         verify(lifecycle, never()).completeAnalysis(any(), any(), any());
-        verify(waitMetrics, never()).record(any(), any());
+        verify(waitMetrics, never()).recordKnownCreatedAt(any(), any());
     }
 
     @Test
@@ -125,8 +129,8 @@ class PlaceExtractionDeduplicationTest {
         PlaceExtractionService service = service();
         CountDownLatch entered = new CountDownLatch(1);
         CountDownLatch release = new CountDownLatch(1);
-        when(lifecycle.startAnalysis(42L)).thenReturn("https://youtu.be/x");
-        when(lifecycle.startAnalysis(43L)).thenReturn("https://youtu.be/y");
+        when(lifecycle.startAnalysisWithMetadata(42L)).thenReturn(started("https://youtu.be/x"));
+        when(lifecycle.startAnalysisWithMetadata(43L)).thenReturn(started("https://youtu.be/y"));
         when(pipeline.run(eq("https://youtu.be/x"), eq(42L), any())).thenAnswer(inv -> {
             entered.countDown();
             assertThat(release.await(5, TimeUnit.SECONDS)).isTrue();
@@ -150,7 +154,7 @@ class PlaceExtractionDeduplicationTest {
     @Test
     void 선행_실패_후_늦은_메시지는_외부호출을_반복하지_않는다() {
         PlaceExtractionService service = service();
-        when(lifecycle.startAnalysis(42L)).thenReturn("https://youtu.be/x").thenReturn(null);
+        when(lifecycle.startAnalysisWithMetadata(42L)).thenReturn(started("https://youtu.be/x")).thenReturn(null);
         when(pipeline.run(eq("https://youtu.be/x"), eq(42L), any())).thenThrow(new IllegalStateException("controlled failure"));
         dispatch(service, QueuePath.ASYNC);
         dispatch(service, QueuePath.KAFKA);
@@ -164,7 +168,7 @@ class PlaceExtractionDeduplicationTest {
     void 시작상태_조회실패는_기존_결과를_실패로_덮어쓰지_않는다() throws Exception {
         PlaceExtractionService service = service();
         TransientDataAccessResourceException unavailable = new TransientDataAccessResourceException("DB unavailable");
-        when(lifecycle.startAnalysis(42L)).thenThrow(unavailable).thenReturn(null);
+        when(lifecycle.startAnalysisWithMetadata(42L)).thenThrow(unavailable).thenReturn(null);
         assertThatThrownBy(() -> dispatch(service, QueuePath.KAFKA)).isSameAs(unavailable);
         // 다른 스레드가 이어서 잠금을 얻고 DB의 완료 결과를 다시 확인할 수 있어야 한다.
         ExecutorService worker = Executors.newSingleThreadExecutor();
@@ -173,7 +177,7 @@ class PlaceExtractionDeduplicationTest {
         } finally {
             worker.shutdownNow();
         }
-        verify(lifecycle, times(2)).startAnalysis(42L);
+        verify(lifecycle, times(2)).startAnalysisWithMetadata(42L);
         verify(lifecycle, never()).markAnalysisFailed(any(), any());
         verify(pipeline, never()).run(any(), any(), any());
         verify(lifecycle, never()).completeAnalysis(any(), any(), any());

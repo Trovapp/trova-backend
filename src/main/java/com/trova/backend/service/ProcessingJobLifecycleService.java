@@ -12,6 +12,7 @@ import com.trova.backend.repository.SavedPlaceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,15 +38,24 @@ public class ProcessingJobLifecycleService {
      * 끝난/삭제된 작업은 null, 재시작 후 중단된 PROCESSING은 다시 분석할 URL을 반환한다.
      * 일정 생성도 쓰는 markProcessing은 별도 유지한다.
      */
+    public record AnalysisStart(String sourceUrl, LocalDateTime createdAt) { }
+
     @Transactional
     public String startAnalysis(Long jobId) {
+        AnalysisStart start = startAnalysisWithMetadata(jobId);
+        return start == null ? null : start.sourceUrl();
+    }
+
+    /** 시작 상태 확인에 사용한 생성 시각을 재조회 없이 큐 계측에 전달한다. */
+    @Transactional
+    public AnalysisStart startAnalysisWithMetadata(Long jobId) {
         ProcessingJob job = processingJobRepository.findById(jobId).orElse(null);
         if (job == null || job.getStatus() == JobStatus.DONE || job.getStatus() == JobStatus.FAILED
                 || job.getAnalysisStatus() != null) {
             return null;
         }
         job.markProcessing();
-        return job.getSourceUrl();
+        return new AnalysisStart(job.getSourceUrl(), job.getCreatedAt());
     }
 
     @Transactional

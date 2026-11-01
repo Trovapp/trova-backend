@@ -65,4 +65,11 @@ class QueueWaitMetricsTest {
         assertThat(metricsAt(CREATED).record(9L, QueuePath.KAFKA)).isEqualTo(-1);
         assertThat(timer("kafka")).isNull();
     }
+
+    @Test
+    void 이미_읽은_생성시각은_DB를_재조회하지_않고_기록한다() {
+        assertThat(metricsAt(CREATED.plusSeconds(1)).recordKnownCreatedAt(CREATED, QueuePath.KAFKA)).isEqualTo(1000);
+        org.mockito.Mockito.verifyNoInteractions(repository);
+        assertThat(timer("kafka").count()).isEqualTo(1);
+    }
 }

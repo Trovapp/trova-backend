@@ -86,7 +86,7 @@ class ShareJobKafkaRoundTripTest {
 
         @Bean
         ShareJobListener shareJobListener(ProcessingJobRepository repository, PlaceExtractionService extraction) {
-            return new ShareJobListener(repository, extraction);
+            return new ShareJobListener(extraction);
         }
     }
 

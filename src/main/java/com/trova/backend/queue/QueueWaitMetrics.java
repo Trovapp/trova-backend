@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 /**
  * 공유로 작업이 만들어진 뒤 분석이 시작되기까지의 대기(#249) — trova_queue_wait_seconds{path}.
- * 분석 시간(시작 → 끝)은 경로와 상관없이 같아서(운영 14.5초·14.8초), Kafka 대기열이 더하거나 줄이는 건 이 구간이다.
+ * 경로별 대기는 DB 시작 상태 확인도 포함한다. 분석 시간은 입력/모델/분기 영향이 있으므로 별도로 비교한다.
  * createdAt은 서버 기본 시간대의 LocalDateTime.now()로 저장되므로 같은 방식으로 비교한다.
  */
 @Component
@@ -42,6 +42,11 @@ public class QueueWaitMetrics {
     /** @return 기다린 ms(로그용). 작업이 없으면 -1이고 기록하지 않는다. */
     public long record(Long jobId, QueuePath path) {
         LocalDateTime createdAt = processingJobRepository.findById(jobId).map(ProcessingJob::getCreatedAt).orElse(null);
+        return recordKnownCreatedAt(createdAt, path);
+    }
+
+    /** 시작 경로가 이미 읽은 시각을 사용하며 DB에 다시 접근하지 않는다. */
+    public long recordKnownCreatedAt(LocalDateTime createdAt, QueuePath path) {
         if (createdAt == null) {
             return -1;
         }

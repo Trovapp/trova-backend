@@ -60,7 +60,7 @@ public class ProcessRecoveryWorker {
     static class Config {
         @Bean ShareJobListener listener(ProcessingJobRepository jobs, PlaceExtractionService extraction,
                 @org.springframework.beans.factory.annotation.Value("${fixture.root}") String root) {
-            return new ShareJobListener(jobs, extraction) {
+            return new ShareJobListener(extraction) {
                 @Override
                 @org.springframework.kafka.annotation.KafkaListener(topics = KafkaShareJobQueue.TOPIC,
                         groupId = "trova-share-jobs", concurrency = "1")

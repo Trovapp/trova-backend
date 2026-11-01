@@ -1,0 +1,18 @@
+{
+  "scope": "Initial duplicate-read removal against 4408e70 before integrating other approved fixes",
+  "fullBuild": {
+    "tests": 1010,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "kafkaProcessRecovery": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "evidence": "../bench/results/operational-pipeline-recovery-20261101.json"
+  },
+  "productionBefore": "../bench/results/operational-before-20261101.json",
+  "interpretation": "n=1 per phase is functional validation, not statistical speed proof; no SQL wire count asserted"
+}
