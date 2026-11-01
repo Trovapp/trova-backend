@@ -2207,6 +2207,19 @@
 - docs/bench/reports/trova-performance-comparison-20261101.pdf 및생성/검수README·JSON, scripts/build_performance_pdf.py에보관. 사용자Downloads에도 같은바이트 사본을 전달했다. 전체build1010중1007통과·실패/오류0·기존opt-in3skip. 이번PDF작업의새AI호출/운영변경0,잠자기복구계속보류.
 
 
+## 2026-11-01 분석 결과 저장·완료 원자성 (#292)
+
+- 사용자 네 보완 승인 중 첫 작업. 기존 건별 저장·별도DONE 커밋과 같은 adapter에서5개검사중부분결과교체/중간실패롤백2개실패를실제H2로재현했다. 원래메서드가없는코드에같은signature adapter를쓴negative이며원본그대로실행했다고표현하지않는다.
+- 새 completeAnalysis가 외부호출종료후작업행을잠그고PROCESSING/analysis미완료를재확인, 기존미완료부분결과교체·새장소전체·DONE을한트랜잭션으로커밋한다. 중간실패시삭제/첫행/상태모두롤백. 완료/실패재호출보존,완료직전종료시자동초안시작안함. 기존단일JVM/큐/시도정책유지(ADR0029).
+- 전체build1016중1013통과·실패/오류0·기존opt-in3skip, 실제Kafka/별도JVM/H2/Python복구opt-in1개및새통합5개추가통과. 기존복구원본보존·새원본별도보관. SIGKILL을DBcommit중간에주입한것은아니며다중JVM외부exactly-once는보장하지않는다.
+- docs/reviews/analysis-finalization-negative-20261101.json,validation및docs/bench/results/analysis-finalization-recovery-20261101.json. 외부실제API/운영변경없음,머지/배포전.
+
+## 2026-11-01 영업시간 진행 요청 공유 (#132)
+
+- 사용자가 Google 정책 확인 후 권장안인 동시 요청 공유를 선택했다. 90일/사용자간 영구 응답 캐시는 추가하지 않고 동일 name/좌표의 진행 요청만 한JVM에서공유했다(ADR0030). 기존SavedPlace저장정책까지허용됨을주장하지않으며별도정책검토대상이다.
+- owner만외부조회/API로그/호출수1,대기자는0이며각자의매칭/저장은독립적이다. 완료/실패/Error후future제거로후속독립재시도가능,대기인터럽트는플래그보존·owner취소없음. 저장실패를HTTP실패로다시기록하지않도록경계를분리했다.
+- 원래서비스그대로실행한동시성negative6개중5실패,수정후새6+기존5통과. 전체build1016중1013통과·실패/오류0·기존opt-in3skip. 동시동일조회1회/다른좌표병렬/실패공유와독립재시도/인터럽트/개별저장실패/Error해제검증. 실제Google/운영변경없음,순차요청이나다중JVM의중복감소는보장하지않는다.
+
 ## 2026-11-01 장소명 보완 후보 평가와 좁은 출력 점검 (#293)
 
 - 같은 사람 정답 10개 영상으로 프롬프트 후보를 비교했다. 엄격 재현율 74.95→64.37%, 정밀도 73.95→64.92%, 빈 정답 오탐 0→1로 사전 채택 기준에 미달해 후보는 반영하지 않았다. 연결 실패 1건은 보존하고 입력 해시 확인 후 재개했다. 실제 요청 before22/after20, 과거 수치와 합산하지 않았다.

@@ -176,11 +176,10 @@ public class PlaceExtractionService {
             geocodedList = verifyUncertainMatches(jobId, extractedList, geocodedList);
 
             lifecycleService.updateStage(jobId, ProcessingStage.SAVING);
-            for (int i = 0; i < extractedList.size(); i++) {
-                lifecycleService.savePlace(jobId, extractedList.get(i), geocodedList.get(i));
+            if (!lifecycleService.completeAnalysis(jobId, extractedList, geocodedList)) {
+                log.info("ProcessingJob {} 결과 저장 건너뜀(더 이상 분석 진행 상태가 아님)", jobId);
+                return;
             }
-
-            lifecycleService.markAnalysisDone(jobId);
             log.info("ProcessingJob {} DONE", jobId);
 
             // 공유만 해 두면 일정까지 짜 두게(#136). 실패해도 분석 결과는 이미 완료다.
