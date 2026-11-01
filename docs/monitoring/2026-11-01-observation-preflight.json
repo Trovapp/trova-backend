@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-11-01T23:06:56.009648+09:00",
+  "runtimeTZ": "Asia/Seoul",
+  "shareLimit": 20,
+  "testUserSharesToday": 19,
+  "inFlight": [
+    0,
+    0,
+    0
+  ],
+  "lastJobId": 124,
+  "geminiLastHour": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "providerRemainingKnown": false,
+  "geminiLastHourFields": [
+    "recordCount",
+    "failedRecords",
+    "knownAttemptsSum",
+    "unknownAttemptRecords"
+  ],
+  "inFlightFields": [
+    "analysis",
+    "draft",
+    "replan"
+  ],
+  "providerUsageSincePacificMidnight": {
+    "developmentRecords": 0,
+    "productionRecords": 8,
+    "remainingKnown": false,
+    "source": "existing qaflow quota read-only query"
+  },
+  "observationStatus": "awaiting user submission or selection of existing test video",
+  "productionLoadTestExecuted": false,
+  "k6Validation": {
+    "environment": "loopback fixture only",
+    "testMethodsPassed": 6,
+    "subcases": [
+      "bounded success",
+      "500 stops after one",
+      "200 DOWN stops after one",
+      "malformed JSON stops after one",
+      "302 not followed",
+      "slow response stops after one",
+      "31 request setting sends nothing",
+      "CLI workload override sends nothing",
+      "missing target sends nothing"
+    ]
+  },
+  "scope": "Preflight and script validation; no new production share submitted by this session"
+}

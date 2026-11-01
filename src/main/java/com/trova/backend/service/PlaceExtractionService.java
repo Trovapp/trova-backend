@@ -109,11 +109,13 @@ public class PlaceExtractionService {
             return;
         }
         String sourceUrl = start.sourceUrl();
+        PipelineStageMetrics.AnalysisTiming timing = stageMetrics.startAnalysis(jobId);
         try {
             // 작업이 만들어진 뒤 여기까지 기다린 시간(#249) — 대기열 경로별로 비교한다.
             long waitMs = queueWaitMetrics.recordKnownCreatedAt(start.createdAt(), path);
             log.info("ProcessingJob {} 파이프라인 시작({}, 대기 {}ms): {}", jobId, path.tag(), waitMs, sourceUrl);
 
+            timing.stage(ProcessingStage.EXTRACTING);
             lifecycleService.updateStage(jobId, ProcessingStage.EXTRACTING);
             // 분석이 끝나기 전에 제목·찾은 장소 이름을 앱에 보여줄 수 있게 바로 반영한다(#51).
             PipelineOutput output = pipelineRunner.run(sourceUrl, jobId, progress -> {
@@ -138,12 +140,14 @@ public class PlaceExtractionService {
             if (output.places().isEmpty()) {
                 log.info("ProcessingJob {} 장소 0곳 — 장소 없음으로 실패 처리", jobId);
                 lifecycleService.markAnalysisFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
+                timing.finish(PipelineStageMetrics.Outcome.NO_PLACES);
                 return;
             }
 
             List<ExtractedPlace> extractedList = output.places();
             List<GeocodingResult> geocodedList = new ArrayList<>();
 
+            timing.stage(ProcessingStage.GEOCODING);
             lifecycleService.updateStage(jobId, ProcessingStage.GEOCODING);
             long geocodingStart = System.currentTimeMillis();
             // 주소·이름 후보 검색은 장소마다 독립적인 카카오 호출이라 동시에 보낸다(#7).
@@ -170,17 +174,22 @@ public class PlaceExtractionService {
             }
             log.info("ProcessingJob {} 지오코딩 {}곳: {}ms", jobId, extractedList.size(), System.currentTimeMillis() - geocodingStart);
 
+            timing.stage(ProcessingStage.SELECTING);
             lifecycleService.updateStage(jobId, ProcessingStage.SELECTING);
             geocodedList = selectAmongAlternatives(jobId, extractedList, geocodedList);
 
+            timing.stage(ProcessingStage.VERIFYING);
             lifecycleService.updateStage(jobId, ProcessingStage.VERIFYING);
             geocodedList = verifyUncertainMatches(jobId, extractedList, geocodedList);
 
+            timing.stage(ProcessingStage.SAVING);
             lifecycleService.updateStage(jobId, ProcessingStage.SAVING);
             if (!lifecycleService.completeAnalysis(jobId, extractedList, geocodedList)) {
                 log.info("ProcessingJob {} 결과 저장 건너뜀(더 이상 분석 진행 상태가 아님)", jobId);
+                timing.finish(PipelineStageMetrics.Outcome.DISCARDED);
                 return;
             }
+            timing.finish(PipelineStageMetrics.Outcome.SUCCESS);
             log.info("ProcessingJob {} DONE", jobId);
 
             // 공유만 해 두면 일정까지 짜 두게(#136). 실패해도 분석 결과는 이미 완료다.
@@ -190,6 +199,8 @@ public class PlaceExtractionService {
                 log.warn("ProcessingJob {} 자동 초안 시작 실패", jobId, e);
             }
         } catch (Exception e) {
+            // 실패 상태를 DB에 기록하는 복구 시간은 실패한 단계의 실행 시간과 분리한다.
+            timing.finish(PipelineStageMetrics.Outcome.FAILURE);
             log.error("ProcessingJob {} 처리 실패", jobId, e);
             // 하루 한도 소진은 앱이 원인과 다시 가능한 시점을 알려줄 수 있게 정해진 문구로 남긴다(#63).
             String message = e.getMessage() == null ? "" : e.getMessage();
@@ -211,6 +222,7 @@ public class PlaceExtractionService {
                 lifecycleService.markAnalysisFailed(jobId, e.getMessage());
             }
         } finally {
+            timing.close();
             foundPlaceNameStore.clear(jobId);
         }
     }

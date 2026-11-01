@@ -68,3 +68,7 @@
 | [0030](0030-opening-hours-inflight-sharing.md) | 영업시간은 진행 중인 동일 조회만 공유 | 확정 | 2026-11-01 |
 
 | [0031](0031-known-non-destination-labels.md) | 명시된 비장소 이름만 좁은 출력 점검으로 제외 | 확정 | 2026-11-01 |
+
+| [0032](0032-monitoring-persistence-and-scrape-status.md) | 로컬 모니터링 기록을 보존하고 수집 중단을 업무 지표 0과 구분한다 | 확정 | 2026-11-01 |
+
+| [0033](0033-analysis-stage-elapsed-metrics.md) | 영상 분석 Java 단계와 실행 시간을 결과별로 계측한다 | 확정 | 2026-11-01 |

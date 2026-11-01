@@ -1,0 +1,606 @@
+{
+  "uid": "trova-monitoring-lab",
+  "title": "Trova 모니터링 시작하기",
+  "tags": [
+    "trova",
+    "learning"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "description": "운영 전용. ① 수집 상태 → ③ 분석 단계 → ④ 대기 시간 순으로 확인합니다. 표본 없는 구간을 0으로 채우지 않습니다. 단일 작업의 정확한 시간은 로그/DB와 대조하세요.",
+  "panels": [
+    {
+      "id": 1,
+      "title": "① 운영 지표 수집 상태 — 1 정상 / 0 중단",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "description": "0은 수집 실패이며 서버 장애와 같지 않습니다. SSH 터널 → Docker → 서버 순으로 확인합니다. 데이터 없음도 정상으로 해석하지 마세요.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "데이터 없음",
+          "min": 0,
+          "max": 1,
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "수집 중단",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "수집 정상",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"trova-prod\"}",
+          "legendFormat": "{{job}}",
+          "instant": true
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 2,
+      "title": "② 수집 중단 경보 — 1 발생",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "description": "1분 연속 수집 실패/대상 누락 때 발생. 이 규칙은 Prometheus 화면에서만 확인하며 외부 알림 전송은 아직 연결하지 않았습니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "데이터 없음",
+          "min": 0,
+          "max": 1,
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "발생한 경보 없음",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "수집 중단 경보",
+                  "color": "red"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(ALERTS{alertname=\"TrovaProductionScrapeUnavailable\",alertstate=\"firing\"}) or vector(0)",
+          "legendFormat": "{{job}}",
+          "instant": true
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 3,
+      "title": "API 요청/초",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "description": "최근 구간의 초당 요청 수. 수집 중단 구간은 빈칸으로 표시합니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job) (rate(http_server_requests_seconds_count{job=\"trova-prod\",uri!~\"/actuator.*\"}[$__rate_interval])) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "API 평균 응답 시간",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "description": "HTTP 응답 시간입니다. 비동기 영상 분석 완료 시간과 다릅니다. 요청이 없으면 빈칸입니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job) (rate(http_server_requests_seconds_sum{job=\"trova-prod\",uri!~\"/actuator.*\"}[$__rate_interval])) / (sum by(job) (rate(http_server_requests_seconds_count{job=\"trova-prod\",uri!~\"/actuator.*\"}[$__rate_interval])) > 0) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "③ 영상 분석 단계별 평균 시간",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "description": "선택 기간 평균. download=다운로드, audio=오디오 추출, frames=프레임 추출, gemini=장소 추출 AI. 현재 계측은 Python 결과를 받은 실행의 단계 기록이며 실패/강제종료 전체를 포함하지 않습니다. 지오코딩·DB 저장·일정 생성도 제외합니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job,stage) (increase(trova_pipeline_stage_seconds_sum{job=\"trova-prod\"}[$__range])) / (sum by(job,stage) (increase(trova_pipeline_stage_seconds_count{job=\"trova-prod\"}[$__range])) > 0) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{stage}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "④ 공유 → 분석 시작 평균 대기",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "description": "DB 작업 생성부터 분석 시작까지. 경로별 전달·DB 확인 시간을 포함합니다. 분석 완료 시간은 아닙니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job,path) (increase(trova_queue_wait_seconds_sum{job=\"trova-prod\"}[$__range])) / (sum by(job,path) (increase(trova_queue_wait_seconds_count{job=\"trova-prod\"}[$__range])) > 0) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{path}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "외부 API 평균 호출 시간",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "description": "성공 호출만의 평균. 병렬 호출 시간을 합해 사용자 대기 시간으로 해석하지 않습니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job,provider,operation) (increase(trova_api_call_seconds_sum{job=\"trova-prod\",success=\"true\"}[$__range])) / (sum by(job,provider,operation) (increase(trova_api_call_seconds_count{job=\"trova-prod\",success=\"true\"}[$__range])) > 0) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{provider}} / {{operation}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "외부 API 실패 기록 증가량",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "description": "선택 기간의 추정 증가량. 최초 호출 이전 표본이 없으면 첫 호출을 놓칠 수 있으며 정확한 건수는 DB 기록과 대조합니다. 실패 시계열이 없으면 데이터 없음으로 보일 수 있습니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job,provider,operation) (increase(trova_api_call_seconds_count{job=\"trova-prod\",success=\"false\"}[$__range])) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{provider}} / {{operation}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "JVM 힙 사용률",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "description": "Java 객체 메모리의 사용률이며 서버 전체 메모리 사용률이 아닙니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job) (jvm_memory_used_bytes{job=\"trova-prod\",area=\"heap\"}) / sum by(job) (jvm_memory_max_bytes{job=\"trova-prod\",area=\"heap\"}) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Java 프로세스 CPU 사용률",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "description": "Java 프로세스 CPU 지표. Python/ffmpeg 부하는 포함하지 않습니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "process_cpu_usage{job=\"trova-prod\"} and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "내부 실행기 대기 작업",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "description": "JVM 내부 스레드풀 대기 수. Kafka 브로커에 남은 메시지 수와 다릅니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "executor_queued_tasks{job=\"trova-prod\"} and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "DB 연결 대기",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "description": "DB 연결 풀에서 연결을 기다리는 스레드 수입니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "hikaricp_connections_pending{job=\"trova-prod\"} and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{pool}}"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "⑤ 후보 선택·검증·저장 평균 시간",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "description": "preparing=선점 후 준비, extracting=Python 추출 전체, geocoding=지도 검색, selecting=후보 선택, verifying=검증, saving=결과 저장. 단계 상태 DB 갱신을 포함합니다. 외부 API 호출을 생략한 단계도 짧은 처리 시간이 있습니다. 성공한 단계만의 평균이며 뒤 단계에서 실패한 작업도 포함될 수 있습니다. 기존 Python 세부 단계와 중첩되므로 합산하지 마세요.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job,stage) (increase(trova_analysis_stage_seconds_sum{job=\"trova-prod\",outcome=\"success\"}[$__range])) / (sum by(job,stage) (increase(trova_analysis_stage_seconds_count{job=\"trova-prod\",outcome=\"success\"}[$__range])) > 0) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{stage}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "⑥ 분석 실행 평균 — 대기·일정 생성 제외",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "description": "분석 선점 커밋 후부터 저장 완료/실패 시점까지. 큐 대기, 선점 DB 처리, 실패 복구 DB 처리, 자동 일정 초안을 제외합니다. success=완료, failure=예외, no_places=장소 없음, discarded=저장 시 이미 종료된 작업. DB 생성→완료 시간과 범위가 다릅니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job,outcome) (increase(trova_analysis_execution_seconds_sum{job=\"trova-prod\"}[$__range])) / (sum by(job,outcome) (increase(trova_analysis_execution_seconds_count{job=\"trova-prod\"}[$__range])) > 0) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{outcome}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "title": "실패한 단계의 평균 경과 시간",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 56,
+        "w": 12,
+        "h": 8
+      },
+      "description": "예외가 발생한 단계의 시간입니다. 실패 상태를 DB에 기록하는 복구 시간은 제외합니다. 프로세스 강제 종료는 종료 지표를 남길 수 없습니다. 실패 표본이 없으면 데이터 없음입니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job,stage) (increase(trova_analysis_stage_seconds_sum{job=\"trova-prod\",outcome=\"failure\"}[$__range])) / (sum by(job,stage) (increase(trova_analysis_stage_seconds_count{job=\"trova-prod\",outcome=\"failure\"}[$__range])) > 0) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{stage}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "title": "분석 실행 결과별 증가량",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 56,
+        "w": 12,
+        "h": 8
+      },
+      "description": "선택 기간의 추정 증가량. 동일 작업 중복 수신을 건너뛴 경우는 세지 않습니다. 첫 수집 이전 완료·수집 공백·재시작으로 정확한 건수와 다를 수 있으며 DB를 기준으로 대조합니다.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "데이터 없음"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(job,outcome) (increase(trova_analysis_execution_seconds_count{job=\"trova-prod\"}[$__range])) and on(job) (up{job=\"trova-prod\"} == 1)",
+          "legendFormat": "{{outcome}}",
+          "instant": true
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "title": "기존 상세 대시보드",
+      "type": "link",
+      "url": "/d/trova-overview"
+    },
+    {
+      "title": "수집 대상 상태",
+      "type": "link",
+      "url": "http://localhost:9090/targets"
+    },
+    {
+      "title": "경보 상태",
+      "type": "link",
+      "url": "http://localhost:9090/alerts"
+    }
+  ]
+}

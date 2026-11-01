@@ -1,0 +1,11 @@
+groups:
+  - name: trova-monitoring
+    rules:
+      - alert: TrovaProductionScrapeUnavailable
+        expr: up{job="trova-prod"} == 0 or absent(up{job="trova-prod"})
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: 운영 서버 지표 수집 중단
+          description: SSH 터널, Docker, 대상 설정, 운영 서버 순서로 확인한다. 수집 실패만으로 서비스 장애라고 단정하지 않는다.
