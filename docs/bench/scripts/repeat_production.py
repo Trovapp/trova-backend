@@ -91,6 +91,9 @@ print(json.dumps({'geocodingWholeStageMs':[int(x[1]) for x in geo],
         with self.db() as db:
             drafts=db.execute("select row_to_json(d) from trip_drafts d where user_id=1 and auto_created=true and job_ids=%s",(str(job),)).fetchall()
             places=db.execute('select row_to_json(p) from saved_places p where user_id=1 and processing_job_id=%s',(job,)).fetchall()
+            assert not any(r[0].get('status')=='APPROVED' or r[0].get('trip_id') is not None for r in drafts),'approved_test_draft_preserved'
+            linked=db.execute('select count(*) from trip_places where saved_place_id in (select id from saved_places where user_id=1 and processing_job_id=%s)',(job,)).fetchone()[0]
+            assert linked==0,'test_places_now_in_trip_preserved'
             fd=os.open(backup,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
             with os.fdopen(fd,'w') as stream:json.dump({'drafts':[r[0] for r in drafts],'places':[r[0] for r in places]},stream,ensure_ascii=False,default=str)
             draft_count=db.execute("delete from trip_drafts where user_id=1 and auto_created=true and job_ids=%s",(str(job),)).rowcount

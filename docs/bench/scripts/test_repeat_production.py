@@ -88,7 +88,7 @@ class CleanupTest(unittest.TestCase):
         b.result={'cleanups':[]};b.idle=Mock();b.save=Mock();b.query=Mock(return_value=[(0,0)])
         db=MagicMock();b.db=MagicMock();b.db.return_value.__enter__.return_value=db
         drafts=[({'id':9,'job_ids':'42'},)];places=[({'id':10,'processing_job_id':42},)]
-        db.execute.side_effect=[Mock(fetchall=Mock(return_value=drafts)),Mock(fetchall=Mock(return_value=places)),SimpleNamespace(rowcount=1),SimpleNamespace(rowcount=1)]
+        db.execute.side_effect=[Mock(fetchall=Mock(return_value=drafts)),Mock(fetchall=Mock(return_value=places)),Mock(fetchone=Mock(return_value=(0,))),SimpleNamespace(rowcount=1),SimpleNamespace(rowcount=1)]
         return b,db
 
     def test_백업에_실패하면_장소나_초안을_삭제하지_않는다(self):
@@ -96,7 +96,7 @@ class CleanupTest(unittest.TestCase):
             b,db=self.fixture(folder)
             with patch('repeat_production.os.open',side_effect=OSError('fixture backup failure')):
                 with self.assertRaises(OSError):b.cleanup_row({'jobId':42})
-            self.assertEqual(db.execute.call_count,2)
+            self.assertEqual(db.execute.call_count,3)
             self.assertFalse(any('delete ' in c.args[0].lower() for c in db.execute.call_args_list))
 
     def test_해당_사용자와_작업의_결과만_백업하고_삭제한다(self):
@@ -104,9 +104,23 @@ class CleanupTest(unittest.TestCase):
             b,db=self.fixture(folder);row={'jobId':42};b.cleanup_row(row)
             backup=Path(folder)/'owned-job-42.json';self.assertEqual(backup.stat().st_mode&0o777,0o600)
             self.assertEqual(json.loads(backup.read_text())['places'][0]['processing_job_id'],42)
-            for call in db.execute.call_args_list[2:]:
+            for call in db.execute.call_args_list[3:]:
                 self.assertIn('user_id=1',call.args[0]);self.assertIn(call.args[1],[(42,),('42',)])
             self.assertTrue(row['cleanupComplete']);self.assertTrue(b.result['cleanups'][0]['jobAndApiLogsKept'])
+
+    def test_여행에_추가된_테스트장소는_자동삭제하지_않는다(self):
+        with tempfile.TemporaryDirectory() as folder:
+            b,db=self.fixture(folder)
+            db.execute.side_effect=[Mock(fetchall=Mock(return_value=[])),Mock(fetchall=Mock(return_value=[])),Mock(fetchone=Mock(return_value=(1,)))]
+            with self.assertRaisesRegex(AssertionError,'test_places_now_in_trip_preserved'):b.cleanup_row({'jobId':42})
+            self.assertFalse(any('delete ' in c.args[0].lower() for c in db.execute.call_args_list))
+
+    def test_사용자가_승인한_테스트초안은_자동삭제하지_않는다(self):
+        with tempfile.TemporaryDirectory() as folder:
+            b,db=self.fixture(folder)
+            db.execute.side_effect=[Mock(fetchall=Mock(return_value=[({'status':'APPROVED'},)])),Mock(fetchall=Mock(return_value=[]))]
+            with self.assertRaisesRegex(AssertionError,'approved_test_draft_preserved'):b.cleanup_row({'jobId':42})
+            self.assertFalse(any('delete ' in c.args[0].lower() for c in db.execute.call_args_list))
 
 
 class SummaryAndScheduleTest(unittest.TestCase):
