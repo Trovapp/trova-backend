@@ -2205,3 +2205,11 @@
 - 기존 REST/async 대비 Spring AI2/Kafka의 결과를 6쪽 PDF로 작성했다. 새확대실험(Java각20회/운영각6건)을 중심으로 도입순서·분포/짝 그래프·지연/자원/신뢰성/비용기록·표본 및 인과 해석 한계·근거링크8개를 포함했다. 세빌드전체통제비교/전체속도개선률로 오해하지 않도록 범위를 명시했다.
 - 생성도구는 고정된분석/원본해시를 확인하고 로컬ReportLab/Matplotlib로 작성, 별도내보내기venv만 사용했다. 프로젝트 런타임의존성/MCP추가없음. 원본 수치·부호·한글 추출·페이지/여백/링크 검사와6쪽 시각검수를 완료했다. 검수 중 글꼴의 음수기호 누락과 그래프라벨 겹침을 수정하고 재검수했다.
 - docs/bench/reports/trova-performance-comparison-20261101.pdf 및생성/검수README·JSON, scripts/build_performance_pdf.py에보관. 사용자Downloads에도 같은바이트 사본을 전달했다. 전체build1010중1007통과·실패/오류0·기존opt-in3skip. 이번PDF작업의새AI호출/운영변경0,잠자기복구계속보류.
+
+
+## 2026-11-01 분석 결과 저장·완료 원자성 (#292)
+
+- 사용자 네 보완 승인 중 첫 작업. 기존 건별 저장·별도DONE 커밋과 같은 adapter에서5개검사중부분결과교체/중간실패롤백2개실패를실제H2로재현했다. 원래메서드가없는코드에같은signature adapter를쓴negative이며원본그대로실행했다고표현하지않는다.
+- 새 completeAnalysis가 외부호출종료후작업행을잠그고PROCESSING/analysis미완료를재확인, 기존미완료부분결과교체·새장소전체·DONE을한트랜잭션으로커밋한다. 중간실패시삭제/첫행/상태모두롤백. 완료/실패재호출보존,완료직전종료시자동초안시작안함. 기존단일JVM/큐/시도정책유지(ADR0029).
+- 전체build1016중1013통과·실패/오류0·기존opt-in3skip, 실제Kafka/별도JVM/H2/Python복구opt-in1개및새통합5개추가통과. 기존복구원본보존·새원본별도보관. SIGKILL을DBcommit중간에주입한것은아니며다중JVM외부exactly-once는보장하지않는다.
+- docs/reviews/analysis-finalization-negative-20261101.json,validation및docs/bench/results/analysis-finalization-recovery-20261101.json. 외부실제API/운영변경없음,머지/배포전.

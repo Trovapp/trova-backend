@@ -1,0 +1,17 @@
+{
+  "fullBuild": {
+    "tests": 1016,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "negativeControl": "analysis-finalization-negative-20261101.json",
+  "actualKafkaJvmRecovery": "../bench/results/analysis-finalization-recovery-20261101.json",
+  "newExternalApiCalls": 0,
+  "productionChanged": false,
+  "limits": [
+    "single JVM dispatch ownership unchanged",
+    "legacy partial row replacement changes their IDs",
+    "constraint rollback and seeded partial-state recovery; JVM fixture kills before final commit, not inside DB commit"
+  ]
+}
