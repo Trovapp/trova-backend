@@ -1,0 +1,1804 @@
+{
+  "scope": "10 same human-gold YouTube cases; paired alternating before/after; no cache; pre-geocoding names only",
+  "startedAt": "2026-11-01T14:34:21.853655+09:00",
+  "model": "gemini-3.5-flash-lite",
+  "maxAttemptsPerPhase": 30,
+  "maxAttemptsTotal": 60,
+  "minimumRequestGapSeconds": 8,
+  "attemptsStarted": {
+    "before": 22,
+    "after": 20
+  },
+  "results": [
+    {
+      "videoNo": "1",
+      "phase": "before",
+      "expected": [
+        "가야랜드",
+        "밀양돼지국밥",
+        "수로왕릉",
+        "명월카페",
+        "만리향",
+        "연지공원"
+      ],
+      "status": "ok",
+      "names": [
+        "가야랜드",
+        "밀양돼지국밥",
+        "수로왕릉",
+        "명월카페",
+        "만리향",
+        "연지공원"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 1,
+          "precision": 1,
+          "missing": [],
+          "hits": 6
+        },
+        "legacyRecall": 1,
+        "legacyPrecision": 1
+      },
+      "seconds": 28.93,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 15435,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5354,
+          "responseTokens": 86,
+          "totalTokens": 5440
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 12211,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6314,
+          "responseTokens": 736,
+          "totalTokens": 7050
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "부산",
+            "김해",
+            "김해공항",
+            "가야랜드",
+            "밀양돼지국밥",
+            "수로왕릉",
+            "명월카페",
+            "만리향",
+            "연지공원"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "부산",
+            "김해",
+            "김해공항"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "1",
+      "phase": "after",
+      "expected": [
+        "가야랜드",
+        "밀양돼지국밥",
+        "수로왕릉",
+        "명월카페",
+        "만리향",
+        "연지공원"
+      ],
+      "status": "ok",
+      "names": [
+        "가야랜드",
+        "밀양돼지국밥",
+        "수로왕릉",
+        "명월카페",
+        "만리향",
+        "연지공원"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 1,
+          "precision": 1,
+          "missing": [],
+          "hits": 6
+        },
+        "legacyRecall": 1,
+        "legacyPrecision": 1
+      },
+      "seconds": 25.923,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 8587,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5499,
+          "responseTokens": 86,
+          "totalTokens": 5585
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 17021,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6525,
+          "responseTokens": 817,
+          "totalTokens": 7342
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "김해",
+            "부산",
+            "김해공항",
+            "가야랜드",
+            "밀양돼지국밥",
+            "수로왕릉",
+            "명월카페",
+            "만리향",
+            "연지공원"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "김해",
+            "부산",
+            "김해공항"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "2",
+      "phase": "after",
+      "expected": [
+        "하평해변",
+        "파닭김밥",
+        "어달삼거리",
+        "어달항",
+        "카페어달",
+        "논골담길",
+        "등대쉼터",
+        "등대그집",
+        "비비소",
+        "해랑전망대"
+      ],
+      "status": "ok",
+      "names": [
+        "하평해변",
+        "동쪽바다중앙시장",
+        "어달삼거리",
+        "어달항",
+        "카페어달",
+        "논골담길"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.5,
+          "precision": 0.8333333333333334,
+          "missing": [
+            "파닭김밥",
+            "등대쉼터",
+            "등대그집",
+            "비비소",
+            "해랑전망대"
+          ],
+          "hits": 5
+        },
+        "legacyRecall": 0.5,
+        "legacyPrecision": 0.8333333333333334
+      },
+      "seconds": 15.221,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 8784,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5774,
+          "responseTokens": 92,
+          "totalTokens": 5866
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 5838,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6804,
+          "responseTokens": 656,
+          "totalTokens": 7460
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "묵호",
+            "동해",
+            "하평해변",
+            "중앙시장",
+            "어달삼거리",
+            "어달항",
+            "카페어달",
+            "묵호항",
+            "논골담길",
+            "비비소"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "묵호",
+            "동해",
+            "중앙시장",
+            "묵호항",
+            "비비소"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "2",
+      "phase": "before",
+      "expected": [
+        "하평해변",
+        "파닭김밥",
+        "어달삼거리",
+        "어달항",
+        "카페어달",
+        "논골담길",
+        "등대쉼터",
+        "등대그집",
+        "비비소",
+        "해랑전망대"
+      ],
+      "status": "ok",
+      "names": [
+        "하평해변",
+        "중앙시장",
+        "어달삼거리",
+        "어달항",
+        "카페어달",
+        "논골담길",
+        "비비소",
+        "해랑상만대"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.6,
+          "precision": 0.75,
+          "missing": [
+            "파닭김밥",
+            "등대쉼터",
+            "등대그집",
+            "해랑전망대"
+          ],
+          "hits": 6
+        },
+        "legacyRecall": 0.6,
+        "legacyPrecision": 0.75
+      },
+      "seconds": 15.746,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 6342,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5629,
+          "responseTokens": 102,
+          "totalTokens": 5731
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 8995,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6600,
+          "responseTokens": 936,
+          "totalTokens": 7536
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "묵호",
+            "동해",
+            "하평해변",
+            "중앙시장",
+            "어달삼거리",
+            "어달항",
+            "카페어달",
+            "묵호항",
+            "논골담길",
+            "비비소",
+            "해랑상만대"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "묵호",
+            "동해",
+            "묵호항"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "3",
+      "phase": "before",
+      "expected": [
+        "트로페오비토리아",
+        "작은피자집",
+        "서울시립남서울미술관",
+        "꿈꾸는크루아상",
+        "도쿄빙수",
+        "아트나인&잇나인"
+      ],
+      "status": "ok",
+      "names": [
+        "트로페오비토리아",
+        "작은피자집",
+        "서울시립남서울미술관",
+        "꿈꾸는크루아상",
+        "도쿄빙수",
+        "아트나인"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.8333333333333334,
+          "precision": 0.8333333333333334,
+          "missing": [
+            "아트나인&잇나인"
+          ],
+          "hits": 5
+        },
+        "legacyRecall": 1,
+        "legacyPrecision": 1
+      },
+      "seconds": 14.728,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 8440,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 4725,
+          "responseTokens": 129,
+          "totalTokens": 4854
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 5305,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5720,
+          "responseTokens": 748,
+          "totalTokens": 6468
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "사당",
+            "사당역",
+            "총신대입구",
+            "남태령",
+            "트로페오비토리아",
+            "작은피자집",
+            "서울시립남서울미술관",
+            "이수역",
+            "꿈꾸는크루아상",
+            "도쿄빙수",
+            "메가박스",
+            "아트나인",
+            "잇나인"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "사당",
+            "사당역",
+            "총신대입구",
+            "남태령",
+            "이수역",
+            "메가박스",
+            "잇나인"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "3",
+      "phase": "after",
+      "expected": [
+        "트로페오비토리아",
+        "작은피자집",
+        "서울시립남서울미술관",
+        "꿈꾸는크루아상",
+        "도쿄빙수",
+        "아트나인&잇나인"
+      ],
+      "status": "ok",
+      "names": [
+        "트로페오비토리아",
+        "작은피자집",
+        "서울시립남서울미술관",
+        "꿈꾸는크루아상",
+        "도쿄빙수",
+        "아트나인"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.8333333333333334,
+          "precision": 0.8333333333333334,
+          "missing": [
+            "아트나인&잇나인"
+          ],
+          "hits": 5
+        },
+        "legacyRecall": 1,
+        "legacyPrecision": 1
+      },
+      "seconds": 16.626,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 7921,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 4870,
+          "responseTokens": 150,
+          "totalTokens": 5020
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 8079,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5948,
+          "responseTokens": 796,
+          "totalTokens": 6744
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "사당",
+            "사당역",
+            "총신대입구",
+            "남태령",
+            "트로페오비토리아",
+            "작은피자집",
+            "서울시립남서울미술관",
+            "구 벨기에 영사관",
+            "이수역",
+            "꿈꾸는크루아상",
+            "도교빙수",
+            "메가박스",
+            "아트나인&잇나인",
+            "아트나인",
+            "잇나인"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "사당",
+            "사당역",
+            "총신대입구",
+            "남태령",
+            "구 벨기에 영사관",
+            "이수역",
+            "도교빙수",
+            "메가박스",
+            "아트나인&잇나인",
+            "잇나인"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "4",
+      "phase": "after",
+      "expected": [
+        "임페리아",
+        "후르셰다사마르칸트",
+        "안산다문화음식거리",
+        "미쉐",
+        "마리나베이커리"
+      ],
+      "status": "ok",
+      "names": [
+        "안산역",
+        "임페리아",
+        "우즈세다사마르칸트",
+        "안산다문화음식거리",
+        "미쉐",
+        "마리나베이커리"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.8,
+          "precision": 0.6666666666666666,
+          "missing": [
+            "후르셰다사마르칸트"
+          ],
+          "hits": 4
+        },
+        "legacyRecall": 0.8,
+        "legacyPrecision": 0.6666666666666666
+      },
+      "seconds": 15.708,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 7510,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5776,
+          "responseTokens": 149,
+          "totalTokens": 5925
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 7867,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6853,
+          "responseTokens": 840,
+          "totalTokens": 7693
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "안산",
+            "경기도",
+            "이태원",
+            "안산 다문화마을",
+            "안산역",
+            "임페리아",
+            "우즈베키스탄",
+            "우즈세다사마르칸트",
+            "안산다문화음식거리",
+            "먹거리 장터",
+            "미쉐",
+            "중국",
+            "메가커피",
+            "안산 땟골마을",
+            "마리나베이커리"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "안산",
+            "경기도",
+            "이태원",
+            "안산 다문화마을",
+            "우즈베키스탄",
+            "먹거리 장터",
+            "중국",
+            "메가커피",
+            "안산 땟골마을"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "4",
+      "phase": "before",
+      "expected": [
+        "임페리아",
+        "후르셰다사마르칸트",
+        "안산다문화음식거리",
+        "미쉐",
+        "마리나베이커리"
+      ],
+      "status": "ok",
+      "names": [
+        "안산역",
+        "임페리아",
+        "후르세다사마르칸트",
+        "안산다문화음식거리",
+        "미쉐",
+        "마리나베이커리"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.8,
+          "precision": 0.6666666666666666,
+          "missing": [
+            "후르셰다사마르칸트"
+          ],
+          "hits": 4
+        },
+        "legacyRecall": 0.8,
+        "legacyPrecision": 0.6666666666666666
+      },
+      "seconds": 16.882,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 6380,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5631,
+          "responseTokens": 106,
+          "totalTokens": 5737
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 10179,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6608,
+          "responseTokens": 767,
+          "totalTokens": 7375
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "안산",
+            "경기도",
+            "안산 다문화마을",
+            "안산역",
+            "임페리아",
+            "후르세다사마르칸트",
+            "안산다문화음식거리",
+            "먹거리 장터",
+            "미쉐",
+            "마리나베이커리"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "안산",
+            "경기도",
+            "안산 다문화마을",
+            "먹거리 장터"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "5",
+      "phase": "before",
+      "expected": [],
+      "status": "error",
+      "errorType": "RemoteDisconnected",
+      "seconds": 20.724,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 8459,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 4263,
+          "responseTokens": 27,
+          "totalTokens": 4290
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "Busan"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "5",
+      "phase": "before",
+      "expected": [],
+      "status": "ok",
+      "names": [],
+      "scores": {
+        "strict": {
+          "recall": 1,
+          "precision": 1,
+          "missing": [],
+          "hits": 0
+        },
+        "legacyRecall": 1,
+        "legacyPrecision": 1
+      },
+      "seconds": 13.19,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 4857,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 4263,
+          "responseTokens": 32,
+          "totalTokens": 4295
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 6105,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5183,
+          "responseTokens": 1,
+          "totalTokens": 5184
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "Busan",
+            "부산"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "Busan",
+            "부산"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "5",
+      "phase": "after",
+      "expected": [],
+      "status": "ok",
+      "names": [
+        "Busan"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0,
+          "precision": 0,
+          "missing": [],
+          "hits": 0
+        },
+        "legacyRecall": 0,
+        "legacyPrecision": 0
+      },
+      "seconds": 16.499,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 8163,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 4408,
+          "responseTokens": 27,
+          "totalTokens": 4435
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 8006,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5391,
+          "responseTokens": 93,
+          "totalTokens": 5484
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "Busan"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": []
+        }
+      ]
+    },
+    {
+      "videoNo": "6",
+      "phase": "after",
+      "expected": [
+        "카츠키친 전포점",
+        "이바바커피",
+        "해운대역",
+        "광안리",
+        "해변포차",
+        "광안리 썰스데이파티",
+        "타이카텐푸라&마츠도 해리단길점",
+        "코오리마찌 해리단길점",
+        "해운대 메인거리 & 시장",
+        "개미집 해운대역점",
+        "해운대 T1 베이스캠프"
+      ],
+      "status": "ok",
+      "names": [
+        "부산역",
+        "카츠키친전포점",
+        "이바비커피전포점",
+        "해운대역",
+        "광안리어방축제",
+        "광안리썰스데이파티",
+        "해운대역거리",
+        "타이거텐푸라&마츠도해리단길점",
+        "코오리마찌해리단길점",
+        "해운대메인거리",
+        "해운대",
+        "개미집해운대역점",
+        "해운대T1베이스캠프",
+        "해운대",
+        "부산역"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.5454545454545454,
+          "precision": 0.4,
+          "missing": [
+            "이바바커피",
+            "광안리",
+            "해변포차",
+            "타이카텐푸라&마츠도해리단길점",
+            "해운대메인거리&시장"
+          ],
+          "hits": 6
+        },
+        "legacyRecall": 0.7272727272727273,
+        "legacyPrecision": 0.7333333333333333
+      },
+      "seconds": 18.743,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 7765,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 2876,
+          "responseTokens": 187,
+          "totalTokens": 3063
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 10608,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 3989,
+          "responseTokens": 1617,
+          "totalTokens": 5606
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "부산",
+            "광안리",
+            "SRT 기차안",
+            "부산역",
+            "카츠키친 전포점",
+            "이바비커피 전포점",
+            "해운대역",
+            "광안리 어방 축제",
+            "광안리 썰스데이파티",
+            "해운대역 거리",
+            "타이거텐푸라&마츠도 해리단길점",
+            "코오리마찌 해리단길점",
+            "해운대 메인 거리",
+            "해운대",
+            "개미집 해운대역점",
+            "해운대 T1 베이스캠프"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "부산",
+            "광안리",
+            "SRT 기차안"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "6",
+      "phase": "before",
+      "expected": [
+        "카츠키친 전포점",
+        "이바바커피",
+        "해운대역",
+        "광안리",
+        "해변포차",
+        "광안리 썰스데이파티",
+        "타이카텐푸라&마츠도 해리단길점",
+        "코오리마찌 해리단길점",
+        "해운대 메인거리 & 시장",
+        "개미집 해운대역점",
+        "해운대 T1 베이스캠프"
+      ],
+      "status": "ok",
+      "names": [
+        "SRT기차안",
+        "부산역",
+        "카츠키친전포점",
+        "이버비커피전포점",
+        "해운대역",
+        "광안리어방축제",
+        "광안리썰스데이파티",
+        "해운대역거리",
+        "타이키텐푸라&마츠도해리단길점",
+        "코오리마찌해리단길점",
+        "해운대메인거리&시장구경",
+        "해운대바다뷰",
+        "개미집해운대역점",
+        "해운대T1베이스캠프"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.5454545454545454,
+          "precision": 0.42857142857142855,
+          "missing": [
+            "이바바커피",
+            "광안리",
+            "해변포차",
+            "타이카텐푸라&마츠도해리단길점",
+            "해운대메인거리&시장"
+          ],
+          "hits": 6
+        },
+        "legacyRecall": 0.7272727272727273,
+        "legacyPrecision": 0.6428571428571429
+      },
+      "seconds": 16.003,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 4346,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 2731,
+          "responseTokens": 180,
+          "totalTokens": 2911
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 11296,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 3775,
+          "responseTokens": 1536,
+          "totalTokens": 5311
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "SRT 기차안",
+            "부산역",
+            "카츠키친 전포점",
+            "이버비커피 전포점",
+            "해운대역",
+            "광안리 어방 축제",
+            "광안리 썰스데이파티",
+            "해운대역 거리",
+            "타이키텐푸라 & 마츠도 해리단길점",
+            "코오리마찌 해리단길점",
+            "해운대 메인 거리 & 시장 구경",
+            "해운대 바다",
+            "개미집 해운대역점",
+            "해운대 T1 베이스캠프"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "해운대 바다"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "7",
+      "phase": "before",
+      "expected": [
+        "삼양해수욕장",
+        "함덕해수욕장",
+        "김녕해수욕장",
+        "세화해수욕장",
+        "표선해수욕장",
+        "색달해수욕장",
+        "화순금모래해수욕장",
+        "판포포구",
+        "협재해수욕장",
+        "이호테우해수욕장"
+      ],
+      "status": "ok",
+      "names": [
+        "삼양해수욕장",
+        "함덕해수욕장",
+        "김녕해수욕장",
+        "세화해수욕장",
+        "표선해수욕장",
+        "색달해수욕장",
+        "화순금모래해변",
+        "한포포구",
+        "협재해수욕장",
+        "이호테우해수욕장"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.8,
+          "precision": 0.8,
+          "missing": [
+            "화순금모래해수욕장",
+            "판포포구"
+          ],
+          "hits": 8
+        },
+        "legacyRecall": 0.8,
+        "legacyPrecision": 0.8
+      },
+      "seconds": 15.438,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 5071,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5725,
+          "responseTokens": 128,
+          "totalTokens": 5853
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 9574,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6723,
+          "responseTokens": 1198,
+          "totalTokens": 7921
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "제주",
+            "삼양해수욕장",
+            "함덕해수욕장",
+            "김녕해수욕장",
+            "세화해수욕장",
+            "표선해수욕장",
+            "색달해수욕장",
+            "화순금모래해변",
+            "한포포구",
+            "협재해수욕장",
+            "이호테우해수욕장"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "제주"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "7",
+      "phase": "after",
+      "expected": [
+        "삼양해수욕장",
+        "함덕해수욕장",
+        "김녕해수욕장",
+        "세화해수욕장",
+        "표선해수욕장",
+        "색달해수욕장",
+        "화순금모래해수욕장",
+        "판포포구",
+        "협재해수욕장",
+        "이호테우해수욕장"
+      ],
+      "status": "ok",
+      "names": [
+        "삼양해수욕장",
+        "함덕해수욕장",
+        "김녕해수욕장",
+        "세화해수욕장",
+        "표선해수욕장",
+        "색달해수욕장",
+        "화순금모래해변",
+        "한포포구",
+        "협재해수욕장",
+        "이호테우해수욕장"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.8,
+          "precision": 0.8,
+          "missing": [
+            "화순금모래해수욕장",
+            "판포포구"
+          ],
+          "hits": 8
+        },
+        "legacyRecall": 0.8,
+        "legacyPrecision": 0.8
+      },
+      "seconds": 16.002,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 4362,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5870,
+          "responseTokens": 138,
+          "totalTokens": 6008
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 11310,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6942,
+          "responseTokens": 1199,
+          "totalTokens": 8141
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "제주",
+            "제주국제공항",
+            "삼양해수욕장",
+            "함덕해수욕장",
+            "김녕해수욕장",
+            "세화해수욕장",
+            "표선해수욕장",
+            "색달해수욕장",
+            "화순금모래해변",
+            "한포포구",
+            "협재해수욕장",
+            "이호테우해수욕장"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "제주",
+            "제주국제공항"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "8",
+      "phase": "after",
+      "expected": [
+        "우진해장국",
+        "삼무국수",
+        "제주당",
+        "금오름",
+        "성이시돌목장",
+        "봄빛코티지",
+        "신창풍차해안",
+        "돈어길",
+        "오설록",
+        "곶자왈도립공원",
+        "한라산아래첫마을",
+        "중문고등어쌈밥",
+        "화순한가네식당",
+        "용머리해안",
+        "송악산",
+        "미영이네",
+        "순천미향",
+        "뚱보아저씨",
+        "협재해수욕장",
+        "호텔샌드",
+        "한림칼국수",
+        "동문시장",
+        "빽다방 제주사수점",
+        "제주공항"
+      ],
+      "status": "ok",
+      "names": [
+        "우진해장국",
+        "삼무국수",
+        "제주당",
+        "금오름",
+        "성이시돌목장",
+        "봄빛코티지",
+        "신창풍차해안",
+        "돈어길",
+        "오설록",
+        "곶자왈도립공원",
+        "한라산아래첫마을",
+        "중문고등어쌈밥",
+        "화순한가네식당",
+        "용머리해안",
+        "송악산",
+        "미영이네",
+        "순천미향",
+        "뚱보아저씨",
+        "협재해수욕장",
+        "카페호텔샌드",
+        "한림칼국수",
+        "동문시장",
+        "빽다방제주사수점",
+        "제주공항"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.9583333333333334,
+          "precision": 0.9583333333333334,
+          "missing": [
+            "호텔샌드"
+          ],
+          "hits": 23
+        },
+        "legacyRecall": 1,
+        "legacyPrecision": 1
+      },
+      "seconds": 18.426,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 5916,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5875,
+          "responseTokens": 234,
+          "totalTokens": 6109
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 12160,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 7018,
+          "responseTokens": 2818,
+          "totalTokens": 9836
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "우진해장국",
+            "삼무국수",
+            "제주당",
+            "금오름",
+            "성이시돌목장",
+            "봄빛코티지",
+            "신창풍차해안",
+            "돈어길",
+            "오설록",
+            "곶자왈도립공원",
+            "한라산아래첫마을",
+            "중문고등어쌈밥",
+            "화순한가네식당",
+            "용머리해안",
+            "송악산",
+            "미영이네",
+            "순천미향",
+            "뚱보아저씨",
+            "협재해수욕장",
+            "카페 호텔샌드",
+            "한림칼국수",
+            "동문시장",
+            "빽다방 제주사수점",
+            "제주공항"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": []
+        }
+      ]
+    },
+    {
+      "videoNo": "8",
+      "phase": "before",
+      "expected": [
+        "우진해장국",
+        "삼무국수",
+        "제주당",
+        "금오름",
+        "성이시돌목장",
+        "봄빛코티지",
+        "신창풍차해안",
+        "돈어길",
+        "오설록",
+        "곶자왈도립공원",
+        "한라산아래첫마을",
+        "중문고등어쌈밥",
+        "화순한가네식당",
+        "용머리해안",
+        "송악산",
+        "미영이네",
+        "순천미향",
+        "뚱보아저씨",
+        "협재해수욕장",
+        "호텔샌드",
+        "한림칼국수",
+        "동문시장",
+        "빽다방 제주사수점",
+        "제주공항"
+      ],
+      "status": "ok",
+      "names": [
+        "제주국제공항",
+        "우진해장국",
+        "삼무국수",
+        "제주당",
+        "금오름",
+        "성이시돌목장",
+        "봄빛코티지",
+        "신창풍차해안",
+        "돈어길",
+        "오설록",
+        "곶자왈도립공원",
+        "한라산아래첫마을",
+        "중문고등어쌈밥",
+        "화순한가네식당",
+        "용머리해안",
+        "송악산",
+        "미영이네",
+        "순천미향",
+        "뚱보아저씨",
+        "협재해수욕장",
+        "카페호텔샌드",
+        "한림칼국수",
+        "동문시장",
+        "빽다방제주사수점"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0.9166666666666666,
+          "precision": 0.9166666666666666,
+          "missing": [
+            "호텔샌드",
+            "제주공항"
+          ],
+          "hits": 22
+        },
+        "legacyRecall": 0.9583333333333334,
+        "legacyPrecision": 0.9583333333333334
+      },
+      "seconds": 16.651,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 2740,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5730,
+          "responseTokens": 249,
+          "totalTokens": 5979
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 13578,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6819,
+          "responseTokens": 2819,
+          "totalTokens": 9638
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "제주",
+            "제주국제공항",
+            "우진해장국",
+            "삼무국수",
+            "제주당",
+            "금오름",
+            "성이시돌목장",
+            "봄빛코티지",
+            "신창풍차해안",
+            "돈어길",
+            "오설록",
+            "곶자왈도립공원",
+            "한라산아래첫마을",
+            "중문고등어쌈밥",
+            "화순한가네식당",
+            "용머리해안",
+            "송악산",
+            "미영이네",
+            "순천미향",
+            "뚱보아저씨",
+            "협재해수욕장",
+            "카페 호텔샌드",
+            "한림칼국수",
+            "동문시장",
+            "빽다방 제주사수점",
+            "제주공항"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "제주",
+            "제주공항"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "9",
+      "phase": "before",
+      "expected": [
+        "대포해안주상절리대",
+        "정방폭포",
+        "천지연폭포",
+        "엉또폭포",
+        "쇠소깍",
+        "황우지해안",
+        "소천지",
+        "서귀포치유의숲",
+        "약천사",
+        "중문색달해수욕장"
+      ],
+      "status": "ok",
+      "names": [
+        "대포해안주상절리대",
+        "쇠소깍",
+        "황우지해안",
+        "정방폭포",
+        "약천사",
+        "천지연폭포",
+        "서귀포치유의숲",
+        "엉또폭포",
+        "소천지",
+        "중문색달해수욕장"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 1,
+          "precision": 1,
+          "missing": [],
+          "hits": 10
+        },
+        "legacyRecall": 1,
+        "legacyPrecision": 1
+      },
+      "seconds": 13.452,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 2834,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1725,
+          "responseTokens": 112,
+          "totalTokens": 1837
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 10233,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 2709,
+          "responseTokens": 1035,
+          "totalTokens": 3744
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "대포해안주상절리대",
+            "쇠소깍",
+            "황우지해안",
+            "정방폭포",
+            "약천사",
+            "천지연폭포",
+            "서귀포치유의숲",
+            "엉또폭포",
+            "소천지",
+            "중문색달해수욕장"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": []
+        }
+      ]
+    },
+    {
+      "videoNo": "9",
+      "phase": "after",
+      "expected": [
+        "대포해안주상절리대",
+        "정방폭포",
+        "천지연폭포",
+        "엉또폭포",
+        "쇠소깍",
+        "황우지해안",
+        "소천지",
+        "서귀포치유의숲",
+        "약천사",
+        "중문색달해수욕장"
+      ],
+      "status": "ok",
+      "names": [
+        "대포해안주상절리대",
+        "쇠소깍",
+        "황우지해안",
+        "정방폭포",
+        "약천사",
+        "천지연폭포",
+        "서귀포치유의숲",
+        "엉또폭포",
+        "소천지",
+        "중문색달해수욕장"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 1,
+          "precision": 1,
+          "missing": [],
+          "hits": 10
+        },
+        "legacyRecall": 1,
+        "legacyPrecision": 1
+      },
+      "seconds": 15.665,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 7612,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 1870,
+          "responseTokens": 113,
+          "totalTokens": 1983
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 7678,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 2921,
+          "responseTokens": 1017,
+          "totalTokens": 3938
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "대포해안주상절리대",
+            "쇠소깍",
+            "황우지해안",
+            "정방폭포",
+            "약천사",
+            "천지연폭포",
+            "서귀포 치유의 숲",
+            "엉또폭포",
+            "소천지",
+            "중문색달해수욕장"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": []
+        }
+      ]
+    },
+    {
+      "videoNo": "10",
+      "phase": "after",
+      "expected": [
+        "테라로사커피공장 강릉점"
+      ],
+      "status": "ok",
+      "names": [
+        "테라로사커피공장"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0,
+          "precision": 0,
+          "missing": [
+            "테라로사커피공장강릉점"
+          ],
+          "hits": 0
+        },
+        "legacyRecall": 1,
+        "legacyPrecision": 1
+      },
+      "seconds": 15.028,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 6444,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5769,
+          "responseTokens": 48,
+          "totalTokens": 5817
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 8061,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6768,
+          "responseTokens": 175,
+          "totalTokens": 6943
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "강릉",
+            "테라로사",
+            "테라로사커피공장"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "강릉",
+            "테라로사"
+          ]
+        }
+      ]
+    },
+    {
+      "videoNo": "10",
+      "phase": "before",
+      "expected": [
+        "테라로사커피공장 강릉점"
+      ],
+      "status": "ok",
+      "names": [
+        "테라로사커피공장강릉본점"
+      ],
+      "scores": {
+        "strict": {
+          "recall": 0,
+          "precision": 0,
+          "missing": [
+            "테라로사커피공장강릉점"
+          ],
+          "hits": 0
+        },
+        "legacyRecall": 0,
+        "legacyPrecision": 0
+      },
+      "seconds": 16.967,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 7730,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5624,
+          "responseTokens": 63,
+          "totalTokens": 5687
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 8604,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 6571,
+          "responseTokens": 166,
+          "totalTokens": 6737
+        }
+      ],
+      "trace": [
+        {
+          "stage": "collect",
+          "candidates": [
+            "테라로사",
+            "테라로사커피공장",
+            "강릉",
+            "테라로사커피공장 강릉 본점"
+          ]
+        },
+        {
+          "stage": "filter",
+          "unmatchedCandidates": [
+            "테라로사",
+            "테라로사커피공장",
+            "강릉"
+          ]
+        }
+      ]
+    }
+  ],
+  "completed": true,
+  "sourceHashes": {
+    "pipeline-test/extract_places.py": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+    "pipeline-test/run_pipeline.py": "bb70fe23c77742f01a4157fdd6f7f96277cb68eddb1b40d2f4033be55d7b4d18",
+    "eval/extraction/answers.csv": "e89934eabbc51bdc25702d372e0971eb57e0e8e13eb77c7a31f4663744f498a6",
+    "eval/extraction/videos.csv": "81b790a479ee921564dff11bacd9a1aeb6c7fac55caba25284a661773d6128ad",
+    "eval/place-extract/scoring.cjs": "38e224e037ce6045be04a5013e3e987bb29e23b518ab57a3a00de81612405a5b",
+    "eval/place-extract/experiments/grounded-names-v1.json": "c924c63072f01b4e4b669c9c7d84c8ba6b3fef290a6c44735344ba410ad97c94"
+  },
+  "finishedAt": "2026-11-01T14:43:18.321609+09:00",
+  "resumptions": [
+    {
+      "at": "2026-11-01T14:40:06.226108+09:00",
+      "reason": "retry failed transient transport case; prior outcomes retained; original request budgets unchanged"
+    }
+  ],
+  "runnerVersions": [
+    {
+      "sha256": "48e5e1d2baa134bca1247f138f793d85b11722cb6adea31b69a88b4eaa0f2b9b",
+      "precedingInterruptedRunnerSha256": "49f0c17c30f01c6395ac24affe323e5ae836b1c53c96f1f69175dd61270010d7"
+    }
+  ]
+}

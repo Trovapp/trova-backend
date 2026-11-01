@@ -63,3 +63,4 @@
 | [0026](0026-admin-action-atomic-audit.md) | 관리자 DB 변경과 실행 감사는 함께 커밋하고 큐 전달은 커밋 뒤에 | 확정 | 2026-10-31 |
 | [0027](0027-place-details-single-flight.md) | 같은 장소의 진행 중 상세 생성을 단일 JVM에서 공유 | 확정 | 2026-10-31 |
 | [0028](0028-python-process-lifecycle.md) | 보조 Python도 소유 프로세스 종료 확인 뒤 출력·파일 처리 | 확정 | 2026-11-01 |
+| [0031](0031-known-non-destination-labels.md) | 명시된 비장소 이름만 좁은 출력 점검으로 제외 | 확정 | 2026-11-01 |
