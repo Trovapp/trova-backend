@@ -9,6 +9,8 @@ import base64
 import json
 import mimetypes
 import os
+import re
+import unicodedata
 import sys
 import time
 import urllib.error
@@ -505,6 +507,37 @@ def trace_selection(candidates: list, places: list[dict], audit: bool = False) -
                reasonAvailability="see_decisions_trace" if audit else "not_returned_by_model")
 
 
+
+# FILTER_PROMPT에서 이미 제외하는 넓은 지역명과 고정 지도 지점이 아닌 이동수단 내부 표기.
+# 부분 문자열로 지점을 지우지 않는다(부산역/서울숲/Jeju Museum 등은 유지).
+_BROAD_REGION_NAMES = frozenset({
+    "서울", "서울특별시", "seoul", "부산", "부산광역시", "busan", "pusan",
+    "제주", "제주도", "제주특별자치도", "jeju", "jejudo", "jeju-do", "jejuisland",
+})
+
+
+def keep_destination_name(name: str) -> bool:
+    normalized = "".join(unicodedata.normalize("NFKC", name).split()).casefold()
+    if normalized in _BROAD_REGION_NAMES:
+        return False
+    if re.fullmatch(r"(?:srt|ktx)?(?:기차|열차)(?:안|내부)", normalized):
+        return False
+    return normalized not in {"지하철안", "버스안", "비행기안", "기내"}
+
+
+def exclude_known_non_destinations(places: list[dict]) -> list[dict]:
+    kept = []
+    for place in places:
+        name = place.get("name")
+        # 도시와 같은 상호가 실제 가게일 수도 있다. 구체적 주소/업종 근거를 이름만으로 버리지 않는다.
+        business = place.get("category") in {"restaurant", "cafe", "lodging", "shopping"}
+        address = place.get("address")
+        if business or (isinstance(address, str) and address.strip()):
+            kept.append(place)
+        elif not isinstance(name, str) or keep_destination_name(name):
+            kept.append(place)
+    return kept
+
 def extract_places(
     transcript: str | None = None,
     audio_path: Path | None = None,
@@ -548,7 +581,7 @@ def extract_places(
     )
     places = call_gemini_with_repair(parts, model, api_key, "extract_places.filter", _parse)
     trace_selection(candidates, places, audit=audit)
-    return _normalize_video_notes(_normalize_name_candidates(_normalize_day_fields(places)))
+    return exclude_known_non_destinations(_normalize_video_notes(_normalize_name_candidates(_normalize_day_fields(places))))
 
 
 if __name__ == "__main__":

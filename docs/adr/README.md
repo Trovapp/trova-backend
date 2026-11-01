@@ -66,3 +66,5 @@
 | [0029](0029-analysis-finalization-transaction.md) | 분석 결과 교체와 완료를 한 트랜잭션으로 저장 | 확정 | 2026-11-01 |
 
 | [0030](0030-opening-hours-inflight-sharing.md) | 영업시간은 진행 중인 동일 조회만 공유 | 확정 | 2026-11-01 |
+
+| [0031](0031-known-non-destination-labels.md) | 명시된 비장소 이름만 좁은 출력 점검으로 제외 | 확정 | 2026-11-01 |

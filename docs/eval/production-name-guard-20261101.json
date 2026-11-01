@@ -1,0 +1,402 @@
+{
+  "environment": "production Oracle host, same deployed Python and key; isolated extraction replay, not share HTTP/Kafka E2E",
+  "startedAt": "2026-11-01T07:31:54.106767+00:00",
+  "deployedPythonSha256": "0343eefb60d9474aeabd46d165613547514e14328a66e3f3c7b9ae7ab4f87d77",
+  "candidateSha256": "12fd5d7e3b0013e72df87cf3ceb11009b5a487d939d74d3cb0297972778dae9f",
+  "results": [
+    {
+      "videoNo": "5",
+      "expected": [],
+      "beforePlaces": [
+        {
+          "name": "Busan",
+          "nameCandidates": [
+            "Busan"
+          ],
+          "region": "Busan",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.9,
+          "dayNumber": null,
+          "orderInDay": null,
+          "videoNotes": [
+            "Trip To Busan"
+          ]
+        }
+      ],
+      "afterPlaces": [],
+      "status": "ok",
+      "seconds": 10.384,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 1710,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 4263,
+          "responseTokens": 27,
+          "totalTokens": 4290
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 8674,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 5180,
+          "responseTokens": 103,
+          "totalTokens": 5283
+        }
+      ]
+    },
+    {
+      "videoNo": "6",
+      "expected": [
+        "카츠키친 전포점",
+        "이바바커피",
+        "해운대역",
+        "광안리",
+        "해변포차",
+        "광안리 썰스데이파티",
+        "타이카텐푸라&마츠도 해리단길점",
+        "코오리마찌 해리단길점",
+        "해운대 메인거리 & 시장",
+        "개미집 해운대역점",
+        "해운대 T1 베이스캠프"
+      ],
+      "beforePlaces": [
+        {
+          "name": "카츠키친 전포점",
+          "nameCandidates": [
+            "카츠키친 전포점"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "restaurant",
+          "confidence": 0.95,
+          "dayNumber": 1,
+          "orderInDay": 1,
+          "videoNotes": [
+            "점심 카츠"
+          ]
+        },
+        {
+          "name": "이바비커피 전포점",
+          "nameCandidates": [
+            "이바비커피 전포점"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "cafe",
+          "confidence": 0.95,
+          "dayNumber": 1,
+          "orderInDay": 2,
+          "videoNotes": [
+            "밥 다 먹고 카페"
+          ]
+        },
+        {
+          "name": "광안리 어방 축제",
+          "nameCandidates": [
+            "광안리 어방 축제"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.95,
+          "dayNumber": 1,
+          "orderInDay": 3,
+          "videoNotes": [
+            "어방 축제 야경"
+          ]
+        },
+        {
+          "name": "광안리 썰스데이파티",
+          "nameCandidates": [
+            "광안리 썰스데이파티"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.95,
+          "dayNumber": 1,
+          "orderInDay": 4,
+          "videoNotes": [
+            "칵테일 먹고 집 가요"
+          ]
+        },
+        {
+          "name": "타이가텐푸라&마초도 해리단길점",
+          "nameCandidates": [
+            "타이가텐푸라&마초도 해리단길점"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "restaurant",
+          "confidence": 0.95,
+          "dayNumber": 2,
+          "orderInDay": 1,
+          "videoNotes": [
+            "점심 텐동"
+          ]
+        },
+        {
+          "name": "코오리마찌 해리단길점",
+          "nameCandidates": [
+            "코오리마찌 해리단길점"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "cafe",
+          "confidence": 0.95,
+          "dayNumber": 2,
+          "orderInDay": 2,
+          "videoNotes": [
+            "후식으로 빙수 먹는당"
+          ]
+        },
+        {
+          "name": "해운대 메인 거리 & 시장 구경",
+          "nameCandidates": [
+            "해운대 메인 거리 & 시장 구경"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.95,
+          "dayNumber": 2,
+          "orderInDay": 3,
+          "videoNotes": [
+            "해운대 거리 구경"
+          ]
+        },
+        {
+          "name": "해운대 바다 뷰",
+          "nameCandidates": [
+            "해운대 바다 뷰"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.95,
+          "dayNumber": 2,
+          "orderInDay": 4,
+          "videoNotes": [
+            "해운대 바다"
+          ]
+        },
+        {
+          "name": "개미집 해운대역점",
+          "nameCandidates": [
+            "개미집 해운대역점"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "restaurant",
+          "confidence": 0.95,
+          "dayNumber": 3,
+          "orderInDay": 1,
+          "videoNotes": [
+            "낙곱새"
+          ]
+        },
+        {
+          "name": "해운대 T1 베이스캠프",
+          "nameCandidates": [
+            "해운대 T1 베이스캠프"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.95,
+          "dayNumber": 3,
+          "orderInDay": 2,
+          "videoNotes": [
+            "베이스캠프 구경"
+          ]
+        }
+      ],
+      "afterPlaces": [
+        {
+          "name": "카츠키친 전포점",
+          "nameCandidates": [
+            "카츠키친 전포점"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "restaurant",
+          "confidence": 0.95,
+          "dayNumber": 1,
+          "orderInDay": 1,
+          "videoNotes": [
+            "점심 카츠"
+          ]
+        },
+        {
+          "name": "이바비커피 전포점",
+          "nameCandidates": [
+            "이바비커피 전포점"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "cafe",
+          "confidence": 0.95,
+          "dayNumber": 1,
+          "orderInDay": 2,
+          "videoNotes": [
+            "밥 다 먹고 카페"
+          ]
+        },
+        {
+          "name": "광안리 어방 축제",
+          "nameCandidates": [
+            "광안리 어방 축제"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.95,
+          "dayNumber": 1,
+          "orderInDay": 3,
+          "videoNotes": [
+            "어방 축제 야경"
+          ]
+        },
+        {
+          "name": "광안리 썰스데이파티",
+          "nameCandidates": [
+            "광안리 썰스데이파티"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.95,
+          "dayNumber": 1,
+          "orderInDay": 4,
+          "videoNotes": [
+            "칵테일 먹고 집 가요"
+          ]
+        },
+        {
+          "name": "타이가텐푸라&마초도 해리단길점",
+          "nameCandidates": [
+            "타이가텐푸라&마초도 해리단길점"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "restaurant",
+          "confidence": 0.95,
+          "dayNumber": 2,
+          "orderInDay": 1,
+          "videoNotes": [
+            "점심 텐동"
+          ]
+        },
+        {
+          "name": "코오리마찌 해리단길점",
+          "nameCandidates": [
+            "코오리마찌 해리단길점"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "cafe",
+          "confidence": 0.95,
+          "dayNumber": 2,
+          "orderInDay": 2,
+          "videoNotes": [
+            "후식으로 빙수 먹는당"
+          ]
+        },
+        {
+          "name": "해운대 메인 거리 & 시장 구경",
+          "nameCandidates": [
+            "해운대 메인 거리 & 시장 구경"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.95,
+          "dayNumber": 2,
+          "orderInDay": 3,
+          "videoNotes": [
+            "해운대 거리 구경"
+          ]
+        },
+        {
+          "name": "해운대 바다 뷰",
+          "nameCandidates": [
+            "해운대 바다 뷰"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.95,
+          "dayNumber": 2,
+          "orderInDay": 4,
+          "videoNotes": [
+            "해운대 바다"
+          ]
+        },
+        {
+          "name": "개미집 해운대역점",
+          "nameCandidates": [
+            "개미집 해운대역점"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "restaurant",
+          "confidence": 0.95,
+          "dayNumber": 3,
+          "orderInDay": 1,
+          "videoNotes": [
+            "낙곱새"
+          ]
+        },
+        {
+          "name": "해운대 T1 베이스캠프",
+          "nameCandidates": [
+            "해운대 T1 베이스캠프"
+          ],
+          "region": "부산",
+          "address": null,
+          "category": "attraction",
+          "confidence": 0.95,
+          "dayNumber": 3,
+          "orderInDay": 2,
+          "videoNotes": [
+            "베이스캠프 구경"
+          ]
+        }
+      ],
+      "status": "ok",
+      "seconds": 17.48,
+      "apiLogRows": [
+        {
+          "operation": "extract_places.collect",
+          "latencyMs": 8300,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 2731,
+          "responseTokens": 205,
+          "totalTokens": 2936
+        },
+        {
+          "operation": "extract_places.filter",
+          "latencyMs": 9179,
+          "success": true,
+          "attempts": 1,
+          "waitedMs": 0,
+          "promptTokens": 3794,
+          "responseTokens": 1182,
+          "totalTokens": 4976
+        }
+      ]
+    }
+  ],
+  "productionFilesChanged": false,
+  "shareJobsCreated": 0,
+  "attemptsStarted": 4,
+  "finishedAt": "2026-11-01T07:32:21.972149+00:00"
+}
