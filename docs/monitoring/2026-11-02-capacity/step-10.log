@@ -1,7 +1,7 @@
 time="2026-11-02T11:56:11+09:00" level=warning msg="There were unknown fields in the options exported in the script" error="json: unknown field \"gracefulStop\""
 
 
-  █ TOTAL RESULTS 
+  █ TOTAL RESULTS
 
     checks_total.......: 425     9.242/s
     checks_succeeded...: 100.00% 425 out of 425
@@ -21,7 +21,7 @@ time="2026-11-02T11:56:11+09:00" level=warning msg="There were unknown fields in
     http_reqs......................: 425    9.242/s
 
     EXECUTION
-    iteration_duration.............: avg=1.06s   med=1.04s   p(95)=1.17s    max=1.93s   
+    iteration_duration.............: avg=1.06s   med=1.04s   p(95)=1.17s    max=1.93s
     iterations.....................: 425    9.242/s
     vus............................: 10     min=10       max=10
     vus_max........................: 10     min=10       max=10
@@ -29,6 +29,3 @@ time="2026-11-02T11:56:11+09:00" level=warning msg="There were unknown fields in
     NETWORK
     data_received..................: 254 MB 5.5 MB/s
     data_sent......................: 108 kB 2.3 kB/s
-
-
-

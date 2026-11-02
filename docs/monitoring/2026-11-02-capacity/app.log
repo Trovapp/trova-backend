@@ -1,13 +1,13 @@
-app-1  | 
+app-1  |
 app-1  |   .   ____          _            __ _ _
 app-1  |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
 app-1  | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
 app-1  |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
 app-1  |   '  |____| .__|_| |_|_| |_\__, | / / / /
 app-1  |  =========|_|==============|___/=/_/_/_/
-app-1  | 
+app-1  |
 app-1  |  :: Spring Boot ::                (v4.1.0)
-app-1  | 
+app-1  |
 app-1  | 2026-11-02T02:54:29.133Z  INFO 1 --- [           main] c.trova.backend.TrovaBackendApplication  : Starting TrovaBackendApplication v0.0.1-SNAPSHOT using Java 21.0.13 with PID 1 (/app.jar started by root in /)
 app-1  | 2026-11-02T02:54:29.135Z  INFO 1 --- [           main] c.trova.backend.TrovaBackendApplication  : No active profile set, falling back to 1 default profile: "default"
 app-1  | 2026-11-02T02:54:30.428Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
