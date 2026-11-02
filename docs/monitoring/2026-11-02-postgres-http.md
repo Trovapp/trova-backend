@@ -32,6 +32,8 @@ PostgreSQL 쿼리, 필터·DTO 변환, JSON 직렬화, 클라이언트의 전체
 운영 응답이 이 비율로 줄었다는 뜻은 아니다. 메모리 할당량 64~65% 감소는 별도 H2 구간 측정의 결과이며,
 이번 HTTP 실험에서 새로 측정한 값처럼 합치지 않는다.
 
+![PostgreSQL HTTP 비교](2026-11-02-postgres-http/comparison.png)
+
 100개 조건의 중앙값은 기존 5.21~5.71ms, 개선 3.38~3.47ms였다.
 원본의 최대값·각 요청 시간까지 남겼으므로 좋은 실행만 골라 보고하지 않는다.
 
@@ -55,4 +57,4 @@ TROVA_POSTGRES_HTTP_BENCH=1 ./gradlew test --tests '*PlaceListPostgresHttpTest' 
 docker rm -fv trova-place-bench-305
 ```
 
-운영 배포·시뮬레이터 결과는 별도 배포 보고서에서 확인한다.
+[운영 배포·시뮬레이터 결과](2026-11-02-place-list-release.md)는 별도로 기록했다.

@@ -1,0 +1,142 @@
+{
+  "scope": "Server-wide counters around simulator relaunch, home, video list, video map and draft view; not isolated client tracing",
+  "requests": [
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "CLIENT_ERROR",
+        "status": "404",
+        "uri": "/api/places/videos/{jobId}/trip"
+      },
+      "count": 1.0,
+      "serverMeanMs": 896.787455
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/auth/me"
+      },
+      "count": 1.0,
+      "serverMeanMs": 150.289663
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/bookmarks"
+      },
+      "count": 1.0,
+      "serverMeanMs": 1388.187958
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/notifications"
+      },
+      "count": 1.0,
+      "serverMeanMs": 313.109537
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/places"
+      },
+      "count": 4.0,
+      "serverMeanMs": 539.6938042499999
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/places/pending"
+      },
+      "count": 2.0,
+      "serverMeanMs": 808.5144245
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/trip-drafts/auto"
+      },
+      "count": 3.0,
+      "serverMeanMs": 942.3511179999999
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/trip-drafts/{id}"
+      },
+      "count": 1.0,
+      "serverMeanMs": 184.85706599999997
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/trips"
+      },
+      "count": 2.0,
+      "serverMeanMs": 646.7732555
+    }
+  ],
+  "up": [
+    {
+      "metric": {
+        "__name__": "up",
+        "instance": "host.docker.internal:18080",
+        "job": "trova-prod"
+      },
+      "value": [
+        1793585119.021,
+        "1"
+      ]
+    }
+  ],
+  "observedScreens": [
+    "home",
+    "video list",
+    "video places and map",
+    "draft itinerary"
+  ],
+  "completedAt": 1793585119.0225651
+}

@@ -1,0 +1,12 @@
+{
+  "build": "SUCCESS",
+  "junit": {
+    "tests": 1036,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 5
+  },
+  "jarSha256": "84d219d030d110b4223795eb700235afef9dcbe961fd1444ec6f263f05b0ddc7",
+  "testOnlyEndpointAbsentFromJar": true,
+  "isolatedPostgresContainerRemoved": true
+}
