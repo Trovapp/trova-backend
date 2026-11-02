@@ -1,0 +1,12 @@
+{
+  "command": "./gradlew build",
+  "result": "BUILD SUCCESSFUL",
+  "duration": "1m 4s",
+  "junit": {
+    "tests": 1035,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 4
+  },
+  "note": "Initial full run exposed shared H2 context teardown interference. New regression test now uses the existing DataJpaTest statistics context; full build rerun passed."
+}

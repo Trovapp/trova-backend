@@ -1,0 +1,816 @@
+{
+  "start": 1793543190.0,
+  "end": 1793543280.0,
+  "stepSeconds": 15,
+  "queries": {
+    "scrapeUp": {
+      "query": "up{job=\"trova-prod\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "up",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod"
+          },
+          "values": [
+            [
+              1793543190,
+              "1"
+            ],
+            [
+              1793543205,
+              "1"
+            ],
+            [
+              1793543220,
+              "1"
+            ],
+            [
+              1793543235,
+              "1"
+            ],
+            [
+              1793543250,
+              "1"
+            ],
+            [
+              1793543265,
+              "1"
+            ],
+            [
+              1793543280,
+              "1"
+            ]
+          ]
+        }
+      ]
+    },
+    "processCpu": {
+      "query": "process_cpu_usage{job=\"trova-prod\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "process_cpu_usage",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod"
+          },
+          "values": [
+            [
+              1793543190,
+              "0.002339572192513369"
+            ],
+            [
+              1793543205,
+              "0.0023364485981308414"
+            ],
+            [
+              1793543220,
+              "0.01572958500669344"
+            ],
+            [
+              1793543235,
+              "0.05730994152046784"
+            ],
+            [
+              1793543250,
+              "0.19211599456275485"
+            ],
+            [
+              1793543265,
+              "0.04017705141300647"
+            ],
+            [
+              1793543280,
+              "0.02837837837837838"
+            ]
+          ]
+        }
+      ]
+    },
+    "systemCpu": {
+      "query": "system_cpu_usage{job=\"trova-prod\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "system_cpu_usage",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod"
+          },
+          "values": [
+            [
+              1793543190,
+              "0.002675586481397963"
+            ],
+            [
+              1793543205,
+              "0.002002671119423637"
+            ],
+            [
+              1793543220,
+              "0.01742214448381644"
+            ],
+            [
+              1793543235,
+              "0.05582521950379708"
+            ],
+            [
+              1793543250,
+              "0.09099832939591022"
+            ],
+            [
+              1793543265,
+              "0.02999788577124045"
+            ],
+            [
+              1793543280,
+              "0.017688743900433138"
+            ]
+          ]
+        }
+      ]
+    },
+    "heapUsedBytes": {
+      "query": "sum(jvm_memory_used_bytes{job=\"trova-prod\",area=\"heap\"})",
+      "series": [
+        {
+          "metric": {},
+          "values": [
+            [
+              1793543190,
+              "98594624"
+            ],
+            [
+              1793543205,
+              "102327936"
+            ],
+            [
+              1793543220,
+              "69686792"
+            ],
+            [
+              1793543235,
+              "59338192"
+            ],
+            [
+              1793543250,
+              "78437128"
+            ],
+            [
+              1793543265,
+              "84804168"
+            ],
+            [
+              1793543280,
+              "89286464"
+            ]
+          ]
+        }
+      ]
+    },
+    "heapMaxBytes": {
+      "query": "sum(jvm_memory_max_bytes{job=\"trova-prod\",area=\"heap\"})",
+      "series": [
+        {
+          "metric": {},
+          "values": [
+            [
+              1793543190,
+              "389283840"
+            ],
+            [
+              1793543205,
+              "389283840"
+            ],
+            [
+              1793543220,
+              "389283840"
+            ],
+            [
+              1793543235,
+              "389283840"
+            ],
+            [
+              1793543250,
+              "389283840"
+            ],
+            [
+              1793543265,
+              "389283840"
+            ],
+            [
+              1793543280,
+              "389283840"
+            ]
+          ]
+        }
+      ]
+    },
+    "dbActive": {
+      "query": "hikaricp_connections_active{job=\"trova-prod\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "hikaricp_connections_active",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "pool": "HikariPool-1"
+          },
+          "values": [
+            [
+              1793543190,
+              "0"
+            ],
+            [
+              1793543205,
+              "0"
+            ],
+            [
+              1793543220,
+              "0"
+            ],
+            [
+              1793543235,
+              "3"
+            ],
+            [
+              1793543250,
+              "0"
+            ],
+            [
+              1793543265,
+              "0"
+            ],
+            [
+              1793543280,
+              "0"
+            ]
+          ]
+        }
+      ]
+    },
+    "dbPending": {
+      "query": "hikaricp_connections_pending{job=\"trova-prod\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "hikaricp_connections_pending",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "pool": "HikariPool-1"
+          },
+          "values": [
+            [
+              1793543190,
+              "0"
+            ],
+            [
+              1793543205,
+              "0"
+            ],
+            [
+              1793543220,
+              "0"
+            ],
+            [
+              1793543235,
+              "0"
+            ],
+            [
+              1793543250,
+              "0"
+            ],
+            [
+              1793543265,
+              "0"
+            ],
+            [
+              1793543280,
+              "0"
+            ]
+          ]
+        }
+      ]
+    },
+    "executorQueued": {
+      "query": "executor_queued_tasks{job=\"trova-prod\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "executor_queued_tasks",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "name": "geocodingTaskExecutor"
+          },
+          "values": [
+            [
+              1793543190,
+              "0"
+            ],
+            [
+              1793543205,
+              "0"
+            ],
+            [
+              1793543220,
+              "0"
+            ],
+            [
+              1793543235,
+              "0"
+            ],
+            [
+              1793543250,
+              "0"
+            ],
+            [
+              1793543265,
+              "0"
+            ],
+            [
+              1793543280,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "executor_queued_tasks",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "name": "pipelineTaskExecutor"
+          },
+          "values": [
+            [
+              1793543190,
+              "0"
+            ],
+            [
+              1793543205,
+              "0"
+            ],
+            [
+              1793543220,
+              "0"
+            ],
+            [
+              1793543235,
+              "0"
+            ],
+            [
+              1793543250,
+              "0"
+            ],
+            [
+              1793543265,
+              "0"
+            ],
+            [
+              1793543280,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "executor_queued_tasks",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "name": "planTaskExecutor"
+          },
+          "values": [
+            [
+              1793543190,
+              "0"
+            ],
+            [
+              1793543205,
+              "0"
+            ],
+            [
+              1793543220,
+              "0"
+            ],
+            [
+              1793543235,
+              "0"
+            ],
+            [
+              1793543250,
+              "0"
+            ],
+            [
+              1793543265,
+              "0"
+            ],
+            [
+              1793543280,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "executor_queued_tasks",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "name": "pushTaskExecutor"
+          },
+          "values": [
+            [
+              1793543190,
+              "0"
+            ],
+            [
+              1793543205,
+              "0"
+            ],
+            [
+              1793543220,
+              "0"
+            ],
+            [
+              1793543235,
+              "0"
+            ],
+            [
+              1793543250,
+              "0"
+            ],
+            [
+              1793543265,
+              "0"
+            ],
+            [
+              1793543280,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "executor_queued_tasks",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "name": "replanTaskExecutor"
+          },
+          "values": [
+            [
+              1793543190,
+              "0"
+            ],
+            [
+              1793543205,
+              "0"
+            ],
+            [
+              1793543220,
+              "0"
+            ],
+            [
+              1793543235,
+              "0"
+            ],
+            [
+              1793543250,
+              "0"
+            ],
+            [
+              1793543265,
+              "0"
+            ],
+            [
+              1793543280,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "executor_queued_tasks",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "name": "taskScheduler"
+          },
+          "values": [
+            [
+              1793543190,
+              "5"
+            ],
+            [
+              1793543205,
+              "5"
+            ],
+            [
+              1793543220,
+              "5"
+            ],
+            [
+              1793543235,
+              "4"
+            ],
+            [
+              1793543250,
+              "5"
+            ],
+            [
+              1793543265,
+              "5"
+            ],
+            [
+              1793543280,
+              "5"
+            ]
+          ]
+        }
+      ]
+    },
+    "http5xxCounter": {
+      "query": "sum(http_server_requests_seconds_count{job=\"trova-prod\",status=~\"5..\"})",
+      "series": []
+    },
+    "shareRequestCount": {
+      "query": "http_server_requests_seconds_count{job=\"trova-prod\",uri=\"/api/shares\",method=\"POST\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "http_server_requests_seconds_count",
+            "application": "trova-backend",
+            "error": "none",
+            "exception": "none",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "method": "POST",
+            "outcome": "SUCCESS",
+            "status": "202",
+            "uri": "/api/shares"
+          },
+          "values": [
+            [
+              1793543190,
+              "1"
+            ],
+            [
+              1793543205,
+              "1"
+            ],
+            [
+              1793543220,
+              "2"
+            ],
+            [
+              1793543235,
+              "2"
+            ],
+            [
+              1793543250,
+              "3"
+            ],
+            [
+              1793543265,
+              "3"
+            ],
+            [
+              1793543280,
+              "3"
+            ]
+          ]
+        }
+      ]
+    },
+    "shareRequestSecondsSum": {
+      "query": "http_server_requests_seconds_sum{job=\"trova-prod\",uri=\"/api/shares\",method=\"POST\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "http_server_requests_seconds_sum",
+            "application": "trova-backend",
+            "error": "none",
+            "exception": "none",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "method": "POST",
+            "outcome": "SUCCESS",
+            "status": "202",
+            "uri": "/api/shares"
+          },
+          "values": [
+            [
+              1793543190,
+              "3.909726548"
+            ],
+            [
+              1793543205,
+              "3.909726548"
+            ],
+            [
+              1793543220,
+              "4.958771404"
+            ],
+            [
+              1793543235,
+              "4.958771404"
+            ],
+            [
+              1793543250,
+              "6.762688751"
+            ],
+            [
+              1793543265,
+              "6.762688751"
+            ],
+            [
+              1793543280,
+              "6.762688751"
+            ]
+          ]
+        }
+      ]
+    },
+    "stageSum": {
+      "query": "trova_pipeline_stage_seconds_sum{job=\"trova-prod\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "trova_pipeline_stage_seconds_sum",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "stage": "gemini"
+          },
+          "values": [
+            [
+              1793543190,
+              "9.542"
+            ],
+            [
+              1793543205,
+              "9.542"
+            ],
+            [
+              1793543220,
+              "9.542"
+            ],
+            [
+              1793543235,
+              "16.524"
+            ],
+            [
+              1793543250,
+              "25.439"
+            ],
+            [
+              1793543265,
+              "25.439"
+            ],
+            [
+              1793543280,
+              "25.439"
+            ]
+          ]
+        }
+      ]
+    },
+    "stageCount": {
+      "query": "trova_pipeline_stage_seconds_count{job=\"trova-prod\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "trova_pipeline_stage_seconds_count",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "stage": "gemini"
+          },
+          "values": [
+            [
+              1793543190,
+              "1"
+            ],
+            [
+              1793543205,
+              "1"
+            ],
+            [
+              1793543220,
+              "1"
+            ],
+            [
+              1793543235,
+              "2"
+            ],
+            [
+              1793543250,
+              "3"
+            ],
+            [
+              1793543265,
+              "3"
+            ],
+            [
+              1793543280,
+              "3"
+            ]
+          ]
+        }
+      ]
+    },
+    "queueSum": {
+      "query": "trova_queue_wait_seconds_sum{job=\"trova-prod\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "trova_queue_wait_seconds_sum",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "path": "kafka"
+          },
+          "values": [
+            [
+              1793543190,
+              "2.637"
+            ],
+            [
+              1793543205,
+              "2.637"
+            ],
+            [
+              1793543220,
+              "3.132"
+            ],
+            [
+              1793543235,
+              "3.132"
+            ],
+            [
+              1793543250,
+              "4.381"
+            ],
+            [
+              1793543265,
+              "4.381"
+            ],
+            [
+              1793543280,
+              "4.381"
+            ]
+          ]
+        }
+      ]
+    },
+    "queueCount": {
+      "query": "trova_queue_wait_seconds_count{job=\"trova-prod\"}",
+      "series": [
+        {
+          "metric": {
+            "__name__": "trova_queue_wait_seconds_count",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "path": "kafka"
+          },
+          "values": [
+            [
+              1793543190,
+              "1"
+            ],
+            [
+              1793543205,
+              "1"
+            ],
+            [
+              1793543220,
+              "2"
+            ],
+            [
+              1793543235,
+              "2"
+            ],
+            [
+              1793543250,
+              "3"
+            ],
+            [
+              1793543265,
+              "3"
+            ],
+            [
+              1793543280,
+              "3"
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "note": "Existing production build, app relaunch and video-list tap; server-wide counters, not improved backend measurement",
+  "requests": [
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/auth/me"
+      },
+      "count": 1.0,
+      "meanMs": 103.54509200000007
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/bookmarks"
+      },
+      "count": 1.0,
+      "meanMs": 323.08562399999994
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/notifications"
+      },
+      "count": 1.0,
+      "meanMs": 196.30975099999992
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/places"
+      },
+      "count": 2.0,
+      "meanMs": 332.9371234999998
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/places/pending"
+      },
+      "count": 2.0,
+      "meanMs": 256.69107849999995
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/trip-drafts/auto"
+      },
+      "count": 2.0,
+      "meanMs": 427.20691700000015
+    },
+    {
+      "labels": {
+        "application": "trova-backend",
+        "error": "none",
+        "exception": "none",
+        "method": "GET",
+        "outcome": "SUCCESS",
+        "status": "200",
+        "uri": "/api/trips"
+      },
+      "count": 1.0,
+      "meanMs": 277.0595500000006
+    }
+  ]
+}

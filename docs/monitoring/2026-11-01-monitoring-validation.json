@@ -1,0 +1,93 @@
+{
+  "checkedAt": "2026-11-01T13:49:28.282000+00:00",
+  "targets": [
+    {
+      "job": "trova-backend",
+      "health": "down",
+      "error": "server returned HTTP status 404 "
+    },
+    {
+      "job": "trova-prod",
+      "health": "up",
+      "error": ""
+    }
+  ],
+  "queries": [
+    {
+      "panel": "① 운영 지표 수집 상태 — 1 정상 / 0 중단",
+      "queryValid": true,
+      "series": 1
+    },
+    {
+      "panel": "② 수집 중단 경보 — 1 발생",
+      "queryValid": true,
+      "series": 1
+    },
+    {
+      "panel": "API 요청/초",
+      "queryValid": true,
+      "series": 1
+    },
+    {
+      "panel": "API 평균 응답 시간",
+      "queryValid": true,
+      "series": 0
+    },
+    {
+      "panel": "③ 영상 분석 단계별 평균 시간",
+      "queryValid": true,
+      "series": 0
+    },
+    {
+      "panel": "④ 공유 → 분석 시작 평균 대기",
+      "queryValid": true,
+      "series": 0
+    },
+    {
+      "panel": "외부 API 평균 호출 시간",
+      "queryValid": true,
+      "series": 0
+    },
+    {
+      "panel": "외부 API 실패 기록 증가량",
+      "queryValid": true,
+      "series": 0
+    },
+    {
+      "panel": "JVM 힙 사용률",
+      "queryValid": true,
+      "series": 1
+    },
+    {
+      "panel": "Java 프로세스 CPU 사용률",
+      "queryValid": true,
+      "series": 1
+    },
+    {
+      "panel": "내부 실행기 대기 작업",
+      "queryValid": true,
+      "series": 6
+    },
+    {
+      "panel": "DB 연결 대기",
+      "queryValid": true,
+      "series": 1
+    }
+  ],
+  "existingDashboardPreserved": true,
+  "historyBeforeMigrationPresent": true,
+  "scrapeRuleLoaded": true,
+  "productionLoadTestRun": false,
+  "backendDeployed": false,
+  "ruleUnitTests": [
+    "brief outage does not fire",
+    "one minute outage fires",
+    "recovery resolves",
+    "missing target fires"
+  ],
+  "notificationDeliveryConfigured": false,
+  "notes": [
+    "No new analysis in the selected hour: empty stage/API panels are expected.",
+    "Java and Python code unchanged; Gradle build not run for monitoring configuration changes."
+  ]
+}

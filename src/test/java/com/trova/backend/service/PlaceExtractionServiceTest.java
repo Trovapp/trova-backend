@@ -65,6 +65,7 @@ class PlaceExtractionServiceTest {
     @Spy
     private FoundPlaceNameStore foundPlaceNameStore = new FoundPlaceNameStore();
 
+    private final SimpleMeterRegistry registry = new SimpleMeterRegistry();
     private PlaceExtractionService placeExtractionService;
 
     @BeforeEach
@@ -77,7 +78,7 @@ class PlaceExtractionServiceTest {
     private PlaceExtractionService serviceWith(Executor geocodingTaskExecutor) {
         return new PlaceExtractionService(lifecycleService, pipelineRunner, kakaoGeocodingService,
                 placeSelectionRunner, placeVerificationRunner, foundPlaceNameStore, autoDraftService, geocodingTaskExecutor,
-                new PipelineStageMetrics(new SimpleMeterRegistry()), mock(QueueWaitMetrics.class));
+                new PipelineStageMetrics(registry), mock(QueueWaitMetrics.class));
     }
 
     @Test
@@ -104,6 +105,10 @@ class PlaceExtractionServiceTest {
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.SAVING);
         order.verify(lifecycleService).completeAnalysis(eq(jobId), any(), any());
         verify(autoDraftService).startFor(jobId);
+        assertThat(registry.get("trova.analysis.execution").tag("outcome", "success").timer().count()).isEqualTo(1);
+        for (String stage : List.of("preparing", "extracting", "geocoding", "selecting", "verifying", "saving")) {
+            assertThat(registry.get("trova.analysis.stage").tags("stage", stage, "outcome", "success").timer().count()).isEqualTo(1);
+        }
     }
 
     @Test
@@ -118,6 +123,8 @@ class PlaceExtractionServiceTest {
         order.verify(lifecycleService).startAnalysisWithMetadata(jobId);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.EXTRACTING);
         order.verify(lifecycleService).markAnalysisFailed(jobId, "파이프라인 오류");
+        assertThat(registry.get("trova.analysis.execution").tag("outcome", "failure").timer().count()).isEqualTo(1);
+        assertThat(registry.get("trova.analysis.stage").tags("stage", "extracting", "outcome", "failure").timer().count()).isEqualTo(1);
     }
 
     @Test
@@ -156,6 +163,7 @@ class PlaceExtractionServiceTest {
         verify(lifecycleService).markAnalysisFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
         verify(lifecycleService, never()).completeAnalysis(any(), any(), any());
         verify(kakaoGeocodingService, never()).searchCandidates(any(), any(), any(), anyLong());
+        assertThat(registry.get("trova.analysis.execution").tag("outcome", "no_places").timer().count()).isEqualTo(1);
     }
 
     @Test
@@ -292,6 +300,7 @@ class PlaceExtractionServiceTest {
 
         verify(lifecycleService).completeAnalysis(eq(jobId), any(), any());
         verify(lifecycleService, never()).markAnalysisFailed(any(), any());
+        assertThat(registry.get("trova.analysis.execution").tag("outcome", "success").timer().count()).isEqualTo(1);
     }
 
     @Test
@@ -307,5 +316,45 @@ class PlaceExtractionServiceTest {
         placeExtractionService.process(jobId);
         verify(autoDraftService, never()).startFor(jobId);
         verify(lifecycleService, never()).markAnalysisFailed(any(), any());
+        assertThat(registry.get("trova.analysis.execution").tag("outcome", "discarded").timer().count()).isEqualTo(1);
     }
+    @Test
+    void 저장_실패는_저장_단계와_실행_실패로_한번씩_기록한다() {
+        Long jobId = 1001L;
+        ExtractedPlace place = new ExtractedPlace("해운대", "부산", "attraction", 0.95, null, null, List.of("해운대"));
+        when(lifecycleService.startAnalysisWithMetadata(jobId)).thenReturn(started("https://youtu.be/x"));
+        when(pipelineRunner.run(any(), eq(jobId), any())).thenReturn(new PipelineOutput("부산", List.of(place)));
+        when(kakaoGeocodingService.searchCandidates(any(), any(), any(), eq(jobId)))
+                .thenReturn(GeocodingResult.coordinatesOnly(35.1, 129.1));
+        when(lifecycleService.completeAnalysis(eq(jobId), any(), any())).thenThrow(new RuntimeException("DB unavailable"));
+
+        placeExtractionService.process(jobId);
+
+        assertThat(registry.get("trova.analysis.stage").tags("stage", "saving", "outcome", "failure").timer().count()).isEqualTo(1);
+        assertThat(registry.get("trova.analysis.execution").tag("outcome", "failure").timer().count()).isEqualTo(1);
+        assertThat(registry.get("trova.analysis.execution").tag("outcome", "success").timer().count()).isZero();
+        verify(lifecycleService).markAnalysisFailed(jobId, "DB unavailable");
+        verify(autoDraftService, never()).startFor(jobId);
+    }
+
+    @Test
+    void 단계_상태_갱신_실패도_해당_단계에_포함한다() {
+        when(lifecycleService.startAnalysisWithMetadata(1002L)).thenReturn(started("https://youtu.be/x"));
+        doThrow(new RuntimeException("update failed")).when(lifecycleService).updateStage(1002L, ProcessingStage.EXTRACTING);
+
+        placeExtractionService.process(1002L);
+
+        assertThat(registry.get("trova.analysis.stage").tags("stage", "extracting", "outcome", "failure").timer().count()).isEqualTo(1);
+        verify(pipelineRunner, never()).run(any(), any(), any());
+    }
+
+    @Test
+    void 이미_완료된_중복_작업은_새_실행으로_세지_않는다() {
+        when(lifecycleService.startAnalysisWithMetadata(1003L)).thenReturn(null);
+
+        placeExtractionService.process(1003L);
+
+        assertThat(registry.find("trova.analysis.execution").timers()).allSatisfy(timer -> assertThat(timer.count()).isZero());
+    }
+
 }

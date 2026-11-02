@@ -1,0 +1,280 @@
+{
+  "checkedAt": "2026-11-01T23:47:52.254707+09:00",
+  "jobs": [
+    {
+      "id": 127,
+      "platform": "YOUTUBE",
+      "status": "DONE",
+      "analysisStatus": "DONE",
+      "createdAt": "2026-11-01 23:47:27.814464",
+      "analysisFinishedAt": "2026-11-01 23:47:46.994008",
+      "totalSeconds": 19.179544,
+      "savedPlaces": 6,
+      "apiCalls": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 4397,
+          "attempts": 1,
+          "waitedMs": 0,
+          "createdAt": "2026-11-01 23:47:41.163099"
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 5001,
+          "attempts": 1,
+          "waitedMs": 0,
+          "createdAt": "2026-11-01 23:47:41.295132"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1419,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:47:43.278532"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1414,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:47:43.272295"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1411,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:47:43.267934"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1409,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:47:43.265835"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1410,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:47:43.267068"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 1404,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:47:43.262777"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 78,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:47:43.522877"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 80,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:47:43.669674"
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1141,
+          "attempts": 1,
+          "waitedMs": 0,
+          "createdAt": "2026-11-01 23:47:45.235790"
+        },
+        {
+          "provider": "gemini",
+          "operation": "verify_places",
+          "success": true,
+          "latencyMs": 604,
+          "attempts": 1,
+          "waitedMs": 0,
+          "createdAt": "2026-11-01 23:47:46.206127"
+        }
+      ],
+      "drafts": [
+        {
+          "status": "READY",
+          "createdAt": "2026-11-01 23:47:48.172949",
+          "updatedAt": "2026-11-01 23:47:52.376252"
+        }
+      ],
+      "stageTimingsLog": [
+        "preparing 17ms (success)",
+        "gemini 9.4초",
+        "extracting 11251ms (success)",
+        "geocoding 2071ms (success)",
+        "selecting 1599ms (success)",
+        "verifying 973ms (success)",
+        "saving 786ms (success)"
+      ],
+      "queueStarts": [
+        {
+          "path": "kafka",
+          "waitMs": 2579
+        }
+      ],
+      "geocodingLog": [
+        [
+          "6",
+          "1898"
+        ]
+      ],
+      "withoutCoordinates": 2
+    }
+  ],
+  "unattributedJavaAiCalls": [
+    {
+      "operation": "trip-plan.draft",
+      "success": true,
+      "latencyMs": 3520,
+      "attempts": 1,
+      "waitedMs": 0,
+      "createdAt": "2026-11-01 23:47:52.187225"
+    }
+  ],
+  "windowWarnErrorCounts": {
+    "WARN": 1,
+    "ERROR": 0
+  },
+  "scope": "Read-only observation of user-submitted job 127 after instrumentation deployment; no extra analysis or load test",
+  "javaStageSeconds": {
+    "extracting": 11.251356444,
+    "geocoding": 2.071258811,
+    "preparing": 0.017689698,
+    "saving": 0.786919448,
+    "selecting": 1.599547237,
+    "verifying": 0.973102888
+  },
+  "javaExecutionSeconds": 16.699874526,
+  "stageSumMatchesExecution": true,
+  "prometheusQueries": {
+    "stageAverage": {
+      "query": "sum by(job,stage) (increase(trova_analysis_stage_seconds_sum{job=\"trova-prod\",outcome=\"success\"}[2m])) / (sum by(job,stage) (increase(trova_analysis_stage_seconds_count{job=\"trova-prod\",outcome=\"success\"}[2m])) > 0)",
+      "time": 1793544540.0,
+      "result": [
+        {
+          "metric": {
+            "job": "trova-prod",
+            "stage": "extracting"
+          },
+          "value": [
+            1793544540,
+            "11.251356444"
+          ]
+        },
+        {
+          "metric": {
+            "job": "trova-prod",
+            "stage": "geocoding"
+          },
+          "value": [
+            1793544540,
+            "2.071258811"
+          ]
+        },
+        {
+          "metric": {
+            "job": "trova-prod",
+            "stage": "preparing"
+          },
+          "value": [
+            1793544540,
+            "0.017689698"
+          ]
+        },
+        {
+          "metric": {
+            "job": "trova-prod",
+            "stage": "saving"
+          },
+          "value": [
+            1793544540,
+            "0.786919448"
+          ]
+        },
+        {
+          "metric": {
+            "job": "trova-prod",
+            "stage": "selecting"
+          },
+          "value": [
+            1793544540,
+            "1.599547237"
+          ]
+        },
+        {
+          "metric": {
+            "job": "trova-prod",
+            "stage": "verifying"
+          },
+          "value": [
+            1793544540,
+            "0.9731028880000001"
+          ]
+        }
+      ]
+    },
+    "executionAverage": {
+      "query": "sum by(job) (increase(trova_analysis_execution_seconds_sum{job=\"trova-prod\",outcome=\"success\"}[2m])) / (sum by(job) (increase(trova_analysis_execution_seconds_count{job=\"trova-prod\",outcome=\"success\"}[2m])) > 0)",
+      "time": 1793544540.0,
+      "result": [
+        {
+          "metric": {
+            "job": "trova-prod"
+          },
+          "value": [
+            1793544540,
+            "16.699874526"
+          ]
+        }
+      ]
+    },
+    "scrapeUp": {
+      "query": "min_over_time(up{job=\"trova-prod\"}[2m])",
+      "time": 1793544540.0,
+      "result": [
+        {
+          "metric": {
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod"
+          },
+          "value": [
+            1793544540,
+            "1"
+          ]
+        }
+      ]
+    }
+  },
+  "warningInterpretation": "One overlapping region-fallback coordinate rejected; saved places without coordinates: 2. No ERROR level entries.",
+  "grafanaUrl": "http://localhost:3300/d/trova-monitoring-lab?from=1793544420000&to=1793544540000"
+}

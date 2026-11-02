@@ -1,0 +1,188 @@
+{
+  "scope": "Actual loopback HTTP with JWT security, PostgreSQL, DTO mapping and JSON serialization; same-process alternate legacy and improved endpoints",
+  "warmupEach": 20,
+  "samplesEach": 50,
+  "runs": 3,
+  "results": [
+    {
+      "run": 1,
+      "places": 100,
+      "variant": "entity",
+      "samples": 50,
+      "medianMs": 5.212958,
+      "p95Ms": 10.028916,
+      "maxMs": 15.803083,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        44303
+      ]
+    },
+    {
+      "run": 1,
+      "places": 100,
+      "variant": "projection",
+      "samples": 50,
+      "medianMs": 3.4004585,
+      "p95Ms": 7.402417,
+      "maxMs": 9.463416,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        44303
+      ]
+    },
+    {
+      "run": 1,
+      "places": 1000,
+      "variant": "entity",
+      "samples": 50,
+      "medianMs": 12.6153955,
+      "p95Ms": 16.596375,
+      "maxMs": 19.119875,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        447012
+      ]
+    },
+    {
+      "run": 1,
+      "places": 1000,
+      "variant": "projection",
+      "samples": 50,
+      "medianMs": 6.3545005,
+      "p95Ms": 8.7815,
+      "maxMs": 8.837041,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        447012
+      ]
+    },
+    {
+      "run": 2,
+      "places": 100,
+      "variant": "entity",
+      "samples": 50,
+      "medianMs": 5.439875,
+      "p95Ms": 10.914458,
+      "maxMs": 14.387333,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        44303
+      ]
+    },
+    {
+      "run": 2,
+      "places": 100,
+      "variant": "projection",
+      "samples": 50,
+      "medianMs": 3.381354,
+      "p95Ms": 7.498958,
+      "maxMs": 8.604875,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        44303
+      ]
+    },
+    {
+      "run": 2,
+      "places": 1000,
+      "variant": "entity",
+      "samples": 50,
+      "medianMs": 12.2183335,
+      "p95Ms": 16.360125,
+      "maxMs": 22.156208,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        447012
+      ]
+    },
+    {
+      "run": 2,
+      "places": 1000,
+      "variant": "projection",
+      "samples": 50,
+      "medianMs": 5.923916500000001,
+      "p95Ms": 9.585333,
+      "maxMs": 9.665625,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        447012
+      ]
+    },
+    {
+      "run": 3,
+      "places": 100,
+      "variant": "entity",
+      "samples": 50,
+      "medianMs": 5.7085415,
+      "p95Ms": 9.075333,
+      "maxMs": 11.525958,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        44303
+      ]
+    },
+    {
+      "run": 3,
+      "places": 100,
+      "variant": "projection",
+      "samples": 50,
+      "medianMs": 3.4700415,
+      "p95Ms": 5.840125,
+      "maxMs": 7.294708,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        44303
+      ]
+    },
+    {
+      "run": 3,
+      "places": 1000,
+      "variant": "entity",
+      "samples": 50,
+      "medianMs": 12.6103125,
+      "p95Ms": 18.703834,
+      "maxMs": 20.402625,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        447012
+      ]
+    },
+    {
+      "run": 3,
+      "places": 1000,
+      "variant": "projection",
+      "samples": 50,
+      "medianMs": 6.455916500000001,
+      "p95Ms": 12.262917,
+      "maxMs": 13.23325,
+      "statuses": [
+        "200"
+      ],
+      "responseBytes": [
+        447012
+      ]
+    }
+  ]
+}

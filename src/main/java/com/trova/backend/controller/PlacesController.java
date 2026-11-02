@@ -7,6 +7,7 @@ import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
+import com.trova.backend.repository.SavedPlaceListRow;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.FoundPlaceNameStore;
 import com.trova.backend.service.ItineraryEditService;
@@ -70,6 +71,16 @@ public class PlacesController {
             // 영상에서 말한 내용(#104). 없으면 빈 배열.
             List<String> videoNotes
     ) {
+        static PlaceResponse from(SavedPlaceListRow place) {
+            return new PlaceResponse(
+                    place.id(), place.jobId(), place.placeName(), place.region(), place.category(),
+                    place.latitude(), place.longitude(), place.sourceUrl(), place.title(),
+                    place.sourcePlatform().name(), place.createdAt().toString(), place.dayNumber(), place.orderInDay(),
+                    place.phone(), place.address(), place.roadAddress(), place.kakaoCategoryName(), place.kakaoPlaceUrl(),
+                    place.videoNoteLines()
+            );
+        }
+
         static PlaceResponse from(SavedPlace place) {
             return new PlaceResponse(
                     place.getId(), place.getProcessingJob().getId(), place.getPlaceName(), place.getRegion(),
@@ -124,12 +135,9 @@ public class PlacesController {
     @GetMapping
     public List<PlaceResponse> list(Authentication authentication) {
         User user = currentUserService.resolve(authentication);
-        List<SavedPlace> places = savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(user);
+        List<SavedPlaceListRow> places = savedPlaceRepository.findListRowsByUserId(user.getId());
         // 같은 영상의 결과가 여러 개면 대표 결과의 장소만 내려준다(#87, VideoResults). 데이터는 지우지 않는다.
-        Map<String, Long> representative = VideoResults.latestJobIdByVideo(places);
-        return places.stream()
-                .filter(place -> place.getProcessingJob().getId().equals(
-                        representative.get(ShareUrl.videoKey(place.getProcessingJob().getSourceUrl()))))
+        return VideoResults.latestRows(places).stream()
                 .map(PlaceResponse::from)
                 .toList();
     }

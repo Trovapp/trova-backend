@@ -1,0 +1,271 @@
+{
+  "checkedAt": "2026-11-01T23:28:19.876715+09:00",
+  "jobs": [
+    {
+      "id": 125,
+      "platform": "YOUTUBE",
+      "status": "DONE",
+      "analysisStatus": "DONE",
+      "createdAt": "2026-11-01 23:26:50.898790",
+      "analysisFinishedAt": "2026-11-01 23:27:11.962379",
+      "totalSeconds": 21.063589,
+      "savedPlaces": 7,
+      "apiCalls": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 3509,
+          "attempts": 1,
+          "waitedMs": 0,
+          "createdAt": "2026-11-01 23:26:58.873199"
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 3472,
+          "attempts": 1,
+          "waitedMs": 0,
+          "createdAt": "2026-11-01 23:26:58.986719"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 573,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:26:59.866461"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 580,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:26:59.876836"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 586,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:26:59.879842"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 569,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:26:59.863398"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 557,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:26:59.864789"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 562,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:26:59.869845"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 569,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:26:59.862264"
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1031,
+          "attempts": 1,
+          "waitedMs": 0,
+          "createdAt": "2026-11-01 23:27:01.415558"
+        }
+      ],
+      "drafts": [
+        {
+          "status": "READY",
+          "createdAt": "2026-11-01 23:27:12.767666",
+          "updatedAt": "2026-11-01 23:27:15.068338"
+        }
+      ],
+      "stageTimingsLog": [
+        "gemini 7.0초"
+      ],
+      "queueStarts": [
+        {
+          "path": "kafka",
+          "waitMs": 495
+        }
+      ],
+      "geocodingLog": [
+        [
+          "7",
+          "762"
+        ]
+      ],
+      "timingScope": "DB job creation to analysis_finished_at; excludes client submission/network and automatic draft generation"
+    },
+    {
+      "id": 126,
+      "platform": "YOUTUBE",
+      "status": "DONE",
+      "analysisStatus": "DONE",
+      "createdAt": "2026-11-01 23:27:12.547880",
+      "analysisFinishedAt": "2026-11-01 23:27:25.974276",
+      "totalSeconds": 13.426396,
+      "savedPlaces": 5,
+      "apiCalls": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latencyMs": 4955,
+          "attempts": 1,
+          "waitedMs": 0,
+          "createdAt": "2026-11-01 23:27:23.167596"
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latencyMs": 3956,
+          "attempts": 1,
+          "waitedMs": 0,
+          "createdAt": "2026-11-01 23:27:23.273152"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 142,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:27:23.692053"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 138,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:27:23.688749"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 137,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:27:23.687813"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 211,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:27:23.762839"
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search",
+          "success": true,
+          "latencyMs": 215,
+          "attempts": null,
+          "waitedMs": null,
+          "createdAt": "2026-11-01 23:27:23.765934"
+        },
+        {
+          "provider": "gemini",
+          "operation": "select_place_match",
+          "success": true,
+          "latencyMs": 1090,
+          "attempts": 1,
+          "waitedMs": 0,
+          "createdAt": "2026-11-01 23:27:25.400154"
+        }
+      ],
+      "drafts": [
+        {
+          "status": "READY",
+          "createdAt": "2026-11-01 23:27:26.574371",
+          "updatedAt": "2026-11-01 23:27:28.657147"
+        }
+      ],
+      "stageTimingsLog": [
+        "gemini 8.9초"
+      ],
+      "queueStarts": [
+        {
+          "path": "kafka",
+          "waitMs": 1249
+        }
+      ],
+      "geocodingLog": [
+        [
+          "5",
+          "450"
+        ]
+      ],
+      "timingScope": "DB job creation to analysis_finished_at; excludes client submission/network and automatic draft generation"
+    }
+  ],
+  "unattributedJavaAiCalls": [
+    {
+      "operation": "trip-plan.draft",
+      "success": true,
+      "latencyMs": 1485,
+      "attempts": 1,
+      "waitedMs": 0,
+      "createdAt": "2026-11-01 23:27:14.861192"
+    },
+    {
+      "operation": "trip-plan.draft",
+      "success": true,
+      "latencyMs": 1601,
+      "attempts": 1,
+      "waitedMs": 0,
+      "createdAt": "2026-11-01 23:27:28.544170"
+    }
+  ],
+  "windowWarnErrorCounts": {
+    "WARN": 0,
+    "ERROR": 0
+  },
+  "scope": "Two user-submitted videos; read-only observation, no additional share or load test",
+  "observationWindowKST": [
+    "2026-11-01T23:26:30+09:00",
+    "2026-11-01T23:28:00+09:00"
+  ],
+  "limits": [
+    "Two different videos, not a controlled performance comparison.",
+    "15-second scrape can miss short peaks.",
+    "Stage metric covers initial extraction only; selecting, verifying, saving are not separately timed.",
+    "Null-job Java AI logs are window observations, not directly attributed to either job.",
+    "No 5xx series returned; do not substitute this with an exact independent error count."
+  ]
+}

@@ -1,6 +1,7 @@
 package com.trova.backend.controller;
 
 import com.trova.backend.entity.SavedPlace;
+import com.trova.backend.repository.SavedPlaceListRow;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,5 +27,18 @@ final class VideoResults {
                     Math::max);
         }
         return latest;
+    }
+
+    static List<SavedPlaceListRow> latestRows(List<SavedPlaceListRow> places) {
+        Map<String, Long> latest = new HashMap<>();
+        Map<Long, String> videoByJob = new HashMap<>();
+        for (SavedPlaceListRow place : places) {
+            // 같은 작업의 URL은 장소마다 다시 파싱하지 않고 이번 호출 안에서만 공유한다.
+            String video = videoByJob.computeIfAbsent(place.jobId(), id -> ShareUrl.videoKey(place.jobSourceUrl()));
+            latest.merge(video, place.jobId(), Math::max);
+        }
+        return places.stream()
+                .filter(place -> place.jobId().equals(latest.get(videoByJob.get(place.jobId()))))
+                .toList();
     }
 }

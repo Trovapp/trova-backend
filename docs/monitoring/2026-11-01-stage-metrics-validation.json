@@ -1,0 +1,20 @@
+{
+  "scope": "Analysis stage instrumentation; build and local validation before production deployment",
+  "gradleBuild": "passed",
+  "testCounts": {
+    "tests": 1033,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "runtimeBaseline": "fff19cdc00b894bbe9aca5f5844ff0589cb9a115",
+  "runtimeTreeAtHeadMatchesBaseline": true,
+  "changedRuntimeFiles": [
+    "PipelineStageMetrics.java",
+    "PlaceExtractionService.java"
+  ],
+  "jarSha256": "3bdcac938389d5ab4d86809690ec25717281019fa05b4283b2bbe5386d66ddb5",
+  "newPanelQueriesValid": 4,
+  "newTimerCount": 28,
+  "newHistogramEnabled": false
+}

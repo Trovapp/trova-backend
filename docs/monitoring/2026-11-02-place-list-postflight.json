@@ -1,0 +1,18 @@
+{
+  "before": {
+    "status": 200,
+    "count": 42,
+    "bodySha256": "3fbb373f874cd8960fd42ed779214e6ccaea77d6a6358ee1e98e79bec6c42e9b",
+    "elapsedSeconds": 0.39974354195874184,
+    "at": 1793584849.905963
+  },
+  "after": {
+    "at": 1793585040.642883,
+    "status": 200,
+    "count": 42,
+    "bodySha256": "3fbb373f874cd8960fd42ed779214e6ccaea77d6a6358ee1e98e79bec6c42e9b",
+    "elapsedSeconds": 1.202720541972667
+  },
+  "sameJson": true,
+  "scope": "Two single read requests for existing test user; functional equality only, not performance comparison"
+}

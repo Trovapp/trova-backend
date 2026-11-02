@@ -1,0 +1,3163 @@
+{
+  "scope": "Bounded production GET observations; no video/AI submissions or production mutations",
+  "dataset": {
+    "testAccountSavedPlaces": 42,
+    "processingJobs": 3
+  },
+  "trials": {
+    "health": {
+      "run": {
+        "mode": "health",
+        "limit": {
+          "vus": 1,
+          "requests": 30,
+          "maxSeconds": 60
+        },
+        "resourceSamples": [
+          {
+            "at": 1793545431.2881222,
+            "availableKiB": 255156,
+            "swapInPages": 3809558,
+            "swapOutPages": 4323801
+          },
+          {
+            "at": 1793545432.211532,
+            "availableKiB": 274448,
+            "swapInPages": 3809593,
+            "swapOutPages": 4323801
+          }
+        ],
+        "stoppedReason": "Swap IO increased",
+        "observer": "SSH meminfo/vmstat + local Prometheus query approximately every 5s; not included in k6 HTTP counts",
+        "start": 1793545431.288129,
+        "exitCode": 105,
+        "end": 1793545432.4466949
+      },
+      "summary": {
+        "root_group": {
+          "checks": {
+            "health is HTTP 200 and UP": {
+              "name": "health is HTTP 200 and UP",
+              "path": "::health is HTTP 200 and UP",
+              "id": "46e4ae029d045b7dfa33a450e29b20cd",
+              "passes": 1,
+              "fails": 0
+            }
+          },
+          "name": "",
+          "path": "",
+          "id": "d41d8cd98f00b204e9800998ecf8427e",
+          "groups": {}
+        },
+        "metrics": {
+          "http_req_sending": {
+            "min": 1.363,
+            "med": 1.363,
+            "max": 1.363,
+            "p(90)": 1.363,
+            "p(95)": 1.363,
+            "avg": 1.363
+          },
+          "http_req_waiting": {
+            "p(90)": 130.224,
+            "p(95)": 130.224,
+            "avg": 130.224,
+            "min": 130.224,
+            "med": 130.224,
+            "max": 130.224
+          },
+          "http_req_receiving": {
+            "min": 2.928,
+            "med": 2.928,
+            "max": 2.928,
+            "p(90)": 2.928,
+            "p(95)": 2.928,
+            "avg": 2.928
+          },
+          "http_req_failed": {
+            "passes": 0,
+            "fails": 1,
+            "thresholds": {
+              "rate==0": false
+            },
+            "value": 0
+          },
+          "data_received": {
+            "count": 5442,
+            "rate": 6572.090714657502
+          },
+          "http_req_blocked": {
+            "avg": 310.018,
+            "min": 310.018,
+            "med": 310.018,
+            "max": 310.018,
+            "p(90)": 310.018,
+            "p(95)": 310.018
+          },
+          "http_req_connecting": {
+            "avg": 46.53,
+            "min": 46.53,
+            "med": 46.53,
+            "max": 46.53,
+            "p(90)": 46.53,
+            "p(95)": 46.53
+          },
+          "checks": {
+            "fails": 0,
+            "passes": 1,
+            "thresholds": {
+              "rate==1": false
+            },
+            "value": 1
+          },
+          "iterations": {
+            "count": 0,
+            "rate": 0,
+            "thresholds": {
+              "count==30": true
+            }
+          },
+          "data_sent": {
+            "count": 1806,
+            "rate": 2181.0356175434486
+          },
+          "http_req_duration": {
+            "min": 134.515,
+            "med": 134.515,
+            "max": 134.515,
+            "p(90)": 134.515,
+            "p(95)": 134.515,
+            "avg": 134.515,
+            "thresholds": {
+              "p(95)<1000": false
+            }
+          },
+          "http_reqs": {
+            "count": 1,
+            "rate": 1.2076609177981443
+          },
+          "http_req_duration{expected_response:true}": {
+            "med": 134.515,
+            "max": 134.515,
+            "p(90)": 134.515,
+            "p(95)": 134.515,
+            "avg": 134.515,
+            "min": 134.515
+          },
+          "http_req_tls_handshaking": {
+            "max": 78.544,
+            "p(90)": 78.544,
+            "p(95)": 78.544,
+            "avg": 78.544,
+            "min": 78.544,
+            "med": 78.544
+          }
+        }
+      },
+      "requestSamples": [
+        {
+          "time": "2026-11-02T00:03:51.835645+09:00",
+          "durationMs": 134.515,
+          "status": "200"
+        }
+      ]
+    },
+    "health-retry": {
+      "run": {
+        "mode": "health",
+        "limit": {
+          "vus": 1,
+          "requests": 30,
+          "maxSeconds": 60
+        },
+        "resourceSamples": [
+          {
+            "at": 1793545541.398745,
+            "availableKiB": 272636,
+            "swapInPages": 3809633,
+            "swapOutPages": 4323801
+          },
+          {
+            "at": 1793545542.274826,
+            "availableKiB": 277580,
+            "swapInPages": 3809633,
+            "swapOutPages": 4323801
+          },
+          {
+            "at": 1793545548.128235,
+            "availableKiB": 283384,
+            "swapInPages": 3809636,
+            "swapOutPages": 4323801
+          }
+        ],
+        "stoppedReason": "Swap IO increased",
+        "observer": "SSH meminfo/vmstat + local Prometheus query approximately every 5s; not included in k6 HTTP counts",
+        "start": 1793545541.398753,
+        "exitCode": 105,
+        "end": 1793545548.352969
+      },
+      "summary": {
+        "metrics": {
+          "http_req_failed": {
+            "passes": 0,
+            "fails": 6,
+            "thresholds": {
+              "rate==0": false
+            },
+            "value": 0
+          },
+          "http_reqs": {
+            "count": 6,
+            "rate": 0.8973139355994797
+          },
+          "http_req_sending": {
+            "med": 0.2105,
+            "max": 0.298,
+            "p(90)": 0.296,
+            "p(95)": 0.297,
+            "avg": 0.22616666666666665,
+            "min": 0.155
+          },
+          "http_req_duration": {
+            "avg": 116.35683333333334,
+            "min": 105.086,
+            "med": 111.4205,
+            "max": 145.943,
+            "p(90)": 132.3025,
+            "p(95)": 139.12275,
+            "thresholds": {
+              "p(95)<1000": false
+            }
+          },
+          "data_sent": {
+            "count": 1988,
+            "rate": 297.3100173286276
+          },
+          "http_req_blocked": {
+            "min": 0,
+            "med": 0.001,
+            "max": 92.071,
+            "p(90)": 46.04350000000001,
+            "p(95)": 69.05724999999997,
+            "avg": 15.348333333333336
+          },
+          "data_received": {
+            "count": 6342,
+            "rate": 948.4608299286501
+          },
+          "iteration_duration": {
+            "avg": 1138.2282998000003,
+            "min": 1106.571916,
+            "med": 1117.31975,
+            "max": 1212.57975,
+            "p(90)": 1186.5552332,
+            "p(95)": 1199.5674916
+          },
+          "http_req_connecting": {
+            "p(90)": 19.224500000000003,
+            "p(95)": 28.83674999999999,
+            "avg": 6.408166666666666,
+            "min": 0,
+            "med": 0,
+            "max": 38.449
+          },
+          "http_req_waiting": {
+            "p(95)": 138.7425,
+            "avg": 116.00933333333332,
+            "min": 104.784,
+            "med": 111.0775,
+            "max": 145.542,
+            "p(90)": 131.943
+          },
+          "iterations": {
+            "count": 5,
+            "rate": 0.7477616129995664,
+            "thresholds": {
+              "count==30": true
+            }
+          },
+          "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+          },
+          "http_req_receiving": {
+            "p(90)": 0.17200000000000001,
+            "p(95)": 0.1765,
+            "avg": 0.12133333333333333,
+            "min": 0.084,
+            "med": 0.106,
+            "max": 0.181
+          },
+          "vus_max": {
+            "min": 1,
+            "max": 1,
+            "value": 1
+          },
+          "http_req_duration{expected_response:true}": {
+            "avg": 116.35683333333334,
+            "min": 105.086,
+            "med": 111.4205,
+            "max": 145.943,
+            "p(90)": 132.3025,
+            "p(95)": 139.12275
+          },
+          "http_req_tls_handshaking": {
+            "min": 0,
+            "med": 0,
+            "max": 50.557,
+            "p(90)": 25.278500000000008,
+            "p(95)": 37.91774999999999,
+            "avg": 8.426166666666667
+          },
+          "checks": {
+            "passes": 6,
+            "fails": 0,
+            "thresholds": {
+              "rate==1": false
+            },
+            "value": 1
+          }
+        },
+        "root_group": {
+          "name": "",
+          "path": "",
+          "id": "d41d8cd98f00b204e9800998ecf8427e",
+          "groups": {},
+          "checks": {
+            "HTTP 200 and expected response shape": {
+              "id": "1b72dfa851be7c4eca26c1cefe434faa",
+              "passes": 6,
+              "fails": 0,
+              "name": "HTTP 200 and expected response shape",
+              "path": "::HTTP 200 and expected response shape"
+            }
+          }
+        }
+      },
+      "requestSamples": [
+        {
+          "time": "2026-11-02T00:05:41.655518+09:00",
+          "durationMs": 118.662,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:05:42.803821+09:00",
+          "durationMs": 145.943,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:05:43.921064+09:00",
+          "durationMs": 115.649,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:05:45.027775+09:00",
+          "durationMs": 105.086,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:05:46.135036+09:00",
+          "durationMs": 105.609,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:05:47.243817+09:00",
+          "durationMs": 107.192,
+          "status": "200"
+        }
+      ]
+    },
+    "health-v2": {
+      "run": {
+        "resourceGuard": "v2: 100MiB available; any swap-out; swap-in >=1MiB/s; memory PSI some avg10 >=1%; all provisional",
+        "mode": "health",
+        "limit": {
+          "vus": 1,
+          "requests": 30,
+          "maxSeconds": 60
+        },
+        "resourceSamples": [
+          {
+            "at": 1793545643.535773,
+            "availableKiB": 275728,
+            "swapInPages": 3809652,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.0
+          },
+          {
+            "at": 1793545644.512309,
+            "availableKiB": 285864,
+            "swapInPages": 3809658,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.0
+          },
+          {
+            "at": 1793545650.355902,
+            "availableKiB": 285576,
+            "swapInPages": 3809668,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.0
+          },
+          {
+            "at": 1793545656.152652,
+            "availableKiB": 283768,
+            "swapInPages": 3809670,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.0
+          },
+          {
+            "at": 1793545662.910044,
+            "availableKiB": 265512,
+            "swapInPages": 3809671,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.0
+          },
+          {
+            "at": 1793545668.8079941,
+            "availableKiB": 278896,
+            "swapInPages": 3809673,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.0
+          },
+          {
+            "at": 1793545674.541745,
+            "availableKiB": 285384,
+            "swapInPages": 3809673,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.0
+          }
+        ],
+        "stoppedReason": null,
+        "observer": "SSH meminfo/vmstat + local Prometheus query approximately every 5s; not included in k6 HTTP counts",
+        "start": 1793545643.535787,
+        "exitCode": 0,
+        "end": 1793545677.772087
+      },
+      "summary": {
+        "root_group": {
+          "path": "",
+          "id": "d41d8cd98f00b204e9800998ecf8427e",
+          "groups": {},
+          "checks": {
+            "HTTP 200 and expected response shape": {
+              "name": "HTTP 200 and expected response shape",
+              "path": "::HTTP 200 and expected response shape",
+              "id": "1b72dfa851be7c4eca26c1cefe434faa",
+              "passes": 30,
+              "fails": 0
+            }
+          },
+          "name": ""
+        },
+        "metrics": {
+          "http_req_tls_handshaking": {
+            "min": 0,
+            "med": 0,
+            "max": 49.383,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 1.6461000000000001
+          },
+          "iteration_duration": {
+            "p(90)": 1176.2603208,
+            "p(95)": 1207.862533,
+            "avg": 1130.2135430333333,
+            "min": 1102.897167,
+            "med": 1109.7211255000002,
+            "max": 1245.994042
+          },
+          "http_req_waiting": {
+            "max": 232.023,
+            "p(90)": 161.34060000000002,
+            "p(95)": 174.62914999999998,
+            "avg": 125.16193333333337,
+            "min": 102.123,
+            "med": 108.2525
+          },
+          "http_reqs": {
+            "count": 30,
+            "rate": 0.8847007287456844
+          },
+          "checks": {
+            "fails": 0,
+            "passes": 30,
+            "thresholds": {
+              "rate==1": false
+            },
+            "value": 1
+          },
+          "http_req_duration": {
+            "min": 102.305,
+            "med": 108.41300000000001,
+            "max": 232.17,
+            "p(90)": 161.4993,
+            "p(95)": 174.93925,
+            "avg": 125.96933333333332,
+            "thresholds": {
+              "p(95)<1000": false
+            }
+          },
+          "http_req_connecting": {
+            "med": 0,
+            "max": 38.328,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 1.2776,
+            "min": 0
+          },
+          "vus_max": {
+            "max": 1,
+            "value": 1,
+            "min": 1
+          },
+          "iterations": {
+            "count": 30,
+            "rate": 0.8847007287456844,
+            "thresholds": {
+              "count==30": false
+            }
+          },
+          "http_req_receiving": {
+            "avg": 0.6405666666666668,
+            "min": 0.026,
+            "med": 0.065,
+            "max": 15.525,
+            "p(90)": 0.25260000000000005,
+            "p(95)": 0.8147999999999989
+          },
+          "vus": {
+            "max": 1,
+            "value": 1,
+            "min": 1
+          },
+          "http_req_failed": {
+            "passes": 0,
+            "fails": 30,
+            "thresholds": {
+              "rate==0": false
+            },
+            "value": 0
+          },
+          "http_req_duration{expected_response:true}": {
+            "avg": 125.96933333333332,
+            "min": 102.305,
+            "med": 108.41300000000001,
+            "max": 232.17,
+            "p(90)": 161.4993,
+            "p(95)": 174.93925
+          },
+          "http_req_blocked": {
+            "med": 0.001,
+            "max": 93.08,
+            "p(90)": 0.002,
+            "p(95)": 0.002,
+            "avg": 3.1033000000000017,
+            "min": 0
+          },
+          "data_received": {
+            "count": 10660,
+            "rate": 314.36365894763316
+          },
+          "http_req_sending": {
+            "min": 0.048,
+            "med": 0.125,
+            "max": 1.064,
+            "p(90)": 0.2145,
+            "p(95)": 0.23020000000000002,
+            "avg": 0.16683333333333336
+          },
+          "data_sent": {
+            "count": 2852,
+            "rate": 84.10554927942306
+          }
+        }
+      },
+      "requestSamples": [
+        {
+          "time": "2026-11-02T00:07:23.894596+09:00",
+          "durationMs": 150.538,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:25.044931+09:00",
+          "durationMs": 148.422,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:26.157957+09:00",
+          "durationMs": 111.545,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:27.264392+09:00",
+          "durationMs": 105.023,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:28.373345+09:00",
+          "durationMs": 107.17,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:29.477815+09:00",
+          "durationMs": 102.91,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:30.582519+09:00",
+          "durationMs": 103.902,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:31.758594+09:00",
+          "durationMs": 175.072,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:32.907622+09:00",
+          "durationMs": 147.568,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:34.014565+09:00",
+          "durationMs": 105.256,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:35.121106+09:00",
+          "durationMs": 104.906,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:36.225919+09:00",
+          "durationMs": 103.792,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:37.33083+09:00",
+          "durationMs": 103.354,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:38.4472+09:00",
+          "durationMs": 114.732,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:39.62255+09:00",
+          "durationMs": 174.777,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:40.771268+09:00",
+          "durationMs": 147.328,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:41.901524+09:00",
+          "durationMs": 128.944,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:43.006174+09:00",
+          "durationMs": 103.799,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:44.116411+09:00",
+          "durationMs": 109.656,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:45.220575+09:00",
+          "durationMs": 102.954,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:46.333429+09:00",
+          "durationMs": 111.653,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:47.486979+09:00",
+          "durationMs": 152.742,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:48.719647+09:00",
+          "durationMs": 232.17,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:49.828002+09:00",
+          "durationMs": 107.053,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:50.935064+09:00",
+          "durationMs": 106.15,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:52.038413+09:00",
+          "durationMs": 102.305,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:53.142791+09:00",
+          "durationMs": 103.734,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:54.30348+09:00",
+          "durationMs": 160.024,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:55.452178+09:00",
+          "durationMs": 147.476,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:07:56.557467+09:00",
+          "durationMs": 104.125,
+          "status": "200"
+        }
+      ]
+    },
+    "places-v2": {
+      "run": {
+        "resourceGuard": "v2: 100MiB available; any swap-out; swap-in >=1MiB/s; memory PSI some avg10 >=1%; all provisional",
+        "mode": "places",
+        "limit": {
+          "vus": 1,
+          "requests": 30,
+          "maxSeconds": 60
+        },
+        "resourceSamples": [
+          {
+            "at": 1793545700.008683,
+            "availableKiB": 284144,
+            "swapInPages": 3809685,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.0
+          },
+          {
+            "at": 1793545701.107376,
+            "availableKiB": 281964,
+            "swapInPages": 3809785,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.0
+          },
+          {
+            "at": 1793545707.0220642,
+            "availableKiB": 278556,
+            "swapInPages": 3809854,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.36
+          },
+          {
+            "at": 1793545712.760903,
+            "availableKiB": 279260,
+            "swapInPages": 3809870,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.19
+          },
+          {
+            "at": 1793545718.5487099,
+            "availableKiB": 279108,
+            "swapInPages": 3809871,
+            "swapOutPages": 4323801,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.1
+          },
+          {
+            "at": 1793545725.356606,
+            "availableKiB": 268948,
+            "swapInPages": 3809894,
+            "swapOutPages": 4323802,
+            "pageBytes": 4096,
+            "memorySomeAvg10": 0.05
+          }
+        ],
+        "stoppedReason": "New swap-out observed",
+        "observer": "SSH meminfo/vmstat + local Prometheus query approximately every 5s; not included in k6 HTTP counts",
+        "start": 1793545700.008687,
+        "exitCode": 105,
+        "end": 1793545725.584746
+      },
+      "summary": {
+        "root_group": {
+          "name": "",
+          "path": "",
+          "id": "d41d8cd98f00b204e9800998ecf8427e",
+          "groups": {},
+          "checks": {
+            "HTTP 200 and expected response shape": {
+              "passes": 18,
+              "fails": 0,
+              "name": "HTTP 200 and expected response shape",
+              "path": "::HTTP 200 and expected response shape",
+              "id": "1b72dfa851be7c4eca26c1cefe434faa"
+            }
+          }
+        },
+        "metrics": {
+          "data_sent": {
+            "count": 5289,
+            "rate": 209.66240428429603
+          },
+          "http_req_failed": {
+            "passes": 0,
+            "fails": 18,
+            "thresholds": {
+              "rate==0": false
+            },
+            "value": 0
+          },
+          "http_req_receiving": {
+            "med": 41.968999999999994,
+            "max": 143.714,
+            "p(90)": 104.24340000000001,
+            "p(95)": 132.40389999999996,
+            "avg": 60.84372222222222,
+            "min": 40.603
+          },
+          "vus_max": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+          },
+          "vus": {
+            "max": 1,
+            "value": 1,
+            "min": 1
+          },
+          "http_req_waiting": {
+            "p(95)": 446.09294999999946,
+            "avg": 315.82827777777777,
+            "min": 236.221,
+            "med": 273.6935,
+            "max": 1084.556,
+            "p(90)": 314.71410000000003
+          },
+          "http_req_blocked": {
+            "p(90)": 0.001,
+            "p(95)": 36.505599999999816,
+            "avg": 13.520611111111114,
+            "min": 0,
+            "med": 0,
+            "max": 243.365
+          },
+          "http_req_tls_handshaking": {
+            "p(95)": 7.595999999999962,
+            "avg": 2.8133333333333335,
+            "min": 0,
+            "med": 0,
+            "max": 50.64,
+            "p(90)": 0
+          },
+          "http_reqs": {
+            "count": 18,
+            "rate": 0.713541931767315
+          },
+          "http_req_duration": {
+            "med": 331.24699999999996,
+            "max": 1229.441,
+            "p(90)": 382.3603,
+            "p(95)": 524.2206499999994,
+            "avg": 376.8115,
+            "min": 280.076,
+            "thresholds": {
+              "p(95)<1000": false
+            }
+          },
+          "iteration_duration": {
+            "avg": 1391.8708610555557,
+            "min": 1281.791375,
+            "med": 1332.738416,
+            "max": 2477.04125,
+            "p(90)": 1383.2377714,
+            "p(95)": 1562.4779419499991
+          },
+          "http_req_connecting": {
+            "p(95)": 5.97989999999997,
+            "avg": 2.214777777777778,
+            "min": 0,
+            "med": 0,
+            "max": 39.866,
+            "p(90)": 0
+          },
+          "http_req_sending": {
+            "p(95)": 0.31929999999999925,
+            "avg": 0.1395,
+            "min": 0.044,
+            "med": 0.073,
+            "max": 1.171,
+            "p(90)": 0.13540000000000002
+          },
+          "checks": {
+            "passes": 18,
+            "fails": 0,
+            "thresholds": {
+              "rate==1": false
+            },
+            "value": 1
+          },
+          "http_req_duration{expected_response:true}": {
+            "p(95)": 524.2206499999994,
+            "avg": 376.8115,
+            "min": 280.076,
+            "med": 331.24699999999996,
+            "max": 1229.441,
+            "p(90)": 382.3603
+          },
+          "iterations": {
+            "rate": 0.713541931767315,
+            "count": 18,
+            "thresholds": {
+              "count==30": true
+            }
+          },
+          "data_received": {
+            "count": 532195,
+            "rate": 21096.858243161452
+          }
+        }
+      },
+      "requestSamples": [
+        {
+          "time": "2026-11-02T00:08:21.611426+09:00",
+          "durationMs": 1229.441,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:22.910776+09:00",
+          "durationMs": 297.232,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:24.230528+09:00",
+          "durationMs": 318.275,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:25.606812+09:00",
+          "durationMs": 374.899,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:27.007329+09:00",
+          "durationMs": 399.77,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:28.383481+09:00",
+          "durationMs": 374.758,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:29.714193+09:00",
+          "durationMs": 330.306,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:31.047772+09:00",
+          "durationMs": 332.188,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:32.351246+09:00",
+          "durationMs": 301.669,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:33.689233+09:00",
+          "durationMs": 336.686,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:34.970978+09:00",
+          "durationMs": 280.076,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:36.287136+09:00",
+          "durationMs": 314.501,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:37.570151+09:00",
+          "durationMs": 282.171,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:38.910756+09:00",
+          "durationMs": 338.867,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:40.202992+09:00",
+          "durationMs": 290.779,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:41.557051+09:00",
+          "durationMs": 352.557,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:42.840678+09:00",
+          "durationMs": 280.757,
+          "status": "200"
+        },
+        {
+          "time": "2026-11-02T00:08:44.189633+09:00",
+          "durationMs": 347.675,
+          "status": "200"
+        }
+      ]
+    }
+  },
+  "idleBaseline": [
+    {
+      "at": 1793545483.9962826,
+      "availableKiB": 285328,
+      "swapInPages": 3809627,
+      "swapOutPages": 4323801
+    },
+    {
+      "at": 1793545489.002039,
+      "availableKiB": 285328,
+      "swapInPages": 3809627,
+      "swapOutPages": 4323801
+    },
+    {
+      "at": 1793545494.007702,
+      "availableKiB": 284608,
+      "swapInPages": 3809629,
+      "swapOutPages": 4323801
+    },
+    {
+      "at": 1793545499.0132794,
+      "availableKiB": 284608,
+      "swapInPages": 3809630,
+      "swapOutPages": 4323801
+    },
+    {
+      "at": 1793545504.0189033,
+      "availableKiB": 284616,
+      "swapInPages": 3809630,
+      "swapOutPages": 4323801
+    },
+    {
+      "at": 1793545509.0244653,
+      "availableKiB": 284624,
+      "swapInPages": 3809630,
+      "swapOutPages": 4323801
+    },
+    {
+      "at": 1793545514.0300767,
+      "availableKiB": 284408,
+      "swapInPages": 3809630,
+      "swapOutPages": 4323801
+    }
+  ],
+  "prometheus": {
+    "health-v2": {
+      "start": 1793545613,
+      "end": 1793545707,
+      "queryStepSeconds": 5,
+      "sourceScrapeSeconds": 15,
+      "series": {
+        "requestsPerSecond": {
+          "query": "sum by(uri) (rate(http_server_requests_seconds_count{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"}[1m]))",
+          "result": [
+            {
+              "metric": {
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545613,
+                  "0"
+                ],
+                [
+                  1793545618,
+                  "0"
+                ],
+                [
+                  1793545623,
+                  "0"
+                ],
+                [
+                  1793545628,
+                  "0"
+                ],
+                [
+                  1793545633,
+                  "0"
+                ],
+                [
+                  1793545638,
+                  "0"
+                ],
+                [
+                  1793545643,
+                  "0"
+                ],
+                [
+                  1793545648,
+                  "0"
+                ],
+                [
+                  1793545653,
+                  "0"
+                ],
+                [
+                  1793545658,
+                  "0.2666785190452909"
+                ],
+                [
+                  1793545663,
+                  "0.2666785190452909"
+                ],
+                [
+                  1793545668,
+                  "0.2666785190452909"
+                ],
+                [
+                  1793545673,
+                  "0.5743409698612685"
+                ],
+                [
+                  1793545678,
+                  "0.5777392618269893"
+                ],
+                [
+                  1793545683,
+                  "0.5777392618269893"
+                ],
+                [
+                  1793545688,
+                  "0.6422331355599505"
+                ],
+                [
+                  1793545693,
+                  "0.6666518521810627"
+                ],
+                [
+                  1793545698,
+                  "0.6666518521810627"
+                ],
+                [
+                  1793545703,
+                  "0.39999111130863757"
+                ]
+              ]
+            }
+          ]
+        },
+        "serverAverageSeconds": {
+          "query": "sum by(uri) (rate(http_server_requests_seconds_sum{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"}[1m])) / (sum by(uri) (rate(http_server_requests_seconds_count{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"}[1m])) > 0)",
+          "result": [
+            {
+              "metric": {
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545658,
+                  "0.06493776716666667"
+                ],
+                [
+                  1793545663,
+                  "0.06493776716666667"
+                ],
+                [
+                  1793545668,
+                  "0.06493776716666667"
+                ],
+                [
+                  1793545673,
+                  "0.06732733315628335"
+                ],
+                [
+                  1793545678,
+                  "0.06752262626923076"
+                ],
+                [
+                  1793545683,
+                  "0.06752262626923076"
+                ],
+                [
+                  1793545688,
+                  "0.06700068406136667"
+                ],
+                [
+                  1793545693,
+                  "0.0670843401"
+                ],
+                [
+                  1793545698,
+                  "0.0670843401"
+                ],
+                [
+                  1793545703,
+                  "0.06851538872222222"
+                ]
+              ]
+            }
+          ]
+        },
+        "cpu": {
+          "query": "process_cpu_usage{job=\"trova-prod\"}",
+          "result": [
+            {
+              "metric": {
+                "__name__": "process_cpu_usage",
+                "application": "trova-backend",
+                "instance": "host.docker.internal:18080",
+                "job": "trova-prod"
+              },
+              "values": [
+                [
+                  1793545613,
+                  "0.005409060175794456"
+                ],
+                [
+                  1793545618,
+                  "0.005409060175794456"
+                ],
+                [
+                  1793545623,
+                  "0.005409060175794456"
+                ],
+                [
+                  1793545628,
+                  "0.002338009352037408"
+                ],
+                [
+                  1793545633,
+                  "0.002338009352037408"
+                ],
+                [
+                  1793545638,
+                  "0.002338009352037408"
+                ],
+                [
+                  1793545643,
+                  "0.0030080213903743314"
+                ],
+                [
+                  1793545648,
+                  "0.0030080213903743314"
+                ],
+                [
+                  1793545653,
+                  "0.0030080213903743314"
+                ],
+                [
+                  1793545658,
+                  "0.012542372881355932"
+                ],
+                [
+                  1793545663,
+                  "0.012542372881355932"
+                ],
+                [
+                  1793545668,
+                  "0.012542372881355932"
+                ],
+                [
+                  1793545673,
+                  "0.012710408794228788"
+                ],
+                [
+                  1793545678,
+                  "0.012710408794228788"
+                ],
+                [
+                  1793545683,
+                  "0.012710408794228788"
+                ],
+                [
+                  1793545688,
+                  "0.003685092127303183"
+                ],
+                [
+                  1793545693,
+                  "0.003685092127303183"
+                ],
+                [
+                  1793545698,
+                  "0.003685092127303183"
+                ],
+                [
+                  1793545703,
+                  "0.03268428372739916"
+                ]
+              ]
+            }
+          ]
+        },
+        "heapBytes": {
+          "query": "sum(jvm_memory_used_bytes{job=\"trova-prod\",area=\"heap\"})",
+          "result": [
+            {
+              "metric": {},
+              "values": [
+                [
+                  1793545613,
+                  "76226464"
+                ],
+                [
+                  1793545618,
+                  "76226464"
+                ],
+                [
+                  1793545623,
+                  "76226464"
+                ],
+                [
+                  1793545628,
+                  "79916840"
+                ],
+                [
+                  1793545633,
+                  "79916840"
+                ],
+                [
+                  1793545638,
+                  "79916840"
+                ],
+                [
+                  1793545643,
+                  "83592160"
+                ],
+                [
+                  1793545648,
+                  "83592160"
+                ],
+                [
+                  1793545653,
+                  "83592160"
+                ],
+                [
+                  1793545658,
+                  "88781928"
+                ],
+                [
+                  1793545663,
+                  "88781928"
+                ],
+                [
+                  1793545668,
+                  "88781928"
+                ],
+                [
+                  1793545673,
+                  "94729016"
+                ],
+                [
+                  1793545678,
+                  "94729016"
+                ],
+                [
+                  1793545683,
+                  "94729016"
+                ],
+                [
+                  1793545688,
+                  "98850984"
+                ],
+                [
+                  1793545693,
+                  "98850984"
+                ],
+                [
+                  1793545698,
+                  "98850984"
+                ],
+                [
+                  1793545703,
+                  "79278640"
+                ]
+              ]
+            }
+          ]
+        },
+        "dbActive": {
+          "query": "hikaricp_connections_active{job=\"trova-prod\"}",
+          "result": [
+            {
+              "metric": {
+                "__name__": "hikaricp_connections_active",
+                "application": "trova-backend",
+                "instance": "host.docker.internal:18080",
+                "job": "trova-prod",
+                "pool": "HikariPool-1"
+              },
+              "values": [
+                [
+                  1793545613,
+                  "0"
+                ],
+                [
+                  1793545618,
+                  "0"
+                ],
+                [
+                  1793545623,
+                  "0"
+                ],
+                [
+                  1793545628,
+                  "0"
+                ],
+                [
+                  1793545633,
+                  "0"
+                ],
+                [
+                  1793545638,
+                  "0"
+                ],
+                [
+                  1793545643,
+                  "0"
+                ],
+                [
+                  1793545648,
+                  "0"
+                ],
+                [
+                  1793545653,
+                  "0"
+                ],
+                [
+                  1793545658,
+                  "0"
+                ],
+                [
+                  1793545663,
+                  "0"
+                ],
+                [
+                  1793545668,
+                  "0"
+                ],
+                [
+                  1793545673,
+                  "0"
+                ],
+                [
+                  1793545678,
+                  "0"
+                ],
+                [
+                  1793545683,
+                  "0"
+                ],
+                [
+                  1793545688,
+                  "0"
+                ],
+                [
+                  1793545693,
+                  "0"
+                ],
+                [
+                  1793545698,
+                  "0"
+                ],
+                [
+                  1793545703,
+                  "0"
+                ]
+              ]
+            }
+          ]
+        },
+        "dbPending": {
+          "query": "hikaricp_connections_pending{job=\"trova-prod\"}",
+          "result": [
+            {
+              "metric": {
+                "__name__": "hikaricp_connections_pending",
+                "application": "trova-backend",
+                "instance": "host.docker.internal:18080",
+                "job": "trova-prod",
+                "pool": "HikariPool-1"
+              },
+              "values": [
+                [
+                  1793545613,
+                  "0"
+                ],
+                [
+                  1793545618,
+                  "0"
+                ],
+                [
+                  1793545623,
+                  "0"
+                ],
+                [
+                  1793545628,
+                  "0"
+                ],
+                [
+                  1793545633,
+                  "0"
+                ],
+                [
+                  1793545638,
+                  "0"
+                ],
+                [
+                  1793545643,
+                  "0"
+                ],
+                [
+                  1793545648,
+                  "0"
+                ],
+                [
+                  1793545653,
+                  "0"
+                ],
+                [
+                  1793545658,
+                  "0"
+                ],
+                [
+                  1793545663,
+                  "0"
+                ],
+                [
+                  1793545668,
+                  "0"
+                ],
+                [
+                  1793545673,
+                  "0"
+                ],
+                [
+                  1793545678,
+                  "0"
+                ],
+                [
+                  1793545683,
+                  "0"
+                ],
+                [
+                  1793545688,
+                  "0"
+                ],
+                [
+                  1793545693,
+                  "0"
+                ],
+                [
+                  1793545698,
+                  "0"
+                ],
+                [
+                  1793545703,
+                  "0"
+                ]
+              ]
+            }
+          ]
+        },
+        "up": {
+          "query": "up{job=\"trova-prod\"}",
+          "result": [
+            {
+              "metric": {
+                "__name__": "up",
+                "instance": "host.docker.internal:18080",
+                "job": "trova-prod"
+              },
+              "values": [
+                [
+                  1793545613,
+                  "1"
+                ],
+                [
+                  1793545618,
+                  "1"
+                ],
+                [
+                  1793545623,
+                  "1"
+                ],
+                [
+                  1793545628,
+                  "1"
+                ],
+                [
+                  1793545633,
+                  "1"
+                ],
+                [
+                  1793545638,
+                  "1"
+                ],
+                [
+                  1793545643,
+                  "1"
+                ],
+                [
+                  1793545648,
+                  "1"
+                ],
+                [
+                  1793545653,
+                  "1"
+                ],
+                [
+                  1793545658,
+                  "1"
+                ],
+                [
+                  1793545663,
+                  "1"
+                ],
+                [
+                  1793545668,
+                  "1"
+                ],
+                [
+                  1793545673,
+                  "1"
+                ],
+                [
+                  1793545678,
+                  "1"
+                ],
+                [
+                  1793545683,
+                  "1"
+                ],
+                [
+                  1793545688,
+                  "1"
+                ],
+                [
+                  1793545693,
+                  "1"
+                ],
+                [
+                  1793545698,
+                  "1"
+                ],
+                [
+                  1793545703,
+                  "1"
+                ]
+              ]
+            }
+          ]
+        },
+        "requestCount": {
+          "query": "sum by(uri,status) (http_server_requests_seconds_count{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"})",
+          "result": [
+            {
+              "metric": {
+                "status": "200",
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545613,
+                  "8"
+                ],
+                [
+                  1793545618,
+                  "8"
+                ],
+                [
+                  1793545623,
+                  "8"
+                ],
+                [
+                  1793545628,
+                  "8"
+                ],
+                [
+                  1793545633,
+                  "8"
+                ],
+                [
+                  1793545638,
+                  "8"
+                ],
+                [
+                  1793545643,
+                  "8"
+                ],
+                [
+                  1793545648,
+                  "8"
+                ],
+                [
+                  1793545653,
+                  "8"
+                ],
+                [
+                  1793545658,
+                  "20"
+                ],
+                [
+                  1793545663,
+                  "20"
+                ],
+                [
+                  1793545668,
+                  "20"
+                ],
+                [
+                  1793545673,
+                  "34"
+                ],
+                [
+                  1793545678,
+                  "34"
+                ],
+                [
+                  1793545683,
+                  "34"
+                ],
+                [
+                  1793545688,
+                  "38"
+                ],
+                [
+                  1793545693,
+                  "38"
+                ],
+                [
+                  1793545698,
+                  "38"
+                ],
+                [
+                  1793545703,
+                  "38"
+                ]
+              ]
+            },
+            {
+              "metric": {
+                "status": "200",
+                "uri": "/api/places"
+              },
+              "values": [
+                [
+                  1793545703,
+                  "1"
+                ]
+              ]
+            },
+            {
+              "metric": {
+                "status": "503",
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545613,
+                  "1"
+                ],
+                [
+                  1793545618,
+                  "1"
+                ],
+                [
+                  1793545623,
+                  "1"
+                ],
+                [
+                  1793545628,
+                  "1"
+                ],
+                [
+                  1793545633,
+                  "1"
+                ],
+                [
+                  1793545638,
+                  "1"
+                ],
+                [
+                  1793545643,
+                  "1"
+                ],
+                [
+                  1793545648,
+                  "1"
+                ],
+                [
+                  1793545653,
+                  "1"
+                ],
+                [
+                  1793545658,
+                  "1"
+                ],
+                [
+                  1793545663,
+                  "1"
+                ],
+                [
+                  1793545668,
+                  "1"
+                ],
+                [
+                  1793545673,
+                  "1"
+                ],
+                [
+                  1793545678,
+                  "1"
+                ],
+                [
+                  1793545683,
+                  "1"
+                ],
+                [
+                  1793545688,
+                  "1"
+                ],
+                [
+                  1793545693,
+                  "1"
+                ],
+                [
+                  1793545698,
+                  "1"
+                ],
+                [
+                  1793545703,
+                  "1"
+                ]
+              ]
+            }
+          ]
+        },
+        "requestSeconds": {
+          "query": "sum by(uri,status) (http_server_requests_seconds_sum{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"})",
+          "result": [
+            {
+              "metric": {
+                "status": "200",
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545613,
+                  "0.53345112"
+                ],
+                [
+                  1793545618,
+                  "0.53345112"
+                ],
+                [
+                  1793545623,
+                  "0.53345112"
+                ],
+                [
+                  1793545628,
+                  "0.53345112"
+                ],
+                [
+                  1793545633,
+                  "0.53345112"
+                ],
+                [
+                  1793545638,
+                  "0.53345112"
+                ],
+                [
+                  1793545643,
+                  "0.53345112"
+                ],
+                [
+                  1793545648,
+                  "0.53345112"
+                ],
+                [
+                  1793545653,
+                  "0.53345112"
+                ],
+                [
+                  1793545658,
+                  "1.312704326"
+                ],
+                [
+                  1793545663,
+                  "1.312704326"
+                ],
+                [
+                  1793545668,
+                  "1.312704326"
+                ],
+                [
+                  1793545673,
+                  "2.289039403"
+                ],
+                [
+                  1793545678,
+                  "2.289039403"
+                ],
+                [
+                  1793545683,
+                  "2.289039403"
+                ],
+                [
+                  1793545688,
+                  "2.545981323"
+                ],
+                [
+                  1793545693,
+                  "2.545981323"
+                ],
+                [
+                  1793545698,
+                  "2.545981323"
+                ],
+                [
+                  1793545703,
+                  "2.545981323"
+                ]
+              ]
+            },
+            {
+              "metric": {
+                "status": "200",
+                "uri": "/api/places"
+              },
+              "values": [
+                [
+                  1793545703,
+                  "1.064036549"
+                ]
+              ]
+            },
+            {
+              "metric": {
+                "status": "503",
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545613,
+                  "3.296837269"
+                ],
+                [
+                  1793545618,
+                  "3.296837269"
+                ],
+                [
+                  1793545623,
+                  "3.296837269"
+                ],
+                [
+                  1793545628,
+                  "3.296837269"
+                ],
+                [
+                  1793545633,
+                  "3.296837269"
+                ],
+                [
+                  1793545638,
+                  "3.296837269"
+                ],
+                [
+                  1793545643,
+                  "3.296837269"
+                ],
+                [
+                  1793545648,
+                  "3.296837269"
+                ],
+                [
+                  1793545653,
+                  "3.296837269"
+                ],
+                [
+                  1793545658,
+                  "3.296837269"
+                ],
+                [
+                  1793545663,
+                  "3.296837269"
+                ],
+                [
+                  1793545668,
+                  "3.296837269"
+                ],
+                [
+                  1793545673,
+                  "3.296837269"
+                ],
+                [
+                  1793545678,
+                  "3.296837269"
+                ],
+                [
+                  1793545683,
+                  "3.296837269"
+                ],
+                [
+                  1793545688,
+                  "3.296837269"
+                ],
+                [
+                  1793545693,
+                  "3.296837269"
+                ],
+                [
+                  1793545698,
+                  "3.296837269"
+                ],
+                [
+                  1793545703,
+                  "3.296837269"
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "places-v2": {
+      "start": 1793545670,
+      "end": 1793545755,
+      "queryStepSeconds": 5,
+      "sourceScrapeSeconds": 15,
+      "series": {
+        "requestsPerSecond": {
+          "query": "sum by(uri) (rate(http_server_requests_seconds_count{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"}[1m]))",
+          "result": [
+            {
+              "metric": {
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545670,
+                  "0.2666785190452909"
+                ],
+                [
+                  1793545675,
+                  "0.5777392618269893"
+                ],
+                [
+                  1793545680,
+                  "0.5777392618269893"
+                ],
+                [
+                  1793545685,
+                  "0.5777392618269893"
+                ],
+                [
+                  1793545690,
+                  "0.664454863965986"
+                ],
+                [
+                  1793545695,
+                  "0.6666518521810627"
+                ],
+                [
+                  1793545700,
+                  "0.6666518521810627"
+                ],
+                [
+                  1793545705,
+                  "0.39999111130863757"
+                ],
+                [
+                  1793545710,
+                  "0.39999111130863757"
+                ],
+                [
+                  1793545715,
+                  "0.3999911113086376"
+                ],
+                [
+                  1793545720,
+                  "0.08889481520990289"
+                ],
+                [
+                  1793545725,
+                  "0.08889481520990289"
+                ],
+                [
+                  1793545730,
+                  "0.08889481520990289"
+                ],
+                [
+                  1793545735,
+                  "0"
+                ],
+                [
+                  1793545740,
+                  "0"
+                ],
+                [
+                  1793545745,
+                  "0"
+                ],
+                [
+                  1793545750,
+                  "0"
+                ],
+                [
+                  1793545755,
+                  "0"
+                ]
+              ]
+            },
+            {
+              "metric": {
+                "uri": "/api/places"
+              },
+              "values": [
+                [
+                  1793545720,
+                  "0.23422222222222222"
+                ],
+                [
+                  1793545725,
+                  "0.29533333333333334"
+                ],
+                [
+                  1793545730,
+                  "0.35644444444444445"
+                ],
+                [
+                  1793545735,
+                  "0.3264341188627046"
+                ],
+                [
+                  1793545740,
+                  "0.3736547670633201"
+                ],
+                [
+                  1793545745,
+                  "0.42087541526393557"
+                ],
+                [
+                  1793545750,
+                  "0.31759619301559083"
+                ],
+                [
+                  1793545755,
+                  "0.3490741769433026"
+                ]
+              ]
+            }
+          ]
+        },
+        "serverAverageSeconds": {
+          "query": "sum by(uri) (rate(http_server_requests_seconds_sum{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"}[1m])) / (sum by(uri) (rate(http_server_requests_seconds_count{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"}[1m])) > 0)",
+          "result": [
+            {
+              "metric": {
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545670,
+                  "0.06493776716666667"
+                ],
+                [
+                  1793545675,
+                  "0.06752262626923076"
+                ],
+                [
+                  1793545680,
+                  "0.06752262626923076"
+                ],
+                [
+                  1793545685,
+                  "0.06752262626923076"
+                ],
+                [
+                  1793545690,
+                  "0.06700348181614409"
+                ],
+                [
+                  1793545695,
+                  "0.0670843401"
+                ],
+                [
+                  1793545700,
+                  "0.0670843401"
+                ],
+                [
+                  1793545705,
+                  "0.06851538872222222"
+                ],
+                [
+                  1793545710,
+                  "0.06851538872222222"
+                ],
+                [
+                  1793545715,
+                  "0.06851538872222222"
+                ],
+                [
+                  1793545720,
+                  "0.06423548000000001"
+                ],
+                [
+                  1793545725,
+                  "0.06423548000000001"
+                ],
+                [
+                  1793545730,
+                  "0.06423548000000001"
+                ]
+              ]
+            },
+            {
+              "metric": {
+                "uri": "/api/places"
+              },
+              "values": [
+                [
+                  1793545720,
+                  "0.2703015746688805"
+                ],
+                [
+                  1793545725,
+                  "0.2577192235146727"
+                ],
+                [
+                  1793545730,
+                  "0.2494512695766833"
+                ],
+                [
+                  1793545735,
+                  "0.24148456342062086"
+                ],
+                [
+                  1793545740,
+                  "0.2371413294888355"
+                ],
+                [
+                  1793545745,
+                  "0.23377268477802998"
+                ],
+                [
+                  1793545750,
+                  "0.24633612544236566"
+                ],
+                [
+                  1793545755,
+                  "0.22412261006466125"
+                ]
+              ]
+            }
+          ]
+        },
+        "cpu": {
+          "query": "process_cpu_usage{job=\"trova-prod\"}",
+          "result": [
+            {
+              "metric": {
+                "__name__": "process_cpu_usage",
+                "application": "trova-backend",
+                "instance": "host.docker.internal:18080",
+                "job": "trova-prod"
+              },
+              "values": [
+                [
+                  1793545670,
+                  "0.012542372881355932"
+                ],
+                [
+                  1793545675,
+                  "0.012710408794228788"
+                ],
+                [
+                  1793545680,
+                  "0.012710408794228788"
+                ],
+                [
+                  1793545685,
+                  "0.012710408794228788"
+                ],
+                [
+                  1793545690,
+                  "0.003685092127303183"
+                ],
+                [
+                  1793545695,
+                  "0.003685092127303183"
+                ],
+                [
+                  1793545700,
+                  "0.003685092127303183"
+                ],
+                [
+                  1793545705,
+                  "0.03268428372739916"
+                ],
+                [
+                  1793545710,
+                  "0.03268428372739916"
+                ],
+                [
+                  1793545715,
+                  "0.03268428372739916"
+                ],
+                [
+                  1793545720,
+                  "0.0369483407458091"
+                ],
+                [
+                  1793545725,
+                  "0.0369483407458091"
+                ],
+                [
+                  1793545730,
+                  "0.0369483407458091"
+                ],
+                [
+                  1793545735,
+                  "0.026791927627000698"
+                ],
+                [
+                  1793545740,
+                  "0.026791927627000698"
+                ],
+                [
+                  1793545745,
+                  "0.026791927627000698"
+                ],
+                [
+                  1793545750,
+                  "0.004349280695884911"
+                ],
+                [
+                  1793545755,
+                  "0.004349280695884911"
+                ]
+              ]
+            }
+          ]
+        },
+        "heapBytes": {
+          "query": "sum(jvm_memory_used_bytes{job=\"trova-prod\",area=\"heap\"})",
+          "result": [
+            {
+              "metric": {},
+              "values": [
+                [
+                  1793545670,
+                  "88781928"
+                ],
+                [
+                  1793545675,
+                  "94729016"
+                ],
+                [
+                  1793545680,
+                  "94729016"
+                ],
+                [
+                  1793545685,
+                  "94729016"
+                ],
+                [
+                  1793545690,
+                  "98850984"
+                ],
+                [
+                  1793545695,
+                  "98850984"
+                ],
+                [
+                  1793545700,
+                  "98850984"
+                ],
+                [
+                  1793545705,
+                  "79278640"
+                ],
+                [
+                  1793545710,
+                  "79278640"
+                ],
+                [
+                  1793545715,
+                  "79278640"
+                ],
+                [
+                  1793545720,
+                  "90625656"
+                ],
+                [
+                  1793545725,
+                  "90625656"
+                ],
+                [
+                  1793545730,
+                  "90625656"
+                ],
+                [
+                  1793545735,
+                  "99061392"
+                ],
+                [
+                  1793545740,
+                  "99061392"
+                ],
+                [
+                  1793545745,
+                  "99061392"
+                ],
+                [
+                  1793545750,
+                  "70453096"
+                ],
+                [
+                  1793545755,
+                  "70453096"
+                ]
+              ]
+            }
+          ]
+        },
+        "dbActive": {
+          "query": "hikaricp_connections_active{job=\"trova-prod\"}",
+          "result": [
+            {
+              "metric": {
+                "__name__": "hikaricp_connections_active",
+                "application": "trova-backend",
+                "instance": "host.docker.internal:18080",
+                "job": "trova-prod",
+                "pool": "HikariPool-1"
+              },
+              "values": [
+                [
+                  1793545670,
+                  "0"
+                ],
+                [
+                  1793545675,
+                  "0"
+                ],
+                [
+                  1793545680,
+                  "0"
+                ],
+                [
+                  1793545685,
+                  "0"
+                ],
+                [
+                  1793545690,
+                  "0"
+                ],
+                [
+                  1793545695,
+                  "0"
+                ],
+                [
+                  1793545700,
+                  "0"
+                ],
+                [
+                  1793545705,
+                  "0"
+                ],
+                [
+                  1793545710,
+                  "0"
+                ],
+                [
+                  1793545715,
+                  "0"
+                ],
+                [
+                  1793545720,
+                  "0"
+                ],
+                [
+                  1793545725,
+                  "0"
+                ],
+                [
+                  1793545730,
+                  "0"
+                ],
+                [
+                  1793545735,
+                  "0"
+                ],
+                [
+                  1793545740,
+                  "0"
+                ],
+                [
+                  1793545745,
+                  "0"
+                ],
+                [
+                  1793545750,
+                  "0"
+                ],
+                [
+                  1793545755,
+                  "0"
+                ]
+              ]
+            }
+          ]
+        },
+        "dbPending": {
+          "query": "hikaricp_connections_pending{job=\"trova-prod\"}",
+          "result": [
+            {
+              "metric": {
+                "__name__": "hikaricp_connections_pending",
+                "application": "trova-backend",
+                "instance": "host.docker.internal:18080",
+                "job": "trova-prod",
+                "pool": "HikariPool-1"
+              },
+              "values": [
+                [
+                  1793545670,
+                  "0"
+                ],
+                [
+                  1793545675,
+                  "0"
+                ],
+                [
+                  1793545680,
+                  "0"
+                ],
+                [
+                  1793545685,
+                  "0"
+                ],
+                [
+                  1793545690,
+                  "0"
+                ],
+                [
+                  1793545695,
+                  "0"
+                ],
+                [
+                  1793545700,
+                  "0"
+                ],
+                [
+                  1793545705,
+                  "0"
+                ],
+                [
+                  1793545710,
+                  "0"
+                ],
+                [
+                  1793545715,
+                  "0"
+                ],
+                [
+                  1793545720,
+                  "0"
+                ],
+                [
+                  1793545725,
+                  "0"
+                ],
+                [
+                  1793545730,
+                  "0"
+                ],
+                [
+                  1793545735,
+                  "0"
+                ],
+                [
+                  1793545740,
+                  "0"
+                ],
+                [
+                  1793545745,
+                  "0"
+                ],
+                [
+                  1793545750,
+                  "0"
+                ],
+                [
+                  1793545755,
+                  "0"
+                ]
+              ]
+            }
+          ]
+        },
+        "up": {
+          "query": "up{job=\"trova-prod\"}",
+          "result": [
+            {
+              "metric": {
+                "__name__": "up",
+                "instance": "host.docker.internal:18080",
+                "job": "trova-prod"
+              },
+              "values": [
+                [
+                  1793545670,
+                  "1"
+                ],
+                [
+                  1793545675,
+                  "1"
+                ],
+                [
+                  1793545680,
+                  "1"
+                ],
+                [
+                  1793545685,
+                  "1"
+                ],
+                [
+                  1793545690,
+                  "1"
+                ],
+                [
+                  1793545695,
+                  "1"
+                ],
+                [
+                  1793545700,
+                  "1"
+                ],
+                [
+                  1793545705,
+                  "1"
+                ],
+                [
+                  1793545710,
+                  "1"
+                ],
+                [
+                  1793545715,
+                  "1"
+                ],
+                [
+                  1793545720,
+                  "1"
+                ],
+                [
+                  1793545725,
+                  "1"
+                ],
+                [
+                  1793545730,
+                  "1"
+                ],
+                [
+                  1793545735,
+                  "1"
+                ],
+                [
+                  1793545740,
+                  "1"
+                ],
+                [
+                  1793545745,
+                  "1"
+                ],
+                [
+                  1793545750,
+                  "1"
+                ],
+                [
+                  1793545755,
+                  "1"
+                ]
+              ]
+            }
+          ]
+        },
+        "requestCount": {
+          "query": "sum by(uri,status) (http_server_requests_seconds_count{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"})",
+          "result": [
+            {
+              "metric": {
+                "status": "200",
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545670,
+                  "20"
+                ],
+                [
+                  1793545675,
+                  "34"
+                ],
+                [
+                  1793545680,
+                  "34"
+                ],
+                [
+                  1793545685,
+                  "34"
+                ],
+                [
+                  1793545690,
+                  "38"
+                ],
+                [
+                  1793545695,
+                  "38"
+                ],
+                [
+                  1793545700,
+                  "38"
+                ],
+                [
+                  1793545705,
+                  "38"
+                ],
+                [
+                  1793545710,
+                  "38"
+                ],
+                [
+                  1793545715,
+                  "38"
+                ],
+                [
+                  1793545720,
+                  "38"
+                ],
+                [
+                  1793545725,
+                  "38"
+                ],
+                [
+                  1793545730,
+                  "38"
+                ],
+                [
+                  1793545735,
+                  "38"
+                ],
+                [
+                  1793545740,
+                  "38"
+                ],
+                [
+                  1793545745,
+                  "38"
+                ],
+                [
+                  1793545750,
+                  "38"
+                ],
+                [
+                  1793545755,
+                  "38"
+                ]
+              ]
+            },
+            {
+              "metric": {
+                "status": "200",
+                "uri": "/api/places"
+              },
+              "values": [
+                [
+                  1793545705,
+                  "1"
+                ],
+                [
+                  1793545710,
+                  "1"
+                ],
+                [
+                  1793545715,
+                  "1"
+                ],
+                [
+                  1793545720,
+                  "12"
+                ],
+                [
+                  1793545725,
+                  "12"
+                ],
+                [
+                  1793545730,
+                  "12"
+                ],
+                [
+                  1793545735,
+                  "19"
+                ],
+                [
+                  1793545740,
+                  "19"
+                ],
+                [
+                  1793545745,
+                  "19"
+                ],
+                [
+                  1793545750,
+                  "19"
+                ],
+                [
+                  1793545755,
+                  "19"
+                ]
+              ]
+            },
+            {
+              "metric": {
+                "status": "503",
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545670,
+                  "1"
+                ],
+                [
+                  1793545675,
+                  "1"
+                ],
+                [
+                  1793545680,
+                  "1"
+                ],
+                [
+                  1793545685,
+                  "1"
+                ],
+                [
+                  1793545690,
+                  "1"
+                ],
+                [
+                  1793545695,
+                  "1"
+                ],
+                [
+                  1793545700,
+                  "1"
+                ],
+                [
+                  1793545705,
+                  "1"
+                ],
+                [
+                  1793545710,
+                  "1"
+                ],
+                [
+                  1793545715,
+                  "1"
+                ],
+                [
+                  1793545720,
+                  "1"
+                ],
+                [
+                  1793545725,
+                  "1"
+                ],
+                [
+                  1793545730,
+                  "1"
+                ],
+                [
+                  1793545735,
+                  "1"
+                ],
+                [
+                  1793545740,
+                  "1"
+                ],
+                [
+                  1793545745,
+                  "1"
+                ],
+                [
+                  1793545750,
+                  "1"
+                ],
+                [
+                  1793545755,
+                  "1"
+                ]
+              ]
+            }
+          ]
+        },
+        "requestSeconds": {
+          "query": "sum by(uri,status) (http_server_requests_seconds_sum{job=\"trova-prod\",uri=~\"/actuator/health|/api/places\",method=\"GET\"})",
+          "result": [
+            {
+              "metric": {
+                "status": "200",
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545670,
+                  "1.312704326"
+                ],
+                [
+                  1793545675,
+                  "2.289039403"
+                ],
+                [
+                  1793545680,
+                  "2.289039403"
+                ],
+                [
+                  1793545685,
+                  "2.289039403"
+                ],
+                [
+                  1793545690,
+                  "2.545981323"
+                ],
+                [
+                  1793545695,
+                  "2.545981323"
+                ],
+                [
+                  1793545700,
+                  "2.545981323"
+                ],
+                [
+                  1793545705,
+                  "2.545981323"
+                ],
+                [
+                  1793545710,
+                  "2.545981323"
+                ],
+                [
+                  1793545715,
+                  "2.545981323"
+                ],
+                [
+                  1793545720,
+                  "2.545981323"
+                ],
+                [
+                  1793545725,
+                  "2.545981323"
+                ],
+                [
+                  1793545730,
+                  "2.545981323"
+                ],
+                [
+                  1793545735,
+                  "2.545981323"
+                ],
+                [
+                  1793545740,
+                  "2.545981323"
+                ],
+                [
+                  1793545745,
+                  "2.545981323"
+                ],
+                [
+                  1793545750,
+                  "2.545981323"
+                ],
+                [
+                  1793545755,
+                  "2.545981323"
+                ]
+              ]
+            },
+            {
+              "metric": {
+                "status": "200",
+                "uri": "/api/places"
+              },
+              "values": [
+                [
+                  1793545705,
+                  "1.064036549"
+                ],
+                [
+                  1793545710,
+                  "1.064036549"
+                ],
+                [
+                  1793545715,
+                  "1.064036549"
+                ],
+                [
+                  1793545720,
+                  "3.368476083"
+                ],
+                [
+                  1793545725,
+                  "3.368476083"
+                ],
+                [
+                  1793545730,
+                  "3.368476083"
+                ],
+                [
+                  1793545735,
+                  "4.840591003"
+                ],
+                [
+                  1793545740,
+                  "4.840591003"
+                ],
+                [
+                  1793545745,
+                  "4.840591003"
+                ],
+                [
+                  1793545750,
+                  "4.840591003"
+                ],
+                [
+                  1793545755,
+                  "4.840591003"
+                ]
+              ]
+            },
+            {
+              "metric": {
+                "status": "503",
+                "uri": "/actuator/health"
+              },
+              "values": [
+                [
+                  1793545670,
+                  "3.296837269"
+                ],
+                [
+                  1793545675,
+                  "3.296837269"
+                ],
+                [
+                  1793545680,
+                  "3.296837269"
+                ],
+                [
+                  1793545685,
+                  "3.296837269"
+                ],
+                [
+                  1793545690,
+                  "3.296837269"
+                ],
+                [
+                  1793545695,
+                  "3.296837269"
+                ],
+                [
+                  1793545700,
+                  "3.296837269"
+                ],
+                [
+                  1793545705,
+                  "3.296837269"
+                ],
+                [
+                  1793545710,
+                  "3.296837269"
+                ],
+                [
+                  1793545715,
+                  "3.296837269"
+                ],
+                [
+                  1793545720,
+                  "3.296837269"
+                ],
+                [
+                  1793545725,
+                  "3.296837269"
+                ],
+                [
+                  1793545730,
+                  "3.296837269"
+                ],
+                [
+                  1793545735,
+                  "3.296837269"
+                ],
+                [
+                  1793545740,
+                  "3.296837269"
+                ],
+                [
+                  1793545745,
+                  "3.296837269"
+                ],
+                [
+                  1793545750,
+                  "3.296837269"
+                ],
+                [
+                  1793545755,
+                  "3.296837269"
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "collectedAt": "2026-11-02T00:09:20.994965+09:00",
+  "validation": {
+    "fixtureTestMethodsPassed": 10,
+    "gradleBuild": "success; Java tasks up-to-date, no backend changes",
+    "grafanaPanelsMatch": true,
+    "finalInFlight": [
+      0,
+      0,
+      0
+    ],
+    "finalLastJobId": 127,
+    "temporaryTokenFileRemoved": true,
+    "backendPerformanceChanged": false,
+    "reasonNoPerformanceChange": "No isolated code bottleneck established; places trial stopped on resource guard."
+  }
+}
