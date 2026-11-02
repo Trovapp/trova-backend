@@ -187,3 +187,6 @@ places 18건에서 자원 기준으로 중단. 특정 앱 코드 병목은 미�
 
 [재현 절차](capacity/README.md) · [실측 결과와 그래프](../docs/monitoring/2026-11-02-capacity.md).
 운영 저부하 확인과 별도로 CPU를 제한한 앱/DB에서 k6 동시 조회를 실행했다.
+
+후속 [인덱스 ABBA 개선 검증](../docs/monitoring/2026-11-02-index-abba.md):
+같은 20/40 VU 부하에서 인덱스 전후를 반복 비교하고 Grafana·Prometheus 실제 화면을 보존했다.

@@ -65,15 +65,41 @@ def run(vus, label, token_path):
 with tempfile.TemporaryDirectory(prefix='trova-capacity-307-') as private:
     token_path = str(Path(private)/'tokens.json')
     Path(token_path).write_text(json.dumps(tokens)); os.chmod(token_path,0o600)
-    previous = 1
-    for vus in [1,5,10,20,40,80,160]:
-        result = run(vus,'step-'+str(vus),token_path)
-        if not result['pass']:
-            run(previous,'repeat-'+str(previous),token_path)
-            run(vus,'repeat-'+str(vus),token_path)
-            break
-        previous = vus
-    run(1,'recovery-1',token_path)
+    if os.environ.get('CAPACITY_MODE') == 'index-abba':
+        expected = None
+        checks = []
+        run(1, 'warmup-1', token_path)
+        for block, indexed in [('a1',False),('b1',True),('b2',True),('a2',False)]:
+            sql = ('CREATE INDEX IF NOT EXISTS idx_saved_places_user_created_id ON saved_places (user_id,created_at,id);'
+                   if indexed else 'DROP INDEX IF EXISTS idx_saved_places_user_created_id;')
+            subprocess.run(COMPOSE + ['exec','-T','db','psql','-v','ON_ERROR_STOP=1','-U','capacity','-d','capacity','-c',sql],check=True)
+            with open(HERE/'explain.sql') as source:
+                plan = subprocess.check_output(COMPOSE+['exec','-T','db','psql','-U','capacity','-d','capacity','-tA'],stdin=source,text=True)
+            (OUT/(block+'-explain.json')).write_text(plan)
+            # Response order/content must remain identical for every exercised user.
+            hashes = []
+            for user in range(40):
+                req=urllib.request.Request('http://127.0.0.1:18081/api/places',headers={'Authorization':'Bearer '+tokens[user]})
+                with urllib.request.urlopen(req,timeout=10) as response:
+                    hashes.append(hashlib.sha256(response.read()).hexdigest())
+            if expected is None: expected = hashes
+            if hashes != expected: raise RuntimeError('Index changed response content/order')
+            checks.append({'block':block,'identical_users':40,'hashes':hashes})
+            (OUT/'response-equivalence.json').write_text(json.dumps(checks,indent=2))
+            for vus in [20,40]:
+                row=run(vus,block+'-'+str(vus),token_path)
+                if row['errors'] > .05: raise RuntimeError('Abort: errors exceed 5%')
+        run(1,'recovery-1',token_path)
+    else:
+        previous = 1
+        for vus in [1,5,10,20,40,80,160]:
+            result = run(vus,'step-'+str(vus),token_path)
+            if not result['pass']:
+                run(previous,'repeat-'+str(previous),token_path)
+                run(vus,'repeat-'+str(vus),token_path)
+                break
+            previous = vus
+        run(1,'recovery-1',token_path)
 
 queries = {
  'cpu':'process_cpu_usage{job="capacity"}',

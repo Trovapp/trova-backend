@@ -1,0 +1,33 @@
+time="2026-11-02T12:08:27+09:00" level=warning msg="There were unknown fields in the options exported in the script" error="json: unknown field \"gracefulStop\""
+time="2026-11-02T12:09:10+09:00" level=warning msg="Request Failed" error="Get \"http://127.0.0.1:18081/api/places\": request timeout"
+
+
+  █ TOTAL RESULTS
+
+    checks_total.......: 750    15.915183/s
+    checks_succeeded...: 99.86% 749 out of 750
+    checks_failed......: 0.13%  1 out of 750
+
+    ✗ 200 and own 1000 places
+      ↳  99% — ✓ 749 / ✗ 1
+
+    CUSTOM
+    measured_errors................: 0.22%  1 out of 447
+    measured_latency...............: avg=1.69s med=1.58s p(95)=3.28s max=5s
+    measured_requests..............: 447    9.485449/s
+
+    HTTP
+    http_req_duration..............: avg=1.42s med=1.28s p(95)=2.88s max=5s
+      { expected_response:true }...: avg=1.42s med=1.28s p(95)=2.88s max=4.78s
+    http_req_failed................: 0.13%  1 out of 750
+    http_reqs......................: 750    15.915183/s
+
+    EXECUTION
+    iteration_duration.............: avg=2.46s med=2.3s  p(95)=3.89s max=6s
+    iterations.....................: 750    15.915183/s
+    vus............................: 5      min=5        max=40
+    vus_max........................: 40     min=40       max=40
+
+    NETWORK
+    data_received..................: 449 MB 9.5 MB/s
+    data_sent......................: 190 kB 4.0 kB/s

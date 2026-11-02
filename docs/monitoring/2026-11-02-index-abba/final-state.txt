@@ -1,0 +1,2 @@
+/trova-capacity-307-app-1 OOMKilled=false Restarts=0
+/trova-capacity-307-db-1 OOMKilled=false Restarts=0

@@ -31,3 +31,26 @@ p95 < 1초 및 오류 < 1%는 실험 목표이지 운영 SLO가 아니다.
 `step-*.json`: k6 전체 요약. `prom-*.json`: 2초 간격 실제 Prometheus 시계열.
 성공은 HTTP 200뿐 아니라 장소 수와 사용자별 접두어가 모두 맞아야 한다.
 컨테이너 CPU throttling은 cgroup 누적값 차이로 계산한다.
+
+## 인덱스 개선 전후 비교 (ABBA)
+
+새 컨테이너/DB에서 같은 `bootJar`, `compose up` 이후 아래를 실행한다.
+
+```sh
+CAPACITY_MODE=index-abba CAPACITY_OUT=/tmp/trova-index-abba python3 monitoring/capacity/run.py
+python3 monitoring/capacity/summarize.py /tmp/trova-index-abba
+# matplotlib 설치 환경에서 그래프 생성
+python3 monitoring/capacity/plot.py /tmp/trova-index-abba
+```
+
+동일 JVM·데이터에서 인덱스 없음(A1), 있음(B1), 있음(B2), 없음(A2) 순으로
+20/40 VU를 각각 45초 실행한다. 먼저 1 VU 예열, 마지막 1 VU 회복을 수행한다.
+블록마다 실행 계획과 40개 계정의 전체 응답 해시 동등성 검사 결과를 보존한다.
+복합 인덱스 이외의 쿼리·데이터·자원 제한은 바꾸지 않는다.
+첫 1 VU 예열은 JPA가 생성한 인덱스를 사용하며, ABBA 비교 표본에서 제외한다.
+이것은 동일 VU 부하 비교이지 고정된 요청 도착률 비교가 아니다.
+원본 결과 디렉터리는 재사용하지 말고 새 경로를 지정한다.
+
+실험 결과는 `docs/monitoring/2026-11-02-index-abba.md`에 기록한다.
+Grafana 대시보드 JSON은 결과 디렉터리에 저장하며, 원본 Prometheus를 제거하기 전에
+고정 시간 범위의 화면과 시계열을 먼저 보존한다.
