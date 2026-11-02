@@ -1,0 +1,441 @@
+{
+  "environment": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+  "scope": "H2 in-process repository + filter/DTO mapping; excludes auth, serialization, HTTP, network",
+  "warmupPerVariantAndSize": 20,
+  "measurementPerVariantAndSize": 50,
+  "alternatingOrder": true,
+  "results": [
+    {
+      "run": 1,
+      "places": 100,
+      "variant": "entity",
+      "samples": 50,
+      "query_ns": {
+        "median": 925583.5,
+        "p95": 1100083.0,
+        "max": 1402084.0
+      },
+      "mapping_ns": {
+        "median": 165208.0,
+        "p95": 247625.0,
+        "max": 1426792.0
+      },
+      "total_ns": {
+        "median": 1090771.0,
+        "p95": 1494167.0,
+        "max": 2453709.0
+      },
+      "allocated_bytes": {
+        "median": 665144.0,
+        "p95": 670504.0,
+        "max": 678952.0
+      },
+      "entities_loaded": {
+        "median": 111.0,
+        "p95": 111.0,
+        "max": 111.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 1,
+      "places": 100,
+      "variant": "projection",
+      "samples": 50,
+      "query_ns": {
+        "median": 257458.0,
+        "p95": 322541.0,
+        "max": 325625.0
+      },
+      "mapping_ns": {
+        "median": 46666.5,
+        "p95": 58167.0,
+        "max": 977916.0
+      },
+      "total_ns": {
+        "median": 304104.5,
+        "p95": 372375.0,
+        "max": 1176708.0
+      },
+      "allocated_bytes": {
+        "median": 216288.0,
+        "p95": 216368.0,
+        "max": 216400.0
+      },
+      "entities_loaded": {
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 1,
+      "places": 1000,
+      "variant": "entity",
+      "samples": 50,
+      "query_ns": {
+        "median": 2783791.5,
+        "p95": 3615125.0,
+        "max": 4861208.0
+      },
+      "mapping_ns": {
+        "median": 1129333.5,
+        "p95": 1664500.0,
+        "max": 3228833.0
+      },
+      "total_ns": {
+        "median": 4037229.5,
+        "p95": 5284583.0,
+        "max": 6216833.0
+      },
+      "allocated_bytes": {
+        "median": 5269168.0,
+        "p95": 5342928.0,
+        "max": 5372376.0
+      },
+      "entities_loaded": {
+        "median": 1101.0,
+        "p95": 1101.0,
+        "max": 1101.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 1,
+      "places": 1000,
+      "variant": "projection",
+      "samples": 50,
+      "query_ns": {
+        "median": 926854.5,
+        "p95": 1095000.0,
+        "max": 1141125.0
+      },
+      "mapping_ns": {
+        "median": 344812.5,
+        "p95": 427875.0,
+        "max": 1444667.0
+      },
+      "total_ns": {
+        "median": 1284833.5,
+        "p95": 1499375.0,
+        "max": 2539667.0
+      },
+      "allocated_bytes": {
+        "median": 1870648.0,
+        "p95": 1872936.0,
+        "max": 1872936.0
+      },
+      "entities_loaded": {
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 2,
+      "places": 100,
+      "variant": "entity",
+      "samples": 50,
+      "query_ns": {
+        "median": 959437.5,
+        "p95": 1175000.0,
+        "max": 2068542.0
+      },
+      "mapping_ns": {
+        "median": 161729.0,
+        "p95": 184250.0,
+        "max": 217750.0
+      },
+      "total_ns": {
+        "median": 1131062.5,
+        "p95": 1349875.0,
+        "max": 2241542.0
+      },
+      "allocated_bytes": {
+        "median": 665072.0,
+        "p95": 670616.0,
+        "max": 678976.0
+      },
+      "entities_loaded": {
+        "median": 111.0,
+        "p95": 111.0,
+        "max": 111.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 2,
+      "places": 100,
+      "variant": "projection",
+      "samples": 50,
+      "query_ns": {
+        "median": 265896.0,
+        "p95": 336375.0,
+        "max": 399583.0
+      },
+      "mapping_ns": {
+        "median": 45833.0,
+        "p95": 55750.0,
+        "max": 61417.0
+      },
+      "total_ns": {
+        "median": 310916.5,
+        "p95": 385250.0,
+        "max": 461000.0
+      },
+      "allocated_bytes": {
+        "median": 216288.0,
+        "p95": 216360.0,
+        "max": 216400.0
+      },
+      "entities_loaded": {
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 2,
+      "places": 1000,
+      "variant": "entity",
+      "samples": 50,
+      "query_ns": {
+        "median": 2742312.5,
+        "p95": 3277125.0,
+        "max": 3774834.0
+      },
+      "mapping_ns": {
+        "median": 909541.5,
+        "p95": 1809542.0,
+        "max": 3591917.0
+      },
+      "total_ns": {
+        "median": 3782229.0,
+        "p95": 4838792.0,
+        "max": 6869042.0
+      },
+      "allocated_bytes": {
+        "median": 5269164.0,
+        "p95": 5343072.0,
+        "max": 5373088.0
+      },
+      "entities_loaded": {
+        "median": 1101.0,
+        "p95": 1101.0,
+        "max": 1101.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 2,
+      "places": 1000,
+      "variant": "projection",
+      "samples": 50,
+      "query_ns": {
+        "median": 883229.5,
+        "p95": 1100583.0,
+        "max": 2607792.0
+      },
+      "mapping_ns": {
+        "median": 294729.0,
+        "p95": 417209.0,
+        "max": 1303000.0
+      },
+      "total_ns": {
+        "median": 1173749.5,
+        "p95": 2152959.0,
+        "max": 2864750.0
+      },
+      "allocated_bytes": {
+        "median": 1870552.0,
+        "p95": 1872952.0,
+        "max": 1873136.0
+      },
+      "entities_loaded": {
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 3,
+      "places": 100,
+      "variant": "entity",
+      "samples": 50,
+      "query_ns": {
+        "median": 928354.5,
+        "p95": 1232916.0,
+        "max": 1316041.0
+      },
+      "mapping_ns": {
+        "median": 171438.0,
+        "p95": 236208.0,
+        "max": 247834.0
+      },
+      "total_ns": {
+        "median": 1113000.0,
+        "p95": 1461833.0,
+        "max": 1537708.0
+      },
+      "allocated_bytes": {
+        "median": 665072.0,
+        "p95": 670432.0,
+        "max": 680096.0
+      },
+      "entities_loaded": {
+        "median": 111.0,
+        "p95": 111.0,
+        "max": 111.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 3,
+      "places": 100,
+      "variant": "projection",
+      "samples": 50,
+      "query_ns": {
+        "median": 250229.0,
+        "p95": 341666.0,
+        "max": 1260125.0
+      },
+      "mapping_ns": {
+        "median": 46312.5,
+        "p95": 71125.0,
+        "max": 93625.0
+      },
+      "total_ns": {
+        "median": 298583.5,
+        "p95": 411125.0,
+        "max": 1320000.0
+      },
+      "allocated_bytes": {
+        "median": 216288.0,
+        "p95": 216368.0,
+        "max": 216400.0
+      },
+      "entities_loaded": {
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 3,
+      "places": 1000,
+      "variant": "entity",
+      "samples": 50,
+      "query_ns": {
+        "median": 2743667.0,
+        "p95": 3111542.0,
+        "max": 3566667.0
+      },
+      "mapping_ns": {
+        "median": 813375.0,
+        "p95": 1859417.0,
+        "max": 1959500.0
+      },
+      "total_ns": {
+        "median": 3583687.0,
+        "p95": 4888625.0,
+        "max": 5048500.0
+      },
+      "allocated_bytes": {
+        "median": 5334768.0,
+        "p95": 5414768.0,
+        "max": 5414872.0
+      },
+      "entities_loaded": {
+        "median": 1101.0,
+        "p95": 1101.0,
+        "max": 1101.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    },
+    {
+      "run": 3,
+      "places": 1000,
+      "variant": "projection",
+      "samples": 50,
+      "query_ns": {
+        "median": 840166.5,
+        "p95": 994292.0,
+        "max": 1508333.0
+      },
+      "mapping_ns": {
+        "median": 275146.5,
+        "p95": 443458.0,
+        "max": 453792.0
+      },
+      "total_ns": {
+        "median": 1124187.5,
+        "p95": 1448084.0,
+        "max": 1787125.0
+      },
+      "allocated_bytes": {
+        "median": 1896952.0,
+        "p95": 1899352.0,
+        "max": 1899536.0
+      },
+      "entities_loaded": {
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "sql_count": {
+        "median": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      }
+    }
+  ]
+}

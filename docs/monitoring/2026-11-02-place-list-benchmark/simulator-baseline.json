@@ -1,0 +1,4 @@
+{
+  "note": "Server-wide counters around simulator video-list tap; unchanged production backend, not a post-change measurement",
+  "requests": []
+}

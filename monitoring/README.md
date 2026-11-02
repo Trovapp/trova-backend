@@ -157,6 +157,14 @@ python3 monitoring/run_observed_smoke.py --run-production --mode health \
 places 18건에서 자원 기준으로 중단. 특정 앱 코드 병목은 미확정이며 성능 개선률을 주장하지 않는다.
 [실험용 Grafana](http://localhost:3300/d/trova-read-smoke)는 기존 대시보드가 제외하던 health 요청도 표시한다.
 
+[시뮬레이터 실제 화면 관찰·그래프 해석](../docs/monitoring/2026-11-02-simulator.md):
+영상 목록·지도·일정 초안·여행·찜·마이페이지 조회, 정상 분기의 404와 출처 미확인 401 구분,
+수집 SSH 연결 복구 및 유휴 요청 비교. 앞선 k6 실험과 계정·데이터가 달라 개선율로 비교하지 않는다.
+
+[장소 목록 코드 개선·로컬 반복 비교](../docs/monitoring/2026-11-02-place-list-performance.md):
+필요한 필드만 조회하고 같은 작업의 URL 파싱을 공유한다. 합성 장소 1,000개 조건에서
+조회·DTO 생성 중앙값 약 68~69%, 스레드 할당량 약 64~65% 감소. 운영 응답 시간 개선율은 아니다.
+
 
 ### Java 단계별 계측 (ADR 0033)
 

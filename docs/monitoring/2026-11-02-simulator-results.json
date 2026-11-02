@@ -1,0 +1,1272 @@
+{
+  "start": 1793582840,
+  "end": 1793582941,
+  "scope": "Server-wide counter deltas; simulator actions correlated, not per-client tracing. Existing logged-in account UI shows 138 places, 19 videos, 9 trips. No k6 in this window.",
+  "requests": [
+    {
+      "application": "trova-backend",
+      "error": "none",
+      "exception": "none",
+      "method": "GET",
+      "outcome": "CLIENT_ERROR",
+      "status": "401",
+      "uri": "UNKNOWN",
+      "count": 1.0,
+      "serverMeanMs": 11.108579000000008
+    },
+    {
+      "application": "trova-backend",
+      "error": "none",
+      "exception": "none",
+      "method": "GET",
+      "outcome": "CLIENT_ERROR",
+      "status": "404",
+      "uri": "/api/places/videos/{jobId}/trip",
+      "count": 1.0,
+      "serverMeanMs": 878.491086
+    },
+    {
+      "application": "trova-backend",
+      "error": "none",
+      "exception": "none",
+      "method": "GET",
+      "outcome": "SUCCESS",
+      "status": "200",
+      "uri": "/api/bookmarks",
+      "count": 2.0,
+      "serverMeanMs": 401.1484594999999
+    },
+    {
+      "application": "trova-backend",
+      "error": "none",
+      "exception": "none",
+      "method": "GET",
+      "outcome": "SUCCESS",
+      "status": "200",
+      "uri": "/api/bookmarks/folders",
+      "count": 1.0,
+      "serverMeanMs": 702.260854
+    },
+    {
+      "application": "trova-backend",
+      "error": "none",
+      "exception": "none",
+      "method": "GET",
+      "outcome": "SUCCESS",
+      "status": "200",
+      "uri": "/api/places",
+      "count": 5.0,
+      "serverMeanMs": 334.05076280000014
+    },
+    {
+      "application": "trova-backend",
+      "error": "none",
+      "exception": "none",
+      "method": "GET",
+      "outcome": "SUCCESS",
+      "status": "200",
+      "uri": "/api/places/pending",
+      "count": 1.0,
+      "serverMeanMs": 237.974801
+    },
+    {
+      "application": "trova-backend",
+      "error": "none",
+      "exception": "none",
+      "method": "GET",
+      "outcome": "SUCCESS",
+      "status": "200",
+      "uri": "/api/trip-drafts/auto",
+      "count": 3.0,
+      "serverMeanMs": 393.2787033333332
+    },
+    {
+      "application": "trova-backend",
+      "error": "none",
+      "exception": "none",
+      "method": "GET",
+      "outcome": "SUCCESS",
+      "status": "200",
+      "uri": "/api/trip-drafts/{id}",
+      "count": 1.0,
+      "serverMeanMs": 321.79382
+    },
+    {
+      "application": "trova-backend",
+      "error": "none",
+      "exception": "none",
+      "method": "GET",
+      "outcome": "SUCCESS",
+      "status": "200",
+      "uri": "/api/trips",
+      "count": 3.0,
+      "serverMeanMs": 268.3973223333333
+    }
+  ],
+  "series": {
+    "up": {
+      "query": "up{job=\"trova-prod\"}",
+      "result": [
+        {
+          "metric": {
+            "__name__": "up",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod"
+          },
+          "values": [
+            [
+              1793582835,
+              "1"
+            ],
+            [
+              1793582850,
+              "1"
+            ],
+            [
+              1793582865,
+              "1"
+            ],
+            [
+              1793582880,
+              "1"
+            ],
+            [
+              1793582895,
+              "1"
+            ],
+            [
+              1793582910,
+              "1"
+            ],
+            [
+              1793582925,
+              "1"
+            ],
+            [
+              1793582940,
+              "1"
+            ],
+            [
+              1793582955,
+              "1"
+            ],
+            [
+              1793582970,
+              "1"
+            ]
+          ]
+        }
+      ]
+    },
+    "cpu": {
+      "query": "process_cpu_usage{job=\"trova-prod\"}",
+      "result": [
+        {
+          "metric": {
+            "__name__": "process_cpu_usage",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod"
+          },
+          "values": [
+            [
+              1793582835,
+              "0.046296296296296294"
+            ],
+            [
+              1793582850,
+              "0.004833836858006042"
+            ],
+            [
+              1793582865,
+              "0.031337047353760444"
+            ],
+            [
+              1793582880,
+              "0.0249843847595253"
+            ],
+            [
+              1793582895,
+              "0.002363268062120189"
+            ],
+            [
+              1793582910,
+              "0.009847198641765705"
+            ],
+            [
+              1793582925,
+              "0.004797806716929404"
+            ],
+            [
+              1793582940,
+              "0.011175076193701321"
+            ],
+            [
+              1793582955,
+              "0.004387889425186486"
+            ],
+            [
+              1793582970,
+              "0.002028397565922921"
+            ]
+          ]
+        }
+      ]
+    },
+    "heap": {
+      "query": "sum(jvm_memory_used_bytes{job=\"trova-prod\",area=\"heap\"})",
+      "result": [
+        {
+          "metric": {},
+          "values": [
+            [
+              1793582835,
+              "62182104"
+            ],
+            [
+              1793582850,
+              "70820680"
+            ],
+            [
+              1793582865,
+              "81154848"
+            ],
+            [
+              1793582880,
+              "91349328"
+            ],
+            [
+              1793582895,
+              "58265048"
+            ],
+            [
+              1793582910,
+              "65273368"
+            ],
+            [
+              1793582925,
+              "70017808"
+            ],
+            [
+              1793582940,
+              "76961184"
+            ],
+            [
+              1793582955,
+              "84760176"
+            ],
+            [
+              1793582970,
+              "89925400"
+            ]
+          ]
+        }
+      ]
+    },
+    "dbPending": {
+      "query": "hikaricp_connections_pending{job=\"trova-prod\"}",
+      "result": [
+        {
+          "metric": {
+            "__name__": "hikaricp_connections_pending",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "pool": "HikariPool-1"
+          },
+          "values": [
+            [
+              1793582835,
+              "0"
+            ],
+            [
+              1793582850,
+              "0"
+            ],
+            [
+              1793582865,
+              "0"
+            ],
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        }
+      ]
+    },
+    "dbActive": {
+      "query": "hikaricp_connections_active{job=\"trova-prod\"}",
+      "result": [
+        {
+          "metric": {
+            "__name__": "hikaricp_connections_active",
+            "application": "trova-backend",
+            "instance": "host.docker.internal:18080",
+            "job": "trova-prod",
+            "pool": "HikariPool-1"
+          },
+          "values": [
+            [
+              1793582835,
+              "0"
+            ],
+            [
+              1793582850,
+              "0"
+            ],
+            [
+              1793582865,
+              "0"
+            ],
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        }
+      ]
+    },
+    "requests": {
+      "query": "sum by(uri,status)(rate(http_server_requests_seconds_count{job=\"trova-prod\",uri!~\"/actuator.*\"}[1m]))",
+      "result": [
+        {
+          "metric": {
+            "status": "200",
+            "uri": "/api/auth/me"
+          },
+          "values": [
+            [
+              1793582835,
+              "0.022224197706462796"
+            ],
+            [
+              1793582850,
+              "0.022223209920440908"
+            ],
+            [
+              1793582865,
+              "0.022222716060356897"
+            ],
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "200",
+            "uri": "/api/bookmarks"
+          },
+          "values": [
+            [
+              1793582835,
+              "0.022224197706462796"
+            ],
+            [
+              1793582850,
+              "0.022223209920440908"
+            ],
+            [
+              1793582865,
+              "0.022222716060356897"
+            ],
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0.022223703802475722"
+            ],
+            [
+              1793582940,
+              "0.04444543212071379"
+            ],
+            [
+              1793582955,
+              "0.04444345681207085"
+            ],
+            [
+              1793582970,
+              "0.022222716060356897"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "200",
+            "uri": "/api/bookmarks/folders"
+          },
+          "values": [
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "200",
+            "uri": "/api/notifications"
+          },
+          "values": [
+            [
+              1793582835,
+              "0.022224197706462796"
+            ],
+            [
+              1793582850,
+              "0.022223209920440908"
+            ],
+            [
+              1793582865,
+              "0.022222716060356897"
+            ],
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "200",
+            "uri": "/api/places"
+          },
+          "values": [
+            [
+              1793582835,
+              "0.022224197706462796"
+            ],
+            [
+              1793582850,
+              "0.022223209920440908"
+            ],
+            [
+              1793582865,
+              "0.0666681481810707"
+            ],
+            [
+              1793582880,
+              "0.06666222251849876"
+            ],
+            [
+              1793582895,
+              "0.06666518521810626"
+            ],
+            [
+              1793582910,
+              "0.044446419840881816"
+            ],
+            [
+              1793582925,
+              "0.022223703802475722"
+            ],
+            [
+              1793582940,
+              "0.04444543212071379"
+            ],
+            [
+              1793582955,
+              "0.022221728406035424"
+            ],
+            [
+              1793582970,
+              "0.022222716060356897"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "200",
+            "uri": "/api/places/pending"
+          },
+          "values": [
+            [
+              1793582835,
+              "0.022224197706462796"
+            ],
+            [
+              1793582850,
+              "0.022223209920440908"
+            ],
+            [
+              1793582865,
+              "0.04444543212071379"
+            ],
+            [
+              1793582880,
+              "0.02222074083949959"
+            ],
+            [
+              1793582895,
+              "0.02222172840603542"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "200",
+            "uri": "/api/trip-drafts/auto"
+          },
+          "values": [
+            [
+              1793582835,
+              "0.022224197706462796"
+            ],
+            [
+              1793582850,
+              "0.022223209920440908"
+            ],
+            [
+              1793582865,
+              "0.0666681481810707"
+            ],
+            [
+              1793582880,
+              "0.04444148167899918"
+            ],
+            [
+              1793582895,
+              "0.04444345681207084"
+            ],
+            [
+              1793582910,
+              "0.022223209920440908"
+            ],
+            [
+              1793582925,
+              "0.022223703802475722"
+            ],
+            [
+              1793582940,
+              "0.022222716060356897"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "200",
+            "uri": "/api/trip-drafts/{id}"
+          },
+          "values": [
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "200",
+            "uri": "/api/trips"
+          },
+          "values": [
+            [
+              1793582835,
+              "0.022224197706462796"
+            ],
+            [
+              1793582850,
+              "0.022223209920440908"
+            ],
+            [
+              1793582865,
+              "0.04444543212071379"
+            ],
+            [
+              1793582880,
+              "0.02222074083949959"
+            ],
+            [
+              1793582895,
+              "0.02222172840603542"
+            ],
+            [
+              1793582910,
+              "0.022223209920440908"
+            ],
+            [
+              1793582925,
+              "0.022223703802475722"
+            ],
+            [
+              1793582940,
+              "0.04444543212071379"
+            ],
+            [
+              1793582955,
+              "0.022221728406035424"
+            ],
+            [
+              1793582970,
+              "0.022222716060356897"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "200",
+            "uri": "UNKNOWN"
+          },
+          "values": [
+            [
+              1793582835,
+              "0"
+            ],
+            [
+              1793582850,
+              "0"
+            ],
+            [
+              1793582865,
+              "0"
+            ],
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "202",
+            "uri": "/api/shares"
+          },
+          "values": [
+            [
+              1793582835,
+              "0"
+            ],
+            [
+              1793582850,
+              "0"
+            ],
+            [
+              1793582865,
+              "0"
+            ],
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "302",
+            "uri": "REDIRECTION"
+          },
+          "values": [
+            [
+              1793582835,
+              "0"
+            ],
+            [
+              1793582850,
+              "0"
+            ],
+            [
+              1793582865,
+              "0"
+            ],
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "400",
+            "uri": "UNKNOWN"
+          },
+          "values": [
+            [
+              1793582835,
+              "0"
+            ],
+            [
+              1793582850,
+              "0"
+            ],
+            [
+              1793582865,
+              "0"
+            ],
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "401",
+            "uri": "UNKNOWN"
+          },
+          "values": [
+            [
+              1793582835,
+              "0"
+            ],
+            [
+              1793582850,
+              "0"
+            ],
+            [
+              1793582865,
+              "0"
+            ],
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0.022223703802475722"
+            ],
+            [
+              1793582940,
+              "0.022222716060356897"
+            ],
+            [
+              1793582955,
+              "0.022221728406035424"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "status": "404",
+            "uri": "/api/places/videos/{jobId}/trip"
+          },
+          "values": [
+            [
+              1793582880,
+              "0"
+            ],
+            [
+              1793582895,
+              "0"
+            ],
+            [
+              1793582910,
+              "0"
+            ],
+            [
+              1793582925,
+              "0"
+            ],
+            [
+              1793582940,
+              "0"
+            ],
+            [
+              1793582955,
+              "0"
+            ],
+            [
+              1793582970,
+              "0"
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "idleEnd": 1793582972,
+  "resources": [
+    {
+      "at": 1793582849.1801379,
+      "resource": {
+        "availableKiB": 344452,
+        "swapInPages": 3898143,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 1.68
+      }
+    },
+    {
+      "at": 1793582855.116606,
+      "resource": {
+        "availableKiB": 354208,
+        "swapInPages": 3898383,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 1.16
+      }
+    },
+    {
+      "at": 1793582860.9564002,
+      "resource": {
+        "availableKiB": 358844,
+        "swapInPages": 3900631,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 1.36
+      }
+    },
+    {
+      "at": 1793582866.817379,
+      "resource": {
+        "availableKiB": 359004,
+        "swapInPages": 3900666,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.74
+      }
+    },
+    {
+      "at": 1793582872.54129,
+      "resource": {
+        "availableKiB": 353036,
+        "swapInPages": 3902192,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 1.21
+      }
+    },
+    {
+      "at": 1793582878.317059,
+      "resource": {
+        "availableKiB": 353124,
+        "swapInPages": 3902225,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.81
+      }
+    },
+    {
+      "at": 1793582884.1149929,
+      "resource": {
+        "availableKiB": 354748,
+        "swapInPages": 3902230,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.44
+      }
+    },
+    {
+      "at": 1793582889.9275122,
+      "resource": {
+        "availableKiB": 354612,
+        "swapInPages": 3902234,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.24
+      }
+    },
+    {
+      "at": 1793582895.775627,
+      "resource": {
+        "availableKiB": 353800,
+        "swapInPages": 3902326,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.13
+      }
+    },
+    {
+      "at": 1793582901.606473,
+      "resource": {
+        "availableKiB": 354240,
+        "swapInPages": 3902326,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.07
+      }
+    },
+    {
+      "at": 1793582907.494965,
+      "resource": {
+        "availableKiB": 347420,
+        "swapInPages": 3902606,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.16
+      }
+    },
+    {
+      "at": 1793582914.36018,
+      "resource": {
+        "availableKiB": 331516,
+        "swapInPages": 3902677,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.08
+      }
+    },
+    {
+      "at": 1793582920.287446,
+      "resource": {
+        "availableKiB": 342420,
+        "swapInPages": 3903713,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.04
+      }
+    },
+    {
+      "at": 1793582926.01357,
+      "resource": {
+        "availableKiB": 347396,
+        "swapInPages": 3903849,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.99
+      }
+    },
+    {
+      "at": 1793582931.8221161,
+      "resource": {
+        "availableKiB": 344552,
+        "swapInPages": 3904066,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.84
+      }
+    },
+    {
+      "at": 1793582937.6220648,
+      "resource": {
+        "availableKiB": 344068,
+        "swapInPages": 3904067,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.46
+      }
+    },
+    {
+      "at": 1793582943.348146,
+      "resource": {
+        "availableKiB": 342532,
+        "swapInPages": 3904140,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.25
+      }
+    },
+    {
+      "at": 1793582949.113516,
+      "resource": {
+        "availableKiB": 342648,
+        "swapInPages": 3904157,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.13
+      }
+    },
+    {
+      "at": 1793582954.9075599,
+      "resource": {
+        "availableKiB": 344272,
+        "swapInPages": 3904232,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.07
+      }
+    },
+    {
+      "at": 1793582960.634696,
+      "resource": {
+        "availableKiB": 341888,
+        "swapInPages": 3904233,
+        "swapOutPages": 4425861,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.04
+      }
+    },
+    {
+      "at": 1793582966.4506261,
+      "resource": {
+        "availableKiB": 342348,
+        "swapInPages": 3904237,
+        "swapOutPages": 4425913,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.2
+      }
+    },
+    {
+      "at": 1793582972.21124,
+      "resource": {
+        "availableKiB": 339108,
+        "swapInPages": 3904381,
+        "swapOutPages": 4425913,
+        "pageBytes": 4096,
+        "memorySomeAvg10": 0.11
+      }
+    }
+  ],
+  "idleCounterChanges": {}
+}
