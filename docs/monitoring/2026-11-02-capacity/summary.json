@@ -1,0 +1,274 @@
+[
+  {
+    "label": "step-1",
+    "vus": 1,
+    "p95_ms": 52.42979999999999,
+    "median_ms": 44.8665,
+    "errors": 0,
+    "measured_requests": 28,
+    "all_requests": 43,
+    "whole_run_rps": 0.9437150977670187,
+    "app_cpu_percent": 6.072848512973413,
+    "db_cpu_percent": 7.548304680118452,
+    "prometheus": {
+      "connections_pending": {
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "connections_active": {
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "connection_acquire": {
+        "max": 0.0003618799411764706,
+        "mean": 0.00031650286564798594
+      },
+      "http_rate": {
+        "max": 1.0,
+        "mean": 0.9214173291269752
+      },
+      "up": {
+        "max": 1.0,
+        "mean": 1.0
+      }
+    }
+  },
+  {
+    "label": "step-5",
+    "vus": 5,
+    "p95_ms": 187.58705,
+    "median_ms": 47.738,
+    "errors": 0,
+    "measured_requests": 140,
+    "all_requests": 211,
+    "whole_run_rps": 4.631780578285489,
+    "app_cpu_percent": 8.949759349185456,
+    "db_cpu_percent": 24.6903754658479,
+    "prometheus": {
+      "connections_pending": {
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "connections_active": {
+        "max": 2.0,
+        "mean": 0.1875
+      },
+      "connection_acquire": {
+        "max": 0.0006952504698795181,
+        "mean": 0.0003921869671746046
+      },
+      "http_rate": {
+        "max": 4.77804322462359,
+        "mean": 4.5452123590494775
+      },
+      "up": {
+        "max": 1.0,
+        "mean": 1.0
+      }
+    }
+  },
+  {
+    "label": "step-10",
+    "vus": 10,
+    "p95_ms": 158.46344999999997,
+    "median_ms": 29.3465,
+    "errors": 0,
+    "measured_requests": 280,
+    "all_requests": 425,
+    "whole_run_rps": 9.241999874830704,
+    "app_cpu_percent": 10.011665395846038,
+    "db_cpu_percent": 45.533123242160386,
+    "prometheus": {
+      "connections_pending": {
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "connections_active": {
+        "max": 1.0,
+        "mean": 0.0625
+      },
+      "connection_acquire": {
+        "max": 0.0009742335662650604,
+        "mean": 0.00028050356936241115
+      },
+      "http_rate": {
+        "max": 9.668278046341056,
+        "mean": 9.326549320147672
+      },
+      "up": {
+        "max": 1.0,
+        "mean": 1.0
+      }
+    }
+  },
+  {
+    "label": "step-20",
+    "vus": 20,
+    "p95_ms": 556.1887499999984,
+    "median_ms": 90.5195,
+    "errors": 0,
+    "measured_requests": 506,
+    "all_requests": 761,
+    "whole_run_rps": 16.51654157683401,
+    "app_cpu_percent": 16.969743225340665,
+    "db_cpu_percent": 85.76305052897362,
+    "prometheus": {
+      "connections_pending": {
+        "max": 1.0,
+        "mean": 0.06666666666666667
+      },
+      "connections_active": {
+        "max": 10.0,
+        "mean": 2.466666666666667
+      },
+      "connection_acquire": {
+        "max": 0.006645652932989692,
+        "mean": 0.004248832623527151
+      },
+      "http_rate": {
+        "max": 17.666666666666668,
+        "mean": 16.471472955677694
+      },
+      "up": {
+        "max": 1.0,
+        "mean": 1.0
+      }
+    }
+  },
+  {
+    "label": "step-40",
+    "vus": 40,
+    "p95_ms": 2715.144,
+    "median_ms": 1467.0015,
+    "errors": 0,
+    "measured_requests": 466,
+    "all_requests": 709,
+    "whole_run_rps": 14.948682165083632,
+    "app_cpu_percent": 17.237252007363256,
+    "db_cpu_percent": 97.10424231128076,
+    "prometheus": {
+      "connections_pending": {
+        "max": 21.0,
+        "mean": 14.8125
+      },
+      "connections_active": {
+        "max": 10.0,
+        "mean": 10.0
+      },
+      "connection_acquire": {
+        "max": 0.5201417184083177,
+        "mean": 0.44254086919718705
+      },
+      "http_rate": {
+        "max": 16.719435649613953,
+        "mean": 15.29449128689443
+      },
+      "up": {
+        "max": 1.0,
+        "mean": 1.0
+      }
+    }
+  },
+  {
+    "label": "repeat-20",
+    "vus": 20,
+    "p95_ms": 900.1805999999999,
+    "median_ms": 190.7045,
+    "errors": 0,
+    "measured_requests": 452,
+    "all_requests": 712,
+    "whole_run_rps": 15.398302172821547,
+    "app_cpu_percent": 16.071843719752334,
+    "db_cpu_percent": 88.61229905572482,
+    "prometheus": {
+      "connections_pending": {
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "connections_active": {
+        "max": 10.0,
+        "mean": 5.0
+      },
+      "connection_acquire": {
+        "max": 0.04890173439245275,
+        "mean": 0.006459417416005411
+      },
+      "http_rate": {
+        "max": 16.224024891654626,
+        "mean": 15.381784280400689
+      },
+      "up": {
+        "max": 1.0,
+        "mean": 1.0
+      }
+    }
+  },
+  {
+    "label": "repeat-40",
+    "vus": 40,
+    "p95_ms": 2887.5267999999996,
+    "median_ms": 1490.699,
+    "errors": 0,
+    "measured_requests": 455,
+    "all_requests": 735,
+    "whole_run_rps": 15.437168968551587,
+    "app_cpu_percent": 17.929809668575842,
+    "db_cpu_percent": 97.1965023931017,
+    "prometheus": {
+      "connections_pending": {
+        "max": 20.0,
+        "mean": 14.705882352941176
+      },
+      "connections_active": {
+        "max": 10.0,
+        "mean": 10.0
+      },
+      "connection_acquire": {
+        "max": 0.5823292199168357,
+        "mean": 0.4462008048302915
+      },
+      "http_rate": {
+        "max": 16.718506998444788,
+        "mean": 15.199338247083139
+      },
+      "up": {
+        "max": 1.0,
+        "mean": 1.0
+      }
+    }
+  },
+  {
+    "label": "recovery-1",
+    "vus": 1,
+    "p95_ms": 45.3542,
+    "median_ms": 39.7905,
+    "errors": 0,
+    "measured_requests": 28,
+    "all_requests": 43,
+    "whole_run_rps": 0.951235529965501,
+    "app_cpu_percent": 1.6093088004508174,
+    "db_cpu_percent": 8.285736549465026,
+    "prometheus": {
+      "connections_pending": {
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "connections_active": {
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "connection_acquire": {
+        "max": 0.21267033764406654,
+        "mean": 0.014387162825154504
+      },
+      "http_rate": {
+        "max": 2.2776512415976886,
+        "mean": 1.0333512651961632
+      },
+      "up": {
+        "max": 1.0,
+        "mean": 1.0
+      }
+    }
+  }
+]

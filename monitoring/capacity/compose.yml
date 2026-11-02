@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:17
+    cpus: 1
+    mem_limit: 512m
+    environment:
+      POSTGRES_DB: capacity
+      POSTGRES_USER: capacity
+      POSTGRES_PASSWORD: isolated-capacity-only
+    networks: [isolated]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U capacity']
+      interval: 2s
+      retries: 30
+  app:
+    image: eclipse-temurin:21-jre
+    cpus: 1
+    mem_limit: 768m
+    command: [java, '-Xmx384m', '-jar', /app.jar]
+    volumes:
+      - ../../build/libs/trova-backend-0.0.1-SNAPSHOT.jar:/app.jar:ro
+    networks: [isolated]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/capacity
+      SPRING_DATASOURCE_USERNAME: capacity
+      SPRING_DATASOURCE_PASSWORD: isolated-capacity-only
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      GOOGLE_CLIENT_ID: isolated-dummy
+      GOOGLE_CLIENT_SECRET: isolated-dummy
+      KAKAO_CLIENT_ID: isolated-dummy
+      KAKAO_CLIENT_SECRET: isolated-dummy
+      JWT_SECRET: isolated-capacity-secret-307-never-use-in-production
+      APP_QUEUE_TYPE: async
+      AUTO_DRAFT_ENABLED: 'false'
+      IP_RATE_LIMIT_PER_MINUTE: '0'
+      ACTUATOR_EXPOSE: health,prometheus
+      APP_INSTANCE_NAME: capacity-307
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    mem_limit: 256m
+    volumes: ['./prometheus.yml:/etc/prometheus/prometheus.yml:ro']
+    networks: [isolated]
+  gateway:
+    image: nginx:alpine
+    ports: ['127.0.0.1:18081:18081', '127.0.0.1:19090:19090']
+    volumes: ['./nginx.conf:/etc/nginx/nginx.conf:ro']
+    networks: [isolated, entry]
+    depends_on: [app, prometheus]
+networks:
+  isolated:
+    internal: true
+  entry: {}
+
