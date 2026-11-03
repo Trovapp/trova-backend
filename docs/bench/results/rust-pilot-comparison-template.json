@@ -1,0 +1,37 @@
+{
+  "status": "not_run",
+  "scope": "Planned matched local-file Python/Rust preparation comparison; no Rust run or new production measurement",
+  "historicalProductionContext": {
+    "source": "rust-pipeline-feasibility-20261104.json",
+    "kafkaPythonAnalysisMedianMs": 12059.818,
+    "note": "Historical whole-analysis context only, not the before result of the planned component experiment"
+  },
+  "plannedExperiment": {
+    "fixtureCount": 24,
+    "measuredPairsPerFixturePerLane": 3,
+    "lanes": [
+      "fresh_process",
+      "persistent_process"
+    ],
+    "implementations": [
+      "python_control",
+      "rust_candidate"
+    ],
+    "measuredObservations": 288,
+    "externalApiCalls": 0,
+    "warmupPairsPerFixturePerLane": 1,
+    "warmupObservations": 96,
+    "preparationsPerObservation": 2,
+    "orderSeed": 309
+  },
+  "results": {
+    "pythonControl": null,
+    "rustCandidate": null,
+    "integratedPythonRustHelper": null,
+    "semanticCompatibilityPassed": null,
+    "improvementSeconds": null,
+    "improvementPercent": null,
+    "memorySavedBytes": null
+  },
+  "decision": "Not adopted; measurement and compatibility needed; no production worker or queue change"
+}
