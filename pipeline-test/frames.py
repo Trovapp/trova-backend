@@ -49,17 +49,32 @@ def extract_frames(video_path: Path, out_dir: Path, max_frames: int = 8, width: 
         # 키프레임이 드물면(운영 인스타 영상은 5초마다) 지점마다 앞 키프레임부터 디코딩해야 해서 짧은 영상은 오히려 느렸다.
         return extract_frames_full_decode(video_path, out_dir, max_frames, width, interval)
     _clear(out_dir)
-    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y"]
-    for t in picks:
-        # 입력 앞의 -ss는 가까운 키프레임부터 디코딩해 t 이전 장면은 버린다(정확한 이동). 반올림 오차로 한 장 밀리지 않게 조금 앞에서.
-        cmd += ["-ss", f"{max(t - times[0] - 0.0005, 0):.6f}", "-i", str(video_path)]
-    for i in range(len(picks)):
-        cmd += ["-map", f"{i}:v:0", "-frames:v", "1", "-vf", f"scale={width}:-1", str(out_dir / f"frame_{i + 1:03d}.jpg")]
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        print(f"[frames] 지점 이동 추출 실패 — 전체 디코딩으로 다시: {result.stderr[:200]}", file=sys.stderr)
-        return extract_frames_full_decode(video_path, out_dir, max_frames, width, interval)
+    for cmd in _seek_commands(video_path, out_dir, picks, times[0], width):
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"[frames] 지점 이동 추출 실패 — 전체 디코딩으로 다시: {result.stderr[:200]}", file=sys.stderr)
+            return extract_frames_full_decode(video_path, out_dir, max_frames, width, interval)
     return sorted(out_dir.glob("frame_*.jpg"))
+
+
+def _seek_commands(video_path: Path, out_dir: Path, picks: list[float], start: float, width: int) -> list[list[str]]:
+    """고른 지점마다 한 장씩 뽑는 ffmpeg 명령들. SEEK_INPUTS_PER_CALL개씩 한 명령에 묶는다.
+
+    #327: 8곳을 한 명령에 열면 디코더 8개가 각자 스레드를 띄워 운영(2코어)에서 ffmpeg 메모리가 72.6→217.5MiB,
+    CPU도 서로 빼앗았다. 입력마다 -threads 1, 2곳씩 나누니 9.5초·80MiB로 시간·메모리 모두 줄고 결과 JPEG는 같았다.
+    """
+    commands = []
+    for base in range(0, len(picks), SEEK_INPUTS_PER_CALL):
+        part = picks[base:base + SEEK_INPUTS_PER_CALL]
+        cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y"]
+        for t in part:
+            # 입력 앞의 -ss는 가까운 키프레임부터 디코딩해 t 이전 장면은 버린다(정확한 이동). 반올림 오차로 한 장 밀리지 않게 조금 앞에서.
+            cmd += ["-threads", "1", "-ss", f"{max(t - start - 0.0005, 0):.6f}", "-i", str(video_path)]
+        for i in range(len(part)):
+            cmd += ["-map", f"{i}:v:0", "-frames:v", "1", "-vf", f"scale={width}:-1",
+                    str(out_dir / f"frame_{base + i + 1:03d}.jpg")]
+        commands.append(cmd)
+    return commands
 
 
 def _frame_times(video_path: Path) -> tuple[list[float], list[float]]:
@@ -102,6 +117,8 @@ def _seek_is_cheaper(times: list[float], keyframes: list[float], picks: list[flo
 SEEK_MAX_COST_RATIO = 0.7
 # 운영 19초 vp9 영상: 전체 디코딩 3.0초, 시각 읽기를 더하면 3.5초. 이보다 짧으면 시각을 읽지 않는다.
 SEEK_MIN_DURATION = 20.0
+# 한 ffmpeg 명령에 여는 입력 수. 운영 46초 영상: 8개 164.8MiB·9.0초, 4개 106.7MiB·9.2초, 2개 80.2MiB·9.5초(docs/bench/insta-e2e-after-frame-seek-20261104.md).
+SEEK_INPUTS_PER_CALL = 2
 
 
 def _pick_like_fps_filter(times: list[float], interval: float, max_frames: int) -> list[float]:
