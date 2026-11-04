@@ -1,0 +1,25 @@
+2026-11-04 21:54:39 KST
+SELECT current_database(), current_user;
+ current_database | current_user 
+------------------+--------------
+ postgres         | postgres
+(1 row)
+
+SELECT indexname, indexdef FROM pg_indexes
+WHERE schemaname = 'public' AND tablename = 'saved_places';
+     indexname     |                                   indexdef                                    
+-------------------+-------------------------------------------------------------------------------
+ saved_places_pkey | CREATE UNIQUE INDEX saved_places_pkey ON public.saved_places USING btree (id)
+(1 row)
+
+CREATE INDEX CONCURRENTLY idx_saved_places_user_created_id
+ON public.saved_places (user_id, created_at, id);
+CREATE INDEX
+SELECT i.indisvalid, i.indisready, pg_get_indexdef(i.indexrelid)
+FROM pg_index i
+WHERE i.indexrelid = 'public.idx_saved_places_user_created_id'::regclass;
+ indisvalid | indisready |                                              pg_get_indexdef                                               
+------------+------------+------------------------------------------------------------------------------------------------------------
+ t          | t          | CREATE INDEX idx_saved_places_user_created_id ON public.saved_places USING btree (user_id, created_at, id)
+(1 row)
+

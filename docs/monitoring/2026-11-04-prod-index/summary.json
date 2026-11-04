@@ -1,0 +1,84 @@
+{
+  "environment": "production E2.1.Micro + Supabase, test account user1 (42 places), same JAR f5e6a773…",
+  "load": "5 VU constant, think 2s, GET /api/places, planned 180s",
+  "indexCreatedKst": "2026-11-04 18:20:56",
+  "before": {
+    "windowKst": "18:07:16~18:10:05",
+    "durationSeconds": 166.1,
+    "stoppedBy": "SERVER_ERROR",
+    "requests": 359,
+    "failedRequests": 1,
+    "k6Ms": {
+      "med": 273.2,
+      "avg": 291.3,
+      "p(90)": 342.4,
+      "p(95)": 425.4,
+      "max": 3006.1
+    },
+    "serverPlacesAvgMs_prometheus30sRate_mean": 165.5,
+    "majorGcPauseMaxSec": 4.973,
+    "minAvailableMiB": 261
+  },
+  "after": {
+    "windowKst": "18:22:43~18:24:56",
+    "durationSeconds": 131.2,
+    "stoppedBy": "New swap-out observed",
+    "requests": 290,
+    "failedRequests": 0,
+    "k6Ms": {
+      "med": 269.0,
+      "avg": 278.8,
+      "p(90)": 334.5,
+      "p(95)": 354.4,
+      "max": 438.6
+    },
+    "serverPlacesAvgMs_prometheus30sRate_mean": 167.0,
+    "majorGcPauseMaxSec": 0.0,
+    "minAvailableMiB": 191
+  },
+  "explainExecutionMs": {
+    "before": 0.264,
+    "after": 0.294,
+    "planBefore": "Seq Scan",
+    "planAfter": "Bitmap Index Scan idx_saved_places_user_created_id"
+  },
+  "conclusion": "운영 규모(277행)에서는 인덱스 효과 없음. 3분 완주 재측정에서 중앙값 275.6(있음) vs 274.9ms(없음), 서버 내부 평균도 같은 수준. p95·최대 차이는 표본 편차와 18:10 Full GC 1회 때문.",
+  "rerun": {
+    "guard": "swap-out 속도 1MiB/s(issue-log #6 이후)",
+    "order": "B(인덱스 있음) → 인덱스 삭제 21:51:17 → A(없음) → 재생성 21:54:39",
+    "B_index": {
+      "windowKst": "21:46:25~21:49:28",
+      "durationSeconds": 182.0,
+      "stoppedBy": null,
+      "requests": 395,
+      "failedRequests": 0,
+      "k6Ms": {
+        "med": 275.6,
+        "avg": 288.4,
+        "p(90)": 367.7,
+        "p(95)": 413.1,
+        "max": 686.3
+      },
+      "serverPlacesAvgMs": 167.4,
+      "majorGcPauseMaxSec": 0.0,
+      "minAvailableMiB": 272
+    },
+    "A_noIndex": {
+      "windowKst": "21:51:24~21:54:27",
+      "durationSeconds": 181.1,
+      "stoppedBy": null,
+      "requests": 395,
+      "failedRequests": 0,
+      "k6Ms": {
+        "med": 274.9,
+        "avg": 279.9,
+        "p(90)": 315.2,
+        "p(95)": 378.0,
+        "max": 460.3
+      },
+      "serverPlacesAvgMs": 164.2,
+      "majorGcPauseMaxSec": 0.0,
+      "minAvailableMiB": 283
+    }
+  }
+}

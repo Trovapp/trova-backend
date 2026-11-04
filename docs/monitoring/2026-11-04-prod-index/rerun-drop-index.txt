@@ -1,0 +1,9 @@
+2026-11-04 21:51:17 KST
+DROP INDEX CONCURRENTLY public.idx_saved_places_user_created_id;
+DROP INDEX
+SELECT indexname FROM pg_indexes WHERE schemaname='public' AND tablename='saved_places';
+     indexname     
+-------------------
+ saved_places_pkey
+(1 row)
+

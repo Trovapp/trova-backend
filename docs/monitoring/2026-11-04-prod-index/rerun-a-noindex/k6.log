@@ -1,0 +1,37 @@
+
+
+  █ THRESHOLDS 
+
+    http_req_duration
+    ✓ 'p(95)<1000' p(95)=377.96ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 395     2.185136/s
+    checks_succeeded...: 100.00% 395 out of 395
+    checks_failed......: 0.00%   0 out of 395
+
+    ✓ HTTP 200 and place list shape
+
+    HTTP
+    http_req_duration..............: avg=279.92ms min=205.49ms med=274.9ms max=460.3ms p(90)=315.18ms p(95)=377.96ms
+      { expected_response:true }...: avg=279.92ms min=205.49ms med=274.9ms max=460.3ms p(90)=315.18ms p(95)=377.96ms
+    http_req_failed................: 0.00% 0 out of 395
+    http_reqs......................: 395   2.185136/s
+
+    EXECUTION
+    iteration_duration.............: avg=2.28s    min=2.2s     med=2.27s   max=2.53s   p(90)=2.32s    p(95)=2.38s   
+    iterations.....................: 395   2.185136/s
+    vus............................: 5     min=5        max=5
+    vus_max........................: 5     min=5        max=5
+
+    NETWORK
+    data_received..................: 12 MB 64 kB/s
+    data_sent......................: 79 kB 436 B/s
+
+
+
