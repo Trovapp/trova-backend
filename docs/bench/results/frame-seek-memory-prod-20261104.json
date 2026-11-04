@@ -1,0 +1,33 @@
+{
+  "issue": 325,
+  "label": "production (Oracle E2.1.Micro, 2 vCPU, 956MB RAM), /tmp 임시 폴더, nice -n 10, Gemini·DB 미사용",
+  "video": "instagram DX-rrm8BHCr (46초 h264, 13,277,988 bytes)",
+  "method": "변형마다 새 python 프로세스 1개(mem_one.py)로 extract_frames 1회, RUSAGE_CHILDREN ru_maxrss = 가장 큰 자식(ffmpeg) 최대 메모리",
+  "runs": {
+    "fullDecode(예전)": [
+      {"wallMs": 19804.7, "childMaxRssKib": 74348, "childCpuMs": 32739},
+      {"wallMs": 22705.4, "childMaxRssKib": 74120, "childCpuMs": 33766},
+      {"wallMs": 20122.0, "childMaxRssKib": 74248, "childCpuMs": 33287}],
+    "seek 입력8개 동시(현재 main 443ae25)": [
+      {"wallMs": 12697.0, "childMaxRssKib": 222868, "childCpuMs": 19526},
+      {"wallMs": 11299.6, "childMaxRssKib": 222868, "childCpuMs": 18209},
+      {"wallMs": 12106.3, "childMaxRssKib": 222744, "childCpuMs": 19506},
+      {"wallMs": 11990.3, "childMaxRssKib": 223128, "childCpuMs": 18937},
+      {"wallMs": 11129.6, "childMaxRssKib": 222996, "childCpuMs": 17866},
+      {"wallMs": 12430.5, "childMaxRssKib": 222872, "childCpuMs": 19401}],
+    "seek + 입력마다 -threads 1, 8개 한 번에": [
+      {"wallMs": 9075.7, "childMaxRssKib": 168684, "childCpuMs": 8902},
+      {"wallMs": 8813.9, "childMaxRssKib": 169176, "childCpuMs": 8843},
+      {"wallMs": 8918.7, "childMaxRssKib": 168852, "childCpuMs": 8947},
+      {"wallMs": 9027.5, "childMaxRssKib": 168812, "childCpuMs": 9123},
+      {"wallMs": 10392.0, "childMaxRssKib": 168824, "childCpuMs": 10395}],
+    "seek + -threads 1, 4개씩 2번": [
+      {"wallMs": 9160.3, "childMaxRssKib": 109200, "childCpuMs": 8997},
+      {"wallMs": 9198.0, "childMaxRssKib": 109328, "childCpuMs": 9111}],
+    "seek + -threads 1, 2개씩 4번": [
+      {"wallMs": 9689.0, "childMaxRssKib": 82036, "childCpuMs": 9613},
+      {"wallMs": 9401.9, "childMaxRssKib": 82168, "childCpuMs": 9477}]
+  },
+  "sameOutput": "현재 main과 '-threads 1, 2개씩' 결과 JPEG 8장 md5 모두 같음",
+  "note": "변형은 서버 임시 복사본에서만 시험했고 운영 파일은 바꾸지 않았다"
+}

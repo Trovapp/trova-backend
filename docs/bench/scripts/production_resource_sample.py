@@ -32,17 +32,20 @@ def journal_lines(args, job):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-production', action='store_true', required=True)
+    parser.add_argument('--kinds', default='youtube,instagram', help='돌릴 종류(쉼표). #325는 instagram만')
+    parser.add_argument('--marker-prefix', default='trova-319')
     for field in ['env-file', 'host', 'ssh-key', 'base-url', 'output', 'backup-dir', 'source-commit']:
         parser.add_argument('--' + field, required=True)
     args = parser.parse_args()
     args.local_requests = 0
     bench = Bench(args)
-    bench.marker = 'trova-319-' + bench.marker.rsplit('-', 1)[-1]
+    bench.marker = args.marker_prefix + '-' + bench.marker.rsplit('-', 1)[-1]
     bench.result.update(scope='운영 1회씩(유튜브·인스타) 자원·토큰 기준값. 속도 비교 아님',
                         harnessSha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
     try:
         bench.healthy()
-        for kind, url in URLS:
+        kinds = args.kinds.split(',')
+        for kind, url in [u for u in URLS if u[0] in kinds]:
             bench.result['preflightInFlight'] = bench.idle()
             shares = bench.query("select count(*) from processing_jobs where user_id=1 and created_at >= "
                                  "date_trunc('day',now() at time zone 'Asia/Seoul')")[0][0]
