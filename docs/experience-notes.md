@@ -2332,3 +2332,12 @@
 - 바꾸기 전 코드를 테스트 전용 `LegacyRouteOptimizer`로 두고 무작위 입력 약 240개에서 총거리 일치를 확인했다.
 - **로컬**(MacBook M5, Java 21) 같은 입력 교대 측정: 10곳 중앙 529.700→0.236ms, 고정 2곳 포함 12곳(움직일 10곳) 813.790→0.251ms. 7곳 이하는 원래도 1ms 미만이다. 운영 서버에서는 측정하지 않았고, API 전체 응답 시간도 재지 않았다.
 - 기록 `docs/bench/route-optimizer-dp-20261104.md`, 원본 `docs/bench/results/route-optimizer-dp-local-20261104.json`.
+
+## 2026-11-04 Rust build_parts 비교 도구와 로컬 결과 (#312)
+
+- 사용자가 다음 단계 선택지(2번 Rust 비교 도구) 진행을 요청했다. 계획 1~5단계만 했고 운영 실행·통합은 하지 않았다.
+- `tools/rust-parts-pilot/`: Rust CLI와 기존 `build_parts`를 그대로 부르는 Python 제어 CLI, 고정 입력 24개·실패 입력 27개, 호환성·측정·통합 비용 스크립트. 키·네트워크 미사용을 감사 훅 테스트로 확인했다.
+- 호환성: 고정 24/24(요청 48개) 바이트 일치, 실패 27/27, 섞인 세션 75요청 일치. 독립 재실행에서도 같은 결과였다. MIME은 Python처럼 시스템 mime.types를 읽어 맞췄고, Linux 운영에서의 일치는 미확인이다.
+- **로컬**(macOS Apple M5) 측정 288관측: 새 프로세스 중앙 Python 34.98ms / Rust 3.02ms, 지속 프로세스 2.43 / 0.80ms. 미디어 없는 입력은 준비 시간 자체가 Python이 짧았다.
+- 그러나 지금 경로에 붙이는 방식(Python → Rust 보조 프로세스, 1회성)은 Python 직접 호출 0.477ms보다 느렸다(지속 1.711ms, 매번 새로 띄우면 5.819ms). Python 최대 RSS도 약 79MiB 늘었다. 로컬 근거로는 **Python 유지**가 맞다. 분석 1건이 약 12초인데 준비 시간은 1ms 안팎이다.
+- 기록 `docs/bench/rust-parts-pilot-local-20261104.md`, 원본 `docs/bench/results/rust-parts-pilot-*-20261104.json`.

@@ -1,0 +1,1728 @@
+{
+  "date": "2026-11-04",
+  "scope": "로컬 macOS 호환성 검사. 운영 서버 실행·Gemini/카카오 호출 없음.",
+  "environment": {
+    "host": "로컬 macOS 개발 맥 — 운영(Oracle E2.1.Micro, Linux) 아님",
+    "os": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "cpu": "Apple M5",
+    "cpuCount": "10",
+    "memBytes": "34359738368",
+    "python": "3.14.7",
+    "pythonExecutable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+    "gitHead": "24580359dbe587af2aced2de6c7befea115830f1",
+    "extractPlacesSha256": "12fd5d7e3b0013e72df87cf3ceb11009b5a487d939d74d3cb0297972778dae9f",
+    "buildPartsSourceSha256": "449524a804420d9dc22971d70fd3711c1c66643338629a21a2d96d86c76ae44e",
+    "cargoLockSha256": "8fd3f1731a4411171c17e26062f28d2f66a89686111282c4de91b7efacc02a00",
+    "rustBinarySha256": "51fe82954d385b41aca3428307ad1b4fbdb7199e99b84a52db26a001e7bf4d1c",
+    "pythonCliSha256": "029da7458a13eebd404f989e37727ebdf6d5aecf89a427582e829f2c7c9eac22",
+    "fixturesLockSha256": "c90ef9ed391fda6945df81d06c7b772024c61566bf862cf7b226ca8e88ec5bec"
+  },
+  "comparison": "출력 바이트 그대로 비교(정규화 없음). 출력 규칙: UTF-8·compact·객체 키 정렬, 배열 순서 보존.",
+  "summary": {
+    "fixturesPassed": 24,
+    "fixtureCount": 24,
+    "requestsCompared": 48,
+    "failureCasesPassed": 27,
+    "failureCaseCount": 27,
+    "mixedSessionPassed": true
+  },
+  "fixtures": [
+    {
+      "id": "yt-01",
+      "type": "youtube",
+      "note": "링크만",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "f090340a9d720bb27207702e0dd30ba7e9cb48892b921e96b8776f12babc143d",
+          "goldenBytes": 1585,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "94bcfc03a9acc34cd4491169164c2164ce7991f2c4790572431032cf78e0b2b6",
+          "goldenBytes": 5089,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 4,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "yt-02",
+      "type": "youtube",
+      "note": "링크+게시물 설명",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "6cda4540b82e77ef08dbf1edc9adf7f09f0da958643b7dd8004d606d929b0bdf",
+          "goldenBytes": 1793,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 4,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "991e245332158bb7fe909d4ce5cc58b794de2970479bcf15f2cf8cc812006f12",
+          "goldenBytes": 5306,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 5,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "yt-03",
+      "type": "youtube",
+      "note": "Unicode URL·이모지·따옴표",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "16f67a24a5519e93e68537873273f89c9b023bde47529b3cf6f04fafdf4b8611",
+          "goldenBytes": 1817,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 5,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "720e3a62474a4cb729c3ec9489188711fb3b8eb9f9d0630412f516052449db38",
+          "goldenBytes": 5343,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 6,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "yt-04",
+      "type": "youtube",
+      "note": "링크+빈 설명·빈 자막(건너뜀)",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "b341d1ec01f6112ffc1009c55da00e9535d6e1f89706d733f61356204c278252",
+          "goldenBytes": 1585,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "6d655e7e5b0a830812b82765ab2dc227a58891177f73c9bfe76159468ea2f956",
+          "goldenBytes": 5061,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 4,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "txt-01",
+      "type": "text",
+      "note": "한글 자막",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "2654773cf295932b60142f731fef1d6d31f9d0b5dc972a925617f1844012ecb4",
+          "goldenBytes": 1525,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 2,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "54e72c30f6a48fedfb3320d2ba1b7eec925c92ae4d84f38d5091bea9d8c546ba",
+          "goldenBytes": 5045,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "txt-02",
+      "type": "text",
+      "note": "영문 자막",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "d5288a789f0dfc044db3387f2404911081d52998c817cb5d0856921697344646",
+          "goldenBytes": 1510,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 2,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "1e2e28b0da8e49c6b4f74829909fbb353f28f3092e995de76ebb22449ec71ae3",
+          "goldenBytes": 5037,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "txt-03",
+      "type": "text",
+      "note": "빈 선택 필드·제어 문자",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "227b403d0b19b0a16314e9661f4541d2d439c0c238c432662ed353940c827735",
+          "goldenBytes": 1478,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 2,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "acbfb1cbeba5fbea3e6dfdbe3ec4c191e3c41fadf688b802be82af809d205b2f",
+          "goldenBytes": 4981,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "txt-04",
+      "type": "text",
+      "note": "긴 자막(약 260KB)",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "27fc11ae2b88efa256f54b0ef31145e461c51781c4d171880e10bc16d697c514",
+          "goldenBytes": 362725,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 2,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "97a68c02f8a178ba918f5ead9caca4c9ccbd9b9214a882c80535c554345eee79",
+          "goldenBytes": 366749,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "aud-01",
+      "type": "audio",
+      "note": "작은 mp3 8KiB",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "e9fd4fb6dc577d5248b39897f8a54ec6c6590768f4787b54734c17ee84b67b3f",
+          "goldenBytes": 12455,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [
+              "audio/mpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "3e0fb28f44f0bab73f74d64a0accb65e2a5737345ea1a44a74da1ab1d6837bc2",
+          "goldenBytes": 15944,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 4,
+            "mimeTypes": [
+              "audio/mpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "aud-02",
+      "type": "audio",
+      "note": "중간 m4a 480KiB·한글 파일명",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "166135a44f333423014e043a67328e2aa31f93ea135b692ea4d5138cb3ff22f0",
+          "goldenBytes": 656950,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 4,
+            "mimeTypes": [
+              "audio/mp4a-latm"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "81d75b9ff9b7d82bd44f24fa2cb9a7dad05fd334af6faa7df1779c8277834a09",
+          "goldenBytes": 660448,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 5,
+            "mimeTypes": [
+              "audio/mp4a-latm"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "aud-03",
+      "type": "audio",
+      "note": "큰 mp3 4MiB",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "852d831e0d1a63bc50245ec26ed3daf3fbccbed01f661ae707a91e859eecbf78",
+          "goldenBytes": 5593939,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [
+              "audio/mpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "9d0655892b20cd4cb7c3ce73a00bd7a724b9161b062780d383c7a13cb1376a82",
+          "goldenBytes": 5597455,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 4,
+            "mimeTypes": [
+              "audio/mpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "aud-04",
+      "type": "audio",
+      "note": "확장자 없음 8MiB(폴백 audio/mp3)",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "b3baebd7df4e3e0b5344bd65a938c3c9c1f2c51edb6b0e90d1eeff2751941a8b",
+          "goldenBytes": 11186342,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [
+              "audio/mp3"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "c5d894fb125beb1ca69247a03129a1a4807134ae603d11383b9d47512dfe79ec",
+          "goldenBytes": 11189840,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 4,
+            "mimeTypes": [
+              "audio/mp3"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "frm-01",
+      "type": "frames",
+      "note": "1장",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "90f92285927ce3969c9db93675bd85a0f7b7863800c54213795bb61bb5854cc7",
+          "goldenBytes": 77737,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "1318a5eb32e6262d6f7c1d7337350c58661b237165d0ec6067501ff419b3aeb6",
+          "goldenBytes": 81232,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 4,
+            "mimeTypes": [
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "frm-02",
+      "type": "frames",
+      "note": "4장",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "bb001b08c50f69144c66004efd98cae9e5ed692bdd1af0f5822563bb14ea56c1",
+          "goldenBytes": 325848,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 6,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "a4b83657f773fce5f7388070c31e21d7a8d17419a497e61beea96d3d136635e5",
+          "goldenBytes": 329352,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 7,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "frm-03",
+      "type": "frames",
+      "note": "8장·한글 폴더/파일명",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "229dec446d6334c929322ba095de2c8b6a333def1d3c8833113d669cbb9a274f",
+          "goldenBytes": 713464,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 10,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "222f9db0d0f712cfef811fbaa39ead6628e4f1094ebfcce236031a96658d8e35",
+          "goldenBytes": 716962,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 11,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "frm-04",
+      "type": "frames",
+      "note": "8장·확장자 섞임·역순 배열(순서 보존)",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "de760d958f92ddf107fa5a8262973429c03763fdd412431fdcab198a74baae6b",
+          "goldenBytes": 477159,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 10,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/jpeg",
+              "image/png",
+              "image/webp",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "c8951dcb4339af32fdcd897d20acbea4ed8bc153053a8eb97f0f5de435f3ae53",
+          "goldenBytes": 480669,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 11,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/jpeg",
+              "image/png",
+              "image/webp",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "mix-01",
+      "type": "mixed",
+      "note": "오디오+프레임+자막",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "da366aef2b03b79a623e59f457e1d28b15e99e06bd14d5b1bfdd1d4ba0812972",
+          "goldenBytes": 1977040,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 13,
+            "mimeTypes": [
+              "audio/mpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "961a8b68cc95c91016419495f1dfb08cf271264f48ecd0769156298c05eb683f",
+          "goldenBytes": 1980554,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 14,
+            "mimeTypes": [
+              "audio/mpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "mix-02",
+      "type": "mixed",
+      "note": "오디오+프레임+설명+후보",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "d7db6dbb1cab61b8b2473a9644b3544b074cdeb770ff01653e4d918f24e6b81a",
+          "goldenBytes": 2861898,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 13,
+            "mimeTypes": [
+              "audio/mpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "d35c4925611def267771f62e1dbfd734572cd2a50b061c5e238decdcab6d0c7b",
+          "goldenBytes": 2865423,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 14,
+            "mimeTypes": [
+              "audio/mpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "mix-03",
+      "type": "mixed",
+      "note": "큰 오디오 4MiB+프레임 8장+특수문자 후보",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "7b3aeaef5782903b026866863ab2db2ccee5618f90e82c4fb98eecb16383c799",
+          "goldenBytes": 6411768,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 14,
+            "mimeTypes": [
+              "audio/mpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "c0f64b47e3e56adc342a5241432375c444eeb0d4b4578c58b80ccc0b18d12a78",
+          "goldenBytes": 6415323,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 15,
+            "mimeTypes": [
+              "audio/mpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "mix-04",
+      "type": "mixed",
+      "note": "wav+프레임·한글 폴더·빈 후보 목록",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "58a84303114512bce77d63474d7cfeef8157608d4845da59f1cdbd76572880ee",
+          "goldenBytes": 1733185,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 8,
+            "mimeTypes": [
+              "audio/x-wav",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "092719a99c8c2f61dbba2b5661dcbafacbe8582113d3bdec20b2f567646e8d33",
+          "goldenBytes": 1736661,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 9,
+            "mimeTypes": [
+              "audio/x-wav",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "pho-01",
+      "type": "photo_post",
+      "note": "사진 1장+설명",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "afc4ad3dc3b242591236e13704b3b27bf193e8dae129a6dc2b92b241b7334adb",
+          "goldenBytes": 289008,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 4,
+            "mimeTypes": [
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "162924f988e59a994b6f86e5479b12c102ac20feb1c38cfd0d47be7c35ab0149",
+          "goldenBytes": 292497,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 5,
+            "mimeTypes": [
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "pho-02",
+      "type": "photo_post",
+      "note": "사진 10장(올린 순서)",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "3db675255b8bb431180aa7ce05f194912264892a6fbbd1e49f35a54e293b46e5",
+          "goldenBytes": 2651167,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 13,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "637c2a824860a67d7bdc2dddf92bc5f35e4512bf2198b0ba012f1c4646ec83a0",
+          "goldenBytes": 2654772,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 14,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "pho-03",
+      "type": "photo_post",
+      "note": "photo_post 이지만 사진 0장(문구 없음)",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "e4a6811eba51a480cd9680c4b3489cd970c05ddd4429a637fdec929ce91c6ad1",
+          "goldenBytes": 1528,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 2,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "8263718336435724d8d1a92c1193c91bea175905344ec79940911748d8b523a8",
+          "goldenBytes": 5023,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 3,
+            "mimeTypes": [],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "pho-04",
+      "type": "photo_post",
+      "note": "사진 3장·한글 경로·자막·특수문자 후보",
+      "requests": [
+        {
+          "stage": "collect",
+          "goldenSha256": "8387d9a098439d96e4f5b4d92e9186beec94c000fa499ef123ec56396aada458",
+          "goldenBytes": 743715,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 7,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        },
+        {
+          "stage": "filter",
+          "goldenSha256": "2188f6dd863fffc33795ddb8d43753527a755413273a1ac1fe7a602d04f9009f",
+          "goldenBytes": 747237,
+          "oneShotExit": {
+            "python": 0,
+            "rust": 0
+          },
+          "oneShotByteEqual": true,
+          "serveByteEqual": true,
+          "semantic": {
+            "partCount": 8,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/jpeg",
+              "image/jpeg"
+            ],
+            "problems": []
+          },
+          "passed": true
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "failureCases": [
+    {
+      "id": "f01-missing-audio",
+      "expect": "not_found",
+      "kinds": {
+        "python": "not_found",
+        "rust": "not_found"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f02-missing-2nd-frame",
+      "expect": "not_found",
+      "kinds": {
+        "python": "not_found",
+        "rust": "not_found"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f03-audio-is-directory",
+      "expect": "is_directory",
+      "kinds": {
+        "python": "is_directory",
+        "rust": "is_directory"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f04-empty-audio-path",
+      "expect": "is_directory",
+      "kinds": {
+        "python": "is_directory",
+        "rust": "is_directory"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f05-trailing-slash-file",
+      "expect": "ok",
+      "kinds": {
+        "python": "ok",
+        "rust": "ok"
+      },
+      "oneShotExit": {
+        "python": 0,
+        "rust": 0
+      },
+      "oneShotStdoutEmptyOnError": null,
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f06-not-a-directory",
+      "expect": "not_a_directory",
+      "kinds": {
+        "python": "not_a_directory",
+        "rust": "not_a_directory"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f07-permission-denied",
+      "expect": "permission_denied",
+      "kinds": {
+        "python": "permission_denied",
+        "rust": "permission_denied"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f08-nul-in-path",
+      "expect": "invalid_path",
+      "kinds": {
+        "python": "invalid_path",
+        "rust": "invalid_path"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f09-too-large",
+      "expect": "input_too_large",
+      "kinds": {
+        "python": "input_too_large",
+        "rust": "input_too_large"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f10-colon-fragment-name",
+      "expect": "ok",
+      "kinds": {
+        "python": "ok",
+        "rust": "ok"
+      },
+      "oneShotExit": {
+        "python": 0,
+        "rust": 0
+      },
+      "oneShotStdoutEmptyOnError": null,
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f11-data-url-name",
+      "expect": "ok",
+      "kinds": {
+        "python": "ok",
+        "rust": "ok"
+      },
+      "oneShotExit": {
+        "python": 0,
+        "rust": 0
+      },
+      "oneShotStdoutEmptyOnError": null,
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f12-dotfile-name",
+      "expect": "ok",
+      "kinds": {
+        "python": "ok",
+        "rust": "ok"
+      },
+      "oneShotExit": {
+        "python": 0,
+        "rust": 0
+      },
+      "oneShotStdoutEmptyOnError": null,
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f13-gz-suffix",
+      "expect": "ok",
+      "kinds": {
+        "python": "ok",
+        "rust": "ok"
+      },
+      "oneShotExit": {
+        "python": 0,
+        "rust": 0
+      },
+      "oneShotStdoutEmptyOnError": null,
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f14-wrong-type",
+      "expect": "invalid_manifest",
+      "kinds": {
+        "python": "invalid_manifest",
+        "rust": "invalid_manifest"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f15-unknown-key",
+      "expect": "invalid_manifest",
+      "kinds": {
+        "python": "invalid_manifest",
+        "rust": "invalid_manifest"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f16-missing-prompt",
+      "expect": "invalid_manifest",
+      "kinds": {
+        "python": "invalid_manifest",
+        "rust": "invalid_manifest"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f17-non-string-candidate",
+      "expect": "invalid_manifest",
+      "kinds": {
+        "python": "invalid_manifest",
+        "rust": "invalid_manifest"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f18-top-level-array",
+      "expect": "invalid_manifest",
+      "kinds": {
+        "python": "invalid_manifest",
+        "rust": "invalid_manifest"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f19-broken-json",
+      "expect": "invalid_json",
+      "kinds": {
+        "python": "invalid_json",
+        "rust": "invalid_json"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f20-nan",
+      "expect": "invalid_json",
+      "kinds": {
+        "python": "invalid_json",
+        "rust": "invalid_json"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f21-lone-surrogate",
+      "expect": "invalid_json",
+      "kinds": {
+        "python": "invalid_json",
+        "rust": "invalid_json"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f22-too-deep",
+      "expect": "invalid_json",
+      "kinds": {
+        "python": "invalid_json",
+        "rust": "invalid_json"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f23-invalid-utf8",
+      "expect": "invalid_json",
+      "kinds": {
+        "python": "invalid_json",
+        "rust": "invalid_json"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f24-bom",
+      "expect": "invalid_json",
+      "kinds": {
+        "python": "invalid_json",
+        "rust": "invalid_json"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f25-empty-line",
+      "expect": "invalid_json",
+      "kinds": {
+        "python": "invalid_json",
+        "rust": "invalid_json"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f26-duplicate-key-last-wins",
+      "expect": "ok",
+      "kinds": {
+        "python": "ok",
+        "rust": "ok"
+      },
+      "oneShotExit": {
+        "python": 0,
+        "rust": 0
+      },
+      "oneShotStdoutEmptyOnError": null,
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    },
+    {
+      "id": "f27-number-overflow",
+      "expect": "invalid_json",
+      "kinds": {
+        "python": "invalid_json",
+        "rust": "invalid_json"
+      },
+      "oneShotExit": {
+        "python": 1,
+        "rust": 1
+      },
+      "oneShotStdoutEmptyOnError": {
+        "python": true,
+        "rust": true
+      },
+      "serveByteEqual": true,
+      "oneShotByteEqual": true,
+      "passed": true
+    }
+  ],
+  "mixedSession": {
+    "requests": 75,
+    "outputLines": {
+      "python": 75,
+      "rust": 75
+    },
+    "byteEqual": true,
+    "exit": {
+      "python": 0,
+      "rust": 0
+    },
+    "streamSha256": {
+      "python": "22fa92fbc33a318e9a82ebb6de3c650a940f76964e740824e1e852cc33c3338e",
+      "rust": "22fa92fbc33a318e9a82ebb6de3c650a940f76964e740824e1e852cc33c3338e"
+    },
+    "passed": true
+  }
+}
