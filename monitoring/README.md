@@ -150,6 +150,12 @@ python3 monitoring/run_observed_smoke.py --run-production --mode health \
 # places 모드에는 --token-file 비공개단기테스트토큰파일 이 추가로 필요하다.
 ```
 
+`--mode places-load`(2026-11-04, 인덱스 전후 비교용): 테스트 계정 장소 목록만 5 VU · 3분 · 요청 뒤 2초 대기로
+고정(≈150 req/min, 운영 IP 제한 300/min 아래). 부하 크기는 `places-load.js`에 고정되어 CLI로 바꿀 수 없다.
+401/403은 `AUTH_FAILED`, 비정상 응답은 `SERVER_ERROR`, 단일 응답 2초 이상은 `SLOW_RESPONSE`로 즉시 중단하고
+`run.json`의 `abortReason`에 남긴다. 오류율 1% 이상·p95 1초 이상도 중단. 자원 감시 기준과 감독 시한(210초)은 위와 같다.
+로컬 검증: `cd monitoring && python3 -m unittest test_places_load`(loopback fixture만).
+
 출력 디렉터리가 이미 있으면 덮어쓰지 않는다. 토큰 발급/계정 선택은 실행기가 하지 않는다.
 원시 k6 로그에 토큰이나 응답 본문을 추가하지 않는다. 실험 후 임시 토큰 파일을 정리한다.
 
