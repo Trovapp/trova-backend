@@ -1,0 +1,371 @@
+{
+  "scope": "Historical Python production context, not a Python/Rust A/B experiment",
+  "recordedSourceCommit": "40fe231f146d9b79dcf2b77fb406e6d75452fdf8",
+  "recordedStartedAt": "2026-11-01T04:37:35.760811+09:00",
+  "recordedFinishedAt": "2026-11-01T04:48:33.033477+09:00",
+  "warmupsExcluded": 3,
+  "measuredJobs": 12,
+  "byMode": {
+    "async": {
+      "n": 6,
+      "uniqueVideos": 3,
+      "processingMs": {
+        "n": 6,
+        "min": 9960.593,
+        "median": 11688.738,
+        "mean": 11807.179,
+        "max": 14177.607
+      },
+      "queueWaitMs": {
+        "n": 6,
+        "min": 229.0,
+        "median": 234.5,
+        "mean": 256.167,
+        "max": 366.0
+      },
+      "primaryCallWindowMs": {
+        "n": 6,
+        "min": 6358,
+        "median": 7510.5,
+        "mean": 7556.833,
+        "max": 9033
+      },
+      "allGeminiCallWindowMs": {
+        "n": 6,
+        "min": 7405,
+        "median": 8648.0,
+        "mean": 8831.333,
+        "max": 10898
+      },
+      "primaryCallSharePercent": {
+        "n": 6,
+        "min": 61.444,
+        "median": 63.861,
+        "mean": 64.049,
+        "max": 66.226
+      },
+      "allGeminiCallSharePercent": {
+        "n": 6,
+        "min": 73.227,
+        "median": 74.55,
+        "mean": 74.709,
+        "max": 76.868
+      },
+      "outsideGeminiLogWindowsMs": {
+        "n": 6,
+        "min": 2555.593,
+        "median": 3040.738,
+        "mean": 2975.846,
+        "max": 3279.607
+      }
+    },
+    "kafka": {
+      "n": 6,
+      "uniqueVideos": 3,
+      "processingMs": {
+        "n": 6,
+        "min": 10420.808,
+        "median": 12059.818,
+        "mean": 12174.452,
+        "max": 14652.536
+      },
+      "queueWaitMs": {
+        "n": 6,
+        "min": 380.0,
+        "median": 440.0,
+        "mean": 692.167,
+        "max": 1540.0
+      },
+      "primaryCallWindowMs": {
+        "n": 6,
+        "min": 6982,
+        "median": 7397.5,
+        "mean": 7763,
+        "max": 9368
+      },
+      "allGeminiCallWindowMs": {
+        "n": 6,
+        "min": 7878,
+        "median": 8975.0,
+        "mean": 9127.833,
+        "max": 11267
+      },
+      "primaryCallSharePercent": {
+        "n": 6,
+        "min": 59.998,
+        "median": 64.011,
+        "mean": 63.839,
+        "max": 67.111
+      },
+      "allGeminiCallSharePercent": {
+        "n": 6,
+        "min": 73.553,
+        "median": 74.685,
+        "mean": 74.904,
+        "max": 76.895
+      },
+      "outsideGeminiLogWindowsMs": {
+        "n": 6,
+        "min": 2542.808,
+        "median": 3084.818,
+        "mean": 3046.619,
+        "max": 3385.536
+      }
+    }
+  },
+  "samples": [
+    {
+      "jobId": 109,
+      "mode": "kafka",
+      "videoId": "H1bCCd1vDCA",
+      "processingMs": 12552.396,
+      "queueWaitMs": 433.0,
+      "primaryCallWindowMs": 8424,
+      "allGeminiCallWindowMs": 9442,
+      "primaryCallSharePercent": 67.11069344848585,
+      "allGeminiCallSharePercent": 75.22069890083137,
+      "outsideGeminiLogWindowsMs": 3110.396,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 3,
+      "knownAttemptSum": 3,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 110,
+      "mode": "kafka",
+      "videoId": "YS4z0NqKkyw",
+      "processingMs": 14652.536,
+      "queueWaitMs": 1540.0,
+      "primaryCallWindowMs": 9368,
+      "allGeminiCallWindowMs": 11267,
+      "primaryCallSharePercent": 63.93432508884468,
+      "allGeminiCallSharePercent": 76.89453893851548,
+      "outsideGeminiLogWindowsMs": 3385.536,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 4,
+      "knownAttemptSum": 4,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 111,
+      "mode": "kafka",
+      "videoId": "8vmpPuFwQ94",
+      "processingMs": 10936.537,
+      "queueWaitMs": 447.0,
+      "primaryCallWindowMs": 7009,
+      "allGeminiCallWindowMs": 8094,
+      "primaryCallSharePercent": 64.08792838171716,
+      "allGeminiCallSharePercent": 74.00880187210996,
+      "outsideGeminiLogWindowsMs": 2842.537,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 3,
+      "knownAttemptSum": 3,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 113,
+      "mode": "async",
+      "videoId": "8vmpPuFwQ94",
+      "processingMs": 10675.164,
+      "queueWaitMs": 366.0,
+      "primaryCallWindowMs": 6959,
+      "allGeminiCallWindowMs": 7976,
+      "primaryCallSharePercent": 65.18869405659716,
+      "allGeminiCallSharePercent": 74.71547978091952,
+      "outsideGeminiLogWindowsMs": 2699.164,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 3,
+      "knownAttemptSum": 3,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 114,
+      "mode": "async",
+      "videoId": "YS4z0NqKkyw",
+      "processingMs": 12652.236,
+      "queueWaitMs": 231.0,
+      "primaryCallWindowMs": 7774,
+      "allGeminiCallWindowMs": 9413,
+      "primaryCallSharePercent": 61.44368473683228,
+      "allGeminiCallSharePercent": 74.39791670025757,
+      "outsideGeminiLogWindowsMs": 3239.236,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 4,
+      "knownAttemptSum": 4,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 115,
+      "mode": "async",
+      "videoId": "H1bCCd1vDCA",
+      "processingMs": 11342.857,
+      "queueWaitMs": 229.0,
+      "primaryCallWindowMs": 7247,
+      "allGeminiCallWindowMs": 8306,
+      "primaryCallSharePercent": 63.890429016252256,
+      "allGeminiCallSharePercent": 73.22670117413982,
+      "outsideGeminiLogWindowsMs": 3036.857,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 3,
+      "knownAttemptSum": 3,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 116,
+      "mode": "async",
+      "videoId": "H1bCCd1vDCA",
+      "processingMs": 12034.619,
+      "queueWaitMs": 232.0,
+      "primaryCallWindowMs": 7970,
+      "allGeminiCallWindowMs": 8990,
+      "primaryCallSharePercent": 66.22561129687611,
+      "allGeminiCallSharePercent": 74.70116004503342,
+      "outsideGeminiLogWindowsMs": 3044.619,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 3,
+      "knownAttemptSum": 3,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 117,
+      "mode": "async",
+      "videoId": "YS4z0NqKkyw",
+      "processingMs": 14177.607,
+      "queueWaitMs": 237.0,
+      "primaryCallWindowMs": 9033,
+      "allGeminiCallWindowMs": 10898,
+      "primaryCallSharePercent": 63.71314989899212,
+      "allGeminiCallSharePercent": 76.86769706622563,
+      "outsideGeminiLogWindowsMs": 3279.607,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 4,
+      "knownAttemptSum": 4,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 118,
+      "mode": "async",
+      "videoId": "8vmpPuFwQ94",
+      "processingMs": 9960.593,
+      "queueWaitMs": 242.0,
+      "primaryCallWindowMs": 6358,
+      "allGeminiCallWindowMs": 7405,
+      "primaryCallSharePercent": 63.83154095343521,
+      "allGeminiCallSharePercent": 74.34296331553755,
+      "outsideGeminiLogWindowsMs": 2555.593,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 3,
+      "knownAttemptSum": 3,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 120,
+      "mode": "kafka",
+      "videoId": "8vmpPuFwQ94",
+      "processingMs": 10420.808,
+      "queueWaitMs": 380.0,
+      "primaryCallWindowMs": 6982,
+      "allGeminiCallWindowMs": 7878,
+      "primaryCallSharePercent": 67.00056272028043,
+      "allGeminiCallSharePercent": 75.59874435840293,
+      "outsideGeminiLogWindowsMs": 2542.808,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 3,
+      "knownAttemptSum": 3,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 121,
+      "mode": "kafka",
+      "videoId": "YS4z0NqKkyw",
+      "processingMs": 11567.239,
+      "queueWaitMs": 970.0,
+      "primaryCallWindowMs": 7045,
+      "allGeminiCallWindowMs": 8508,
+      "primaryCallSharePercent": 60.90476733471142,
+      "allGeminiCallSharePercent": 73.55255649165717,
+      "outsideGeminiLogWindowsMs": 3059.239,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 4,
+      "knownAttemptSum": 4,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    },
+    {
+      "jobId": 122,
+      "mode": "kafka",
+      "videoId": "H1bCCd1vDCA",
+      "processingMs": 12917.198,
+      "queueWaitMs": 383.0,
+      "primaryCallWindowMs": 7750,
+      "allGeminiCallWindowMs": 9578,
+      "primaryCallSharePercent": 59.99753197249125,
+      "allGeminiCallSharePercent": 74.14920790097048,
+      "outsideGeminiLogWindowsMs": 3339.198,
+      "outsideGeminiLogWindowsIsCpuTime": false,
+      "geminiLogicalLogs": 4,
+      "knownAttemptSum": 4,
+      "unknownAttemptRows": 0,
+      "knownWaitedMs": 0,
+      "unknownWaitedRows": 0
+    }
+  ],
+  "availability": {
+    "pythonCpuTimeMs": null,
+    "pythonPeakRssBytes": null,
+    "mediaPreparationWallMs": null,
+    "perJobMediaStageTimings": null,
+    "rustAfterResults": null,
+    "rustSpeedupEstimate": null
+  },
+  "limitations": [
+    "Three YouTube videos; direct-link path expected from measured-source code, media timings not captured in this JSON",
+    "No Instagram media processing evidence; FFmpeg and Python-local CPU share cannot be inferred",
+    "Gemini log windows include network, remote processing, local response parsing and any retry waits; not pure external time",
+    "Summing Gemini windows assumes the reviewed sequential collect/filter/select/verify flow; no concurrent Kakao log sum is subtracted",
+    "Outside Gemini log windows also includes geocoding, DB, Java, subprocess/log overhead; not Python CPU or a Rust speedup bound",
+    "Stored Java RSS after drafts is not Python worker memory and is intentionally excluded",
+    "Current source differs from historical run; do not label these figures current production performance",
+    "No Rust implementation ran; before/after improvement remains unmeasured"
+  ],
+  "illustrativeScenariosNotMeasurements": [
+    {
+      "assumedLocalCpuShare": 0.01,
+      "assumedLocalSpeedup": 10,
+      "totalTimeReductionPercent": 0.9
+    },
+    {
+      "assumedLocalCpuShare": 0.05,
+      "assumedLocalSpeedup": 10,
+      "totalTimeReductionPercent": 4.5
+    },
+    {
+      "assumedLocalCpuShare": 0.1,
+      "assumedLocalSpeedup": 10,
+      "totalTimeReductionPercent": 9.0
+    }
+  ],
+  "sourceFile": "production-queue-expanded-20261101.json",
+  "sourceSha256": "62a7f68e48d236f71acd9a0124677b200a750716246d1baebf24f9e6b6a69341"
+}

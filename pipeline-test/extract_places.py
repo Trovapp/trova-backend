@@ -17,6 +17,19 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+# 요청 준비에 쓴 시간(#311). Rust 비교 대상(build_parts)과 요청 JSON 만들기의 실제 비용을 운영에서 재려고 둔다.
+# 텍스트만 있는 호출은 1ms보다 짧아 마이크로초(us)로 쌓는다. run_pipeline이 결과 JSON의 resources로 내보낸다.
+REQUEST_PREP_STATS: dict[str, int] = {
+    "buildPartsCalls": 0, "buildPartsUs": 0, "buildPartsCpuUs": 0,
+    "requestJsonUs": 0, "requestJsonCpuUs": 0, "requestBytes": 0,
+}
+
+
+def _add_prep(prefix: str, wall_started: int, cpu_started: int) -> None:
+    REQUEST_PREP_STATS[prefix + "Us"] += (time.perf_counter_ns() - wall_started) // 1000
+    REQUEST_PREP_STATS[prefix + "CpuUs"] += (time.process_time_ns() - cpu_started) // 1000
+
+
 DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
@@ -123,7 +136,7 @@ PHOTO_POST_TEXT = (
 )
 
 
-def build_parts(
+def _build_parts(
     transcript: str | None,
     audio_path: Path | None,
     frame_paths: list[Path] | None,
@@ -161,6 +174,17 @@ def build_parts(
         parts.append({"text": f"1차 후보 목록: {json.dumps(candidates, ensure_ascii=False)}"})
     parts.append({"text": prompt})
     return parts
+
+
+
+def build_parts(*args, **kwargs) -> list[dict]:
+    """_build_parts 결과를 그대로 돌려주면서 걸린 시간·CPU만 더한다(#311)."""
+    wall_started, cpu_started = time.perf_counter_ns(), time.process_time_ns()
+    try:
+        return _build_parts(*args, **kwargs)
+    finally:
+        REQUEST_PREP_STATS["buildPartsCalls"] += 1
+        _add_prep("buildParts", wall_started, cpu_started)
 
 
 def _extract_text(payload: dict) -> str:
@@ -260,7 +284,19 @@ def _log_api_call(
         entry["promptTokens"] = usage.get("promptTokenCount")
         entry["responseTokens"] = usage.get("candidatesTokenCount")
         entry["totalTokens"] = usage.get("totalTokenCount")
+        # Gemini 대기를 줄일 근거(#317): 생각 토큰(응답 시간에 직접 영향), 캐시로 처리된 입력, 입력 중 영상 토큰.
+        entry["thoughtsTokens"] = usage.get("thoughtsTokenCount")
+        entry["cachedTokens"] = usage.get("cachedContentTokenCount")
+        entry["videoTokens"] = _modality_tokens(usage.get("promptTokensDetails"), "VIDEO")
     print(f"{API_LOG_MARKER}{json.dumps(entry, ensure_ascii=False)}", file=sys.stderr)
+
+
+def _modality_tokens(details, modality: str) -> int | None:
+    """promptTokensDetails([{"modality": "VIDEO", "tokenCount": 1234}, ...])에서 한 종류의 합. 없으면 None."""
+    if not isinstance(details, list):
+        return None
+    counts = [d.get("tokenCount") or 0 for d in details if isinstance(d, dict) and d.get("modality") == modality]
+    return sum(counts) if counts else None
 
 
 def _quota_info(detail: str) -> tuple[bool, float | None]:
@@ -291,6 +327,7 @@ def _quota_info(detail: str) -> tuple[bool, float | None]:
 def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> dict:
     # 키는 URL 쿼리가 아니라 헤더로 보낸다 — URL은 예외 메시지·로그에 찍히기 쉬워서(#47).
     url = f"{API_BASE}/{model}:generateContent"
+    wall_started, cpu_started = time.perf_counter_ns(), time.process_time_ns()
     body = json.dumps({
         "contents": [{"role": "user", "parts": parts}],
         "generationConfig": {
@@ -298,6 +335,8 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
             "responseMimeType": "application/json",
         },
     }).encode("utf-8")
+    _add_prep("requestJson", wall_started, cpu_started)
+    REQUEST_PREP_STATS["requestBytes"] += len(body)
 
     started_at = time.monotonic()
     last_detail = ""

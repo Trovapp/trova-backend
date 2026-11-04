@@ -10,6 +10,8 @@
 """
 from __future__ import annotations
 
+import worker_resources  # 가장 먼저 읽어 작업 시작 시각을 잡는다(#311)
+
 import json
 import re
 import subprocess
@@ -20,7 +22,7 @@ from pathlib import Path
 
 import download
 import frames as frames_mod
-from extract_places import extract_places
+from extract_places import REQUEST_PREP_STATS, extract_places
 from post_images import download_images, post_image_urls
 from stage_timer import StageTimer
 
@@ -290,12 +292,20 @@ def run_photo_post(title: str | None, post_description: str | None, image_paths:
     return {"title": title, "places": places, "timings": timer.as_dict()}
 
 
+
+def resource_report(timer: StageTimer) -> dict[str, int]:
+    """CPU·메모리(#311): 프로세스 전체, 단계별 CPU, 요청 준비(build_parts·요청 JSON) 시간을 한 사전으로."""
+    return {**worker_resources.snapshot(), **timer.cpu_dict(), **REQUEST_PREP_STATS}
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("usage: run_pipeline.py <url> [work_dir]", file=sys.stderr)
         raise SystemExit(2)
     url = sys.argv[1]
     work_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("work") / "run"
-    result = run(url, work_dir)
+    stage_timer = StageTimer()
+    result = run(url, work_dir, stage_timer)
+    result["resources"] = resource_report(stage_timer)
 
     print(json.dumps(result, ensure_ascii=False, indent=2))

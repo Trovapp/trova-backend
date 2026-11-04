@@ -1,0 +1,1898 @@
+{
+ "label": "로컬 macOS 1회성 통합 경로 측정 — 운영(Oracle E2.1.Micro, Linux) 수치가 아님",
+ "issue": "#312",
+ "environment": {
+  "host": "로컬 macOS 개발 맥 — 운영(Oracle E2.1.Micro, Linux) 아님",
+  "os": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "cpu": "Apple M5",
+  "cpuCount": "10",
+  "memBytes": "34359738368",
+  "python": "3.14.7",
+  "pythonExecutable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+  "gitHead": "24580359dbe587af2aced2de6c7befea115830f1",
+  "extractPlacesSha256": "12fd5d7e3b0013e72df87cf3ceb11009b5a487d939d74d3cb0297972778dae9f",
+  "buildPartsSourceSha256": "449524a804420d9dc22971d70fd3711c1c66643338629a21a2d96d86c76ae44e",
+  "cargoLockSha256": "8fd3f1731a4411171c17e26062f28d2f66a89686111282c4de91b7efacc02a00",
+  "rustBinarySha256": "51fe82954d385b41aca3428307ad1b4fbdb7199e99b84a52db26a001e7bf4d1c",
+  "pythonCliSha256": "029da7458a13eebd404f989e37727ebdf6d5aecf89a427582e829f2c7c9eac22",
+  "fixturesLockSha256": "c90ef9ed391fda6945df81d06c7b772024c61566bf862cf7b226ca8e88ec5bec"
+ },
+ "config": {
+  "reps": 3,
+  "warmup": 1,
+  "order": [
+   "direct",
+   "rust_spawn",
+   "rust_persistent"
+  ],
+  "observationDefinition": "같은 입력의 collect+filter parts 를 Python 리스트로 얻을 때까지(요청 2개)",
+  "limits": "방식별 1회 실행(순서 고정 direct→spawn→persistent), 교대·반복 라운드 없음. 프로세스 트리 주기 샘플 없음."
+ },
+ "summary": {
+  "direct": {
+   "observations": 72,
+   "wallMsMedian": 0.4775,
+   "wallMsMean": 2.233776583333333,
+   "perFixtureMedianMs": {
+    "yt-01": 0.002125,
+    "yt-02": 0.001583,
+    "yt-03": 0.001625,
+    "yt-04": 0.001292,
+    "txt-01": 0.001416,
+    "txt-02": 0.001459,
+    "txt-03": 0.001416,
+    "txt-04": 0.011708,
+    "aud-01": 0.040584,
+    "aud-02": 0.933042,
+    "aud-03": 8.426,
+    "aud-04": 17.071125,
+    "frm-01": 0.125333,
+    "frm-02": 0.538167,
+    "frm-03": 1.182792,
+    "frm-04": 0.85075,
+    "mix-01": 2.923542,
+    "mix-02": 4.353,
+    "mix-03": 9.181833,
+    "mix-04": 2.514125,
+    "pho-01": 0.421291,
+    "pho-02": 3.923709,
+    "pho-03": 0.001542,
+    "pho-04": 1.107792
+   },
+   "selfMaxRssBytes": 260587520,
+   "childrenMaxRssBytes": 0,
+   "mismatches": 0
+  },
+  "rust_spawn": {
+   "observations": 72,
+   "wallMsMedian": 5.8191875,
+   "wallMsMean": 10.784870416666667,
+   "perFixtureMedianMs": {
+    "yt-01": 4.047375,
+    "yt-02": 3.961583,
+    "yt-03": 3.887792,
+    "yt-04": 3.886917,
+    "txt-01": 3.756542,
+    "txt-02": 3.848,
+    "txt-03": 3.893334,
+    "txt-04": 9.095791,
+    "aud-01": 4.045125,
+    "aud-02": 6.470333,
+    "aud-03": 28.235792,
+    "aud-04": 52.609459,
+    "frm-01": 4.756125,
+    "frm-02": 5.514083,
+    "frm-03": 7.187292,
+    "frm-04": 6.306667,
+    "mix-01": 12.125334,
+    "mix-02": 17.291459,
+    "mix-03": 33.374333,
+    "mix-04": 11.656084,
+    "pho-01": 5.352208,
+    "pho-02": 15.267042,
+    "pho-03": 4.149,
+    "pho-04": 7.415
+   },
+   "selfMaxRssBytes": 346374144,
+   "childrenMaxRssBytes": 33144832,
+   "mismatches": 0
+  },
+  "rust_persistent": {
+   "observations": 72,
+   "wallMsMedian": 1.7108955,
+   "wallMsMean": 6.008041638888889,
+   "perFixtureMedianMs": {
+    "yt-01": 0.050375,
+    "yt-02": 0.051958,
+    "yt-03": 0.053792,
+    "yt-04": 0.045167,
+    "txt-01": 0.045208,
+    "txt-02": 0.042583,
+    "txt-03": 0.043167,
+    "txt-04": 2.682166,
+    "aud-01": 0.106666,
+    "aud-02": 2.419583,
+    "aud-03": 22.145291,
+    "aud-04": 45.217333,
+    "frm-01": 0.378167,
+    "frm-02": 1.365333,
+    "frm-03": 2.928792,
+    "frm-04": 2.027583,
+    "mix-01": 7.514125,
+    "mix-02": 12.0645,
+    "mix-03": 24.362333,
+    "mix-04": 6.570042,
+    "pho-01": 1.121542,
+    "pho-02": 9.756042,
+    "pho-03": 0.052417,
+    "pho-04": 2.768
+   },
+   "selfMaxRssBytes": 343588864,
+   "childrenMaxRssBytes": 53051392,
+   "mismatches": 0
+  }
+ },
+ "raw": {
+  "direct": {
+   "variant": "direct",
+   "samples": [
+    {
+     "fixture": "yt-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 6625
+    },
+    {
+     "fixture": "yt-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 3292
+    },
+    {
+     "fixture": "yt-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 2125
+    },
+    {
+     "fixture": "yt-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1666
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 2583
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1750
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1583
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1541
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 2459
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1750
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1625
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1583
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 1875
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1375
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1292
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1291
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 1833
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1458
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1416
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1375
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 1791
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1541
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1459
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1459
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 1667
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1416
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1375
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1417
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 50958
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 11916
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 11708
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 11541
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 49917
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 42834
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 40584
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 39000
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 1002250
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 935459
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 933042
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 932500
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 8307417
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 8426000
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 8479625
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 8385667
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 16845750
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 17326041
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 17071125
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 16960333
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 144625
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 131041
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 125333
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 124584
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 525250
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 538291
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 527500
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 538167
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 1187792
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1182083
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1182792
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1187833
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 860583
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 850750
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 848083
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 860541
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 3221958
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 2854250
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 2923542
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 2927459
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 4458041
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 4353000
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 4367875
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 4303584
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 9081667
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 9181833
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 9066000
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 9230000
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 2488750
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 2514125
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 2519000
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 2476625
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 415333
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 418750
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 421291
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 427500
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 3996709
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 3889625
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 3923709
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 3947042
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 2250
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1625
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1542
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1458
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 1114375
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1107792
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1105083
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1131042
+    }
+   ],
+   "mismatches": 0,
+   "selfMaxRssBytes": 260587520,
+   "childrenMaxRssBytes": 0,
+   "childrenNote": "수거한 자식 중 가장 큰 최대 RSS(자식 합계 아님)",
+   "processWallNs": 328912792
+  },
+  "rust_spawn": {
+   "variant": "rust_spawn",
+   "samples": [
+    {
+     "fixture": "yt-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 4887458
+    },
+    {
+     "fixture": "yt-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 4256208
+    },
+    {
+     "fixture": "yt-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 4047375
+    },
+    {
+     "fixture": "yt-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 4032667
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 4041833
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 3896542
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 3978209
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 3961583
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 3702625
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 3887792
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 4067625
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 3853000
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 3906041
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 3886917
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 3837833
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 3929417
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 3853750
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 3762625
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 3750333
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 3756542
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 3828041
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 3848000
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 3818625
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 3902375
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 3731083
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 3841541
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 3893334
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 3924500
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 9134750
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 9095791
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 9059833
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 9134916
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 4035083
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 4058708
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 4045125
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 3992833
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 6528084
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 6470333
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 6599875
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 6466542
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 28147292
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 28390916
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 28235792
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 28118917
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 53833667
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 52164166
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 52609459
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 55622500
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 5574625
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 4756125
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 4553083
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 4797958
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 5709042
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 5540708
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 5514083
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 5392167
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 7188625
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 7239542
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 7187292
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 7176667
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 6285459
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 6306667
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 6478667
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 6011667
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 12602708
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 12189000
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 11963917
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 12125334
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 16670500
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 17291459
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 16794042
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 17352125
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 32883375
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 33374333
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 32472708
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 33934417
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 11977042
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 11528500
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 12024500
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 11656084
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 5703334
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 5352208
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 5347875
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 5626708
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 14912125
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 15267042
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 15194417
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 15268917
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 4686708
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 4253500
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 3998250
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 4149000
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 7518167
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 7415000
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 7284500
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 7493459
+    }
+   ],
+   "mismatches": 0,
+   "selfMaxRssBytes": 346374144,
+   "childrenMaxRssBytes": 33144832,
+   "childrenNote": "수거한 자식 중 가장 큰 최대 RSS(자식 합계 아님)",
+   "processWallNs": 1160813459
+  },
+  "rust_persistent": {
+   "variant": "rust_persistent",
+   "samples": [
+    {
+     "fixture": "yt-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 1161375
+    },
+    {
+     "fixture": "yt-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 69959
+    },
+    {
+     "fixture": "yt-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 50375
+    },
+    {
+     "fixture": "yt-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 46416
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 77292
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 59334
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 51917
+    },
+    {
+     "fixture": "yt-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 51958
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 60000
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 53792
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 55666
+    },
+    {
+     "fixture": "yt-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 49958
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 52542
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 46250
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 43667
+    },
+    {
+     "fixture": "yt-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 45167
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 48125
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 46125
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 45208
+    },
+    {
+     "fixture": "txt-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 43042
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 49208
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 47416
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 42583
+    },
+    {
+     "fixture": "txt-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 42042
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 48042
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 45000
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 43167
+    },
+    {
+     "fixture": "txt-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 42833
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 2915042
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 2682166
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 2775583
+    },
+    {
+     "fixture": "txt-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 2675750
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 139291
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 106666
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 107625
+    },
+    {
+     "fixture": "aud-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 104667
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 2547250
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 2397875
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 2429667
+    },
+    {
+     "fixture": "aud-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 2419583
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 23673084
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 22231417
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 22145291
+    },
+    {
+     "fixture": "aud-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 21787625
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 45803792
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 46604625
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 45217333
+    },
+    {
+     "fixture": "aud-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 44928958
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 417959
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 376625
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 378958
+    },
+    {
+     "fixture": "frm-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 378167
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 1381500
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1357292
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1365333
+    },
+    {
+     "fixture": "frm-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1396250
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 2974542
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 2928792
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 2924500
+    },
+    {
+     "fixture": "frm-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 2959500
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 2045625
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 2025541
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 2040375
+    },
+    {
+     "fixture": "frm-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 2027583
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 7839125
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 7506750
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 7518042
+    },
+    {
+     "fixture": "mix-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 7514125
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 11745333
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 12165334
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 12064500
+    },
+    {
+     "fixture": "mix-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 12056375
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 26275166
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 24362333
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 24428250
+    },
+    {
+     "fixture": "mix-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 24221041
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 6782292
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 6564708
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 6570042
+    },
+    {
+     "fixture": "mix-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 6607959
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 1143041
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 1131916
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 1110125
+    },
+    {
+     "fixture": "pho-01",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 1121542
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 9880917
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 9927208
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 9756042
+    },
+    {
+     "fixture": "pho-02",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 9695916
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 60583
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 56834
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 52417
+    },
+    {
+     "fixture": "pho-03",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 51875
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 0,
+     "warmup": true,
+     "wallNs": 2735708
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 1,
+     "warmup": false,
+     "wallNs": 2768000
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 2,
+     "warmup": false,
+     "wallNs": 2762750
+    },
+    {
+     "fixture": "pho-04",
+     "rep": 3,
+     "warmup": false,
+     "wallNs": 2769292
+    }
+   ],
+   "mismatches": 0,
+   "selfMaxRssBytes": 343588864,
+   "childrenMaxRssBytes": 53051392,
+   "childrenNote": "수거한 자식 중 가장 큰 최대 RSS(자식 합계 아님)",
+   "processWallNs": 701137458
+  }
+ }
+}

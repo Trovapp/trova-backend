@@ -1,0 +1,175 @@
+{
+  "issue": 323,
+  "label": "prod-oracle-e2-micro",
+  "platform": "Linux-6.8.0-1062-oracle-x86_64-with-glibc2.35",
+  "python": "3.10.12",
+  "method": {
+    "warmupPerMethod": 1,
+    "measuredPerMethod": 3,
+    "order": "짝수 회차 fullDecode→seek, 홀수 회차 seek→fullDecode, 동시성 1"
+  },
+  "videos": [
+    {
+      "video": "DUX2qkMEQAQ/video.mp4",
+      "bytes": 18253286,
+      "samples": {
+        "fullDecode": [
+          {
+            "wallMs": 19006.5,
+            "childCpuMs": 31898.0,
+            "frames": 8
+          },
+          {
+            "wallMs": 18883.0,
+            "childCpuMs": 31093.5,
+            "frames": 8
+          },
+          {
+            "wallMs": 19195.5,
+            "childCpuMs": 30846.2,
+            "frames": 8
+          }
+        ],
+        "seek": [
+          {
+            "wallMs": 10587.0,
+            "childCpuMs": 16857.8,
+            "frames": 8
+          },
+          {
+            "wallMs": 11626.7,
+            "childCpuMs": 18962.8,
+            "frames": 8
+          },
+          {
+            "wallMs": 11222.3,
+            "childCpuMs": 17974.7,
+            "frames": 8
+          }
+        ]
+      },
+      "warmup_fullDecode": {
+        "wallMs": 18402.4,
+        "childCpuMs": 30635.6,
+        "frames": 8
+      },
+      "warmup_seek": {
+        "wallMs": 9990.5,
+        "childCpuMs": 15665.8,
+        "frames": 8
+      },
+      "fullDecodeMedianWallMs": 19006.5,
+      "fullDecodeMedianChildCpuMs": 31093.5,
+      "seekMedianWallMs": 11222.3,
+      "seekMedianChildCpuMs": 17974.7
+    },
+    {
+      "video": "DWksnFLCR_J/video.mp4",
+      "bytes": 1720535,
+      "samples": {
+        "fullDecode": [
+          {
+            "wallMs": 3194.2,
+            "childCpuMs": 3894.2,
+            "frames": 8
+          },
+          {
+            "wallMs": 3295.1,
+            "childCpuMs": 3877.7,
+            "frames": 8
+          },
+          {
+            "wallMs": 3041.7,
+            "childCpuMs": 3751.7,
+            "frames": 8
+          }
+        ],
+        "seek": [
+          {
+            "wallMs": 3700.0,
+            "childCpuMs": 4463.3,
+            "frames": 8
+          },
+          {
+            "wallMs": 3686.6,
+            "childCpuMs": 4575.7,
+            "frames": 8
+          },
+          {
+            "wallMs": 3577.1,
+            "childCpuMs": 4186.0,
+            "frames": 8
+          }
+        ]
+      },
+      "warmup_fullDecode": {
+        "wallMs": 2969.4,
+        "childCpuMs": 2997.6,
+        "frames": 8
+      },
+      "warmup_seek": {
+        "wallMs": 3625.7,
+        "childCpuMs": 4370.6,
+        "frames": 8
+      },
+      "fullDecodeMedianWallMs": 3194.2,
+      "fullDecodeMedianChildCpuMs": 3877.7,
+      "seekMedianWallMs": 3686.6,
+      "seekMedianChildCpuMs": 4463.3
+    },
+    {
+      "video": "DX-rrm8BHCr/video.mp4",
+      "bytes": 13277995,
+      "samples": {
+        "fullDecode": [
+          {
+            "wallMs": 20097.0,
+            "childCpuMs": 33413.9,
+            "frames": 8
+          },
+          {
+            "wallMs": 18796.7,
+            "childCpuMs": 30561.4,
+            "frames": 8
+          },
+          {
+            "wallMs": 19504.6,
+            "childCpuMs": 32447.4,
+            "frames": 8
+          }
+        ],
+        "seek": [
+          {
+            "wallMs": 10793.4,
+            "childCpuMs": 17237.7,
+            "frames": 8
+          },
+          {
+            "wallMs": 11398.5,
+            "childCpuMs": 18576.7,
+            "frames": 8
+          },
+          {
+            "wallMs": 11776.3,
+            "childCpuMs": 19008.3,
+            "frames": 8
+          }
+        ]
+      },
+      "warmup_fullDecode": {
+        "wallMs": 18597.3,
+        "childCpuMs": 31786.3,
+        "frames": 8
+      },
+      "warmup_seek": {
+        "wallMs": 11509.2,
+        "childCpuMs": 18646.9,
+        "frames": 8
+      },
+      "fullDecodeMedianWallMs": 19504.6,
+      "fullDecodeMedianChildCpuMs": 32447.4,
+      "seekMedianWallMs": 11398.5,
+      "seekMedianChildCpuMs": 18576.7
+    }
+  ]
+}

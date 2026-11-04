@@ -2,6 +2,7 @@ package com.trova.backend.planner;
 
 import com.google.genai.errors.ApiException;
 import com.trova.backend.config.SpringAiConfig;
+import com.trova.backend.entity.ApiCallLog;
 import com.trova.backend.service.ApiCallLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
+import org.springframework.ai.google.genai.metadata.GoogleGenAiUsage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -91,13 +93,22 @@ public class GeminiJsonClientImpl implements GeminiJsonClient {
             apiCallLogService.record("gemini", operation, null, System.currentTimeMillis() - start, true, null,
                     usage == null ? null : usage.getPromptTokens(),
                     usage == null ? null : usage.getCompletionTokens(),
-                    usage == null ? null : usage.getTotalTokens(), attempts, TimeUnit.NANOSECONDS.toMillis(waitedNanos));
+                    usage == null ? null : usage.getTotalTokens(), attempts, TimeUnit.NANOSECONDS.toMillis(waitedNanos),
+                    tokenDetail(usage));
             return text(response);
         }
         apiCallLogService.record("gemini", operation, null, System.currentTimeMillis() - start, false, lastError,
                 null, null, null, attempts, TimeUnit.NANOSECONDS.toMillis(waitedNanos));
         log.warn("Gemini JSON 생성 실패(operation={}): {}", operation, lastError);
         return Optional.empty();
+    }
+
+    /** 생각·캐시 토큰(#317). 텍스트만 보내는 호출이라 영상 토큰은 남기지 않는다. */
+    static ApiCallLog.TokenDetail tokenDetail(Usage usage) {
+        if (usage instanceof GoogleGenAiUsage genAi) {
+            return new ApiCallLog.TokenDetail(genAi.getThoughtsTokenCount(), genAi.getCachedContentTokenCount(), null);
+        }
+        return null;
     }
 
     /** google-genai가 던진 HTTP 오류의 상태 코드. Spring AI가 RuntimeException으로 감싸서 원인 사슬을 따라간다. */

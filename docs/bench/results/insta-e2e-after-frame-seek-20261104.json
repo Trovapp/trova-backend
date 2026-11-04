@@ -1,0 +1,119 @@
+{
+  "startedAt": "2026-11-04T14:17:24.167994+09:00",
+  "sourceCommit": "443ae25",
+  "results": [
+    {
+      "kind": "instagram",
+      "url": "https://www.instagram.com/reel/DX-rrm8BHCr/",
+      "jobId": 132,
+      "sharesBefore": 4,
+      "geminiRowsTodayBefore": 14,
+      "status": "DONE",
+      "createdAt": "2026-11-04 14:17:26.710781",
+      "analysisFinishedAt": "2026-11-04 14:17:59.790265",
+      "clientWaitSeconds": 34.537,
+      "createdToAnalysisDoneSeconds": 33.079484,
+      "apiLogRows": [
+        {
+          "provider": "gemini",
+          "operation": "extract_places.collect",
+          "success": true,
+          "latency_ms": 3234,
+          "attempts": 1,
+          "waited_ms": 0,
+          "prompt_tokens": 10974,
+          "response_tokens": 45,
+          "total_tokens": 11019,
+          "thoughts_tokens": null,
+          "cached_tokens": null,
+          "video_tokens": null
+        },
+        {
+          "provider": "gemini",
+          "operation": "extract_places.filter",
+          "success": true,
+          "latency_ms": 3806,
+          "attempts": 1,
+          "waited_ms": 0,
+          "prompt_tokens": 11903,
+          "response_tokens": 160,
+          "total_tokens": 12063,
+          "thoughts_tokens": null,
+          "cached_tokens": null,
+          "video_tokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "address_search",
+          "success": true,
+          "latency_ms": 331,
+          "attempts": null,
+          "waited_ms": null,
+          "prompt_tokens": null,
+          "response_tokens": null,
+          "total_tokens": null,
+          "thoughts_tokens": null,
+          "cached_tokens": null,
+          "video_tokens": null
+        },
+        {
+          "provider": "kakao",
+          "operation": "keyword_search_near",
+          "success": true,
+          "latency_ms": 83,
+          "attempts": null,
+          "waited_ms": null,
+          "prompt_tokens": null,
+          "response_tokens": null,
+          "total_tokens": null,
+          "thoughts_tokens": null,
+          "cached_tokens": null,
+          "video_tokens": null
+        }
+      ],
+      "journal": [
+        "ProcessingJob 132 Java 단계 시간: preparing 60ms (success)",
+        "ProcessingJob 132 파이프라인 완료: 1개 장소 추출",
+        "ProcessingJob 132 단계 시간: download 8.9초 · audio 1.1초 · frames 12.6초 · gemini 7.1초",
+        "ProcessingJob 132 Python 자원: Python CPU 317ms · 자식 CPU 25824ms · Python 최대 메모리 25.2MiB · 가장 큰 자식 217.5MiB · 시작·종료 76ms · 요청 parts 81.4ms · 요청 JSON 12.1ms · 요청 2035.1KiB",
+        "ProcessingJob 132 Java 단계 시간: extracting 30897ms (success)",
+        "ProcessingJob 132 Java 단계 시간: geocoding 676ms (success)",
+        "ProcessingJob 132 Java 단계 시간: selecting 106ms (success)",
+        "ProcessingJob 132 Java 단계 시간: verifying 104ms (success)",
+        "ProcessingJob 132 Java 단계 시간: saving 374ms (success)",
+        "ProcessingJob 132 분석 실행 시간: 32219ms (success)"
+      ],
+      "savedPlaceCount": 1
+    }
+  ],
+  "transitions": [],
+  "cleanup": {
+    "jobIds": [
+      132
+    ],
+    "draftsDeleted": 1,
+    "placesDeleted": 1,
+    "residualDrafts": 0,
+    "residualPlaces": 0,
+    "privateBackup": "/Users/gimtaehyeong/.config/devflow/trova/backups/trova-325-145946036d8a-outputs.json",
+    "jobAndApiLogsKept": true
+  },
+  "restored": false,
+  "errors": [],
+  "localClientInvocations": 0,
+  "scope": "운영 1회씩(유튜브·인스타) 자원·토큰 기준값. 속도 비교 아님",
+  "temporaryDropIn": "/run/systemd/system/trova-backend.service.d/90-trova-bench-288-145946036d8a.conf",
+  "harnessSha256": "6c0af03306da49f2133883d018428d439c5fe7eb50d0198c03153d3f5aa1b1b8",
+  "preflightInFlight": [
+    0,
+    0,
+    0
+  ],
+  "complete": true,
+  "finalInFlight": [
+    0,
+    0,
+    0
+  ],
+  "finishedAt": "2026-11-04T14:18:13.214311+09:00"
+}

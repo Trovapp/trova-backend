@@ -1,0 +1,158 @@
+{
+  "status": "local_only",
+  "label": "로컬 macOS(Apple M5) 측정으로 채울 수 있는 칸만 채운 사본 — 운영(Oracle E2.1.Micro, Linux) 수치가 아님",
+  "template": "rust-pilot-comparison-template.json (원본은 그대로, 운영 칸 null 유지)",
+  "sources": {
+    "compatibility": "rust-parts-pilot-compat-20261104.json",
+    "measurement": "rust-parts-pilot-local-20261104.json",
+    "aa": "rust-parts-pilot-aa-20261104.json",
+    "integration": "rust-parts-pilot-integration-20261104.json"
+  },
+  "historicalProductionContext": {
+    "source": "rust-pipeline-feasibility-20261104.json",
+    "kafkaPythonAnalysisMedianMs": 12059.818,
+    "note": "Historical whole-analysis context only, not the before result of the planned component experiment"
+  },
+  "plannedExperiment": {
+    "fixtureCount": 24,
+    "measuredPairsPerFixturePerLane": 3,
+    "lanes": [
+      "fresh_process",
+      "persistent_process"
+    ],
+    "implementations": [
+      "python_control",
+      "rust_candidate"
+    ],
+    "measuredObservations": 288,
+    "externalApiCalls": 0,
+    "warmupPairsPerFixturePerLane": 1,
+    "warmupObservations": 96,
+    "preparationsPerObservation": 2,
+    "orderSeed": 309
+  },
+  "actualLocalRun": {
+    "fixtureCount": 24,
+    "measuredPairsPerFixturePerLane": 3,
+    "warmupPairsPerFixturePerLane": 1,
+    "measuredObservations": 288,
+    "warmupObservations": 96,
+    "orderSeed": 309,
+    "externalApiCalls": 0,
+    "concurrency": 1
+  },
+  "localResults": {
+    "semanticCompatibilityPassed": true,
+    "compatibility": {
+      "fixturesPassed": 24,
+      "fixtureCount": 24,
+      "requestsCompared": 48,
+      "failureCasesPassed": 27,
+      "failureCaseCount": 27,
+      "mixedSessionPassed": true
+    },
+    "pythonControl": {
+      "fresh_process": {
+        "wallMsMedian": 34.984,
+        "wallMsMean": 42.356,
+        "prepMsMedian": 2.571,
+        "prepMsMean": 9.317,
+        "maxRssBytesMedian": 28688384.0,
+        "maxRssBytesMax": 146636800,
+        "cpuSecMedian": 0.03343,
+        "measuredObservations": 72
+      },
+      "persistent_process": {
+        "wallMsMedian": 2.43,
+        "wallMsMean": 9.591,
+        "prepMsMedian": 2.104,
+        "prepMsMean": 8.501,
+        "maxRssBytesMedian": 28876800.0,
+        "maxRssBytesMax": 416055296,
+        "cpuSecMedian": 0.04099,
+        "measuredObservations": 72
+      }
+    },
+    "rustCandidate": {
+      "fresh_process": {
+        "wallMsMedian": 3.019,
+        "wallMsMean": 4.641,
+        "prepMsMedian": 0.817,
+        "prepMsMean": 1.9,
+        "maxRssBytesMedian": 3153920.0,
+        "maxRssBytesMax": 44335104,
+        "cpuSecMedian": 0.00208,
+        "measuredObservations": 72
+      },
+      "persistent_process": {
+        "wallMsMedian": 0.798,
+        "wallMsMean": 2.661,
+        "prepMsMedian": 0.491,
+        "prepMsMean": 1.506,
+        "maxRssBytesMedian": 3268608.0,
+        "maxRssBytesMax": 111640576,
+        "cpuSecMedian": 0.00375,
+        "measuredObservations": 72
+      }
+    },
+    "cliPairedDiffMsMedian": {
+      "definition": "python − rust, 양수 = Rust 가 빠름 (CLI 끼리 비교, 통합 경로 아님)",
+      "fresh_process": {
+        "wall": 31.951,
+        "prep": 1.908
+      },
+      "persistent_process": {
+        "wall": 1.637,
+        "prep": 1.582
+      }
+    },
+    "integratedPythonRustHelper": {
+      "definition": "같은 Python 프로세스에서 collect+filter parts 를 파이썬 리스트로 얻을 때까지. 1회성(방식별 1회 실행)",
+      "direct": {
+        "wallMsMedian": 0.477,
+        "wallMsMean": 2.234,
+        "observations": 72,
+        "pythonMaxRssBytes": 260587520,
+        "childMaxRssBytes": 0
+      },
+      "rust_spawn": {
+        "wallMsMedian": 5.819,
+        "wallMsMean": 10.785,
+        "observations": 72,
+        "pythonMaxRssBytes": 346374144,
+        "childMaxRssBytes": 33144832
+      },
+      "rust_persistent": {
+        "wallMsMedian": 1.711,
+        "wallMsMean": 6.008,
+        "observations": 72,
+        "pythonMaxRssBytes": 343588864,
+        "childMaxRssBytes": 53051392
+      }
+    },
+    "improvementSeconds": {
+      "definition": "현재 방식(direct) − Rust 보조 지속 프로세스, 중앙값. 음수 = Rust 통합이 더 느림",
+      "integratedPersistentMedian": -0.001233,
+      "integratedSpawnMedian": -0.005342
+    },
+    "improvementPercent": {
+      "integratedPersistentMedian": -258.3,
+      "integratedSpawnMedian": -1118.7
+    },
+    "memorySavedBytes": {
+      "definition": "통합 경로에서 Python 프로세스 최대 RSS 의 direct − rust_persistent. 음수 = 늘어남. 자식 RSS 는 따로(더하지 않음)",
+      "integratedPersistentPythonRss": -83001344,
+      "rustHelperChildMaxRssBytes": 53051392
+    }
+  },
+  "productionResults": {
+    "pythonControl": null,
+    "rustCandidate": null,
+    "integratedPythonRustHelper": null,
+    "semanticCompatibilityPassed": null,
+    "improvementSeconds": null,
+    "improvementPercent": null,
+    "memorySavedBytes": null
+  },
+  "decision": "채택하지 않음(로컬 근거). CLI 끼리는 Rust 가 빨랐지만 실제 통합 경로(Python→Rust 보조)는 현재 Python 직접 호출보다 느리고 Python RSS 도 컸다. 운영 실험은 사용자가 고를 때만."
+}
