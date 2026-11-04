@@ -2272,3 +2272,11 @@
 - `build_parts`의 파일읽기/base64/parts생성 비교를24고정입력·두프로세스묶음·교대순서로 설계. 별도CLI의시작이득과Python에Rust보조프로세스를추가하는통합비용을구분한다. 로컬호환성후사용자선택시운영별도프로세스비교,API호출0을계획했다. 실제채택/배포결정은아직없어ADR기존결정을변경하지 않았다.
 - 기록 docs/bench/rust-pipeline-feasibility-20261104.md, 계산기/원본지문/작업별JSON/미측정전후틀, docs/superpowers/specs·plans/2026-11-04-rust-pipeline-pilot.md. 누락/중복/순차성가정·큐분리등오프라인9검사통과,필수Gradlebuild통과.
 - Gradle 검증1036개 중1031통과·5skip·실패/오류0,BUILD SUCCESSFUL1분9초. 오프라인 분석 JSON은 재생성 바이트 일치 확인했고, 개별 비율을 중간 반올림하지 않은 원비율의 통계와 대조했다.
+
+## 2026-11-04 Python 분석 작업 CPU·메모리 계측 (#311)
+
+- 사용자가 다음 단계 선택지(1번 Recommended 포함)를 진행하라고 했다. Rust 비교의 기준값이 없던 문제(#309)를 풀려고 계측만 추가했다.
+- Python: `worker_resources.py`(getrusage로 자신·자식 CPU, 최대 RSS, macOS 단위 보정), `StageTimer` 단계별 CPU, `build_parts`·요청 JSON 준비 시간/크기를 결과 JSON `resources`로 낸다. Java: 프로세스 전체 시간을 더해 로그 한 줄과 고정 태그 지표 4종으로 남긴다.
+- `build_parts`는 이름을 유지한 감싸기 함수로 바꿨고 결과가 원래 함수와 같음을 테스트로 확인했다. 자식 최대 메모리는 가장 큰 하나이며 합계로 쓰지 않는다.
+- 확인: Python 60개 통과, Java 관련 테스트 통과, `./gradlew build` 통과. **실제 영상 측정은 하지 않았다**(Gemini 한도를 운영과 공유). 운영 반영 때 새 Python 파일도 같이 복사해야 한다.
+- 기록 `docs/monitoring/2026-11-04-python-worker-resources.md`.

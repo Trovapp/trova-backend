@@ -199,4 +199,21 @@ class PipelineOutputParserTest {
                 """);
         assertThat(without.timings()).isEmpty();
     }
+
+    @Test
+    void Python_자원_값을_파싱하고_Java가_잰_프로세스_시간을_더한다() {
+        // #311: Rust 비교 기준값 — CPU·최대 메모리·요청 준비 시간
+        PipelineOutput output = PipelineOutputParser.parse("""
+                {"title": "t", "places": [], "resources": {"cpuUserMs": 310, "maxRssKib": 41000, "buildPartsUs": 950}}
+                """).withProcessWallMs(12000L);
+
+        assertThat(output.resources())
+                .containsEntry("cpuUserMs", 310L)
+                .containsEntry("maxRssKib", 41000L)
+                .containsEntry("buildPartsUs", 950L)
+                .containsEntry("processWallMs", 12000L);
+        assertThat(PipelineOutputParser.parse("""
+                {"title": "t", "places": []}
+                """).resources()).isEmpty();
+    }
 }

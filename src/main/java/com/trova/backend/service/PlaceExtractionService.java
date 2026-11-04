@@ -132,6 +132,10 @@ public class PlaceExtractionService {
             if (stageLine != null) {
                 log.info("ProcessingJob {} 단계 시간: {}", jobId, stageLine);
             }
+            String resourceLine = stageMetrics.recordResources(jobId, output.resources());
+            if (resourceLine != null) {
+                log.info("ProcessingJob {} Python 자원: {}", jobId, resourceLine);
+            }
 
             lifecycleService.setTitle(jobId, output.title());
 

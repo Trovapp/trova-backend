@@ -91,6 +91,7 @@ public class PipelineRunner {
             // 최종 JSON은 파일로 받는다. 자식이 stdout을 상속해도 reader 스레드가 남지 않는다.
             stdoutFile = Files.createTempFile("trova-pipeline-stdout-", ".json").toFile();
             builder.redirectOutput(stdoutFile);
+            long processStartedAt = System.nanoTime();
             process = builder.start();
 
             // 끝날 때까지 기다리면서 0.5초마다 stderr에 새로 찍힌 진행 표식을 읽는다.
@@ -106,6 +107,9 @@ public class PipelineRunner {
                 log.error("ProcessingJob {} 파이프라인 실행 시간 초과({}ms): {}", jobId, processTimeout.toMillis(), url);
                 throw new PipelineException("파이프라인 실행 시간 초과: " + url);
             }
+            // 프로세스 시작~끝난 것을 확인한 때까지(#311). waitFor는 끝나면 바로 돌아오고, 그 뒤 진행 표식 읽기만 조금 더해진다.
+            // Python이 잰 workerWallMs와의 차이가 인터프리터 시작·모듈 읽기·종료 비용이다.
+            long processWallMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - processStartedAt);
 
             terminationAttempted = true;
             terminationConfirmed = terminateOwnedProcesses(process, descendants, jobId);
@@ -124,7 +128,8 @@ public class PipelineRunner {
                 throw new PipelineException("파이프라인 실행 실패(exit=" + exitCode + "): " + stderrContent);
             }
 
-            return PipelineOutputParser.parse(Files.readString(stdoutFile.toPath(), StandardCharsets.UTF_8));
+            return PipelineOutputParser.parse(Files.readString(stdoutFile.toPath(), StandardCharsets.UTF_8))
+                    .withProcessWallMs(processWallMs);
         } catch (IOException e) {
             throw new PipelineException("파이프라인 실행/출력 처리 실패: " + e.getMessage(), e);
         } catch (InterruptedException e) {
