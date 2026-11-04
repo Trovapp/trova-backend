@@ -140,7 +140,7 @@ python3 -m unittest discover -s monitoring -p 'test_health_smoke.py' -v
 ### 자원 감시를 포함한 실행과 실제 결과
 
 2026-11-02 관찰에서 스왑 읽기 한 페이지만 늘어도 중단하던 초기 기준은 무부하 상태에도 반응했다.
-이후 실행에는 여유 메모리 100MiB 미만, 새 swap-out, swap-in 속도 1MiB/s 이상,
+이후 실행에는 여유 메모리 100MiB 미만, swap-out 속도 1MiB/s 이상(2026-11-04 변경, 이전엔 새 swap-out 1페이지), swap-in 속도 1MiB/s 이상,
 memory PSI some avg10 1% 이상을 임시 중단 기준으로 사용한다. HTTP 제한은 그대로다.
 이는 서비스 SLO나 입증된 안전 용량이 아니다. 운영 수집이나 SSH 관찰이 실패해도 중단한다.
 
