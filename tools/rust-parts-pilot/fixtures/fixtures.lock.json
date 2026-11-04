@@ -1,0 +1,1409 @@
+{
+  "generator": "tools/rust-parts-pilot/scripts/make_fixtures.py",
+  "byteSource": "SHAKE-256('trova-312:<path>') 합성 바이트 — 개인 자료·다운로드 없음",
+  "promptSha256": {
+    "collect": "aac77375749b9d48695a1472076cd62c9ebd052f595ac1211b0cf36e57f7ae89",
+    "filter": "cebbf46d4b8d5a293311e5025d8cb2a248ebdd5f5f826c2c59607ee26ab50b0d"
+  },
+  "fixtureCount": 24,
+  "fixtures": [
+    {
+      "id": "yt-01",
+      "type": "youtube",
+      "note": "링크만",
+      "requestFile": "requests/yt-01.jsonl",
+      "requestSha256": "35ffdd1ed7728df502b835d04ed52b6b091d5c151b2eb8015ad3616cb8c2dfe2",
+      "collectRequestSha256": "7cd0b31d01216798f784f6b4b364e9e52c53b62783b0b51bd0192bb7bc2c1dfe",
+      "filterRequestSha256": "759dbdd453a8ef35b8fff3a32d5971a2eec0c4cdcc07ae2670363a6b919110c5",
+      "mediaOrder": [],
+      "mediaBytesTotal": 0,
+      "candidates": [
+        "해운대",
+        "광안리"
+      ]
+    },
+    {
+      "id": "yt-02",
+      "type": "youtube",
+      "note": "링크+게시물 설명",
+      "requestFile": "requests/yt-02.jsonl",
+      "requestSha256": "1278996164e6180abff8619fcc2165dacc99718ebd1ce42d817dd1328adf15dd",
+      "collectRequestSha256": "cc4628fe6d3b73f29324d7b76928c13332b35b0b23f1cb8ab7906b2298240a62",
+      "filterRequestSha256": "186618d0f990eb849c7c2c7a6410a1312d3f57ef0913782588f2ef124ed5b4f2",
+      "mediaOrder": [],
+      "mediaBytesTotal": 0,
+      "candidates": [
+        "블루라인파크",
+        "청사포"
+      ]
+    },
+    {
+      "id": "yt-03",
+      "type": "youtube",
+      "note": "Unicode URL·이모지·따옴표",
+      "requestFile": "requests/yt-03.jsonl",
+      "requestSha256": "2100c9a4bed0a582c39d9a19a8e58a0b84fdea231d93a2a335b4445012d03abb",
+      "collectRequestSha256": "771214168b907beb666d3996f5be719e27e83a4efed7e2e93931dcbea9021548",
+      "filterRequestSha256": "e47c19e257a7a2f2ea32711e58134769bf5bdca42f9639a13d9f13f6a5ba3f51",
+      "mediaOrder": [],
+      "mediaBytesTotal": 0,
+      "candidates": [
+        "애월 카페거리",
+        "\"숨은\" 카페"
+      ]
+    },
+    {
+      "id": "yt-04",
+      "type": "youtube",
+      "note": "링크+빈 설명·빈 자막(건너뜀)",
+      "requestFile": "requests/yt-04.jsonl",
+      "requestSha256": "eeef54c240fbedaa9c3f3ca432432940d130ed0ed1bd7e245ddd24fc1c80d5b6",
+      "collectRequestSha256": "0d70b76c16abd5f35679c07ab18240f7357fde29c269aea33e7adba610a1e869",
+      "filterRequestSha256": "abe0111519713899b474fb9f57129109ba1e78614f805861960e58df460c29c9",
+      "mediaOrder": [],
+      "mediaBytesTotal": 0,
+      "candidates": []
+    },
+    {
+      "id": "txt-01",
+      "type": "text",
+      "note": "한글 자막",
+      "requestFile": "requests/txt-01.jsonl",
+      "requestSha256": "f64eeb30b260a3c54da720a63421f61413bc73f5ad894a71f7b6d13c37b9716a",
+      "collectRequestSha256": "053ad2b7287294de260b2d27263626fa6b48280c4370b877fc111a6f373d667c",
+      "filterRequestSha256": "613bbf339bd78540ce168bad9c12d0b94eaf1e8fec49211bd3e93adc01205347",
+      "mediaOrder": [],
+      "mediaBytesTotal": 0,
+      "candidates": [
+        "안목해변",
+        "초당순두부 마을"
+      ]
+    },
+    {
+      "id": "txt-02",
+      "type": "text",
+      "note": "영문 자막",
+      "requestFile": "requests/txt-02.jsonl",
+      "requestSha256": "645bc307d636d5a3e138e6a9fad65a69eb7af50ed07e0b3fa735163ea35202d9",
+      "collectRequestSha256": "0e0092e7e56fa33a55d27d821f849297493c4d17157701f7ba836682c75e5729",
+      "filterRequestSha256": "fdb88538b56dbdfeadd459d0711d1921c1a911f0430b1d769622c7c7f0eb52c4",
+      "mediaOrder": [],
+      "mediaBytesTotal": 0,
+      "candidates": [
+        "Gyeongbokgung Palace",
+        "Bukchon Hanok Village"
+      ]
+    },
+    {
+      "id": "txt-03",
+      "type": "text",
+      "note": "빈 선택 필드·제어 문자",
+      "requestFile": "requests/txt-03.jsonl",
+      "requestSha256": "4fc5d63e9dc9dd7d2d5d089b2dac17e5d953b39a57bc965704af71d37e7c1cad",
+      "collectRequestSha256": "d7e67e37095c335883d6e7f70a20af6290ef9edb3653c53cbef85dacef341df0",
+      "filterRequestSha256": "3dd3a57f36bb2068f398b6fe2ccff55e4a33f45c39de22f5d403f299c7840d2e",
+      "mediaOrder": [],
+      "mediaBytesTotal": 0,
+      "candidates": [
+        "\u0001",
+        "백\\슬"
+      ]
+    },
+    {
+      "id": "txt-04",
+      "type": "text",
+      "note": "긴 자막(약 260KB)",
+      "requestFile": "requests/txt-04.jsonl",
+      "requestSha256": "665b2578f65142f8e02d30c662883ec639740c70a40a054f857a5ce3f0fc214f",
+      "collectRequestSha256": "d2c5722f6bcc3bba0fa2c001b03581145b445f5b6bb7fa5081d9cbb146c39edc",
+      "filterRequestSha256": "07065553e810c271222e478591d17fe4c19951f9d7fe1f9767a35061208ab166",
+      "mediaOrder": [],
+      "mediaBytesTotal": 0,
+      "candidates": [
+        "맛집0",
+        "맛집1",
+        "맛집2",
+        "맛집3",
+        "맛집4",
+        "맛집5",
+        "맛집6",
+        "맛집7",
+        "맛집8",
+        "맛집9",
+        "맛집10",
+        "맛집11",
+        "맛집12",
+        "맛집13",
+        "맛집14",
+        "맛집15",
+        "맛집16",
+        "맛집17",
+        "맛집18",
+        "맛집19",
+        "맛집20",
+        "맛집21",
+        "맛집22",
+        "맛집23",
+        "맛집24",
+        "맛집25",
+        "맛집26",
+        "맛집27",
+        "맛집28",
+        "맛집29",
+        "맛집30",
+        "맛집31",
+        "맛집32",
+        "맛집33",
+        "맛집34",
+        "맛집35",
+        "맛집36",
+        "맛집37",
+        "맛집38",
+        "맛집39"
+      ]
+    },
+    {
+      "id": "aud-01",
+      "type": "audio",
+      "note": "작은 mp3 8KiB",
+      "requestFile": "requests/aud-01.jsonl",
+      "requestSha256": "38ea63c2cd251367f83ffe3b80882430feda640b0b08ccb41dbfdeb380e49074",
+      "collectRequestSha256": "fe13ffd8d6b925de681d7144c3668bc5c754596f3ff8776e0eb8e7f4c0b21537",
+      "filterRequestSha256": "bca6287bf8ec0e5c1939c78c970af4997301bdf7ad7fc162763adf4fda7322cc",
+      "mediaOrder": [
+        {
+          "path": "media/aud-01/audio.mp3",
+          "bytes": 8192,
+          "sha256": "c0b2d793500f6a63135b029b895f788517b02ca914d0d038dfa241272236c5f6",
+          "kind": "mp3"
+        }
+      ],
+      "mediaBytesTotal": 8192,
+      "candidates": [
+        "남포동"
+      ]
+    },
+    {
+      "id": "aud-02",
+      "type": "audio",
+      "note": "중간 m4a 480KiB·한글 파일명",
+      "requestFile": "requests/aud-02.jsonl",
+      "requestSha256": "fff25d38feeaf7451389921eaf50b19da8f6f1eb1d34cd0a6b871423653dedef",
+      "collectRequestSha256": "01751ee61035b194264ab513c358509f1f6049eba9bd3b8b481c363c53a2bf48",
+      "filterRequestSha256": "685d5c4b3ddb7290b6326e3541c568794375fce01489111c6b0a08567ee3874c",
+      "mediaOrder": [
+        {
+          "path": "media/aud-02/여행 음성.m4a",
+          "bytes": 491520,
+          "sha256": "8ee2605b61464ab3945e064bd4f91dca6197f2ed2e5e0220d131b1c27e792a69",
+          "kind": "m4a"
+        }
+      ],
+      "mediaBytesTotal": 491520,
+      "candidates": [
+        "감천문화마을"
+      ]
+    },
+    {
+      "id": "aud-03",
+      "type": "audio",
+      "note": "큰 mp3 4MiB",
+      "requestFile": "requests/aud-03.jsonl",
+      "requestSha256": "243a523c22daa4eaaa94bfb8b62a82bf4c4f2d59188fecabd7c69fb11b98ea04",
+      "collectRequestSha256": "3943998d97b4835d94f883ddff9b913d1bfbd525a69c81b6a6c2608bd59cabbd",
+      "filterRequestSha256": "ccba031e9111fc2b8cab5580daf3e894d08d2025938cc75d2b1b600135fdd1ff",
+      "mediaOrder": [
+        {
+          "path": "media/aud-03/audio.mp3",
+          "bytes": 4194304,
+          "sha256": "3760e3d15cec5368f414bcb98a0cbffd3553abddb7eca4c1ffaf8630d2103bb9",
+          "kind": "mp3"
+        }
+      ],
+      "mediaBytesTotal": 4194304,
+      "candidates": [
+        "태종대",
+        "흰여울문화마을"
+      ]
+    },
+    {
+      "id": "aud-04",
+      "type": "audio",
+      "note": "확장자 없음 8MiB(폴백 audio/mp3)",
+      "requestFile": "requests/aud-04.jsonl",
+      "requestSha256": "964ec4900f3792c601b6c6cb30af40933e249e0d4850b933220a9f1a2414c31d",
+      "collectRequestSha256": "9b112fd8cfec05dff1ea046aff27dcff4ddc3512f1daf9eec92ce8c3755aec10",
+      "filterRequestSha256": "2ca7685cebddd98fba6937659f08fe1d5d1b227e3a5089e10bc7f548e8847cb1",
+      "mediaOrder": [
+        {
+          "path": "media/aud-04/audio",
+          "bytes": 8388608,
+          "sha256": "80aa5b8970a70a24181d1b334c21e153700a988daa683a2823d65e9a30e2e666",
+          "kind": "bin"
+        }
+      ],
+      "mediaBytesTotal": 8388608,
+      "candidates": [
+        "송도해수욕장"
+      ]
+    },
+    {
+      "id": "frm-01",
+      "type": "frames",
+      "note": "1장",
+      "requestFile": "requests/frm-01.jsonl",
+      "requestSha256": "9ededb2fb20687ae97938b1d2ff1f401ff91835a9d20903af03276975fbbba0f",
+      "collectRequestSha256": "20de5a16f13ff05cfebdaffe7206f741367b3b712eb36ff8d0eca44ba021e9dd",
+      "filterRequestSha256": "983ba902076315bc25920833e89d76776a522f8a63b451805050cfb5878bc810",
+      "mediaOrder": [
+        {
+          "path": "media/frm-01/frame_001.jpg",
+          "bytes": 57071,
+          "sha256": "9b5271f61ad51d07cc8ac9a75d9434b8e01f73ba245749c4f30de64b4f9e9497",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 57071,
+      "candidates": [
+        "성산일출봉"
+      ]
+    },
+    {
+      "id": "frm-02",
+      "type": "frames",
+      "note": "4장",
+      "requestFile": "requests/frm-02.jsonl",
+      "requestSha256": "8872a0d6d8d877e98b48882ab43ecb9c3249b6606d0b3b1d0cc8d21f35625e1c",
+      "collectRequestSha256": "2efe8b9d0b28d2547708cc3d91e7e1a20b69040b04b89016771d7ae9a67fa89c",
+      "filterRequestSha256": "9b75e57b4d28bd2f82863e9123afc53a750a93b1be3cf5b2f919bab177f88992",
+      "mediaOrder": [
+        {
+          "path": "media/frm-02/frame_001.jpg",
+          "bytes": 57071,
+          "sha256": "9d0693b5a960a36933be95397ad7d923f8635f8254b6c8c74b7c8848232757ee",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/frm-02/frame_002.jpg",
+          "bytes": 64990,
+          "sha256": "df669c680d35b18ef37c0bccfaeae1b2efb0fc0f37755d4bd6e2a06ebe9a8061",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/frm-02/frame_003.jpg",
+          "bytes": 56525,
+          "sha256": "c1462e095862e08958022f5377e222a940cd2bd6cf7202c147b9b4b1dcded211",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/frm-02/frame_004.jpg",
+          "bytes": 64444,
+          "sha256": "2d21787e92b9f1cd4a508c73b3bb8b715decc2bb9290baa3e575d5f6424a2851",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 243030,
+      "candidates": [
+        "우도",
+        "섭지코지"
+      ]
+    },
+    {
+      "id": "frm-03",
+      "type": "frames",
+      "note": "8장·한글 폴더/파일명",
+      "requestFile": "requests/frm-03.jsonl",
+      "requestSha256": "0a33788e4604cdb30c2f7184dd61dbf49960b55e98a54973575dbf36630e63d8",
+      "collectRequestSha256": "a4a09dcfe08307fa2d1a3d2011739efbf6e6efa605d7869b86b28d7b75a53af4",
+      "filterRequestSha256": "c32f9fbd981694677859854ad1cc27501f6cb7829c6afd4523092076575b4524",
+      "mediaOrder": [
+        {
+          "path": "media/한글 폴더/frm-03/프레임_001.jpg",
+          "bytes": 65263,
+          "sha256": "b4fce02ef87c0315489dc8e34241d36683fbfe54c3512da41b64bc9fd369e622",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/frm-03/프레임_002.jpg",
+          "bytes": 73182,
+          "sha256": "b315a1dcf6cb37b481c3b758c2f6b78d1f7e807d54d4be5ec4624a4e4992e2e5",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/frm-03/프레임_003.jpg",
+          "bytes": 61987,
+          "sha256": "96284c9b8c577a840ce4a9a0edaa457e070efa51b466a6b1b17312cc668aceb9",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/frm-03/프레임_004.jpg",
+          "bytes": 69906,
+          "sha256": "8febf5f57e67e139f412ff11eefdcf00f4e052dfb2fff3319989ac705ef3624b",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/frm-03/프레임_005.jpg",
+          "bytes": 58711,
+          "sha256": "63a84796dc312382011f01f87f28a4f3ebd59ff2deb0ec6966cb7a7268f2f639",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/frm-03/프레임_006.jpg",
+          "bytes": 66630,
+          "sha256": "fd14707cd6abf9c6bcafa86c126b901385bb0097a58d26d7257373766d1a5458",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/frm-03/프레임_007.jpg",
+          "bytes": 74549,
+          "sha256": "4a78c3f7a495691986ecf74e01d4a179d7050ec716da050ea1f577eb58ab61c4",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/frm-03/프레임_008.jpg",
+          "bytes": 63354,
+          "sha256": "464b7787e5da2ff66253109b385ca32bff9ada75f06c0e5ae11eeac261c9228e",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 533582,
+      "candidates": [
+        "협재해수욕장"
+      ]
+    },
+    {
+      "id": "frm-04",
+      "type": "frames",
+      "note": "8장·확장자 섞임·역순 배열(순서 보존)",
+      "requestFile": "requests/frm-04.jsonl",
+      "requestSha256": "39ffd2e46c20f89a0ea106d7e5707dea7cf6f6558cf50eef2fbe82e9d5f28792",
+      "collectRequestSha256": "d258cd4de61f7971121f1ea4c021371532a3b02a344e7d73fff89dd538b5f62f",
+      "filterRequestSha256": "e3da4ecc27b5f5a0b77f567d882be2d1500b509e672c29d0ce470d3a7858dea7",
+      "mediaOrder": [
+        {
+          "path": "media/frm-04/f8.JPG",
+          "bytes": 40960,
+          "sha256": "6618fb8ba9e9ec7c8856ecf633e29cade6adeae8b60a216ff2f783a6d3375956",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/frm-04/f7.jpeg",
+          "bytes": 41984,
+          "sha256": "47b0c4ab4037473292eb06e26ce5fb48f8788a34e42d4ff5cfd75f1442b78210",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/frm-04/f6.png",
+          "bytes": 43008,
+          "sha256": "ea789b5bc3c8b72881347987e9b04e33b79ce95320863b049def2c808476e9af",
+          "kind": "png"
+        },
+        {
+          "path": "media/frm-04/f5.webp",
+          "bytes": 44032,
+          "sha256": "aebe0d6c356d3c71a29fe668fe84aa5e0fd418679963739b53e298595ee6cd69",
+          "kind": "webp"
+        },
+        {
+          "path": "media/frm-04/f4",
+          "bytes": 45056,
+          "sha256": "db5676f86218892472c1ceb8d4b0ae969f8b679b87989acd018d045be6dc1fc4",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/frm-04/f3.jpe",
+          "bytes": 46080,
+          "sha256": "50caa8cca63988b971fb82f6d409b17432c0bf8744456741b4d33cf7f13ba708",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/frm-04/./f2.jpg",
+          "bytes": 47104,
+          "sha256": "c1b068125f3afcf892cdacf03f5cd76ff035c606c8582d697c16aed1da348841",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/frm-04//f1.jpg",
+          "bytes": 48128,
+          "sha256": "8592743479c320ccad452aa15d2ea12aa0b820792766e48263d34ec42ebf3ae2",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 356352,
+      "candidates": [
+        "오설록",
+        "카멜리아힐"
+      ]
+    },
+    {
+      "id": "mix-01",
+      "type": "mixed",
+      "note": "오디오+프레임+자막",
+      "requestFile": "requests/mix-01.jsonl",
+      "requestSha256": "6e75ee48520e7fd6222e33a1376bf2310aaee733ad818a3b1a3488b8478888d5",
+      "collectRequestSha256": "ad6e87db9a7b9d7321093ea3f39d81a2167fab429ecdef95e1a129b6362289c1",
+      "filterRequestSha256": "52c126f4cd03c72a9415bdd447232d0752ef9c964e84407282cfd18de41a63a2",
+      "mediaOrder": [
+        {
+          "path": "media/mix-01/audio.mp3",
+          "bytes": 983040,
+          "sha256": "97a099c7f7dc796bab6fb788e0095eafbeed101589c8923d97e5315df07d83d6",
+          "kind": "mp3"
+        },
+        {
+          "path": "media/mix-01/frame_001.jpg",
+          "bytes": 61167,
+          "sha256": "a31c76779c07201d43b339b9136e330f3c9527d5d6934b528a199b213d8f7501",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-01/frame_002.jpg",
+          "bytes": 69086,
+          "sha256": "6ef398a296fd8543dbe0cf5d5d76ad16a0872bb9b8500b87a861e7baed712d32",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-01/frame_003.jpg",
+          "bytes": 59256,
+          "sha256": "8675181bd4c0d630fedf6d709293ea0abf1482d1f1ea56d46925a44d10e158ec",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-01/frame_004.jpg",
+          "bytes": 67175,
+          "sha256": "f753642a063fdcc9551a59b303e4a9812a18594fc0f4951ba6adaf07594b7e5e",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-01/frame_005.jpg",
+          "bytes": 57345,
+          "sha256": "bd85a4f8b41fc98f0928f22881f43fb4e8d292a3a37063ea54727652874d7a61",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-01/frame_006.jpg",
+          "bytes": 65264,
+          "sha256": "1074e7617264aff1663a679309f3baf3bcf457ca19093548b76d10f12ba5d8c6",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-01/frame_007.jpg",
+          "bytes": 55434,
+          "sha256": "22adcd4d273e26c0ee940b5dae1ec2265adbcd62bc9946b66da97a1aca4cfc43",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-01/frame_008.jpg",
+          "bytes": 63353,
+          "sha256": "3d283e2638ff976516365849fc1e033999402f64eb0adfb8e355edcc6c617bf3",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 1481120,
+      "candidates": [
+        "전주 한옥마을",
+        "경기전"
+      ]
+    },
+    {
+      "id": "mix-02",
+      "type": "mixed",
+      "note": "오디오+프레임+설명+후보",
+      "requestFile": "requests/mix-02.jsonl",
+      "requestSha256": "9c3895613d5b9a91e06e2194052926340438396198f7754b030f9c817b3063ef",
+      "collectRequestSha256": "ebafd9f307d5028d952865e8677b4574657512df51b5f0f6491a5bcbed061609",
+      "filterRequestSha256": "8589506897b8d2deb8d3ca16f630b7009817cb76138742c3542e5c1ea69de028",
+      "mediaOrder": [
+        {
+          "path": "media/mix-02/audio.mp3",
+          "bytes": 1572864,
+          "sha256": "5142a3668a26230a9a19a228714ef207e0d3dd8c815116a74a0240ffb3e9af36",
+          "kind": "mp3"
+        },
+        {
+          "path": "media/mix-02/frame_001.jpg",
+          "bytes": 69359,
+          "sha256": "672ff988bdab4bb0fd7cb78a879883f86b36cb5527f360891efb6ef81e7bb66b",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-02/frame_002.jpg",
+          "bytes": 77278,
+          "sha256": "902d13006bd31a20fa046704f399a92d28cea0b7c9b737d8f76bfd9da81a7b8f",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-02/frame_003.jpg",
+          "bytes": 64717,
+          "sha256": "ea145707126fc3e9eb815ffbace32618fd4be01353ff6f160086de852c918f0e",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-02/frame_004.jpg",
+          "bytes": 72636,
+          "sha256": "7dce4f41bedc7fb18911075b923cd2e708b6892d5cc58a92060bca326cf9b610",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-02/frame_005.jpg",
+          "bytes": 80555,
+          "sha256": "84e27820633cf86dc327fd3c1525602d201c9f5f1d8bada032cd4587d459cc28",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-02/frame_006.jpg",
+          "bytes": 67994,
+          "sha256": "12e6e2186d6f50d87539f7a5d4a97c1358e0978d86efd82e3afa90c990486614",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-02/frame_007.jpg",
+          "bytes": 75913,
+          "sha256": "22110f42fdde4fcc7fe66403daa9c93975804825ea3d5209a7e1f806725292b4",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-02/frame_008.jpg",
+          "bytes": 63352,
+          "sha256": "45ce9718aa84c3f50fe71552c39c6190cde9aa9c37305ba7abce0f4da729a944",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 2144668,
+      "candidates": [
+        "황리단길",
+        "교리김밥",
+        "첨성대"
+      ]
+    },
+    {
+      "id": "mix-03",
+      "type": "mixed",
+      "note": "큰 오디오 4MiB+프레임 8장+특수문자 후보",
+      "requestFile": "requests/mix-03.jsonl",
+      "requestSha256": "624ac1ed28a73312f2b0b6d4f7f376115808ef887040c4671c944f194d29aa5e",
+      "collectRequestSha256": "acbc401ffb3c5c3e7647a84d1a80a7496bc9e46607ff8e04e5e5be4afb7a19c5",
+      "filterRequestSha256": "747d3865a14272a8b33cbdc99de2b64346f7f26789c4d9b712c8d8fb0763df93",
+      "mediaOrder": [
+        {
+          "path": "media/aud-03/audio.mp3",
+          "bytes": 4194304,
+          "sha256": "3760e3d15cec5368f414bcb98a0cbffd3553abddb7eca4c1ffaf8630d2103bb9",
+          "kind": "mp3"
+        },
+        {
+          "path": "media/mix-03/frame_001.jpg",
+          "bytes": 73455,
+          "sha256": "08341a4efb12e03b6b6a17eabf218d47bbbcc14bd7eac2faebc0a1aeff79b5bd",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-03/frame_002.jpg",
+          "bytes": 81374,
+          "sha256": "6148e4e7e15fec7a73cd914ccd4afb147c52b032493f935193945db8b6b91660",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-03/frame_003.jpg",
+          "bytes": 67448,
+          "sha256": "cb72fe7b2d2992464b2338341b4e2c72a4e9f13c2f9e3caa0b05af208b63e7b0",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-03/frame_004.jpg",
+          "bytes": 75367,
+          "sha256": "9503bfd18ced31d60e7021eac3d328ba7ae754ee592ee9ca25a837ed2a8688c4",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-03/frame_005.jpg",
+          "bytes": 83286,
+          "sha256": "adaff8faacaf2d508a2ddd273301b65119bd8a1279f5d70bc25306548e78d437",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-03/frame_006.jpg",
+          "bytes": 69360,
+          "sha256": "01cdba0cae2175a08bcbb0db64081c3fd389da03b0de45e38422415137f8e239",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-03/frame_007.jpg",
+          "bytes": 77279,
+          "sha256": "12a8870d74c129092e0f71fc475132093ccf7885eecf513ef13c653ad4179a4a",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/mix-03/frame_008.jpg",
+          "bytes": 85198,
+          "sha256": "9a205a9fa955f5b39fb3c74a6b599779b6b945682157b0d0e001b7cfffa39055",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 4807071,
+      "candidates": [
+        "낭만포차 \"거리\"",
+        "a\\b",
+        "😀 이모지",
+        "tab\tchar"
+      ]
+    },
+    {
+      "id": "mix-04",
+      "type": "mixed",
+      "note": "wav+프레임·한글 폴더·빈 후보 목록",
+      "requestFile": "requests/mix-04.jsonl",
+      "requestSha256": "bae09dc4032daebcca6e82d621bd5f9ceeccacc9bf6592d61e0a27d2b2ae6211",
+      "collectRequestSha256": "ee7c4ae4e0959cc56101f79aca033ce06989b66cef7aa3572797f30fea5218d0",
+      "filterRequestSha256": "8b613edbfac83d8039dd908f4c368558cfe5a47bf3ebebff88c988f316ddd432",
+      "mediaOrder": [
+        {
+          "path": "media/한글 폴더/mix-04/녹음.wav",
+          "bytes": 1048576,
+          "sha256": "e777f10144da34375ebaab59ab5635fe0ce8e68e37a68cc63b9ea076b7793bfe",
+          "kind": "wav"
+        },
+        {
+          "path": "media/한글 폴더/mix-04/frame_001.jpg",
+          "bytes": 59119,
+          "sha256": "2691c153a527547632069ef5961906191c87cb5d1a5d9fc018ba72a195f8830c",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/mix-04/frame_002.jpg",
+          "bytes": 67038,
+          "sha256": "1e5779cd3cb091c4bbe22900a19674a5b0fabc21ed1ed95199c31e53ebe97792",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/mix-04/frame_003.jpg",
+          "bytes": 57891,
+          "sha256": "5d819c06a8a8b335a6c8003bdef3a9faa569432b8b554a2565497763eee1bcfe",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/mix-04/frame_004.jpg",
+          "bytes": 65810,
+          "sha256": "75ede1aaa515772f40c8915d6bd7a097bcff6c2d62e740b59bab4d53cf6008f4",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 1298434,
+      "candidates": []
+    },
+    {
+      "id": "pho-01",
+      "type": "photo_post",
+      "note": "사진 1장+설명",
+      "requestFile": "requests/pho-01.jsonl",
+      "requestSha256": "ca38db54e43bace3dc8eef203d995a8a0bf4791524b8f04df0cc821f26466640",
+      "collectRequestSha256": "160bbbb2dd79307a685f024099db9c901866415af61f74203776bf809d89a034",
+      "filterRequestSha256": "695aebfe398926d0fe4cbc075cdb51ac90f0d488b9b4bc7b1067bde075ac3992",
+      "mediaOrder": [
+        {
+          "path": "media/pho-01/photo-00.jpg",
+          "bytes": 215040,
+          "sha256": "514354a2a4351fa54a78ef8e14cdb9ade85f20cc1638d443a81b8f33bce784f9",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 215040,
+      "candidates": [
+        "남이섬"
+      ]
+    },
+    {
+      "id": "pho-02",
+      "type": "photo_post",
+      "note": "사진 10장(올린 순서)",
+      "requestFile": "requests/pho-02.jsonl",
+      "requestSha256": "00f70ad758c191da99d7c79d7518e766013397c22020f9676f230e6f951e9b6a",
+      "collectRequestSha256": "ae544dec2893cfb71591af5f6191a23ee76229cad0d47c234f0caaeecea7c229",
+      "filterRequestSha256": "e26159d94169f43fc9d22474a9e59d10b79a83df2671e860bc9582604bc4a624",
+      "mediaOrder": [
+        {
+          "path": "media/photos10/photo-00.jpg",
+          "bytes": 143360,
+          "sha256": "e61f48b700abcffe7c80442e38373e708862591c59adb6e6f0ae893a79a8aeae",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/photos10/photo-01.jpg",
+          "bytes": 158373,
+          "sha256": "81f32752ceb334d93348da9239e796a2b0b7150317ab73a2540736944b5336cc",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/photos10/photo-02.jpg",
+          "bytes": 173386,
+          "sha256": "4264f91333211e37fd5f4a24acf68a98c6e98b893aad7415a0af2ea969f169ca",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/photos10/photo-03.jpg",
+          "bytes": 188399,
+          "sha256": "9af88df169a7f58d93340b6ee96467e1d479d026b23d9e1b8c53ff2fc1f1b5b1",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/photos10/photo-04.jpg",
+          "bytes": 203412,
+          "sha256": "375f1c51ff7e11a51f4b64d2fe20d893573bfd0be8c5d4d7eca6260015ccd79a",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/photos10/photo-05.jpg",
+          "bytes": 218425,
+          "sha256": "3982f7d019b12e5093eeac5eb3288a0f3b8a7085573407c8759b7de430d6bf9d",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/photos10/photo-06.jpg",
+          "bytes": 233438,
+          "sha256": "35633fba3bd1d8d4ec59dacb488b1aa4dbf698467a033dc7efe9365dd34f269b",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/photos10/photo-07.jpg",
+          "bytes": 248451,
+          "sha256": "6ab7de49ff3b777dc448819c012499a2e818696828c1d08d6a3bfe1aa6c7bde8",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/photos10/photo-08.jpg",
+          "bytes": 263464,
+          "sha256": "1965048b5db52177f679b6121ab3dc99e4527ce3e4bd9ce4a733c200faf560f3",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/photos10/photo-09.jpg",
+          "bytes": 155597,
+          "sha256": "bfe952de72c6597fa90e404e2faa1fe27b32aa783c1217a211e1c9b633880925",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 1986305,
+      "candidates": [
+        "코스1",
+        "코스2",
+        "코스3",
+        "코스4",
+        "코스5",
+        "코스6",
+        "코스7",
+        "코스8",
+        "코스9",
+        "코스10"
+      ]
+    },
+    {
+      "id": "pho-03",
+      "type": "photo_post",
+      "note": "photo_post 이지만 사진 0장(문구 없음)",
+      "requestFile": "requests/pho-03.jsonl",
+      "requestSha256": "af0da267ecf00f4e9b7e5dae4af75aba3aaf48db420b8d374d90e6b54121b514",
+      "collectRequestSha256": "5c44bc6b59ae2f922e060a4d7919fb35598282aad66370d21b5dc17cc7166724",
+      "filterRequestSha256": "bd3b92b3bc76adc3c9696e22c239dcb2b198e272ca022054f7e1e8a91a5c5219",
+      "mediaOrder": [],
+      "mediaBytesTotal": 0,
+      "candidates": [
+        "북한강변길"
+      ]
+    },
+    {
+      "id": "pho-04",
+      "type": "photo_post",
+      "note": "사진 3장·한글 경로·자막·특수문자 후보",
+      "requestFile": "requests/pho-04.jsonl",
+      "requestSha256": "d08d6895d9527d87e49ab4e57a4b2c2c39c9a148c7904a78a92060d87c366225",
+      "collectRequestSha256": "e256cb7e8a64d388181f05b29b4e8aeeef25d8e10dde4edc55e330ea988ed1c9",
+      "filterRequestSha256": "056051d7efa8c1725e78551d6bd8a68ad31717f9ac78f0663ffb557e4d1adb81",
+      "mediaOrder": [
+        {
+          "path": "media/한글 폴더/pho-04/사진-0.jpg",
+          "bytes": 184320,
+          "sha256": "c619c38d65ddb0740246621cd9237fe9777a15e38d84b148162690409df3a985",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/pho-04/사진-1.jpg",
+          "bytes": 185319,
+          "sha256": "fa56a88a41c750717ae5b0e0e171c74b39ddce5caeb4ef378d505bbf43d75b5c",
+          "kind": "jpg"
+        },
+        {
+          "path": "media/한글 폴더/pho-04/사진-2.jpg",
+          "bytes": 186318,
+          "sha256": "6fb9d3f1e4f1df40738aa93d97e726cc33550cd3407f500204021fc684dda9d0",
+          "kind": "jpg"
+        }
+      ],
+      "mediaBytesTotal": 555957,
+      "candidates": [
+        "속초중앙시장",
+        "영금정 '정자'"
+      ]
+    }
+  ],
+  "failureCases": [
+    {
+      "id": "f01-missing-audio",
+      "expect": "not_found",
+      "requestFile": "failures-requests/f01-missing-audio.jsonl",
+      "requestSha256": "d6e807b2261e04a0233f5cbe9caa73e34eacad44d34aea03f1d63b422afa146c"
+    },
+    {
+      "id": "f02-missing-2nd-frame",
+      "expect": "not_found",
+      "requestFile": "failures-requests/f02-missing-2nd-frame.jsonl",
+      "requestSha256": "49339bab0fff0b1cbe43278524f7deef76a2ff6d5aabf236971a6a712eb215a4"
+    },
+    {
+      "id": "f03-audio-is-directory",
+      "expect": "is_directory",
+      "requestFile": "failures-requests/f03-audio-is-directory.jsonl",
+      "requestSha256": "73eb910f89dcbe202fd949a40e61ab723e2ec9d7ca9f6ccd8e080f1182c365d3"
+    },
+    {
+      "id": "f04-empty-audio-path",
+      "expect": "is_directory",
+      "requestFile": "failures-requests/f04-empty-audio-path.jsonl",
+      "requestSha256": "fe749a5bbb0191a1f40aaf7afebf1484b03ce03b6c52f3568093249eef468e26"
+    },
+    {
+      "id": "f05-trailing-slash-file",
+      "expect": "ok",
+      "requestFile": "failures-requests/f05-trailing-slash-file.jsonl",
+      "requestSha256": "168118f53db13194da3c1cda669ea746deed9674b11a9d093df43abb6fe427d4"
+    },
+    {
+      "id": "f06-not-a-directory",
+      "expect": "not_a_directory",
+      "requestFile": "failures-requests/f06-not-a-directory.jsonl",
+      "requestSha256": "72a9e9a679b57ce88c4d20d08f7f74931d1c43fc21d892402d3aa0a2626bd6e1"
+    },
+    {
+      "id": "f07-permission-denied",
+      "expect": "permission_denied",
+      "requestFile": "failures-requests/f07-permission-denied.jsonl",
+      "requestSha256": "3b705a05b7a41305929b37434f378f26f34522fd96c168051d818fcb7c29d2ec"
+    },
+    {
+      "id": "f08-nul-in-path",
+      "expect": "invalid_path",
+      "requestFile": "failures-requests/f08-nul-in-path.jsonl",
+      "requestSha256": "19b15e440371543ffe4da98010e0e99f0c05042420dd813fe4079d211e541fb8"
+    },
+    {
+      "id": "f09-too-large",
+      "expect": "input_too_large",
+      "requestFile": "failures-requests/f09-too-large.jsonl",
+      "requestSha256": "ce891079dad5cbeb59df16acd7fa6d95fcc46ab9768b1324744829c473d2050b"
+    },
+    {
+      "id": "f10-colon-fragment-name",
+      "expect": "ok",
+      "requestFile": "failures-requests/f10-colon-fragment-name.jsonl",
+      "requestSha256": "f3a15bebfa68067d0dc28944255f305a81f0b9dfcc7f6511eb7bc57162fd3df9"
+    },
+    {
+      "id": "f11-data-url-name",
+      "expect": "ok",
+      "requestFile": "failures-requests/f11-data-url-name.jsonl",
+      "requestSha256": "dc43e38b5ad16c7a302e44807cb3a61a78a5d7e7598501b22a617326894619a4"
+    },
+    {
+      "id": "f12-dotfile-name",
+      "expect": "ok",
+      "requestFile": "failures-requests/f12-dotfile-name.jsonl",
+      "requestSha256": "458b9bfa8e7ae07b56e9e739847d32ea79a0cae35e4541eae93cb5d0b80df431"
+    },
+    {
+      "id": "f13-gz-suffix",
+      "expect": "ok",
+      "requestFile": "failures-requests/f13-gz-suffix.jsonl",
+      "requestSha256": "730c11def9c9db9d6ad7586565bbf0c3e8ceaf70204a18b36ce50df62f8c8087"
+    },
+    {
+      "id": "f14-wrong-type",
+      "expect": "invalid_manifest",
+      "requestFile": "failures-requests/f14-wrong-type.jsonl",
+      "requestSha256": "6ef0454b13c5d890f5d9310b55ff661b9d5963c1295595995e6c3fc8d6519d7b"
+    },
+    {
+      "id": "f15-unknown-key",
+      "expect": "invalid_manifest",
+      "requestFile": "failures-requests/f15-unknown-key.jsonl",
+      "requestSha256": "f18bbcd19abab14ae1a97c120a12ff681e8cf3d1b6919e0b2bce80cf583063dc"
+    },
+    {
+      "id": "f16-missing-prompt",
+      "expect": "invalid_manifest",
+      "requestFile": "failures-requests/f16-missing-prompt.jsonl",
+      "requestSha256": "3f13cf0a3d756bd4a248cc317a1a88227e21e263f5eb0b66e15fc37e4ff397b8"
+    },
+    {
+      "id": "f17-non-string-candidate",
+      "expect": "invalid_manifest",
+      "requestFile": "failures-requests/f17-non-string-candidate.jsonl",
+      "requestSha256": "96d15c7f538cb4d17cd02ee6902c9e9c26670d84b1e57668b10662ec10d990ce"
+    },
+    {
+      "id": "f18-top-level-array",
+      "expect": "invalid_manifest",
+      "requestFile": "failures-requests/f18-top-level-array.jsonl",
+      "requestSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "id": "f19-broken-json",
+      "expect": "invalid_json",
+      "requestFile": "failures-requests/f19-broken-json.jsonl",
+      "requestSha256": "d1f83be41388415d87bab12d3389af729bd2520979ed077c4ddb4458f58daa5a"
+    },
+    {
+      "id": "f20-nan",
+      "expect": "invalid_json",
+      "requestFile": "failures-requests/f20-nan.jsonl",
+      "requestSha256": "14b0ea0d86506b483e6fe1b873d71a97fa3a79a5ca2f92539d2e2d37234a515c"
+    },
+    {
+      "id": "f21-lone-surrogate",
+      "expect": "invalid_json",
+      "requestFile": "failures-requests/f21-lone-surrogate.jsonl",
+      "requestSha256": "5963a5fe8b4bf4cd87a662cbb074d9f100e6e5b9d740305785bfdee21b85cf44"
+    },
+    {
+      "id": "f22-too-deep",
+      "expect": "invalid_json",
+      "requestFile": "failures-requests/f22-too-deep.jsonl",
+      "requestSha256": "a91a9ddf5e8f5dcb598c3610d6579ab3a6461f642f1dba4e994898ab7c2b5464"
+    },
+    {
+      "id": "f23-invalid-utf8",
+      "expect": "invalid_json",
+      "requestFile": "failures-requests/f23-invalid-utf8.jsonl",
+      "requestSha256": "b201465f060470e4f0e4f6675a2be06897b489b84668542c18b4770e10670183"
+    },
+    {
+      "id": "f24-bom",
+      "expect": "invalid_json",
+      "requestFile": "failures-requests/f24-bom.jsonl",
+      "requestSha256": "cd9e49f6e1ebcd930388a26b1be18f3dbfa4daf39becd5398f810eda4b8b304c"
+    },
+    {
+      "id": "f25-empty-line",
+      "expect": "invalid_json",
+      "requestFile": "failures-requests/f25-empty-line.jsonl",
+      "requestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "f26-duplicate-key-last-wins",
+      "expect": "ok",
+      "requestFile": "failures-requests/f26-duplicate-key-last-wins.jsonl",
+      "requestSha256": "8da1f1375c9df46ca6d4cd44ac3767fbdc48fd14c5527c45d6f3d38d29a000af"
+    },
+    {
+      "id": "f27-number-overflow",
+      "expect": "invalid_json",
+      "requestFile": "failures-requests/f27-number-overflow.jsonl",
+      "requestSha256": "f23d756f3bc4310c96e4a4a09faefd11d0f59ab8cbebf37d0a94598144f50d68"
+    }
+  ],
+  "files": {
+    "failures/.mp3": {
+      "bytes": 2048,
+      "sha256": "79a38f7606fbefc09c760b042abe253c50e1053f313ccef73376e34e415c68f6",
+      "kind": "mp3"
+    },
+    "failures/ab:c.png#x.mp3": {
+      "bytes": 2048,
+      "sha256": "55be6bedfcf1044b39b37e58417f5db3096b9411521a604520b8e911add93e5b",
+      "kind": "mp3"
+    },
+    "failures/big-a.bin": {
+      "bytes": 9437184,
+      "sha256": "24486384b5cd9ca4ee50a6b1089ef2c11e37729b7568642c04140f8790a0f0d6",
+      "kind": "bin"
+    },
+    "failures/big-b.bin": {
+      "bytes": 8388608,
+      "sha256": "9b33c9fa27afb3263272db2b92fff35873bd82590a14ec69c9e0efea1ad5e4ef",
+      "kind": "bin"
+    },
+    "failures/data:x,y.mp3": {
+      "bytes": 2048,
+      "sha256": "2d5b30c09fe2b49748afb167ff03f26a1d86974c93e51218305c86895efc8b21",
+      "kind": "mp3"
+    },
+    "failures/no-read.mp3": {
+      "bytes": 2048,
+      "sha256": "93e0faa178463814b8340daa2cc377c020c752bbdebb892ee06281fc28d009ef",
+      "kind": "mp3"
+    },
+    "failures/ok.jpg": {
+      "bytes": 4096,
+      "sha256": "257a9b2beb44841448182e070f1ed271c3e690bc066d478a1dadaa399d0d24d1",
+      "kind": "jpg"
+    },
+    "failures/ok.mp3": {
+      "bytes": 4096,
+      "sha256": "f6094eb21c0dfab3ce7addeb0b1483ee17cdc0c48e678260ad868abb34b021fb",
+      "kind": "mp3"
+    },
+    "failures/x.mp3.gz": {
+      "bytes": 2048,
+      "sha256": "3a09c5a304cef45597c8ab83b28abbab1a99fcfd85c2c6107288fbe340056a71",
+      "kind": "mp3"
+    },
+    "media/aud-01/audio.mp3": {
+      "bytes": 8192,
+      "sha256": "c0b2d793500f6a63135b029b895f788517b02ca914d0d038dfa241272236c5f6",
+      "kind": "mp3"
+    },
+    "media/aud-02/여행 음성.m4a": {
+      "bytes": 491520,
+      "sha256": "8ee2605b61464ab3945e064bd4f91dca6197f2ed2e5e0220d131b1c27e792a69",
+      "kind": "m4a"
+    },
+    "media/aud-03/audio.mp3": {
+      "bytes": 4194304,
+      "sha256": "3760e3d15cec5368f414bcb98a0cbffd3553abddb7eca4c1ffaf8630d2103bb9",
+      "kind": "mp3"
+    },
+    "media/aud-04/audio": {
+      "bytes": 8388608,
+      "sha256": "80aa5b8970a70a24181d1b334c21e153700a988daa683a2823d65e9a30e2e666",
+      "kind": "bin"
+    },
+    "media/frm-01/frame_001.jpg": {
+      "bytes": 57071,
+      "sha256": "9b5271f61ad51d07cc8ac9a75d9434b8e01f73ba245749c4f30de64b4f9e9497",
+      "kind": "jpg"
+    },
+    "media/frm-02/frame_001.jpg": {
+      "bytes": 57071,
+      "sha256": "9d0693b5a960a36933be95397ad7d923f8635f8254b6c8c74b7c8848232757ee",
+      "kind": "jpg"
+    },
+    "media/frm-02/frame_002.jpg": {
+      "bytes": 64990,
+      "sha256": "df669c680d35b18ef37c0bccfaeae1b2efb0fc0f37755d4bd6e2a06ebe9a8061",
+      "kind": "jpg"
+    },
+    "media/frm-02/frame_003.jpg": {
+      "bytes": 56525,
+      "sha256": "c1462e095862e08958022f5377e222a940cd2bd6cf7202c147b9b4b1dcded211",
+      "kind": "jpg"
+    },
+    "media/frm-02/frame_004.jpg": {
+      "bytes": 64444,
+      "sha256": "2d21787e92b9f1cd4a508c73b3bb8b715decc2bb9290baa3e575d5f6424a2851",
+      "kind": "jpg"
+    },
+    "media/frm-04/f1.jpg": {
+      "bytes": 48128,
+      "sha256": "8592743479c320ccad452aa15d2ea12aa0b820792766e48263d34ec42ebf3ae2",
+      "kind": "jpg"
+    },
+    "media/frm-04/f2.jpg": {
+      "bytes": 47104,
+      "sha256": "c1b068125f3afcf892cdacf03f5cd76ff035c606c8582d697c16aed1da348841",
+      "kind": "jpg"
+    },
+    "media/frm-04/f3.jpe": {
+      "bytes": 46080,
+      "sha256": "50caa8cca63988b971fb82f6d409b17432c0bf8744456741b4d33cf7f13ba708",
+      "kind": "jpg"
+    },
+    "media/frm-04/f4": {
+      "bytes": 45056,
+      "sha256": "db5676f86218892472c1ceb8d4b0ae969f8b679b87989acd018d045be6dc1fc4",
+      "kind": "jpg"
+    },
+    "media/frm-04/f5.webp": {
+      "bytes": 44032,
+      "sha256": "aebe0d6c356d3c71a29fe668fe84aa5e0fd418679963739b53e298595ee6cd69",
+      "kind": "webp"
+    },
+    "media/frm-04/f6.png": {
+      "bytes": 43008,
+      "sha256": "ea789b5bc3c8b72881347987e9b04e33b79ce95320863b049def2c808476e9af",
+      "kind": "png"
+    },
+    "media/frm-04/f7.jpeg": {
+      "bytes": 41984,
+      "sha256": "47b0c4ab4037473292eb06e26ce5fb48f8788a34e42d4ff5cfd75f1442b78210",
+      "kind": "jpg"
+    },
+    "media/frm-04/f8.JPG": {
+      "bytes": 40960,
+      "sha256": "6618fb8ba9e9ec7c8856ecf633e29cade6adeae8b60a216ff2f783a6d3375956",
+      "kind": "jpg"
+    },
+    "media/mix-01/audio.mp3": {
+      "bytes": 983040,
+      "sha256": "97a099c7f7dc796bab6fb788e0095eafbeed101589c8923d97e5315df07d83d6",
+      "kind": "mp3"
+    },
+    "media/mix-01/frame_001.jpg": {
+      "bytes": 61167,
+      "sha256": "a31c76779c07201d43b339b9136e330f3c9527d5d6934b528a199b213d8f7501",
+      "kind": "jpg"
+    },
+    "media/mix-01/frame_002.jpg": {
+      "bytes": 69086,
+      "sha256": "6ef398a296fd8543dbe0cf5d5d76ad16a0872bb9b8500b87a861e7baed712d32",
+      "kind": "jpg"
+    },
+    "media/mix-01/frame_003.jpg": {
+      "bytes": 59256,
+      "sha256": "8675181bd4c0d630fedf6d709293ea0abf1482d1f1ea56d46925a44d10e158ec",
+      "kind": "jpg"
+    },
+    "media/mix-01/frame_004.jpg": {
+      "bytes": 67175,
+      "sha256": "f753642a063fdcc9551a59b303e4a9812a18594fc0f4951ba6adaf07594b7e5e",
+      "kind": "jpg"
+    },
+    "media/mix-01/frame_005.jpg": {
+      "bytes": 57345,
+      "sha256": "bd85a4f8b41fc98f0928f22881f43fb4e8d292a3a37063ea54727652874d7a61",
+      "kind": "jpg"
+    },
+    "media/mix-01/frame_006.jpg": {
+      "bytes": 65264,
+      "sha256": "1074e7617264aff1663a679309f3baf3bcf457ca19093548b76d10f12ba5d8c6",
+      "kind": "jpg"
+    },
+    "media/mix-01/frame_007.jpg": {
+      "bytes": 55434,
+      "sha256": "22adcd4d273e26c0ee940b5dae1ec2265adbcd62bc9946b66da97a1aca4cfc43",
+      "kind": "jpg"
+    },
+    "media/mix-01/frame_008.jpg": {
+      "bytes": 63353,
+      "sha256": "3d283e2638ff976516365849fc1e033999402f64eb0adfb8e355edcc6c617bf3",
+      "kind": "jpg"
+    },
+    "media/mix-02/audio.mp3": {
+      "bytes": 1572864,
+      "sha256": "5142a3668a26230a9a19a228714ef207e0d3dd8c815116a74a0240ffb3e9af36",
+      "kind": "mp3"
+    },
+    "media/mix-02/frame_001.jpg": {
+      "bytes": 69359,
+      "sha256": "672ff988bdab4bb0fd7cb78a879883f86b36cb5527f360891efb6ef81e7bb66b",
+      "kind": "jpg"
+    },
+    "media/mix-02/frame_002.jpg": {
+      "bytes": 77278,
+      "sha256": "902d13006bd31a20fa046704f399a92d28cea0b7c9b737d8f76bfd9da81a7b8f",
+      "kind": "jpg"
+    },
+    "media/mix-02/frame_003.jpg": {
+      "bytes": 64717,
+      "sha256": "ea145707126fc3e9eb815ffbace32618fd4be01353ff6f160086de852c918f0e",
+      "kind": "jpg"
+    },
+    "media/mix-02/frame_004.jpg": {
+      "bytes": 72636,
+      "sha256": "7dce4f41bedc7fb18911075b923cd2e708b6892d5cc58a92060bca326cf9b610",
+      "kind": "jpg"
+    },
+    "media/mix-02/frame_005.jpg": {
+      "bytes": 80555,
+      "sha256": "84e27820633cf86dc327fd3c1525602d201c9f5f1d8bada032cd4587d459cc28",
+      "kind": "jpg"
+    },
+    "media/mix-02/frame_006.jpg": {
+      "bytes": 67994,
+      "sha256": "12e6e2186d6f50d87539f7a5d4a97c1358e0978d86efd82e3afa90c990486614",
+      "kind": "jpg"
+    },
+    "media/mix-02/frame_007.jpg": {
+      "bytes": 75913,
+      "sha256": "22110f42fdde4fcc7fe66403daa9c93975804825ea3d5209a7e1f806725292b4",
+      "kind": "jpg"
+    },
+    "media/mix-02/frame_008.jpg": {
+      "bytes": 63352,
+      "sha256": "45ce9718aa84c3f50fe71552c39c6190cde9aa9c37305ba7abce0f4da729a944",
+      "kind": "jpg"
+    },
+    "media/mix-03/frame_001.jpg": {
+      "bytes": 73455,
+      "sha256": "08341a4efb12e03b6b6a17eabf218d47bbbcc14bd7eac2faebc0a1aeff79b5bd",
+      "kind": "jpg"
+    },
+    "media/mix-03/frame_002.jpg": {
+      "bytes": 81374,
+      "sha256": "6148e4e7e15fec7a73cd914ccd4afb147c52b032493f935193945db8b6b91660",
+      "kind": "jpg"
+    },
+    "media/mix-03/frame_003.jpg": {
+      "bytes": 67448,
+      "sha256": "cb72fe7b2d2992464b2338341b4e2c72a4e9f13c2f9e3caa0b05af208b63e7b0",
+      "kind": "jpg"
+    },
+    "media/mix-03/frame_004.jpg": {
+      "bytes": 75367,
+      "sha256": "9503bfd18ced31d60e7021eac3d328ba7ae754ee592ee9ca25a837ed2a8688c4",
+      "kind": "jpg"
+    },
+    "media/mix-03/frame_005.jpg": {
+      "bytes": 83286,
+      "sha256": "adaff8faacaf2d508a2ddd273301b65119bd8a1279f5d70bc25306548e78d437",
+      "kind": "jpg"
+    },
+    "media/mix-03/frame_006.jpg": {
+      "bytes": 69360,
+      "sha256": "01cdba0cae2175a08bcbb0db64081c3fd389da03b0de45e38422415137f8e239",
+      "kind": "jpg"
+    },
+    "media/mix-03/frame_007.jpg": {
+      "bytes": 77279,
+      "sha256": "12a8870d74c129092e0f71fc475132093ccf7885eecf513ef13c653ad4179a4a",
+      "kind": "jpg"
+    },
+    "media/mix-03/frame_008.jpg": {
+      "bytes": 85198,
+      "sha256": "9a205a9fa955f5b39fb3c74a6b599779b6b945682157b0d0e001b7cfffa39055",
+      "kind": "jpg"
+    },
+    "media/pho-01/photo-00.jpg": {
+      "bytes": 215040,
+      "sha256": "514354a2a4351fa54a78ef8e14cdb9ade85f20cc1638d443a81b8f33bce784f9",
+      "kind": "jpg"
+    },
+    "media/photos10/photo-00.jpg": {
+      "bytes": 143360,
+      "sha256": "e61f48b700abcffe7c80442e38373e708862591c59adb6e6f0ae893a79a8aeae",
+      "kind": "jpg"
+    },
+    "media/photos10/photo-01.jpg": {
+      "bytes": 158373,
+      "sha256": "81f32752ceb334d93348da9239e796a2b0b7150317ab73a2540736944b5336cc",
+      "kind": "jpg"
+    },
+    "media/photos10/photo-02.jpg": {
+      "bytes": 173386,
+      "sha256": "4264f91333211e37fd5f4a24acf68a98c6e98b893aad7415a0af2ea969f169ca",
+      "kind": "jpg"
+    },
+    "media/photos10/photo-03.jpg": {
+      "bytes": 188399,
+      "sha256": "9af88df169a7f58d93340b6ee96467e1d479d026b23d9e1b8c53ff2fc1f1b5b1",
+      "kind": "jpg"
+    },
+    "media/photos10/photo-04.jpg": {
+      "bytes": 203412,
+      "sha256": "375f1c51ff7e11a51f4b64d2fe20d893573bfd0be8c5d4d7eca6260015ccd79a",
+      "kind": "jpg"
+    },
+    "media/photos10/photo-05.jpg": {
+      "bytes": 218425,
+      "sha256": "3982f7d019b12e5093eeac5eb3288a0f3b8a7085573407c8759b7de430d6bf9d",
+      "kind": "jpg"
+    },
+    "media/photos10/photo-06.jpg": {
+      "bytes": 233438,
+      "sha256": "35633fba3bd1d8d4ec59dacb488b1aa4dbf698467a033dc7efe9365dd34f269b",
+      "kind": "jpg"
+    },
+    "media/photos10/photo-07.jpg": {
+      "bytes": 248451,
+      "sha256": "6ab7de49ff3b777dc448819c012499a2e818696828c1d08d6a3bfe1aa6c7bde8",
+      "kind": "jpg"
+    },
+    "media/photos10/photo-08.jpg": {
+      "bytes": 263464,
+      "sha256": "1965048b5db52177f679b6121ab3dc99e4527ce3e4bd9ce4a733c200faf560f3",
+      "kind": "jpg"
+    },
+    "media/photos10/photo-09.jpg": {
+      "bytes": 155597,
+      "sha256": "bfe952de72c6597fa90e404e2faa1fe27b32aa783c1217a211e1c9b633880925",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/frm-03/프레임_001.jpg": {
+      "bytes": 65263,
+      "sha256": "b4fce02ef87c0315489dc8e34241d36683fbfe54c3512da41b64bc9fd369e622",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/frm-03/프레임_002.jpg": {
+      "bytes": 73182,
+      "sha256": "b315a1dcf6cb37b481c3b758c2f6b78d1f7e807d54d4be5ec4624a4e4992e2e5",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/frm-03/프레임_003.jpg": {
+      "bytes": 61987,
+      "sha256": "96284c9b8c577a840ce4a9a0edaa457e070efa51b466a6b1b17312cc668aceb9",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/frm-03/프레임_004.jpg": {
+      "bytes": 69906,
+      "sha256": "8febf5f57e67e139f412ff11eefdcf00f4e052dfb2fff3319989ac705ef3624b",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/frm-03/프레임_005.jpg": {
+      "bytes": 58711,
+      "sha256": "63a84796dc312382011f01f87f28a4f3ebd59ff2deb0ec6966cb7a7268f2f639",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/frm-03/프레임_006.jpg": {
+      "bytes": 66630,
+      "sha256": "fd14707cd6abf9c6bcafa86c126b901385bb0097a58d26d7257373766d1a5458",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/frm-03/프레임_007.jpg": {
+      "bytes": 74549,
+      "sha256": "4a78c3f7a495691986ecf74e01d4a179d7050ec716da050ea1f577eb58ab61c4",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/frm-03/프레임_008.jpg": {
+      "bytes": 63354,
+      "sha256": "464b7787e5da2ff66253109b385ca32bff9ada75f06c0e5ae11eeac261c9228e",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/mix-04/frame_001.jpg": {
+      "bytes": 59119,
+      "sha256": "2691c153a527547632069ef5961906191c87cb5d1a5d9fc018ba72a195f8830c",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/mix-04/frame_002.jpg": {
+      "bytes": 67038,
+      "sha256": "1e5779cd3cb091c4bbe22900a19674a5b0fabc21ed1ed95199c31e53ebe97792",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/mix-04/frame_003.jpg": {
+      "bytes": 57891,
+      "sha256": "5d819c06a8a8b335a6c8003bdef3a9faa569432b8b554a2565497763eee1bcfe",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/mix-04/frame_004.jpg": {
+      "bytes": 65810,
+      "sha256": "75ede1aaa515772f40c8915d6bd7a097bcff6c2d62e740b59bab4d53cf6008f4",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/mix-04/녹음.wav": {
+      "bytes": 1048576,
+      "sha256": "e777f10144da34375ebaab59ab5635fe0ce8e68e37a68cc63b9ea076b7793bfe",
+      "kind": "wav"
+    },
+    "media/한글 폴더/pho-04/사진-0.jpg": {
+      "bytes": 184320,
+      "sha256": "c619c38d65ddb0740246621cd9237fe9777a15e38d84b148162690409df3a985",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/pho-04/사진-1.jpg": {
+      "bytes": 185319,
+      "sha256": "fa56a88a41c750717ae5b0e0e171c74b39ddce5caeb4ef378d505bbf43d75b5c",
+      "kind": "jpg"
+    },
+    "media/한글 폴더/pho-04/사진-2.jpg": {
+      "bytes": 186318,
+      "sha256": "6fb9d3f1e4f1df40738aa93d97e726cc33550cd3407f500204021fc684dda9d0",
+      "kind": "jpg"
+    }
+  }
+}
