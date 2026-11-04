@@ -2357,3 +2357,13 @@
 - **로컬**(macOS Apple M5) 측정 288관측: 새 프로세스 중앙 Python 34.98ms / Rust 3.02ms, 지속 프로세스 2.43 / 0.80ms. 미디어 없는 입력은 준비 시간 자체가 Python이 짧았다.
 - 그러나 지금 경로에 붙이는 방식(Python → Rust 보조 프로세스, 1회성)은 Python 직접 호출 0.477ms보다 느렸다(지속 1.711ms, 매번 새로 띄우면 5.819ms). Python 최대 RSS도 약 79MiB 늘었다. 로컬 근거로는 **Python 유지**가 맞다. 분석 1건이 약 12초인데 준비 시간은 1ms 안팎이다.
 - 기록 `docs/bench/rust-parts-pilot-local-20261104.md`, 원본 `docs/bench/results/rust-parts-pilot-*-20261104.json`.
+
+## 2026-11-04 운영 장소 목록 인덱스 반영·전후 측정과 Full GC 발견 (#329, PR #308 후속)
+
+- 사용자 목표: 면접용 병목 해결 경험 + Trova가 실제로 버티는 인원. 순서는 #308 운영 반영·확인 → 복제 환경 한계 찾기(설계 `docs/superpowers/specs/2026-11-04-capacity-limit-and-prod-index-design.md`).
+- 운영 약한 고정 부하 도구 `--mode places-load`(5 VU·2초 대기·3분, 테스트 8개) 추가. 운영 DB에 CONCURRENTLY 생성(18:20) → PR #308 머지 → 배포(22:04, b041704, UP 100초, 확인 3/3).
+- 운영(277행)에서는 인덱스 효과 없음: 3분 완주 재측정 중앙 275.6 vs 274.9ms, 서버 내부 평균 167 vs 164ms. 실행 계획은 Index Scan으로 바뀜(0.26→0.29ms).
+- 측정 중 Full GC(Serial) 4.97초 멈춤 발견 → 요청 1건 3초 시간 초과. 별도 분석 예정. 운영 응답 약 270ms 분해: 앱 내부 약 165ms, 서버→DB 31.5ms, PC→서버 40ms.
+- 자원 감시 swap-out 기준을 “1페이지” → “1MiB/s”로 보정(테스트 추가). 문제 8건과 사용자 선택은 `docs/monitoring/2026-11-04-capacity-issue-log.md`.
+- 지식베이스용 매뉴얼 `docs/monitoring/load-testing-manual.md`, 면접 노트 `docs/interview/capacity-qa.md`, 보고서 `docs/monitoring/2026-11-04-prod-index.md`.
+
