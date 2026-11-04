@@ -1,0 +1,27 @@
+                                                                      QUERY PLAN                                                                       
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=24.47..24.58 rows=45 width=462) (actual time=0.238..0.242 rows=42 loops=1)
+   Sort Key: p.created_at DESC, p.id DESC
+   Sort Method: quicksort  Memory: 44kB
+   Buffers: shared hit=12
+   ->  Hash Join  (cost=6.54..23.24 rows=45 width=462) (actual time=0.166..0.201 rows=42 loops=1)
+         Hash Cond: (p.processing_job_id = j.id)
+         Buffers: shared hit=12
+         ->  Bitmap Heap Scan on saved_places p  (cost=1.72..18.28 rows=45 width=419) (actual time=0.040..0.053 rows=42 loops=1)
+               Recheck Cond: (user_id = 1)
+               Heap Blocks: exact=4
+               Buffers: shared hit=9
+               ->  Bitmap Index Scan on idx_saved_places_user_created_id  (cost=0.00..1.71 rows=45 width=0) (actual time=0.033..0.033 rows=42 loops=1)
+                     Index Cond: (user_id = 1)
+                     Buffers: shared hit=5
+         ->  Hash  (cost=3.81..3.81 rows=81 width=51) (actual time=0.107..0.107 rows=82 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 15kB
+               Buffers: shared hit=3
+               ->  Seq Scan on processing_jobs j  (cost=0.00..3.81 rows=81 width=51) (actual time=0.015..0.084 rows=82 loops=1)
+                     Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=25 read=1
+ Planning Time: 0.589 ms
+ Execution Time: 0.294 ms
+(23 rows)
+
