@@ -1,0 +1,53 @@
+# 운영 사양 흉내(E2.1.Micro): 앱 CPU 제한 + JVM에는 CPU 2개로 보이게, 힙 384MiB. 운영 설정·DB를 읽지 않는다.
+services:
+  db:
+    image: postgres:17
+    cpus: 1
+    mem_limit: 512m
+    environment:
+      POSTGRES_DB: gc
+      POSTGRES_USER: gc
+      POSTGRES_PASSWORD: isolated-gc-only
+    networks: [isolated]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U gc']
+      interval: 2s
+      retries: 30
+  app:
+    image: eclipse-temurin:21-jre
+    cpus: ${APP_CPUS:-0.25}
+    mem_limit: 768m
+    entrypoint: [sh, -c, 'exec java $$GC_JAVA_OPTS -jar /app.jar']
+    volumes:
+      - ../../build/libs/trova-backend-0.0.1-SNAPSHOT.jar:/app.jar:ro
+      - ${GC_LOG_DIR:-/tmp/trova-gc-logs}:/gclogs
+    networks: [isolated]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GC_JAVA_OPTS: ${GC_JAVA_OPTS:?GC_JAVA_OPTS required}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gc
+      SPRING_DATASOURCE_USERNAME: gc
+      SPRING_DATASOURCE_PASSWORD: isolated-gc-only
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      GOOGLE_CLIENT_ID: isolated-dummy
+      GOOGLE_CLIENT_SECRET: isolated-dummy
+      KAKAO_CLIENT_ID: isolated-dummy
+      KAKAO_CLIENT_SECRET: isolated-dummy
+      JWT_SECRET: isolated-gc-secret-331-never-use-in-production
+      APP_QUEUE_TYPE: async
+      AUTO_DRAFT_ENABLED: 'false'
+      IP_RATE_LIMIT_PER_MINUTE: '0'
+      ACTUATOR_EXPOSE: health,prometheus
+      APP_INSTANCE_NAME: gc-331
+  gateway:
+    image: nginx:alpine
+    ports: ['127.0.0.1:18082:18082']
+    volumes: ['./nginx.conf:/etc/nginx/nginx.conf:ro']
+    networks: [isolated, entry]
+    depends_on: [app]
+networks:
+  isolated:
+    internal: true
+  entry: {}
