@@ -1,6 +1,7 @@
 package com.trova.backend.pipeline;
 
 import com.trova.backend.entity.ProcessingStage;
+import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
@@ -135,5 +136,90 @@ public class PipelineStageMetrics {
             parts.add(stage + " " + String.format(Locale.ROOT, "%.1f", millis / 1000.0) + "초");
         }
         return parts.isEmpty() ? null : String.join(" · ", parts);
+    }
+
+    /**
+     * Python 작업 프로세스의 CPU·메모리(#311)를 지표와 로그 한 줄로 남긴다. Rust 등 다른 구현과 비교할 기준값이다.
+     * 지표 태그는 고정 값만 쓴다. 값이 없거나 음수인 항목은 건너뛴다(예전 스크립트는 resources가 비어 있다).
+     *
+     * @return 로그에 붙일 한 줄, 남긴 게 없으면 null
+     */
+    public String recordResources(Long jobId, Map<String, Long> resources) {
+        if (resources.isEmpty()) {
+            return null;
+        }
+        List<String> parts = new ArrayList<>();
+        Long selfCpu = sum(resources.get("cpuUserMs"), resources.get("cpuSystemMs"));
+        Long childCpu = sum(resources.get("childCpuUserMs"), resources.get("childCpuSystemMs"));
+        if (selfCpu != null) {
+            cpuSummary("worker").record(selfCpu);
+            parts.add("Python CPU " + selfCpu + "ms");
+        }
+        if (childCpu != null) {
+            cpuSummary("children").record(childCpu);
+            parts.add("자식 CPU " + childCpu + "ms");
+        }
+        Long rss = valid(resources.get("maxRssKib"));
+        if (rss != null) {
+            rssSummary("worker").record(rss * 1024.0);
+            parts.add("Python 최대 메모리 " + String.format(Locale.ROOT, "%.1f", rss / 1024.0) + "MiB");
+        }
+        Long childRss = valid(resources.get("childMaxRssKib"));
+        if (childRss != null && childRss > 0) {
+            rssSummary("largest_child").record(childRss * 1024.0);
+            parts.add("가장 큰 자식 " + String.format(Locale.ROOT, "%.1f", childRss / 1024.0) + "MiB");
+        }
+        Long processWall = valid(resources.get("processWallMs"));
+        Long workerWall = valid(resources.get("workerWallMs"));
+        if (processWall != null && workerWall != null && processWall >= workerWall) {
+            long overhead = processWall - workerWall;
+            Timer.builder("trova.pipeline.worker.overhead")
+                    .description("Python 프로세스 전체 시간 - 스크립트가 잰 시간(인터프리터 시작·모듈 읽기·종료)")
+                    .register(registry).record(Duration.ofMillis(overhead));
+            parts.add("시작·종료 " + overhead + "ms");
+        }
+        Long buildParts = valid(resources.get("buildPartsUs"));
+        if (buildParts != null) {
+            prepTimer("build_parts").record(buildParts, TimeUnit.MICROSECONDS);
+            parts.add("요청 parts " + String.format(Locale.ROOT, "%.1f", buildParts / 1000.0) + "ms");
+        }
+        Long requestJson = valid(resources.get("requestJsonUs"));
+        if (requestJson != null) {
+            prepTimer("request_json").record(requestJson, TimeUnit.MICROSECONDS);
+            parts.add("요청 JSON " + String.format(Locale.ROOT, "%.1f", requestJson / 1000.0) + "ms");
+        }
+        Long requestBytes = valid(resources.get("requestBytes"));
+        if (requestBytes != null) {
+            parts.add("요청 " + String.format(Locale.ROOT, "%.1f", requestBytes / 1024.0) + "KiB");
+        }
+        return parts.isEmpty() ? null : String.join(" · ", parts);
+    }
+
+    private DistributionSummary cpuSummary(String process) {
+        return DistributionSummary.builder("trova.pipeline.worker.cpu")
+                .description("영상 분석 1건의 CPU 시간(사용자+시스템). Gemini 응답 대기는 들어가지 않는다")
+                .baseUnit("milliseconds").tag("process", process).register(registry);
+    }
+
+    private DistributionSummary rssSummary(String process) {
+        return DistributionSummary.builder("trova.pipeline.worker.max_rss")
+                .description("영상 분석 1건의 최대 메모리(RSS). largest_child는 자식 중 가장 큰 하나이며 합계가 아니다")
+                .baseUnit("bytes").tag("process", process).register(registry);
+    }
+
+    private Timer prepTimer(String part) {
+        return Timer.builder("trova.pipeline.request_prep")
+                .description("Gemini 요청 준비 시간 합계(build_parts: 파일 읽기·base64, request_json: 요청 본문 만들기)")
+                .tag("part", part).register(registry);
+    }
+
+    private static Long valid(Long value) {
+        return value == null || value < 0 ? null : value;
+    }
+
+    private static Long sum(Long a, Long b) {
+        Long first = valid(a);
+        Long second = valid(b);
+        return first == null || second == null ? null : first + second;
     }
 }
