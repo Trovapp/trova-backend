@@ -1,5 +1,9 @@
 package com.trova.backend.planner;
 
+import com.google.genai.types.GenerateContentResponseUsageMetadata;
+import com.trova.backend.entity.ApiCallLog;
+import org.springframework.ai.chat.metadata.DefaultUsage;
+import org.springframework.ai.google.genai.metadata.GoogleGenAiUsage;
 import com.google.genai.errors.ApiException;
 import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
@@ -54,7 +58,7 @@ class GeminiJsonClientImplTest {
 
         assertThat(client.generateJson("p", "trip-plan.test")).contains("{\"days\": 2}");
         assertThat(sleeps).containsExactly(2_000L);
-        verify(logs).record(eq("gemini"), eq("trip-plan.test"), isNull(), anyLong(), eq(true), isNull(), eq(120), eq(8), eq(128), eq(2), anyLong());
+        verify(logs).record(eq("gemini"), eq("trip-plan.test"), isNull(), anyLong(), eq(true), isNull(), eq(120), eq(8), eq(128), eq(2), anyLong(), any());
         ArgumentCaptor<Prompt> prompt = ArgumentCaptor.forClass(Prompt.class);
         verify(chatModel, times(2)).call(prompt.capture());
         GoogleGenAiChatOptions options = (GoogleGenAiChatOptions) prompt.getValue().getOptions();
@@ -101,7 +105,7 @@ class GeminiJsonClientImplTest {
         when(model.call(any(Prompt.class))).thenReturn(ok("{}"));
         GeminiJsonClientImpl client = new GeminiJsonClientImpl(model, logs, millis -> { throw new AssertionError("no wait"); }, () -> 0);
         assertThat(client.generateJson("p", "test")).contains("{}");
-        verify(logs).record(eq("gemini"), eq("test"), isNull(), anyLong(), eq(true), isNull(), eq(120), eq(8), eq(128), eq(1), eq(0L));
+        verify(logs).record(eq("gemini"), eq("test"), isNull(), anyLong(), eq(true), isNull(), eq(120), eq(8), eq(128), eq(1), eq(0L), any());
     }
 
     @Test
@@ -114,7 +118,7 @@ class GeminiJsonClientImplTest {
                 millis -> clock.addAndGet(TimeUnit.MILLISECONDS.toNanos(millis)), clock::get);
         assertThat(client.generateJson("p", "test")).contains("{}");
         verify(model,times(3)).call(any(Prompt.class));
-        verify(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(true),isNull(),eq(120),eq(8),eq(128),eq(3),eq(6000L));
+        verify(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(true),isNull(),eq(120),eq(8),eq(128),eq(3),eq(6000L), any());
     }
 
     @Test
@@ -138,7 +142,7 @@ class GeminiJsonClientImplTest {
         GeminiJsonClientImpl client=new GeminiJsonClientImpl(model,logs,
                 millis->clock.addAndGet(TimeUnit.MILLISECONDS.toNanos(1250)),clock::get);
         client.generateJson("p","test");
-        verify(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(true),isNull(),eq(120),eq(8),eq(128),eq(2),eq(1250L));
+        verify(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(true),isNull(),eq(120),eq(8),eq(128),eq(2),eq(1250L), any());
     }
 
     @Test
@@ -163,9 +167,23 @@ class GeminiJsonClientImplTest {
         ChatModel model=mock(ChatModel.class);
         ApiCallLogService logs=mock(ApiCallLogService.class);
         when(model.call(any(Prompt.class))).thenReturn(ok("{}"));
-        doThrow(new IllegalStateException("log fixture")).when(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(true),isNull(),eq(120),eq(8),eq(128),eq(1),eq(0L));
+        doThrow(new IllegalStateException("log fixture")).when(logs).record(eq("gemini"),eq("test"),isNull(),anyLong(),eq(true),isNull(),eq(120),eq(8),eq(128),eq(1),eq(0L), any());
         GeminiJsonClientImpl client=new GeminiJsonClientImpl(model,logs,millis->{throw new AssertionError("no retry");},()->0);
         assertThatThrownBy(()->client.generateJson("p","test")).isInstanceOf(IllegalStateException.class).hasMessage("log fixture");
         verify(model,times(1)).call(any(Prompt.class));
+    }
+
+    @Test
+    void 생각_토큰과_캐시_토큰을_호출_기록에_넘긴다() {
+        // #317: 일정 생성 등 Java 호출도 생각 토큰을 쓰는지 본다. 텍스트만 보내므로 영상 토큰은 없다.
+        GoogleGenAiUsage usage = GoogleGenAiUsage.from(GenerateContentResponseUsageMetadata.builder()
+                .promptTokenCount(120).candidatesTokenCount(8).totalTokenCount(158)
+                .thoughtsTokenCount(30).cachedContentTokenCount(64).build());
+
+        ApiCallLog.TokenDetail detail = GeminiJsonClientImpl.tokenDetail(usage);
+
+        assertThat(detail).isEqualTo(new ApiCallLog.TokenDetail(30, 64, null));
+        assertThat(GeminiJsonClientImpl.tokenDetail(new DefaultUsage(1, 2))).isNull();
+        assertThat(GeminiJsonClientImpl.tokenDetail(null)).isNull();
     }
 }
