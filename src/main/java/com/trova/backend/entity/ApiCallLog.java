@@ -60,6 +60,17 @@ public class ApiCallLog {
     @Column(name = "waited_ms")
     private Long waitedMs;
 
+    // Gemini 응답 대기를 줄일 근거(#317). thoughts: 답 전에 모델이 생각하는 데 쓴 토큰(응답 시간에 직접 영향),
+    // cached: 앞부분이 같은 요청이라 캐시로 처리된 입력 토큰, video: 입력 중 영상 토큰. 모르면 null.
+    @Column(name = "thoughts_tokens")
+    private Integer thoughtsTokens;
+
+    @Column(name = "cached_tokens")
+    private Integer cachedTokens;
+
+    @Column(name = "video_tokens")
+    private Integer videoTokens;
+
     protected ApiCallLog() {
     }
 
@@ -85,6 +96,22 @@ public class ApiCallLog {
         return this;
     }
 
+    public ApiCallLog withTokenDetail(TokenDetail detail) {
+        if (detail != null) {
+            this.thoughtsTokens = detail.thoughtsTokens();
+            this.cachedTokens = detail.cachedTokens();
+            this.videoTokens = detail.videoTokens();
+        }
+        return this;
+    }
+
+    /** usageMetadata의 세부 토큰(#317). 셋 다 없을 수 있다. */
+    public record TokenDetail(Integer thoughtsTokens, Integer cachedTokens, Integer videoTokens) {
+    }
+
+    public Integer getThoughtsTokens() { return thoughtsTokens; }
+    public Integer getCachedTokens() { return cachedTokens; }
+    public Integer getVideoTokens() { return videoTokens; }
     public Long getId() { return id; }
     public Integer getAttempts() { return attempts; }
     public Long getWaitedMs() { return waitedMs; }

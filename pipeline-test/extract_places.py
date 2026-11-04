@@ -284,7 +284,19 @@ def _log_api_call(
         entry["promptTokens"] = usage.get("promptTokenCount")
         entry["responseTokens"] = usage.get("candidatesTokenCount")
         entry["totalTokens"] = usage.get("totalTokenCount")
+        # Gemini 대기를 줄일 근거(#317): 생각 토큰(응답 시간에 직접 영향), 캐시로 처리된 입력, 입력 중 영상 토큰.
+        entry["thoughtsTokens"] = usage.get("thoughtsTokenCount")
+        entry["cachedTokens"] = usage.get("cachedContentTokenCount")
+        entry["videoTokens"] = _modality_tokens(usage.get("promptTokensDetails"), "VIDEO")
     print(f"{API_LOG_MARKER}{json.dumps(entry, ensure_ascii=False)}", file=sys.stderr)
+
+
+def _modality_tokens(details, modality: str) -> int | None:
+    """promptTokensDetails([{"modality": "VIDEO", "tokenCount": 1234}, ...])에서 한 종류의 합. 없으면 None."""
+    if not isinstance(details, list):
+        return None
+    counts = [d.get("tokenCount") or 0 for d in details if isinstance(d, dict) and d.get("modality") == modality]
+    return sum(counts) if counts else None
 
 
 def _quota_info(detail: str) -> tuple[bool, float | None]:

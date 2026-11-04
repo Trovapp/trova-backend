@@ -80,6 +80,27 @@ class ApiCallLogServiceTest {
     }
 
     @Test
+    void 생각_캐시_영상_토큰을_저장하고_없으면_null이다() {
+        // #317: Gemini 대기를 줄일 근거 — 생각 토큰이 많으면 응답이 늦고, 캐시가 되면 같은 영상 재처리가 줄어든다.
+        String stderr = """
+                TROVA_API_LOG:{"provider":"gemini","operation":"extract_places.filter","latencyMs":4100,"success":true,"thoughtsTokens":812,"cachedTokens":6400,"videoTokens":7000}
+                TROVA_API_LOG:{"provider":"gemini","operation":"extract_places.collect","latencyMs":3900,"success":true,"thoughtsTokens":null}
+                """;
+
+        apiCallLogService.recordFromStderr(stderr, 15L);
+
+        ArgumentCaptor<ApiCallLog> captor = ArgumentCaptor.forClass(ApiCallLog.class);
+        verify(apiCallLogRepository, times(2)).save(captor.capture());
+        List<ApiCallLog> saved = captor.getAllValues();
+        assertThat(saved.get(0).getThoughtsTokens()).isEqualTo(812);
+        assertThat(saved.get(0).getCachedTokens()).isEqualTo(6400);
+        assertThat(saved.get(0).getVideoTokens()).isEqualTo(7000);
+        assertThat(saved.get(1).getThoughtsTokens()).isNull();
+        assertThat(saved.get(1).getCachedTokens()).isNull();
+        assertThat(saved.get(1).getVideoTokens()).isNull();
+    }
+
+    @Test
     void 마커_줄이_여러개면_각각_저장한다() {
         String stderr = """
                 TROVA_API_LOG:{"provider":"gemini","operation":"extract_places.collect","latencyMs":800,"success":true}

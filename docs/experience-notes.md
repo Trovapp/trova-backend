@@ -2280,3 +2280,9 @@
 - `build_parts`는 이름을 유지한 감싸기 함수로 바꿨고 결과가 원래 함수와 같음을 테스트로 확인했다. 자식 최대 메모리는 가장 큰 하나이며 합계로 쓰지 않는다.
 - 확인: Python 60개 통과, Java 관련 테스트 통과, `./gradlew build` 통과. **실제 영상 측정은 하지 않았다**(Gemini 한도를 운영과 공유). 운영 반영 때 새 Python 파일도 같이 복사해야 한다.
 - 기록 `docs/monitoring/2026-11-04-python-worker-resources.md`.
+## 2026-11-04 Gemini 생각·캐시·영상 토큰 기록 (#317)
+
+- 사용자가 "Gemini 대기(약 9초)를 줄일 근거부터 모으기"를 선택했다. API 호출을 늘리지 않고 이미 오는 응답의 usageMetadata만 더 남긴다.
+- `api_call_logs`에 `thoughts_tokens`(답 전에 생각한 토큰), `cached_tokens`(앞부분이 같아 캐시로 처리된 입력), `video_tokens`(입력 중 영상) 세 칸을 추가했다(nullable, ddl-auto update). Python 파이프라인 모든 Gemini 호출과 Java Spring AI JSON 호출(영상 칸은 없음)에서 채운다.
+- 판단에 쓰는 법: 생각 토큰이 크면 thinking 설정 낮추기, 같은 영상의 collect→filter에서 cached가 0이면 영상 중복 처리가 그대로라는 뜻, 영상 토큰이 입력 대부분이면 해상도 낮추기 후보.
+- 확인: Python 전체 테스트, Java 관련 테스트, `./gradlew build` 통과. 실제 값은 배포 뒤 수집.

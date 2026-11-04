@@ -81,9 +81,19 @@ public class ApiCallLogService {
             String errorMessage, Integer promptTokens, Integer responseTokens, Integer totalTokens,
             Integer attempts, Long waitedMs
     ) {
+        record(provider, operation, jobId, latencyMs, success, errorMessage, promptTokens, responseTokens, totalTokens,
+                attempts, waitedMs, null);
+    }
+
+    /** tokenDetail: Gemini 생각·캐시·영상 토큰(#317). 모르면 null. */
+    public void record(
+            String provider, String operation, Long jobId, long latencyMs, boolean success,
+            String errorMessage, Integer promptTokens, Integer responseTokens, Integer totalTokens,
+            Integer attempts, Long waitedMs, ApiCallLog.TokenDetail tokenDetail
+    ) {
         apiCallLogRepository.save(new ApiCallLog(
                 provider, operation, jobId, latencyMs, success, errorMessage,
-                promptTokens, responseTokens, totalTokens).withRetry(attempts, waitedMs));
+                promptTokens, responseTokens, totalTokens).withRetry(attempts, waitedMs).withTokenDetail(tokenDetail));
 
         Timer.builder("trova.api_call")
                 .tag("provider", provider)
@@ -114,7 +124,7 @@ public class ApiCallLogService {
                 record(
                         payload.provider(), payload.operation(), jobId, payload.latencyMs(), payload.success(),
                         payload.errorMessage(), payload.promptTokens(), payload.responseTokens(), payload.totalTokens(),
-                        payload.attempts(), payload.waitedMs());
+                        payload.attempts(), payload.waitedMs(), payload.tokenDetail());
             } catch (Exception e) {
                 log.warn("API 호출 로그 줄 파싱 실패, 건너뜁니다: {}", json, e);
             }
@@ -123,7 +133,14 @@ public class ApiCallLogService {
 
     private record LogLinePayload(
             String provider, String operation, long latencyMs, boolean success, String errorMessage,
-            Integer promptTokens, Integer responseTokens, Integer totalTokens, Integer attempts, Long waitedMs
+            Integer promptTokens, Integer responseTokens, Integer totalTokens, Integer attempts, Long waitedMs,
+            Integer thoughtsTokens, Integer cachedTokens, Integer videoTokens
     ) {
+        ApiCallLog.TokenDetail tokenDetail() {
+            if (thoughtsTokens == null && cachedTokens == null && videoTokens == null) {
+                return null;
+            }
+            return new ApiCallLog.TokenDetail(thoughtsTokens, cachedTokens, videoTokens);
+        }
     }
 }
