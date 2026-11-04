@@ -17,7 +17,7 @@
 | `workerWallMs` | `run_pipeline.py`가 모듈을 처음 읽은 때부터 결과를 만들 때까지 |
 | `cpuUserMs`, `cpuSystemMs` | Python 프로세스 자신의 CPU 시간 |
 | `childCpuUserMs`, `childCpuSystemMs` | 끝난 자식 프로세스들(yt-dlp·ffmpeg)의 CPU 시간 합 |
-| `maxRssKib` | Python 프로세스의 최대 메모리(KiB, macOS 바이트 단위도 KiB로 맞춤) |
+| `maxRssKib` | Python 프로세스의 최대 메모리(KiB). 리눅스는 `VmHWM`, macOS는 `ru_maxrss`(#320: 리눅스 `ru_maxrss`는 부모 JVM 값이 남음) |
 | `childMaxRssKib` | 자식 중 **가장 컸던 하나**의 최대 메모리. 합계가 아니며, 부모와 동시에 쓴 양도 아니다 |
 | `<단계>CpuMs`, `<단계>ChildCpuMs` | download·audio·frames·gemini 단계별 CPU. gemini 단계의 CPU에는 요청 준비·응답 해석이 들어간다 |
 | `buildPartsCalls`, `buildPartsUs`, `buildPartsCpuUs` | Rust 비교 대상인 `build_parts`(파일 읽기·base64·parts 만들기) 호출 수와 시간 합(마이크로초) |

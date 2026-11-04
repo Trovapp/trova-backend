@@ -36,6 +36,30 @@ class WorkerResourcesTest(unittest.TestCase):
         self.assertGreater(worker_resources.child_cpu_seconds(), before)
 
 
+class PeakMemoryTest(unittest.TestCase):
+    def test_리눅스에서는_부모_값이_남는_ru_maxrss_대신_VmHWM을_쓴다(self):
+        # #320: Java가 띄운 Python의 ru_maxrss가 JVM 크기(약 400MiB)로 찍혔다.
+        with tempfile.TemporaryDirectory() as tmp:
+            status = Path(tmp) / "status"
+            status.write_text("Name:\tpython3\nVmPeak:\t  30000 kB\nVmHWM:\t    8908 kB\nVmRSS:\t 8800 kB\n")
+            self.assertEqual(worker_resources.self_peak_kib(str(status)), 8908)
+
+    def test_VmHWM이_없으면_ru_maxrss를_쓴다(self):
+        # macOS에는 /proc가 없다.
+        self.assertGreater(worker_resources.self_peak_kib("/nonexistent/status"), 1024)
+
+    def test_부모가_메모리를_많이_써도_자식_Python의_최대_메모리는_자기_값이다(self):
+        code = ("import sys; sys.path.insert(0, %r); import worker_resources; print(worker_resources.snapshot()['maxRssKib'])"
+                % str(Path(__file__).parent))
+        blob = bytearray(120 * 1024 * 1024)
+        for i in range(0, len(blob), 4096):
+            blob[i] = 1
+        child_kib = int(subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True).stdout)
+        del blob
+        if sys.platform.startswith("linux"):
+            self.assertLess(child_kib, 100 * 1024)
+
+
 class StageCpuTest(unittest.TestCase):
     def test_단계마다_자기_CPU와_자식_CPU를_더한다(self):
         wall, cpu, child = FakeClock(), FakeClock(), FakeClock()
