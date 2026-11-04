@@ -1,0 +1,235 @@
+{
+  "issue": 323,
+  "label": "local-macbook-m5",
+  "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+  "python": "3.14.7",
+  "method": {
+    "warmupPerMethod": 1,
+    "measuredPerMethod": 5,
+    "order": "짝수 회차 fullDecode→seek, 홀수 회차 seek→fullDecode, 동시성 1"
+  },
+  "videos": [
+    {
+      "video": "DUX2qkMEQAQ/video.mp4",
+      "bytes": 18253286,
+      "samples": {
+        "fullDecode": [
+          {
+            "wallMs": 506.6,
+            "childCpuMs": 2898.9,
+            "frames": 8
+          },
+          {
+            "wallMs": 509.1,
+            "childCpuMs": 2912.1,
+            "frames": 8
+          },
+          {
+            "wallMs": 500.9,
+            "childCpuMs": 2914.2,
+            "frames": 8
+          },
+          {
+            "wallMs": 503.4,
+            "childCpuMs": 2926.5,
+            "frames": 8
+          },
+          {
+            "wallMs": 509.7,
+            "childCpuMs": 2914.8,
+            "frames": 8
+          }
+        ],
+        "seek": [
+          {
+            "wallMs": 314.7,
+            "childCpuMs": 1907.1,
+            "frames": 8
+          },
+          {
+            "wallMs": 313.6,
+            "childCpuMs": 1893.4,
+            "frames": 8
+          },
+          {
+            "wallMs": 318.9,
+            "childCpuMs": 1904.0,
+            "frames": 8
+          },
+          {
+            "wallMs": 308.6,
+            "childCpuMs": 1902.9,
+            "frames": 8
+          },
+          {
+            "wallMs": 324.5,
+            "childCpuMs": 1898.2,
+            "frames": 8
+          }
+        ]
+      },
+      "warmup_fullDecode": {
+        "wallMs": 537.3,
+        "childCpuMs": 2914.3,
+        "frames": 8
+      },
+      "warmup_seek": {
+        "wallMs": 346.2,
+        "childCpuMs": 1918.5,
+        "frames": 8
+      },
+      "fullDecodeMedianWallMs": 506.6,
+      "fullDecodeMedianChildCpuMs": 2914.2,
+      "seekMedianWallMs": 314.7,
+      "seekMedianChildCpuMs": 1902.9
+    },
+    {
+      "video": "DWksnFLCR_J/video.mp4",
+      "bytes": 1720535,
+      "samples": {
+        "fullDecode": [
+          {
+            "wallMs": 203.8,
+            "childCpuMs": 350.1,
+            "frames": 8
+          },
+          {
+            "wallMs": 199.1,
+            "childCpuMs": 350.8,
+            "frames": 8
+          },
+          {
+            "wallMs": 199.1,
+            "childCpuMs": 353.8,
+            "frames": 8
+          },
+          {
+            "wallMs": 205.8,
+            "childCpuMs": 357.9,
+            "frames": 8
+          },
+          {
+            "wallMs": 199.2,
+            "childCpuMs": 348.0,
+            "frames": 8
+          }
+        ],
+        "seek": [
+          {
+            "wallMs": 235.7,
+            "childCpuMs": 701.0,
+            "frames": 8
+          },
+          {
+            "wallMs": 239.7,
+            "childCpuMs": 690.2,
+            "frames": 8
+          },
+          {
+            "wallMs": 233.7,
+            "childCpuMs": 693.4,
+            "frames": 8
+          },
+          {
+            "wallMs": 241.8,
+            "childCpuMs": 713.8,
+            "frames": 8
+          },
+          {
+            "wallMs": 287.8,
+            "childCpuMs": 685.0,
+            "frames": 8
+          }
+        ]
+      },
+      "warmup_fullDecode": {
+        "wallMs": 202.9,
+        "childCpuMs": 352.8,
+        "frames": 8
+      },
+      "warmup_seek": {
+        "wallMs": 245.5,
+        "childCpuMs": 700.0,
+        "frames": 8
+      },
+      "fullDecodeMedianWallMs": 199.2,
+      "fullDecodeMedianChildCpuMs": 350.8,
+      "seekMedianWallMs": 239.7,
+      "seekMedianChildCpuMs": 693.4
+    },
+    {
+      "video": "DX-rrm8BHCr/video.mp4",
+      "bytes": 13277995,
+      "samples": {
+        "fullDecode": [
+          {
+            "wallMs": 437.9,
+            "childCpuMs": 2743.5,
+            "frames": 8
+          },
+          {
+            "wallMs": 438.5,
+            "childCpuMs": 2735.5,
+            "frames": 8
+          },
+          {
+            "wallMs": 441.4,
+            "childCpuMs": 2738.7,
+            "frames": 8
+          },
+          {
+            "wallMs": 431.3,
+            "childCpuMs": 2734.3,
+            "frames": 8
+          },
+          {
+            "wallMs": 462.2,
+            "childCpuMs": 2820.0,
+            "frames": 8
+          }
+        ],
+        "seek": [
+          {
+            "wallMs": 334.5,
+            "childCpuMs": 1864.7,
+            "frames": 8
+          },
+          {
+            "wallMs": 326.6,
+            "childCpuMs": 1883.1,
+            "frames": 8
+          },
+          {
+            "wallMs": 340.8,
+            "childCpuMs": 1894.0,
+            "frames": 8
+          },
+          {
+            "wallMs": 327.3,
+            "childCpuMs": 1898.9,
+            "frames": 8
+          },
+          {
+            "wallMs": 336.5,
+            "childCpuMs": 1893.0,
+            "frames": 8
+          }
+        ]
+      },
+      "warmup_fullDecode": {
+        "wallMs": 443.8,
+        "childCpuMs": 2729.5,
+        "frames": 8
+      },
+      "warmup_seek": {
+        "wallMs": 328.1,
+        "childCpuMs": 1892.9,
+        "frames": 8
+      },
+      "fullDecodeMedianWallMs": 438.5,
+      "fullDecodeMedianChildCpuMs": 2738.7,
+      "seekMedianWallMs": 334.5,
+      "seekMedianChildCpuMs": 1893.0
+    }
+  ]
+}
