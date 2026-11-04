@@ -1,0 +1,58 @@
+# 운영 인덱스 반영·한계 찾기 — 문제 기록
+
+작업 중 생긴 문제와 원인, 해결안, 사용자 선택을 시간 순으로 남긴다.
+설계: `docs/superpowers/specs/2026-11-04-capacity-limit-and-prod-index-design.md`
+
+## #1 git 명령이 동작하지 않음 (2026-11-04, 로컬)
+
+**현상**: 워크트리에서 `git status` →
+`fatal: not a git repository: /Users/gimtaehyeong/Downloads/buildlog/trova-backend/.git/worktrees/76116-…`.
+같은 세션 초반에는 `git status`/`git fetch`가 정상이었다.
+
+**확인한 것**
+- 워크트리 `.git` 파일은 정상 경로를 가리킨다.
+- `ls ~/Downloads/buildlog/trova-backend/.git/worktrees/` → `Operation not permitted`.
+- 같은 폴더에서 `git worktree list` → `Unable to read current working directory: Operation not permitted`.
+
+**원인 추정**: 파일이 사라진 게 아니라 macOS 개인정보 보호(TCC)가 이 앱(Orca)의 **다운로드 폴더 접근을 막고 있다**.
+같은 유형의 문제가 Desktop에서 있었다(메모리 `reference_orca-desktop-access`). 세션 중간에 권한이 바뀐 이유는 확인하지 못했다.
+
+**해결안**
+1. (권장) 시스템 설정 → 개인정보 보호 및 보안 → 파일 및 폴더(또는 전체 디스크 접근)에서 Orca의 “다운로드 폴더” 허용 후 Orca 재시작.
+   레포 위치를 바꾸지 않아 다른 워크트리에 영향이 없다.
+2. 메인 레포를 다운로드 폴더 밖(예: `~/dev/trova-backend`)으로 옮기고 `git worktree repair`. 근본 해결이지만 다른 워크트리·스크립트 경로가 모두 바뀐다.
+3. 당분간 git이 필요 없는 일(측정 스크립트 작성·로컬 테스트)만 먼저 하고, 커밋은 권한 해결 후 한 번에.
+
+**영향**: Task 0(이미지 복원·충돌 해결·커밋·푸시)과 이후 모든 커밋이 막힌다.
+
+**사용자 선택**: 1번(다운로드 폴더 권한 허용 후 Orca 재시작). 실행 방식은 Claude가 직접 순서대로(Native).
+**결과**: 사용자 확인 — Orca는 이미 전체 디스크 접근 허용 상태인데도 “저번부터 계속” 안 됨. 추가 조사:
+
+**추가 조사 (2026-11-04)**
+- Claude Code 샌드박스를 끄고 실행해도 `ls ~/Downloads` → `Operation not permitted`. 샌드박스 원인 아님.
+- 이 셸의 부모 프로세스: `zsh ← claude ← zsh ← login ← Orca Terminal Host`(PID 73679, 부모 launchd).
+  실행 파일은 `~/Library/Application Support/orca/daemon-host/macos/terminal-host-3ac457…/app.noindex/Orca Terminal Host.app`.
+- 이 터미널 호스트는 **2026-10-30 18:16부터 계속 살아 있다**. Orca 앱 창(`/Applications/Orca 2.app`, 11-03~04 시작)을
+  재시작해도 터미널 세션 유지를 위해 이 호스트는 따로 계속 돈다.
+- 서명은 정상(`codesign --verify` 통과), 번들 ID `com.stablyai.orca`, 팀 ID는 Orca 2.app과 같다.
+- 같은 폴더에 10-30 10:57 생성된 다른 버전 호스트(`terminal-host-53e64c…`)도 있다 → Orca 업데이트마다 새 호스트가 만들어진다.
+
+**원인 추정(확정 아님)**: 전체 디스크 접근 변경은 보통 **프로세스를 새로 띄워야** 적용된다. 실제로 파일에 접근하는 건
+Orca 창이 아니라 10-30부터 떠 있는 터미널 호스트라서, Orca를 재시작해도 이 호스트는 예전 권한 상태 그대로다.
+업데이트마다 호스트 위치가 바뀌어 “저번부터 계속” 재발하는 것도 이걸로 설명된다. 세션 초반에 git이 됐던 이유는 확인하지 못했다.
+
+**해결안(갱신)**
+1. (권장) 다른 Orca 터미널 작업이 없을 때 터미널 호스트를 종료(`kill 73679`) → Orca가 새로 띄움 → `git status` 확인.
+   빠르지만 **이 세션 포함 Orca의 모든 터미널 세션이 끊긴다**. 다른 세션 작업 중이면 안 됨.
+2. 메인 레포를 다운로드 폴더 밖(예: `~/dev/trova-backend`)으로 이동 + `git worktree repair`. 다운로드 폴더는 macOS 보호 폴더라
+   밖으로 옮기면 권한 문제가 재발하지 않는다. 대신 모든 워크트리 경로 갱신, Claude 메모리 폴더(현재 레포 경로 기준) 이동 필요.
+3. 당분간 git 작업만 macOS 기본 터미널(Terminal.app)에서 사용자가 실행.
+
+**사용자 선택(갱신)**: 1번. 사용자가 `sander` Claude 세션 종료를 확인 → 2026-11-04 터미널 호스트(PID 73679) 종료.
+같이 종료된 것: Codex 세션들(sander·이력서-정리·관리자-페이지-터미널·safe-korea), trova-app Expo 8081, safe-korea wrangler 8787 등.
+**재시작 후 확인할 것**: `ls ~/Downloads`, 이 워크트리 `git status`. 되면 #1 해결로 기록, 안 되면 해결안 2·3으로.
+
+**해결 확인 (2026-11-04 16:33)**: 터미널 호스트 종료 후 Orca가 새 호스트(16:32:50 시작)를 띄움.
+새 세션에서 `ls ~/Downloads` 정상, 워크트리 `git status` 정상. → **#1 해결**.
+원인 추정(권한 변경이 오래 떠 있던 터미널 호스트에 반영되지 않음)과 일치. 재발 시: Orca 업데이트·권한 변경 뒤
+터미널 호스트를 다시 띄워야 한다(Orca 창 재시작만으로는 호스트가 안 바뀜).
