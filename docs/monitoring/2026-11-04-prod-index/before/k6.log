@@ -1,0 +1,40 @@
+time="2026-11-04T18:10:05+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/places\": request timeout"
+
+
+  █ THRESHOLDS 
+
+    http_req_duration
+    ✓ 'p(95)<1000' p(95)=425.44ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.27%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 359    2.16616/s
+    checks_succeeded...: 99.72% 358 out of 359
+    checks_failed......: 0.27%  1 out of 359
+
+    ✗ HTTP 200 and place list shape
+      ↳  99% — ✓ 358 / ✗ 1
+
+    HTTP
+    http_req_duration..............: avg=291.26ms min=177.14ms med=273.19ms max=3s       p(90)=342.43ms p(95)=425.44ms
+      { expected_response:true }...: avg=283.68ms min=177.14ms med=273.09ms max=619.25ms p(90)=342.16ms p(95)=416.02ms
+    http_req_failed................: 0.27% 1 out of 359
+    http_reqs......................: 359   2.16616/s
+
+    EXECUTION
+    iteration_duration.............: avg=2.29s    min=2.17s    med=2.27s    max=3s       p(90)=2.34s    p(95)=2.43s   
+    iterations.....................: 359   2.16616/s
+    vus............................: 5     min=5        max=5
+    vus_max........................: 5     min=5        max=5
+
+    NETWORK
+    data_received..................: 11 MB 63 kB/s
+    data_sent......................: 64 kB 387 B/s
+
+
+
+time="2026-11-04T18:10:05+09:00" level=error msg="test aborted: SERVER_ERROR: status 0 at default (file:///Users/gimtaehyeong/orca/workspaces/trova-backend/%EA%B4%80%EB%A6%AC%EC%9E%90-%ED%8E%98%EC%9D%B4%EC%A7%80-%ED%84%B0%EB%AF%B8%EB%84%90/monitoring/places-load.js:68:29(96))"
