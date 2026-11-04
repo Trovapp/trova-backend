@@ -17,7 +17,7 @@
 
 - 자료: [2026-11-01 확대 비교 원본](results/production-queue-expanded-20261101.json), 소스 `40fe231f146d9b79dcf2b77fb406e6d75452fdf8`. 당시 Oracle E2.1.Micro 운영 서버에서 수집했다. 현재 분석 시점의 소스는 `008e2de`이며 최신 서버 속도라고 부르지 않는다.
 - 15건 중 워밍업3건을 제외한12건이다. 공개 유튜브3개를 각 경로에서2회씩 실행했다. Python은 양쪽 모두 같고, Kafka/async 대기열만 달랐다. **두 경로를 Python/Rust 전후라고 해석하지 않는다.**
-- 이 코드의 정상 유튜브 경로는 Gemini에 URL을 직접 넘긴다. 따라서 이 자료로 인스타 다운로드·FFmpeg·미디어 base64 처리 성능을 평가할 수 없다. 원본 JSON에는 해당 단계별 timings/프로세스 CPU/RSS도 없다.
+- 이 코드의 정상 유튜브 경로는 Gemini에 URL을 직접 넘긴다. 따라서 이 자료로 인스타 다운로드·FFmpeg·미디어 base64 처리 성능을 평가할 수 없다. 원본 JSON에는 해당 단계별 timings와 Python 작업 프로세스의 CPU/RSS가 없다. 있는 메모리 값은 Java 서버의 관측 RSS다.
 - 기록된 Gemini41행, 알려진 시도41회, 알려진 재시도 대기0ms다. 누락된 시도/대기 행은0이었다. 이는 공급자 청구/잔여 한도나 모든 실제 전송을 입증하는 값은 아니다.
 - 원본 SHA-256과 작업별 재계산: [분석 JSON](results/rust-pipeline-feasibility-20261104.json). 새 영상 제출·Gemini/카카오 호출·DB/SSH 접속·배포 없이 파일만 재계산했다.
 
