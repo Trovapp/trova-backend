@@ -3,7 +3,7 @@ package com.trova.backend.service;
 import com.trova.backend.entity.SavedPlace;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -18,9 +18,8 @@ import java.util.function.Predicate;
  */
 public final class RouteOptimizer {
 
-    // 순열을 전부 탐색하는 정확해(brute force) 방식은 n!로 늘어난다. 하루 방문지가
-    // 이 개수를 넘으면 대신 nearest-neighbor 근사로 전환한다.
-    // 10! = 3,628,800 — 로컬에서 수백 ms 안에 끝나는 안전한 상한선으로 잡음(실측 아님, 이론적 상한).
+    // 이 개수 이하면 정확해, 넘으면 nearest-neighbor 근사. 정확해는 예전엔 모든 순서(10! = 3,628,800)를 따졌고,
+    // #313부터 같은 최적값을 동적 계획법(Held-Karp, n²·2ⁿ ≈ 10만 번)으로 구한다. 상한은 동작을 바꾸지 않으려고 그대로 뒀다.
     private static final int EXACT_SEARCH_MAX_SIZE = 10;
 
     private RouteOptimizer() {
@@ -80,33 +79,84 @@ public final class RouteOptimizer {
         if (movable.size() > EXACT_SEARCH_MAX_SIZE) {
             return fillNearestKeepingFixed(places, slots, movable, latOf, lngOf);
         }
-        List<List<T>> best = new ArrayList<>();
-        best.add(new ArrayList<>(places));
-        double[] bestDistance = {totalDistanceKm(places, latOf, lngOf)};
-        permuteIntoSlots(new ArrayList<>(places), slots, movable, 0, best, bestDistance, latOf, lngOf);
-        return best.get(0);
+        List<T> ordered = fillSlotsExact(places, slots, movable, latOf, lngOf);
+        // 예전 방식처럼 원래 순서보다 확실히 짧을 때만 바꾼다(같으면 원래 순서 유지).
+        if (totalDistanceKm(ordered, latOf, lngOf) < totalDistanceKm(places, latOf, lngOf)) {
+            return ordered;
+        }
+        return new ArrayList<>(places);
     }
 
-    private static <T> void permuteIntoSlots(
-            List<T> working, List<Integer> slots, List<T> movable, int k,
-            List<List<T>> best, double[] bestDistance, Function<T, Double> latOf, Function<T, Double> lngOf
+    /**
+     * 빈자리(slots)를 앞에서부터 하나씩 채우는 동적 계획법. 상태는 (지금까지 쓴 장소 집합, 마지막에 넣은 장소)이고,
+     * 고정 장소는 자리가 바뀌지 않으므로 빈자리 사이 구간의 거리는 "앞 빈자리 장소 → 고정 구간 첫 장소"와
+     * "고정 구간 마지막 장소 → 다음 빈자리 장소" 두 조각만 장소에 따라 달라진다.
+     */
+    private static <T> List<T> fillSlotsExact(
+            List<T> places, List<Integer> slots, List<T> movable, Function<T, Double> latOf, Function<T, Double> lngOf
     ) {
-        if (k == movable.size()) {
-            for (int i = 0; i < slots.size(); i++) {
-                working.set(slots.get(i), movable.get(i));
+        int m = movable.size();
+        int lastSlot = slots.get(m - 1);
+        double[][] between = distanceMatrix(movable, latOf, lngOf);
+        double[] enterFirst = new double[m];
+        double[] exitLast = new double[m];
+        double[][] leave = new double[m][m];
+        double[][] enter = new double[m][m];
+        for (int j = 0; j < m; j++) {
+            T place = movable.get(j);
+            int first = slots.get(0);
+            enterFirst[j] = first > 0 ? pairKm(places.get(first - 1), place, latOf, lngOf) : 0.0;
+            exitLast[j] = lastSlot + 1 < places.size() ? pairKm(place, places.get(lastSlot + 1), latOf, lngOf) : 0.0;
+            for (int t = 1; t < m; t++) {
+                int prevSlot = slots.get(t - 1);
+                int slot = slots.get(t);
+                if (slot > prevSlot + 1) {
+                    leave[t][j] = pairKm(place, places.get(prevSlot + 1), latOf, lngOf);
+                    enter[t][j] = pairKm(places.get(slot - 1), place, latOf, lngOf);
+                }
             }
-            double distance = totalDistanceKm(working, latOf, lngOf);
-            if (distance < bestDistance[0]) {
-                bestDistance[0] = distance;
-                best.set(0, new ArrayList<>(working));
+        }
+
+        int full = (1 << m) - 1;
+        double[][] best = new double[full + 1][m];
+        int[][] parent = new int[full + 1][m];
+        for (double[] row : best) {
+            Arrays.fill(row, Double.POSITIVE_INFINITY);
+        }
+        for (int j = 0; j < m; j++) {
+            best[1 << j][j] = enterFirst[j];
+            parent[1 << j][j] = -1;
+        }
+        for (int mask = 1; mask <= full; mask++) {
+            int t = Integer.bitCount(mask);
+            if (t == m) {
+                continue;
             }
-            return;
+            boolean adjacent = slots.get(t) == slots.get(t - 1) + 1;
+            for (int j = 0; j < m; j++) {
+                double base = best[mask][j];
+                if (base == Double.POSITIVE_INFINITY) {
+                    continue;
+                }
+                for (int k = 0; k < m; k++) {
+                    if ((mask & (1 << k)) != 0) {
+                        continue;
+                    }
+                    double step = adjacent ? between[j][k] : leave[t][j] + enter[t][k];
+                    int next = mask | (1 << k);
+                    if (base + step < best[next][k]) {
+                        best[next][k] = base + step;
+                        parent[next][k] = j;
+                    }
+                }
+            }
         }
-        for (int i = k; i < movable.size(); i++) {
-            Collections.swap(movable, k, i);
-            permuteIntoSlots(working, slots, movable, k + 1, best, bestDistance, latOf, lngOf);
-            Collections.swap(movable, k, i);
+        int[] order = reconstruct(best[full], exitLast, parent, full, m);
+        List<T> result = new ArrayList<>(places);
+        for (int t = 0; t < m; t++) {
+            result.set(slots.get(t), movable.get(order[t]));
         }
+        return result;
     }
 
     private static <T> List<T> fillNearestKeepingFixed(
@@ -149,34 +199,88 @@ public final class RouteOptimizer {
         return latOf.apply(place) != null && lngOf.apply(place) != null;
     }
 
-    /** 모든 순열 × 모든 시작점을 탐색해 총 이동거리가 최소인 경로(왕복 아님, 편도)를 찾는다. */
+    /**
+     * 총 이동거리가 최소인 편도 경로(시작점 자유)를 동적 계획법(Held-Karp)으로 구한다. 예전 전체 순열 탐색과 같은 최적값이며,
+     * 예전처럼 원래 순서보다 확실히 짧을 때만 순서를 바꾼다. 거리가 똑같은 경로가 여러 개면 어느 쪽을 고르는지는 예전과 다를 수 있다.
+     */
     private static <T> List<T> shortestPathExact(List<T> places, Function<T, Double> latOf, Function<T, Double> lngOf) {
-        List<T> working = new ArrayList<>(places);
-        double[] bestDistanceHolder = {totalDistanceKm(places, latOf, lngOf)};
-        List<List<T>> bestPermutationHolder = new ArrayList<>();
-        bestPermutationHolder.add(places);
-
-        permute(working, 0, bestDistanceHolder, bestPermutationHolder, latOf, lngOf);
-        return bestPermutationHolder.get(0);
+        int n = places.size();
+        double[][] distance = distanceMatrix(places, latOf, lngOf);
+        int full = (1 << n) - 1;
+        double[][] best = new double[full + 1][n];
+        int[][] parent = new int[full + 1][n];
+        for (double[] row : best) {
+            Arrays.fill(row, Double.POSITIVE_INFINITY);
+        }
+        for (int j = 0; j < n; j++) {
+            best[1 << j][j] = 0.0;
+            parent[1 << j][j] = -1;
+        }
+        for (int mask = 1; mask < full; mask++) {
+            for (int j = 0; j < n; j++) {
+                double base = best[mask][j];
+                if (base == Double.POSITIVE_INFINITY) {
+                    continue;
+                }
+                for (int k = 0; k < n; k++) {
+                    if ((mask & (1 << k)) != 0) {
+                        continue;
+                    }
+                    int next = mask | (1 << k);
+                    if (base + distance[j][k] < best[next][k]) {
+                        best[next][k] = base + distance[j][k];
+                        parent[next][k] = j;
+                    }
+                }
+            }
+        }
+        int[] order = reconstruct(best[full], new double[n], parent, full, n);
+        List<T> path = new ArrayList<>(n);
+        for (int index : order) {
+            path.add(places.get(index));
+        }
+        return totalDistanceKm(path, latOf, lngOf) < totalDistanceKm(places, latOf, lngOf) ? path : places;
     }
 
-    private static <T> void permute(
-            List<T> arr, int k, double[] bestDistanceHolder, List<List<T>> bestPermutationHolder,
-            Function<T, Double> latOf, Function<T, Double> lngOf
-    ) {
-        if (k == arr.size()) {
-            double distance = totalDistanceKm(arr, latOf, lngOf);
-            if (distance < bestDistanceHolder[0]) {
-                bestDistanceHolder[0] = distance;
-                bestPermutationHolder.set(0, new ArrayList<>(arr));
+    /** 마지막 장소별 최소 거리(+끝 비용)에서 가장 짧은 것을 고르고 parent를 거슬러 순서를 만든다. */
+    private static int[] reconstruct(double[] lastRow, double[] endCost, int[][] parent, int full, int size) {
+        int last = 0;
+        for (int j = 1; j < size; j++) {
+            if (lastRow[j] + endCost[j] < lastRow[last] + endCost[last]) {
+                last = j;
             }
-            return;
         }
-        for (int i = k; i < arr.size(); i++) {
-            Collections.swap(arr, k, i);
-            permute(arr, k + 1, bestDistanceHolder, bestPermutationHolder, latOf, lngOf);
-            Collections.swap(arr, k, i);
+        int[] order = new int[size];
+        int mask = full;
+        for (int t = size - 1; t >= 0; t--) {
+            order[t] = last;
+            int previous = parent[mask][last];
+            mask &= ~(1 << last);
+            last = previous;
         }
+        return order;
+    }
+
+    /** 장소 쌍 거리를 한 번씩만 계산해 둔다. 방향마다 계산해 예전 합계와 같은 값을 쓴다. */
+    private static <T> double[][] distanceMatrix(List<T> places, Function<T, Double> latOf, Function<T, Double> lngOf) {
+        int n = places.size();
+        double[][] distance = new double[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    distance[i][j] = pairKm(places.get(i), places.get(j), latOf, lngOf);
+                }
+            }
+        }
+        return distance;
+    }
+
+    /** totalDistanceKm과 같은 규칙: 둘 중 하나라도 좌표가 없으면 0. */
+    private static <T> double pairKm(T from, T to, Function<T, Double> latOf, Function<T, Double> lngOf) {
+        if (!hasCoordinates(from, latOf, lngOf) || !hasCoordinates(to, latOf, lngOf)) {
+            return 0.0;
+        }
+        return haversineKm(latOf.apply(from), lngOf.apply(from), latOf.apply(to), lngOf.apply(to));
     }
 
     /** 가장 가까운 미방문 지점을 계속 골라 잇는 근사 알고리즘. 첫 지점은 입력 순서의 첫 장소로 고정. */
