@@ -1,0 +1,203 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": false,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "id": 5,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "capacity-index-abba"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{job=\"capacity\",uri=\"/api/places\"}[20s]))",
+          "refId": "A",
+          "legendFormat": "Request throughput"
+        }
+      ],
+      "title": "Request throughput",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "capacity-index-abba"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_sum{job=\"capacity\",uri=\"/api/places\"}[20s]))/sum(rate(http_server_requests_seconds_count{job=\"capacity\",uri=\"/api/places\"}[20s]))",
+          "refId": "A",
+          "legendFormat": "HTTP mean latency"
+        }
+      ],
+      "title": "HTTP mean latency",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "capacity-index-abba"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "hikaricp_connections_pending{job=\"capacity\"}",
+          "refId": "A",
+          "legendFormat": "DB connection waiters"
+        }
+      ],
+      "title": "DB connection waiters",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "capacity-index-abba"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "targets": [
+        {
+          "expr": "hikaricp_connections_active{job=\"capacity\"}",
+          "refId": "A",
+          "legendFormat": "Active DB connections"
+        }
+      ],
+      "title": "Active DB connections",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "capacity-index-abba"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "targets": [
+        {
+          "expr": "process_cpu_usage{job=\"capacity\"}",
+          "refId": "A",
+          "legendFormat": "JVM CPU"
+        }
+      ],
+      "title": "JVM CPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "capacity-index-abba"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 6,
+      "targets": [
+        {
+          "expr": "rate(hikaricp_connections_acquire_seconds_sum{job=\"capacity\"}[20s])/rate(hikaricp_connections_acquire_seconds_count{job=\"capacity\"}[20s])",
+          "refId": "A",
+          "legendFormat": "Mean connection acquisition time"
+        }
+      ],
+      "title": "Mean connection acquisition time",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [
+    "capacity",
+    "isolated",
+    "index-abba"
+  ],
+  "time": {
+    "from": "2026-11-02T03:06:53.938000Z",
+    "to": "2026-11-02T03:14:44.856000Z"
+  },
+  "title": "Trova - index before / after (isolated ABBA)",
+  "uid": "trova-index-abba",
+  "version": 2
+}

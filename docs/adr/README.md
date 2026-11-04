@@ -74,3 +74,4 @@
 | [0033](0033-analysis-stage-elapsed-metrics.md) | 영상 분석 Java 단계와 실행 시간을 결과별로 계측한다 | 확정 | 2026-11-01 |
 
 | [0034](0034-place-list-scalar-read.md) | 장소 목록에 필요한 값만 조회하고 요청 내 URL 정규화를 공유한다 | 확정 | 2026-11-02 |
+| [0035](0035-place-list-user-order-index.md) | 장소 목록 사용자·정렬 복합 인덱스 | 확정 | 2026-11-02 |

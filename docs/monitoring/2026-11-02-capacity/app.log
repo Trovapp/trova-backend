@@ -1,0 +1,49 @@
+app-1  |
+app-1  |   .   ____          _            __ _ _
+app-1  |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+app-1  | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+app-1  |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+app-1  |   '  |____| .__|_| |_|_| |_\__, | / / / /
+app-1  |  =========|_|==============|___/=/_/_/_/
+app-1  |
+app-1  |  :: Spring Boot ::                (v4.1.0)
+app-1  |
+app-1  | 2026-11-02T02:54:29.133Z  INFO 1 --- [           main] c.trova.backend.TrovaBackendApplication  : Starting TrovaBackendApplication v0.0.1-SNAPSHOT using Java 21.0.13 with PID 1 (/app.jar started by root in /)
+app-1  | 2026-11-02T02:54:29.135Z  INFO 1 --- [           main] c.trova.backend.TrovaBackendApplication  : No active profile set, falling back to 1 default profile: "default"
+app-1  | 2026-11-02T02:54:30.428Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+app-1  | 2026-11-02T02:54:30.605Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 172 ms. Found 20 JPA repository interfaces.
+app-1  | 2026-11-02T02:54:31.504Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+app-1  | 2026-11-02T02:54:31.515Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+app-1  | 2026-11-02T02:54:31.515Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+app-1  | 2026-11-02T02:54:31.540Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2324 ms
+app-1  | 2026-11-02T02:54:31.743Z  INFO 1 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+app-1  | 2026-11-02T02:54:31.814Z  INFO 1 --- [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+app-1  | 2026-11-02T02:54:32.159Z  INFO 1 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+app-1  | 2026-11-02T02:54:32.218Z  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+app-1  | 2026-11-02T02:54:32.331Z  INFO 1 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@35d53cd8
+app-1  | 2026-11-02T02:54:32.334Z  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+app-1  | 2026-11-02T02:54:32.410Z  INFO 1 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+app-1  | 	Database JDBC URL [jdbc:postgresql://db:5432/capacity]
+app-1  | 	Database driver: PostgreSQL JDBC Driver
+app-1  | 	Database dialect: PostgreSQLDialect
+app-1  | 	Database version: 17.11
+app-1  | 	Default catalog/schema: capacity/public
+app-1  | 	Autocommit mode: undefined/unknown
+app-1  | 	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+app-1  | 	JDBC fetch size: none
+app-1  | 	Pool: DataSourceConnectionProvider
+app-1  | 	Minimum pool size: undefined/unknown
+app-1  | 	Maximum pool size: undefined/unknown
+app-1  | 2026-11-02T02:54:33.850Z  INFO 1 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+app-1  | 2026-11-02T02:54:33.947Z  INFO 1 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+app-1  | 2026-11-02T02:54:34.001Z  INFO 1 --- [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+app-1  | 2026-11-02T02:54:34.938Z  INFO 1 --- [           main] o.s.boot.web.servlet.RegistrationBean    : Filter jwtAuthenticationFilterRegistration was not registered (disabled)
+app-1  | 2026-11-02T02:54:34.938Z  INFO 1 --- [           main] o.s.boot.web.servlet.RegistrationBean    : Filter shareKeyAuthenticationFilterRegistration was not registered (disabled)
+app-1  | 2026-11-02T02:54:34.938Z  INFO 1 --- [           main] o.s.boot.web.servlet.RegistrationBean    : Filter mobileLoginFlagFilterRegistration was not registered (disabled)
+app-1  | 2026-11-02T02:54:36.142Z  INFO 1 --- [           main] com.trova.backend.push.VapidKeys         : 웹 푸시 꺼짐: VAPID 키가 설정되지 않았어요
+app-1  | 2026-11-02T02:54:37.139Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+app-1  | 2026-11-02T02:54:37.417Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+app-1  | 2026-11-02T02:54:37.423Z  INFO 1 --- [           main] c.trova.backend.TrovaBackendApplication  : Started TrovaBackendApplication in 8.78 seconds (process running for 9.308)
+app-1  | 2026-11-02T02:54:37.688Z  INFO 1 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+app-1  | 2026-11-02T02:54:37.688Z  INFO 1 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+app-1  | 2026-11-02T02:54:37.689Z  INFO 1 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms

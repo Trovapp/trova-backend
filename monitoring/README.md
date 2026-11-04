@@ -150,6 +150,12 @@ python3 monitoring/run_observed_smoke.py --run-production --mode health \
 # places 모드에는 --token-file 비공개단기테스트토큰파일 이 추가로 필요하다.
 ```
 
+`--mode places-load`(2026-11-04, 인덱스 전후 비교용): 테스트 계정 장소 목록만 5 VU · 3분 · 요청 뒤 2초 대기로
+고정(≈150 req/min, 운영 IP 제한 300/min 아래). 부하 크기는 `places-load.js`에 고정되어 CLI로 바꿀 수 없다.
+401/403은 `AUTH_FAILED`, 비정상 응답은 `SERVER_ERROR`, 단일 응답 2초 이상은 `SLOW_RESPONSE`로 즉시 중단하고
+`run.json`의 `abortReason`에 남긴다. 오류율 1% 이상·p95 1초 이상도 중단. 자원 감시 기준과 감독 시한(210초)은 위와 같다.
+로컬 검증: `cd monitoring && python3 -m unittest test_places_load`(loopback fixture만).
+
 출력 디렉터리가 이미 있으면 덮어쓰지 않는다. 토큰 발급/계정 선택은 실행기가 하지 않는다.
 원시 k6 로그에 토큰이나 응답 본문을 추가하지 않는다. 실험 후 임시 토큰 파일을 정리한다.
 
@@ -182,3 +188,11 @@ places 18건에서 자원 기준으로 중단. 특정 앱 코드 병목은 미�
 선택/검증할 후보가 없으면 외부 호출 없이 빠르게 끝날 수 있다. Timer 28개(단계 6 × 결과 4 + 전체 결과 4)를
 미리 등록하므로 첫 수집부터 0 표본이 나오지만 첫 수집 전에 완료된 작업은 증가량에서 놓칠 수 있다.
 히스토그램/p95는 추가하지 않았다. 배포 후 새 분석이 없으면 평균 시간은 계속 데이터 없음이다.
+
+### 격리 환경 동시 사용자 부하 (#307)
+
+[재현 절차](capacity/README.md) · [실측 결과와 그래프](../docs/monitoring/2026-11-02-capacity.md).
+운영 저부하 확인과 별도로 CPU를 제한한 앱/DB에서 k6 동시 조회를 실행했다.
+
+후속 [인덱스 ABBA 개선 검증](../docs/monitoring/2026-11-02-index-abba.md):
+같은 20/40 VU 부하에서 인덱스 전후를 반복 비교하고 Grafana·Prometheus 실제 화면을 보존했다.

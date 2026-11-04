@@ -1,0 +1,44 @@
+{
+  "commit": "008e2de9be78205a5d089ed1b4f0ecdd70d95d6a",
+  "jar_sha256": "84d219d030d110b4223795eb700235afef9dcbe961fd1444ec6f263f05b0ddc7",
+  "k6": "k6 v2.2.0 (commit/devel, go1.26.5, darwin/arm64)",
+  "containers": [
+    {
+      "name": "/trova-capacity-307-app-1",
+      "image": "sha256:0b99b3376fbb50dbf9c0af8535fdd5b8eb0d3fdfc8b1e4967f383b6919f6901a",
+      "memory": 805306368,
+      "nano_cpus": 1000000000,
+      "networks": [
+        "trova-capacity-307_isolated"
+      ]
+    },
+    {
+      "name": "/trova-capacity-307-db-1",
+      "image": "sha256:3b0cda93be7c8dba2ed484d19393d93845dc3dafb88973e248ba8e6d99d784e1",
+      "memory": 536870912,
+      "nano_cpus": 1000000000,
+      "networks": [
+        "trova-capacity-307_isolated"
+      ]
+    },
+    {
+      "name": "/trova-capacity-307-prometheus-1",
+      "image": "sha256:565ee86501224ebbb98fc10b332fa54440b100469924003359edf49cbce374bd",
+      "memory": 268435456,
+      "nano_cpus": 0,
+      "networks": [
+        "trova-capacity-307_isolated"
+      ]
+    },
+    {
+      "name": "/trova-capacity-307-gateway-1",
+      "image": "sha256:785835ea65db4bba6f021acc0f3be91b0fef76a53fe41f8588c6698d2aed0606",
+      "memory": 0,
+      "nano_cpus": 0,
+      "networks": [
+        "trova-capacity-307_entry",
+        "trova-capacity-307_isolated"
+      ]
+    }
+  ]
+}

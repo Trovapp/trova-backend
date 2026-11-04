@@ -1,0 +1,249 @@
+{
+  "resourceGuard": "v2: 100MiB available; any swap-out; swap-in >=1MiB/s; memory PSI some avg10 >=1%; all provisional",
+  "mode": "places-load",
+  "limit": {
+    "vus": 5,
+    "durationSeconds": 180,
+    "thinkSeconds": 2
+  },
+  "resourceSamples": [
+    {
+      "at": 1793783239.186497,
+      "availableKiB": 284168,
+      "swapInPages": 4352880,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783240.357404,
+      "availableKiB": 280760,
+      "swapInPages": 4352941,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783246.218574,
+      "availableKiB": 292360,
+      "swapInPages": 4352966,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783252.131731,
+      "availableKiB": 294752,
+      "swapInPages": 4353043,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783258.044526,
+      "availableKiB": 301208,
+      "swapInPages": 4353059,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783263.848292,
+      "availableKiB": 300408,
+      "swapInPages": 4353096,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783269.705469,
+      "availableKiB": 298984,
+      "swapInPages": 4353114,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783275.522791,
+      "availableKiB": 280040,
+      "swapInPages": 4353150,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783281.584588,
+      "availableKiB": 279836,
+      "swapInPages": 4353174,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783287.522063,
+      "availableKiB": 294548,
+      "swapInPages": 4353208,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783293.3450649,
+      "availableKiB": 294556,
+      "swapInPages": 4353227,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783300.5052779,
+      "availableKiB": 268052,
+      "swapInPages": 4353272,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783306.4215412,
+      "availableKiB": 279584,
+      "swapInPages": 4353293,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.18
+    },
+    {
+      "at": 1793783312.235714,
+      "availableKiB": 289868,
+      "swapInPages": 4353307,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.09
+    },
+    {
+      "at": 1793783318.04975,
+      "availableKiB": 292884,
+      "swapInPages": 4353323,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.05
+    },
+    {
+      "at": 1793783323.8520262,
+      "availableKiB": 292024,
+      "swapInPages": 4353351,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.02
+    },
+    {
+      "at": 1793783329.7871811,
+      "availableKiB": 290124,
+      "swapInPages": 4353360,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.01
+    },
+    {
+      "at": 1793783335.643198,
+      "availableKiB": 286820,
+      "swapInPages": 4353372,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783341.4572852,
+      "availableKiB": 293156,
+      "swapInPages": 4353383,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783347.307861,
+      "availableKiB": 291044,
+      "swapInPages": 4353405,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783353.155091,
+      "availableKiB": 287676,
+      "swapInPages": 4353418,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783359.0954912,
+      "availableKiB": 290876,
+      "swapInPages": 4353427,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783366.046643,
+      "availableKiB": 269016,
+      "swapInPages": 4353441,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783371.8594701,
+      "availableKiB": 269916,
+      "swapInPages": 4353444,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783378.025367,
+      "availableKiB": 276032,
+      "swapInPages": 4354217,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783384.021997,
+      "availableKiB": 284672,
+      "swapInPages": 4354219,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783389.93585,
+      "availableKiB": 286552,
+      "swapInPages": 4354223,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783395.794461,
+      "availableKiB": 286396,
+      "swapInPages": 4354233,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793783401.685305,
+      "availableKiB": 274536,
+      "swapInPages": 4354235,
+      "swapOutPages": 4870309,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    }
+  ],
+  "stoppedReason": null,
+  "observer": "SSH meminfo/vmstat + local Prometheus query approximately every 5s; not included in k6 HTTP counts",
+  "start": 1793783239.1865091,
+  "exitCode": 108,
+  "end": 1793783405.278242,
+  "abortReason": "SERVER_ERROR"
+}

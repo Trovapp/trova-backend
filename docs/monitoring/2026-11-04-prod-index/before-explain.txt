@@ -1,0 +1,24 @@
+                                                           QUERY PLAN                                                           
+--------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=25.64..25.75 rows=45 width=462) (actual time=0.206..0.209 rows=42 loops=1)
+   Sort Key: p.created_at DESC, p.id DESC
+   Sort Method: quicksort  Memory: 44kB
+   Buffers: shared hit=19
+   ->  Hash Join  (cost=4.82..24.40 rows=45 width=462) (actual time=0.132..0.173 rows=42 loops=1)
+         Hash Cond: (p.processing_job_id = j.id)
+         Buffers: shared hit=19
+         ->  Seq Scan on saved_places p  (cost=0.00..19.45 rows=45 width=419) (actual time=0.065..0.091 rows=42 loops=1)
+               Filter: (user_id = 1)
+               Rows Removed by Filter: 235
+               Buffers: shared hit=16
+         ->  Hash  (cost=3.81..3.81 rows=81 width=51) (actual time=0.054..0.055 rows=82 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 15kB
+               Buffers: shared hit=3
+               ->  Seq Scan on processing_jobs j  (cost=0.00..3.81 rows=81 width=51) (actual time=0.009..0.031 rows=82 loops=1)
+                     Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=15
+ Planning Time: 3.581 ms
+ Execution Time: 0.264 ms
+(20 rows)
+
