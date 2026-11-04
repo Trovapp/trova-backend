@@ -2287,3 +2287,9 @@
 - `api_call_logs`에 `thoughts_tokens`(답 전에 생각한 토큰), `cached_tokens`(앞부분이 같아 캐시로 처리된 입력), `video_tokens`(입력 중 영상) 세 칸을 추가했다(nullable, ddl-auto update). Python 파이프라인 모든 Gemini 호출과 Java Spring AI JSON 호출(영상 칸은 없음)에서 채운다.
 - 판단에 쓰는 법: 생각 토큰이 크면 thinking 설정 낮추기, 같은 영상의 collect→filter에서 cached가 0이면 영상 중복 처리가 그대로라는 뜻, 영상 토큰이 입력 대부분이면 해상도 낮추기 후보.
 - 확인: Python 전체 테스트, Java 관련 테스트, `./gradlew build` 통과. 실제 값은 배포 뒤 수집.
+
+## 2026-11-04 리눅스 Python 최대 메모리 계측 오류 수정 (#320)
+
+- #315 배포 뒤 운영 값에서 Python 최대 메모리가 400.6/409.6MiB로 나왔다. 리눅스 `ru_maxrss`는 exec 전 부모(JVM) 값이 남기 때문이다. 운영에서 부모 150MiB일 때 자식 `ru_maxrss` 163,200KiB, `VmHWM` 8,908KiB로 확인했다.
+- 리눅스에서는 `/proc/self/status`의 `VmHWM`을 쓰고, 없으면(macOS) 예전 방식을 쓴다. 자식 최대 메모리는 fork 시점 Python 크기가 섞인 상한값이라고 문서에 적었다.
+- 확인: 로컬 Python 전체 테스트, 운영 서버 Python 3.10에서 새 테스트(부모 120MiB여도 자식 100MiB 미만) 통과. Python 파일만 바뀌어 Java 빌드는 영향 없음.
