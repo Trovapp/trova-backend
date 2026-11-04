@@ -195,4 +195,4 @@ Orca 앱 권한이 간헐적으로만 적용된 것으로 추정. 사용자가 H
 **현상**: `sudo install -d … /opt/trova-backend/gc-logs` + `sudo -u trova jcmd <pid> VM.log output=…gc.log …`가 Claude Code 자동 권한 분류기에서 차단(설명 없음).
 **해결안**: 1) (권장) 사용자가 “운영 GC 로그 켜줘”라고 직접 요청 → 재시도 2) 사용자가 SSH로 직접 실행(명령 제공)
 3) 운영 로그 없이 복제 환경 비교만으로 결정.
-**사용자 선택**: (대기 중)
+**사용자 선택**: 1번(“운영 GC 로그 켜줘” 직접 요청) → 재시도 통과. 2026-11-05 00:10 KST(서버 시각 15:10 UTC) `/opt/trova-backend/gc-logs/gc.log` 기록 시작(PID 316620). 재시작·배포 시 자동으로 꺼짐.
