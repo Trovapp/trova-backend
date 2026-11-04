@@ -42,6 +42,27 @@ class PickTest(unittest.TestCase):
         self.assertFalse(frames._seek_is_cheaper(times, [], picks))
 
 
+class SeekCommandTest(unittest.TestCase):
+    def test_입력마다_스레드_하나로_2곳씩_나눠_번호를_이어_붙인다(self):
+        picks = [0.4 + i for i in range(8)]
+        commands = frames._seek_commands(Path("v.mp4"), Path("out"), picks, 0.0, 512)
+        self.assertEqual(len(commands), 4)
+        outputs = []
+        for cmd in commands:
+            self.assertEqual(cmd.count("-i"), frames.SEEK_INPUTS_PER_CALL)
+            for i, arg in enumerate(cmd):
+                if arg == "-i":
+                    self.assertEqual(cmd[i - 4:i - 2], ["-threads", "1"])
+            outputs += [Path(a).name for a in cmd if a.endswith(".jpg")]
+        self.assertEqual(outputs, [f"frame_{i:03d}.jpg" for i in range(1, 9)])
+
+    def test_남는_지점이_홀수면_마지막_명령에_하나만_연다(self):
+        commands = frames._seek_commands(Path("v.mp4"), Path("out"), [0.5, 1.5, 2.5], 0.0, 512)
+        self.assertEqual([c.count("-i") for c in commands], [2, 1])
+        self.assertIn("1:v:0", commands[0])
+        self.assertNotIn("1:v:0", commands[1])
+
+
 @unittest.skipUnless(HAS_FFMPEG, "ffmpeg 없음")
 class VideoTest(unittest.TestCase):
     def test_키프레임이_5초마다인_영상에서_지점_이동으로_예전과_같은_장면을_뽑는다(self):

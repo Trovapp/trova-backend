@@ -1,0 +1,19 @@
+{
+  "issue": 327,
+  "label": "production (Oracle E2.1.Micro, 2 vCPU, 956MB RAM), /tmp 임시 폴더, nice -n 10, 진행 중 분석 0건, Gemini·DB 미사용",
+  "video": "instagram DX-rrm8BHCr (46초 h264, 13,277,988 bytes)",
+  "compare": {"old": "운영 frames.py (main 443ae25, 입력 8개 한 명령)", "new": "fix/#327 frames.py (입력마다 -threads 1, 2개씩)"},
+  "order": "1·3회차 old→new, 2회차 new→old",
+  "runs": {
+    "old": [{"wallMs": 12005.8, "childMaxRssKib": 223192, "childCpuMs": 19670},
+            {"wallMs": 11897.0, "childMaxRssKib": 222996, "childCpuMs": 18702},
+            {"wallMs": 11973.0, "childMaxRssKib": 223252, "childCpuMs": 18124}],
+    "new": [{"wallMs": 9787.7, "childMaxRssKib": 82368, "childCpuMs": 9829},
+            {"wallMs": 9460.8, "childMaxRssKib": 82232, "childCpuMs": 9403},
+            {"wallMs": 9398.3, "childMaxRssKib": 82472, "childCpuMs": 9333}]
+  },
+  "medians": {"old": {"wallMs": 11973.0, "childMaxRssMiB": 217.97, "childCpuMs": 18702},
+              "new": {"wallMs": 9460.8, "childMaxRssMiB": 80.44, "childCpuMs": 9403}},
+  "sameOutput": "JPEG 8장 md5 모두 같음",
+  "serverTests": "test_frames 7개 OK (Python 3.10, ffmpeg 4.4)"
+}
