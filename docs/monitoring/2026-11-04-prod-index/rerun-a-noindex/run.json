@@ -1,0 +1,273 @@
+{
+  "resourceGuard": "v2: 100MiB available; any swap-out; swap-in >=1MiB/s; memory PSI some avg10 >=1%; all provisional",
+  "mode": "places-load",
+  "limit": {
+    "vus": 5,
+    "durationSeconds": 180,
+    "thinkSeconds": 2
+  },
+  "resourceSamples": [
+    {
+      "at": 1793796686.0750048,
+      "availableKiB": 293396,
+      "swapInPages": 4377764,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796686.940734,
+      "availableKiB": 304584,
+      "swapInPages": 4377770,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796692.834558,
+      "availableKiB": 316412,
+      "swapInPages": 4377784,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796698.917681,
+      "availableKiB": 314512,
+      "swapInPages": 4377920,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.12
+    },
+    {
+      "at": 1793796704.8045828,
+      "availableKiB": 315516,
+      "swapInPages": 4377920,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.06
+    },
+    {
+      "at": 1793796710.638572,
+      "availableKiB": 318436,
+      "swapInPages": 4377922,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.03
+    },
+    {
+      "at": 1793796716.545589,
+      "availableKiB": 316600,
+      "swapInPages": 4377931,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.01
+    },
+    {
+      "at": 1793796722.500086,
+      "availableKiB": 313156,
+      "swapInPages": 4377932,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796728.393358,
+      "availableKiB": 317172,
+      "swapInPages": 4377957,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796734.236279,
+      "availableKiB": 316400,
+      "swapInPages": 4377966,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796740.034616,
+      "availableKiB": 318188,
+      "swapInPages": 4377973,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796745.8395588,
+      "availableKiB": 316104,
+      "swapInPages": 4378000,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796752.647157,
+      "availableKiB": 290708,
+      "swapInPages": 4378000,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796758.365854,
+      "availableKiB": 303144,
+      "swapInPages": 4378054,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796764.203579,
+      "availableKiB": 316640,
+      "swapInPages": 4378054,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796770.037034,
+      "availableKiB": 316432,
+      "swapInPages": 4378062,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796775.8705862,
+      "availableKiB": 315452,
+      "swapInPages": 4378079,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796781.877014,
+      "availableKiB": 316332,
+      "swapInPages": 4378089,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796787.733712,
+      "availableKiB": 315532,
+      "swapInPages": 4378092,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796793.477658,
+      "availableKiB": 314780,
+      "swapInPages": 4378095,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796799.239578,
+      "availableKiB": 314340,
+      "swapInPages": 4378155,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796805.099086,
+      "availableKiB": 318172,
+      "swapInPages": 4378167,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796810.929987,
+      "availableKiB": 318020,
+      "swapInPages": 4378173,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796817.744938,
+      "availableKiB": 295628,
+      "swapInPages": 4378184,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796823.686146,
+      "availableKiB": 306152,
+      "swapInPages": 4378188,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796829.585647,
+      "availableKiB": 312036,
+      "swapInPages": 4378188,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796835.436245,
+      "availableKiB": 317300,
+      "swapInPages": 4378199,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796841.2396019,
+      "availableKiB": 312348,
+      "swapInPages": 4378203,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796847.1288729,
+      "availableKiB": 315452,
+      "swapInPages": 4378203,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796852.9337778,
+      "availableKiB": 315920,
+      "swapInPages": 4378206,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796858.812615,
+      "availableKiB": 316696,
+      "swapInPages": 4378208,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    },
+    {
+      "at": 1793796864.71883,
+      "availableKiB": 314844,
+      "swapInPages": 4378211,
+      "swapOutPages": 4898716,
+      "pageBytes": 4096,
+      "memorySomeAvg10": 0.0
+    }
+  ],
+  "stoppedReason": null,
+  "observer": "SSH meminfo/vmstat + local Prometheus query approximately every 5s; not included in k6 HTTP counts",
+  "start": 1793796686.0750132,
+  "exitCode": 0,
+  "end": 1793796867.211796,
+  "abortReason": null
+}

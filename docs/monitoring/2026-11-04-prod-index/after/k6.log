@@ -1,0 +1,38 @@
+
+
+  █ THRESHOLDS 
+
+    http_req_duration
+    ✓ 'p(95)<1000' p(95)=354.36ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 290     2.215085/s
+    checks_succeeded...: 100.00% 290 out of 290
+    checks_failed......: 0.00%   0 out of 290
+
+    ✓ HTTP 200 and place list shape
+
+    HTTP
+    http_req_duration..............: avg=278.79ms min=183.94ms med=268.99ms max=438.62ms p(90)=334.47ms p(95)=354.36ms
+      { expected_response:true }...: avg=278.79ms min=183.94ms med=268.99ms max=438.62ms p(90)=334.47ms p(95)=354.36ms
+    http_req_failed................: 0.00%  0 out of 290
+    http_reqs......................: 290    2.215085/s
+
+    EXECUTION
+    iteration_duration.............: avg=2.28s    min=2.18s    med=2.27s    max=2.53s    p(90)=2.32s    p(95)=2.35s   
+    iterations.....................: 285    2.176893/s
+    vus............................: 5      min=5        max=5
+    vus_max........................: 5      min=5        max=5
+
+    NETWORK
+    data_received..................: 8.5 MB 65 kB/s
+    data_sent......................: 58 kB  442 B/s
+
+
+
+time="2026-11-04T18:24:56+09:00" level=error msg="test run was aborted because k6 received a 'terminated' signal"

@@ -1,12 +1,62 @@
 {
   "collectedAtKst": "2026-11-04 16:4x",
   "environment": "production (Supabase Postgres 17.6, read-only transaction)",
-  "prometheus": {"job": "trova-prod", "up": 1, "via": "monitoring/tunnel.sh localhost:18080"},
-  "tables": {"users": 12, "saved_places": 277, "saved_places_total_size": "184 kB", "database_size": "21 MB"},
-  "placesPerUserTop": {"user1_test_account": 42, "user2": 210, "user7": 17, "user12": 8},
-  "existingIndexes": ["processing_jobs_pkey(id)", "saved_places_pkey(id)"],
+  "prometheus": {
+    "job": "trova-prod",
+    "up": 1,
+    "via": "monitoring/tunnel.sh localhost:18080"
+  },
+  "tables": {
+    "users": 12,
+    "saved_places": 277,
+    "saved_places_total_size": "184 kB",
+    "database_size": "21 MB"
+  },
+  "placesPerUserTop": {
+    "user1_test_account": 42,
+    "user2": 210,
+    "user7": 17,
+    "user12": 8
+  },
+  "existingIndexes": [
+    "processing_jobs_pkey(id)",
+    "saved_places_pkey(id)"
+  ],
   "targetIndexPresent": false,
-  "beforeExplain": {"file": "before-explain.txt", "plan": "Sort <- Hash Join <- Seq Scan saved_places (Rows Removed by Filter 235) + Seq Scan processing_jobs", "executionMs": 0.264, "planningMs": 3.581},
+  "beforeExplain": {
+    "file": "before-explain.txt",
+    "plan": "Sort <- Hash Join <- Seq Scan saved_places (Rows Removed by Filter 235) + Seq Scan processing_jobs",
+    "executionMs": 0.264,
+    "planningMs": 3.581
+  },
   "reference": "2026-11-02 운영 1 VU 장소 목록 18건 p95 524.22ms (docs/monitoring/2026-11-02-read-smoke.md)",
-  "pending": ["운영 JAR SHA (SSH)", "운영 서버→Supabase 왕복 지연 (SSH)", "테스트 계정 단기 토큰"]
+  "pending": [
+    "테스트 계정 단기 토큰(사용자 준비, #2)"
+  ],
+  "productionJar": {
+    "sha256": "f5e6a773019400c346bef72816177be97542b4487a2f9e62756e975216e9a663",
+    "note": "메모리 인계: 운영 소스 a108814(main, #316까지). 프로세스 시작 2026-11-04(process_start_time_seconds 1793776599)"
+  },
+  "networkRtt": {
+    "method": "TCP connect 시간(핸드셰이크≈1 RTT), 자격증명 사용 안 함",
+    "prodServerToSupabaseMs": {
+      "n": 30,
+      "min": 29.82,
+      "median": 31.5,
+      "p95": 35.79,
+      "max": 142.19
+    },
+    "macToProdServer443Ms": {
+      "n": 20,
+      "min": 38.6,
+      "median": 40.4,
+      "p95": 77.9,
+      "max": 81.7
+    }
+  },
+  "serverSideLatencyHint": {
+    "query": "30일 rate 기준 /api/places 서버 내부 평균",
+    "avgSec": 0.56,
+    "caveat": "오늘 재시작 후 요청 1건씩뿐이고 재시작 직후 느린 요청이 섞여 대표값 아님. 측정 구간에서 다시 본다."
+  }
 }
