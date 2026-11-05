@@ -174,7 +174,7 @@ Trova 실측(운영, 2026-11-04): 장소 277행·184kB, 쿼리 0.264ms, 서버�
   운영 GC 로그의 8.75초 Full GC는 `User 0.16s / Sys 0.97s / Real 8.75s` → CPU를 실제 쓴 시간은 1.1초, **나머지 7.6초는 CPU 대기(steal)와 스왑**.
   복제 환경(CPU 0.125·메모리 520MiB, Serial→G1→G1→Serial 각 6분)에서 G1은 CodeCache 정리를 Full GC 없이 처리해
   최대 멈춤 1.9~2.5초 → 0.7~0.9초, p99 2.2~2.7초 → 1.2~1.3초. 대신 메모리를 한도까지 더 쓴다.
-  → 운영에 G1 적용(11-05 11:22). 24시간 이상 관찰 뒤 결론(진행 중). 자세히: `docs/monitoring/2026-11-04-full-gc-analysis.md`(PR #331 브랜치).
+  → 운영에 G1 적용(11-05 11:22). 24시간 이상 관찰 뒤 결론(진행 중). 자세히: `docs/monitoring/2026-11-04-full-gc-analysis.md`(브랜치 `perf/#331-gc-compare`, PR 아직 없음).
 
 ### GC 로그 보는 법 (JVM)
 1. **켜기**
@@ -203,7 +203,7 @@ Trova 실측(운영, 2026-11-04): 장소 277행·184kB, 쿼리 0.264ms, 서버�
 - 고친 것: 확인된 사용자 ID를 메모리에 기억(ADR 0036, 탈퇴 커밋 뒤 제거). 같은 조건 재측정에서 조회 7개 왕복 약 3.5 → 약 1.25번,
   +30ms 조건 중앙값 약 107 → 약 39ms. 대조군(사용자 정보가 필요한 `/api/auth/me`)은 그대로 → 변경이 원인임을 확인.
 - 교훈: DB가 멀리 있으면(관리형 DB) **쿼리 속도보다 왕복 횟수**가 지연을 정한다. 쿼리 계획(EXPLAIN)만 보면 놓친다.
-- 자세히: `docs/monitoring/2026-11-05-db-roundtrips.md`, 도구 `monitoring/roundtrips/`(PR #333).
+- 자세히: `docs/monitoring/2026-11-05-db-roundtrips.md`, 도구 `monitoring/roundtrips/`(PR #333, 11-05 main 머지 9f126ee — 운영 배포는 G1 관찰 뒤).
 
 ### 실제 사례: 운영에서 인덱스 효과가 안 보인 이유 (2026-11-04)
 - 같은 JAR에서 인덱스만 바꿔(있음 → 삭제 → 재생성) 3분씩 측정: 중앙값 275.6 vs 274.9ms, 서버 내부 평균 167 vs 164ms → 차이 없음.
@@ -254,5 +254,5 @@ Trova 실측(운영, 2026-11-04): 장소 277행·184kB, 쿼리 0.264ms, 서버�
 - 격리 인덱스 실험: `docs/monitoring/2026-11-02-index-abba.md`
 - 운영 측정 보고서: `docs/monitoring/2026-11-04-prod-index.md`, 원본 `docs/monitoring/2026-11-04-prod-index/`
 - 면접 노트: `docs/interview/capacity-qa.md`
-- Full GC 분석·Serial vs G1 비교·운영 G1 적용: `docs/monitoring/2026-11-04-full-gc-analysis.md`, 도구 `monitoring/gc-compare/` (PR #331 브랜치)
-- 요청당 DB 왕복 수: `docs/monitoring/2026-11-05-db-roundtrips.md`, 도구 `monitoring/roundtrips/`, ADR 0036 (PR #333)
+- Full GC 분석·Serial vs G1 비교·운영 G1 적용: `docs/monitoring/2026-11-04-full-gc-analysis.md`, 도구 `monitoring/gc-compare/` (브랜치 `perf/#331-gc-compare`, PR 아직 없음)
+- 요청당 DB 왕복 수: `docs/monitoring/2026-11-05-db-roundtrips.md`, 도구 `monitoring/roundtrips/`, ADR 0036 (PR #333, main 머지 9f126ee, 운영 배포 전)
