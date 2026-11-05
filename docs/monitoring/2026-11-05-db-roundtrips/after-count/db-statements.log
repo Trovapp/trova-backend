@@ -1,0 +1,170 @@
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default "max_connections" ... 100
+selecting default "shared_buffers" ... 128MB
+selecting default time zone ... Etc/UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+initdb: warning: enabling "trust" authentication for local connections
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+syncing data to disk ... ok
+
+
+Success. You can now start the database server using:
+
+    pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+waiting for server to start....2026-11-05 03:11:18.074 UTC [47] LOG:  starting PostgreSQL 17.11 (Debian 17.11-1.pgdg13+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+2026-11-05 03:11:18.075 UTC [47] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-11-05 03:11:18.076 UTC [50] LOG:  database system was shut down at 2026-11-05 03:11:17 UTC
+2026-11-05 03:11:18.078 UTC [47] LOG:  database system is ready to accept connections
+ done
+server started
+CREATE DATABASE
+
+
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+
+waiting for server to shut down....2026-11-05 03:11:18.219 UTC [47] LOG:  received fast shutdown request
+2026-11-05 03:11:18.220 UTC [47] LOG:  aborting any active transactions
+2026-11-05 03:11:18.221 UTC [47] LOG:  background worker "logical replication launcher" (PID 53) exited with exit code 1
+2026-11-05 03:11:18.221 UTC [48] LOG:  shutting down
+2026-11-05 03:11:18.221 UTC [48] LOG:  checkpoint starting: shutdown immediate
+2026-11-05 03:11:18.240 UTC [48] LOG:  checkpoint complete: wrote 925 buffers (5.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.014 s, total=0.019 s; sync files=301, longest=0.007 s, average=0.001 s; distance=4256 kB, estimate=4256 kB; lsn=0/1917998, redo lsn=0/1917998
+2026-11-05 03:11:18.241 UTC [47] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+
+2026-11-05 03:11:18.332 UTC [1] LOG:  starting PostgreSQL 17.11 (Debian 17.11-1.pgdg13+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+2026-11-05 03:11:18.332 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-11-05 03:11:18.332 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-11-05 03:11:18.334 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-11-05 03:11:18.338 UTC [63] LOG:  database system was shut down at 2026-11-05 03:11:18 UTC
+2026-11-05 03:11:18.339 UTC [1] LOG:  database system is ready to accept connections
+2026-11-05 03:11:31.010 UTC [1] LOG:  received SIGHUP, reloading configuration files
+2026-11-05 03:11:31.011 UTC [1] LOG:  parameter "log_statement" changed to "all"
+2026-11-05 03:11:31.011 UTC [1] app= LOG:  parameter "log_line_prefix" changed to "%m [%p] app=%a "
+2026-11-05 03:11:33.083 UTC [91] app=PostgreSQL JDBC Driver LOG:  statement: 
+2026-11-05 03:11:33.090 UTC [91] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 03:11:33.090 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select count(*) from users u1_0 where u1_0.id=$1
+2026-11-05 03:11:33.090 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.091 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 03:11:33.096 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select sp1_0.id,pj1_0.id,pj1_0.source_url,sp1_0.place_name,sp1_0.region,sp1_0.category,sp1_0.latitude,sp1_0.longitude,sp1_0.source_url,sp1_0.title,sp1_0.source_platform,sp1_0.created_at,sp1_0.day_number,sp1_0.order_in_day,sp1_0.phone,sp1_0.address,sp1_0.road_address,sp1_0.kakao_category_name,sp1_0.kakao_place_url,sp1_0.video_notes from saved_places sp1_0 join processing_jobs pj1_0 on pj1_0.id=sp1_0.processing_job_id where sp1_0.user_id=$1 order by sp1_0.created_at desc,sp1_0.id desc
+2026-11-05 03:11:33.096 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.275 UTC [167] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/places'
+2026-11-05 03:11:33.285 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select sp1_0.id,pj1_0.id,pj1_0.source_url,sp1_0.place_name,sp1_0.region,sp1_0.category,sp1_0.latitude,sp1_0.longitude,sp1_0.source_url,sp1_0.title,sp1_0.source_platform,sp1_0.created_at,sp1_0.day_number,sp1_0.order_in_day,sp1_0.phone,sp1_0.address,sp1_0.road_address,sp1_0.kakao_category_name,sp1_0.kakao_place_url,sp1_0.video_notes from saved_places sp1_0 join processing_jobs pj1_0 on pj1_0.id=sp1_0.processing_job_id where sp1_0.user_id=$1 order by sp1_0.created_at desc,sp1_0.id desc
+2026-11-05 03:11:33.285 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.292 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select sp1_0.id,pj1_0.id,pj1_0.source_url,sp1_0.place_name,sp1_0.region,sp1_0.category,sp1_0.latitude,sp1_0.longitude,sp1_0.source_url,sp1_0.title,sp1_0.source_platform,sp1_0.created_at,sp1_0.day_number,sp1_0.order_in_day,sp1_0.phone,sp1_0.address,sp1_0.road_address,sp1_0.kakao_category_name,sp1_0.kakao_place_url,sp1_0.video_notes from saved_places sp1_0 join processing_jobs pj1_0 on pj1_0.id=sp1_0.processing_job_id where sp1_0.user_id=$1 order by sp1_0.created_at desc,sp1_0.id desc
+2026-11-05 03:11:33.292 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.297 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select sp1_0.id,pj1_0.id,pj1_0.source_url,sp1_0.place_name,sp1_0.region,sp1_0.category,sp1_0.latitude,sp1_0.longitude,sp1_0.source_url,sp1_0.title,sp1_0.source_platform,sp1_0.created_at,sp1_0.day_number,sp1_0.order_in_day,sp1_0.phone,sp1_0.address,sp1_0.road_address,sp1_0.kakao_category_name,sp1_0.kakao_place_url,sp1_0.video_notes from saved_places sp1_0 join processing_jobs pj1_0 on pj1_0.id=sp1_0.processing_job_id where sp1_0.user_id=$1 order by sp1_0.created_at desc,sp1_0.id desc
+2026-11-05 03:11:33.297 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.379 UTC [174] app=psql LOG:  statement: SELECT 'RT_END /api/places'
+2026-11-05 03:11:33.390 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select pj1_0.id,pj1_0.analysis_finished_at,pj1_0.analysis_status,pj1_0.created_at,pj1_0.current_stage,pj1_0.error_message,pj1_0.retry_count,pj1_0.source_platform,pj1_0.source_url,pj1_0.status,pj1_0.title,pj1_0.updated_at,pj1_0.user_id from processing_jobs pj1_0 where pj1_0.user_id=$1 and pj1_0.status in ($2,$3,$4)
+2026-11-05 03:11:33.390 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1', $2 = 'PENDING', $3 = 'PROCESSING', $4 = 'FAILED'
+2026-11-05 03:11:33.473 UTC [181] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/places/pending'
+2026-11-05 03:11:33.488 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select pj1_0.id,pj1_0.analysis_finished_at,pj1_0.analysis_status,pj1_0.created_at,pj1_0.current_stage,pj1_0.error_message,pj1_0.retry_count,pj1_0.source_platform,pj1_0.source_url,pj1_0.status,pj1_0.title,pj1_0.updated_at,pj1_0.user_id from processing_jobs pj1_0 where pj1_0.user_id=$1 and pj1_0.status in ($2,$3,$4)
+2026-11-05 03:11:33.488 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1', $2 = 'PENDING', $3 = 'PROCESSING', $4 = 'FAILED'
+2026-11-05 03:11:33.493 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select pj1_0.id,pj1_0.analysis_finished_at,pj1_0.analysis_status,pj1_0.created_at,pj1_0.current_stage,pj1_0.error_message,pj1_0.retry_count,pj1_0.source_platform,pj1_0.source_url,pj1_0.status,pj1_0.title,pj1_0.updated_at,pj1_0.user_id from processing_jobs pj1_0 where pj1_0.user_id=$1 and pj1_0.status in ($2,$3,$4)
+2026-11-05 03:11:33.493 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1', $2 = 'PENDING', $3 = 'PROCESSING', $4 = 'FAILED'
+2026-11-05 03:11:33.498 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select pj1_0.id,pj1_0.analysis_finished_at,pj1_0.analysis_status,pj1_0.created_at,pj1_0.current_stage,pj1_0.error_message,pj1_0.retry_count,pj1_0.source_platform,pj1_0.source_url,pj1_0.status,pj1_0.title,pj1_0.updated_at,pj1_0.user_id from processing_jobs pj1_0 where pj1_0.user_id=$1 and pj1_0.status in ($2,$3,$4)
+2026-11-05 03:11:33.498 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1', $2 = 'PENDING', $3 = 'PROCESSING', $4 = 'FAILED'
+2026-11-05 03:11:33.570 UTC [188] app=psql LOG:  statement: SELECT 'RT_END /api/places/pending'
+2026-11-05 03:11:33.585 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select t1_0.id,t1_0.created_at,t1_0.end_date,t1_0.start_date,t1_0.title,t1_0.updated_at,t1_0.user_id from trips t1_0 where t1_0.user_id=$1 order by t1_0.created_at desc
+2026-11-05 03:11:33.585 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.668 UTC [195] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/trips'
+2026-11-05 03:11:33.677 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select t1_0.id,t1_0.created_at,t1_0.end_date,t1_0.start_date,t1_0.title,t1_0.updated_at,t1_0.user_id from trips t1_0 where t1_0.user_id=$1 order by t1_0.created_at desc
+2026-11-05 03:11:33.677 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.680 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select t1_0.id,t1_0.created_at,t1_0.end_date,t1_0.start_date,t1_0.title,t1_0.updated_at,t1_0.user_id from trips t1_0 where t1_0.user_id=$1 order by t1_0.created_at desc
+2026-11-05 03:11:33.680 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.683 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select t1_0.id,t1_0.created_at,t1_0.end_date,t1_0.start_date,t1_0.title,t1_0.updated_at,t1_0.user_id from trips t1_0 where t1_0.user_id=$1 order by t1_0.created_at desc
+2026-11-05 03:11:33.683 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.763 UTC [202] app=psql LOG:  statement: SELECT 'RT_END /api/trips'
+2026-11-05 03:11:33.772 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select b1_0.id,b1_0.created_at,b1_0.folder_id,b1_0.place_id,b1_0.user_id from bookmarks b1_0 where b1_0.user_id=$1 order by b1_0.created_at desc
+2026-11-05 03:11:33.772 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.851 UTC [209] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/bookmarks'
+2026-11-05 03:11:33.859 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select b1_0.id,b1_0.created_at,b1_0.folder_id,b1_0.place_id,b1_0.user_id from bookmarks b1_0 where b1_0.user_id=$1 order by b1_0.created_at desc
+2026-11-05 03:11:33.859 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.863 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select b1_0.id,b1_0.created_at,b1_0.folder_id,b1_0.place_id,b1_0.user_id from bookmarks b1_0 where b1_0.user_id=$1 order by b1_0.created_at desc
+2026-11-05 03:11:33.863 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.866 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select b1_0.id,b1_0.created_at,b1_0.folder_id,b1_0.place_id,b1_0.user_id from bookmarks b1_0 where b1_0.user_id=$1 order by b1_0.created_at desc
+2026-11-05 03:11:33.866 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:33.942 UTC [216] app=psql LOG:  statement: SELECT 'RT_END /api/bookmarks'
+2026-11-05 03:11:33.952 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select bf1_0.id,bf1_0.color,bf1_0.created_at,bf1_0.name,bf1_0.user_id from bookmark_folders bf1_0 where bf1_0.user_id=$1 order by bf1_0.created_at desc
+2026-11-05 03:11:33.952 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.031 UTC [223] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/bookmarks/folders'
+2026-11-05 03:11:34.040 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select bf1_0.id,bf1_0.color,bf1_0.created_at,bf1_0.name,bf1_0.user_id from bookmark_folders bf1_0 where bf1_0.user_id=$1 order by bf1_0.created_at desc
+2026-11-05 03:11:34.040 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.044 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select bf1_0.id,bf1_0.color,bf1_0.created_at,bf1_0.name,bf1_0.user_id from bookmark_folders bf1_0 where bf1_0.user_id=$1 order by bf1_0.created_at desc
+2026-11-05 03:11:34.044 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.047 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select bf1_0.id,bf1_0.color,bf1_0.created_at,bf1_0.name,bf1_0.user_id from bookmark_folders bf1_0 where bf1_0.user_id=$1 order by bf1_0.created_at desc
+2026-11-05 03:11:34.047 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.130 UTC [230] app=psql LOG:  statement: SELECT 'RT_END /api/bookmarks/folders'
+2026-11-05 03:11:34.142 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select n1_0.id,n1_0.body,n1_0.created_at,n1_0.is_read,n1_0.itinerary_id,n1_0.precipitation_prob,n1_0.title,n1_0.trip_place_id,n1_0.user_id from notifications n1_0 where n1_0.user_id=$1 and n1_0.is_read=false order by n1_0.created_at desc
+2026-11-05 03:11:34.142 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.199 UTC [245] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/notifications'
+2026-11-05 03:11:34.208 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select n1_0.id,n1_0.body,n1_0.created_at,n1_0.is_read,n1_0.itinerary_id,n1_0.precipitation_prob,n1_0.title,n1_0.trip_place_id,n1_0.user_id from notifications n1_0 where n1_0.user_id=$1 and n1_0.is_read=false order by n1_0.created_at desc
+2026-11-05 03:11:34.208 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.211 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select n1_0.id,n1_0.body,n1_0.created_at,n1_0.is_read,n1_0.itinerary_id,n1_0.precipitation_prob,n1_0.title,n1_0.trip_place_id,n1_0.user_id from notifications n1_0 where n1_0.user_id=$1 and n1_0.is_read=false order by n1_0.created_at desc
+2026-11-05 03:11:34.211 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.213 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select n1_0.id,n1_0.body,n1_0.created_at,n1_0.is_read,n1_0.itinerary_id,n1_0.precipitation_prob,n1_0.title,n1_0.trip_place_id,n1_0.user_id from notifications n1_0 where n1_0.user_id=$1 and n1_0.is_read=false order by n1_0.created_at desc
+2026-11-05 03:11:34.213 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.284 UTC [252] app=psql LOG:  statement: SELECT 'RT_END /api/notifications'
+2026-11-05 03:11:34.298 UTC [91] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 03:11:34.298 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 03:11:34.298 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.301 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 03:11:34.379 UTC [259] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/auth/me'
+2026-11-05 03:11:34.387 UTC [91] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 03:11:34.387 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 03:11:34.387 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.388 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 03:11:34.390 UTC [91] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 03:11:34.390 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 03:11:34.390 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.390 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 03:11:34.393 UTC [91] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 03:11:34.393 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 03:11:34.393 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.393 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 03:11:34.473 UTC [266] app=psql LOG:  statement: SELECT 'RT_END /api/auth/me'
+2026-11-05 03:11:34.484 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select td1_0.id,td1_0.answer,td1_0.auto_created,td1_0.created_at,td1_0.days,td1_0.dismissed_at,td1_0.draft_json,td1_0.error_message,td1_0.gemini_calls,td1_0.job_ids,td1_0.message,td1_0.question,td1_0.request_source,td1_0.start_date,td1_0.status,td1_0.summary_json,td1_0.trip_id,td1_0.updated_at,td1_0.user_id from trip_drafts td1_0 where td1_0.user_id=$1 and td1_0.auto_created=true and td1_0.dismissed_at is null and td1_0.status in ($2,$3,$4) order by td1_0.created_at desc
+2026-11-05 03:11:34.484 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1', $2 = 'PENDING', $3 = 'PROCESSING', $4 = 'READY'
+2026-11-05 03:11:34.551 UTC [273] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/trip-drafts/auto'
+2026-11-05 03:11:34.560 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select td1_0.id,td1_0.answer,td1_0.auto_created,td1_0.created_at,td1_0.days,td1_0.dismissed_at,td1_0.draft_json,td1_0.error_message,td1_0.gemini_calls,td1_0.job_ids,td1_0.message,td1_0.question,td1_0.request_source,td1_0.start_date,td1_0.status,td1_0.summary_json,td1_0.trip_id,td1_0.updated_at,td1_0.user_id from trip_drafts td1_0 where td1_0.user_id=$1 and td1_0.auto_created=true and td1_0.dismissed_at is null and td1_0.status in ($2,$3,$4) order by td1_0.created_at desc
+2026-11-05 03:11:34.560 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1', $2 = 'PENDING', $3 = 'PROCESSING', $4 = 'READY'
+2026-11-05 03:11:34.564 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select td1_0.id,td1_0.answer,td1_0.auto_created,td1_0.created_at,td1_0.days,td1_0.dismissed_at,td1_0.draft_json,td1_0.error_message,td1_0.gemini_calls,td1_0.job_ids,td1_0.message,td1_0.question,td1_0.request_source,td1_0.start_date,td1_0.status,td1_0.summary_json,td1_0.trip_id,td1_0.updated_at,td1_0.user_id from trip_drafts td1_0 where td1_0.user_id=$1 and td1_0.auto_created=true and td1_0.dismissed_at is null and td1_0.status in ($2,$3,$4) order by td1_0.created_at desc
+2026-11-05 03:11:34.564 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1', $2 = 'PENDING', $3 = 'PROCESSING', $4 = 'READY'
+2026-11-05 03:11:34.567 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select td1_0.id,td1_0.answer,td1_0.auto_created,td1_0.created_at,td1_0.days,td1_0.dismissed_at,td1_0.draft_json,td1_0.error_message,td1_0.gemini_calls,td1_0.job_ids,td1_0.message,td1_0.question,td1_0.request_source,td1_0.start_date,td1_0.status,td1_0.summary_json,td1_0.trip_id,td1_0.updated_at,td1_0.user_id from trip_drafts td1_0 where td1_0.user_id=$1 and td1_0.auto_created=true and td1_0.dismissed_at is null and td1_0.status in ($2,$3,$4) order by td1_0.created_at desc
+2026-11-05 03:11:34.567 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1', $2 = 'PENDING', $3 = 'PROCESSING', $4 = 'READY'
+2026-11-05 03:11:34.637 UTC [280] app=psql LOG:  statement: SELECT 'RT_END /api/trip-drafts/auto'
+2026-11-05 03:11:34.646 UTC [91] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 03:11:34.646 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 03:11:34.646 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.646 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 03:11:34.729 UTC [287] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/users/me'
+2026-11-05 03:11:34.738 UTC [91] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 03:11:34.738 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 03:11:34.738 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.738 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 03:11:34.740 UTC [91] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 03:11:34.741 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 03:11:34.741 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.741 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 03:11:34.744 UTC [91] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 03:11:34.744 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 03:11:34.744 UTC [91] app=PostgreSQL JDBC Driver DETAIL:  Parameters: $1 = '1'
+2026-11-05 03:11:34.744 UTC [91] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 03:11:34.826 UTC [295] app=psql LOG:  statement: SELECT 'RT_END /api/users/me'

@@ -3,6 +3,7 @@ package com.trova.backend.service;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtAuthenticationToken;
+import com.trova.backend.security.KnownUsers;
 import com.trova.backend.security.OAuth2UserInfo;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
@@ -13,9 +14,30 @@ import org.springframework.stereotype.Service;
 public class CurrentUserService {
 
     private final UserRepository userRepository;
+    private final KnownUsers knownUsers;
 
-    public CurrentUserService(UserRepository userRepository) {
+    public CurrentUserService(UserRepository userRepository, KnownUsers knownUsers) {
         this.userRepository = userRepository;
+        this.knownUsers = knownUsers;
+    }
+
+    /**
+     * 사용자 ID만 필요한 조회 API용(ADR 0036). JWT 사용자는 처음 한 번만 DB로 존재를 확인하고
+     * 이후에는 메모리에서 확인해 DB 왕복을 줄인다. 없는 사용자(탈퇴)는 resolve와 같이 401로 이어지는 예외.
+     */
+    public Long resolveUserId(Authentication authentication) {
+        if (authentication instanceof JwtAuthenticationToken jwtToken) {
+            Long userId = jwtToken.getUserId();
+            if (knownUsers.contains(userId)) {
+                return userId;
+            }
+            if (!userRepository.existsById(userId)) {
+                throw new InsufficientAuthenticationException("인증된 사용자를 찾을 수 없습니다: userId=" + userId);
+            }
+            knownUsers.add(userId);
+            return userId;
+        }
+        return resolve(authentication).getId();
     }
 
     public User resolve(Authentication authentication) {

@@ -1,0 +1,163 @@
+2026-11-05 02:53:15.879 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: 
+2026-11-05 02:53:15.882 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:15.883 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:15.886 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:15.890 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select sp1_0.id,pj1_0.id,pj1_0.source_url,sp1_0.place_name,sp1_0.region,sp1_0.category,sp1_0.latitude,sp1_0.longitude,sp1_0.source_url,sp1_0.title,sp1_0.source_platform,sp1_0.created_at,sp1_0.day_number,sp1_0.order_in_day,sp1_0.phone,sp1_0.address,sp1_0.road_address,sp1_0.kakao_category_name,sp1_0.kakao_place_url,sp1_0.video_notes from saved_places sp1_0 join processing_jobs pj1_0 on pj1_0.id=sp1_0.processing_job_id where sp1_0.user_id=$1 order by sp1_0.created_at desc,sp1_0.id desc
+2026-11-05 02:53:16.010 UTC [168] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/places'
+2026-11-05 02:53:16.019 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.019 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.020 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.020 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select sp1_0.id,pj1_0.id,pj1_0.source_url,sp1_0.place_name,sp1_0.region,sp1_0.category,sp1_0.latitude,sp1_0.longitude,sp1_0.source_url,sp1_0.title,sp1_0.source_platform,sp1_0.created_at,sp1_0.day_number,sp1_0.order_in_day,sp1_0.phone,sp1_0.address,sp1_0.road_address,sp1_0.kakao_category_name,sp1_0.kakao_place_url,sp1_0.video_notes from saved_places sp1_0 join processing_jobs pj1_0 on pj1_0.id=sp1_0.processing_job_id where sp1_0.user_id=$1 order by sp1_0.created_at desc,sp1_0.id desc
+2026-11-05 02:53:16.026 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.026 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.026 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.026 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select sp1_0.id,pj1_0.id,pj1_0.source_url,sp1_0.place_name,sp1_0.region,sp1_0.category,sp1_0.latitude,sp1_0.longitude,sp1_0.source_url,sp1_0.title,sp1_0.source_platform,sp1_0.created_at,sp1_0.day_number,sp1_0.order_in_day,sp1_0.phone,sp1_0.address,sp1_0.road_address,sp1_0.kakao_category_name,sp1_0.kakao_place_url,sp1_0.video_notes from saved_places sp1_0 join processing_jobs pj1_0 on pj1_0.id=sp1_0.processing_job_id where sp1_0.user_id=$1 order by sp1_0.created_at desc,sp1_0.id desc
+2026-11-05 02:53:16.030 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.030 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.031 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.031 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select sp1_0.id,pj1_0.id,pj1_0.source_url,sp1_0.place_name,sp1_0.region,sp1_0.category,sp1_0.latitude,sp1_0.longitude,sp1_0.source_url,sp1_0.title,sp1_0.source_platform,sp1_0.created_at,sp1_0.day_number,sp1_0.order_in_day,sp1_0.phone,sp1_0.address,sp1_0.road_address,sp1_0.kakao_category_name,sp1_0.kakao_place_url,sp1_0.video_notes from saved_places sp1_0 join processing_jobs pj1_0 on pj1_0.id=sp1_0.processing_job_id where sp1_0.user_id=$1 order by sp1_0.created_at desc,sp1_0.id desc
+2026-11-05 02:53:16.139 UTC [175] app=psql LOG:  statement: SELECT 'RT_END /api/places'
+2026-11-05 02:53:16.148 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.148 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.148 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.151 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select pj1_0.id,pj1_0.analysis_finished_at,pj1_0.analysis_status,pj1_0.created_at,pj1_0.current_stage,pj1_0.error_message,pj1_0.retry_count,pj1_0.source_platform,pj1_0.source_url,pj1_0.status,pj1_0.title,pj1_0.updated_at,pj1_0.user_id from processing_jobs pj1_0 where pj1_0.user_id=$1 and pj1_0.status in ($2,$3,$4)
+2026-11-05 02:53:16.242 UTC [182] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/places/pending'
+2026-11-05 02:53:16.254 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.254 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.254 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.256 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select pj1_0.id,pj1_0.analysis_finished_at,pj1_0.analysis_status,pj1_0.created_at,pj1_0.current_stage,pj1_0.error_message,pj1_0.retry_count,pj1_0.source_platform,pj1_0.source_url,pj1_0.status,pj1_0.title,pj1_0.updated_at,pj1_0.user_id from processing_jobs pj1_0 where pj1_0.user_id=$1 and pj1_0.status in ($2,$3,$4)
+2026-11-05 02:53:16.262 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.262 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.263 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.264 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select pj1_0.id,pj1_0.analysis_finished_at,pj1_0.analysis_status,pj1_0.created_at,pj1_0.current_stage,pj1_0.error_message,pj1_0.retry_count,pj1_0.source_platform,pj1_0.source_url,pj1_0.status,pj1_0.title,pj1_0.updated_at,pj1_0.user_id from processing_jobs pj1_0 where pj1_0.user_id=$1 and pj1_0.status in ($2,$3,$4)
+2026-11-05 02:53:16.268 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.268 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.268 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.269 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select pj1_0.id,pj1_0.analysis_finished_at,pj1_0.analysis_status,pj1_0.created_at,pj1_0.current_stage,pj1_0.error_message,pj1_0.retry_count,pj1_0.source_platform,pj1_0.source_url,pj1_0.status,pj1_0.title,pj1_0.updated_at,pj1_0.user_id from processing_jobs pj1_0 where pj1_0.user_id=$1 and pj1_0.status in ($2,$3,$4)
+2026-11-05 02:53:16.346 UTC [189] app=psql LOG:  statement: SELECT 'RT_END /api/places/pending'
+2026-11-05 02:53:16.355 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.355 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.356 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.358 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.358 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select t1_0.id,t1_0.created_at,t1_0.end_date,t1_0.start_date,t1_0.title,t1_0.updated_at,t1_0.user_id from trips t1_0 where t1_0.user_id=$1 order by t1_0.created_at desc
+2026-11-05 02:53:16.359 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.433 UTC [196] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/trips'
+2026-11-05 02:53:16.442 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.442 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.442 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.443 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.443 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select t1_0.id,t1_0.created_at,t1_0.end_date,t1_0.start_date,t1_0.title,t1_0.updated_at,t1_0.user_id from trips t1_0 where t1_0.user_id=$1 order by t1_0.created_at desc
+2026-11-05 02:53:16.443 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.445 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.445 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.446 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.446 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.446 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select t1_0.id,t1_0.created_at,t1_0.end_date,t1_0.start_date,t1_0.title,t1_0.updated_at,t1_0.user_id from trips t1_0 where t1_0.user_id=$1 order by t1_0.created_at desc
+2026-11-05 02:53:16.446 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.448 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.449 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.449 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.449 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.449 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select t1_0.id,t1_0.created_at,t1_0.end_date,t1_0.start_date,t1_0.title,t1_0.updated_at,t1_0.user_id from trips t1_0 where t1_0.user_id=$1 order by t1_0.created_at desc
+2026-11-05 02:53:16.449 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.530 UTC [203] app=psql LOG:  statement: SELECT 'RT_END /api/trips'
+2026-11-05 02:53:16.539 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.539 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.539 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.540 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select b1_0.id,b1_0.created_at,b1_0.folder_id,b1_0.place_id,b1_0.user_id from bookmarks b1_0 where b1_0.user_id=$1 order by b1_0.created_at desc
+2026-11-05 02:53:16.624 UTC [210] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/bookmarks'
+2026-11-05 02:53:16.635 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.636 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.636 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.636 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select b1_0.id,b1_0.created_at,b1_0.folder_id,b1_0.place_id,b1_0.user_id from bookmarks b1_0 where b1_0.user_id=$1 order by b1_0.created_at desc
+2026-11-05 02:53:16.640 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.640 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.640 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.641 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select b1_0.id,b1_0.created_at,b1_0.folder_id,b1_0.place_id,b1_0.user_id from bookmarks b1_0 where b1_0.user_id=$1 order by b1_0.created_at desc
+2026-11-05 02:53:16.643 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.643 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.644 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.644 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select b1_0.id,b1_0.created_at,b1_0.folder_id,b1_0.place_id,b1_0.user_id from bookmarks b1_0 where b1_0.user_id=$1 order by b1_0.created_at desc
+2026-11-05 02:53:16.725 UTC [217] app=psql LOG:  statement: SELECT 'RT_END /api/bookmarks'
+2026-11-05 02:53:16.737 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.737 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.737 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.739 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select bf1_0.id,bf1_0.color,bf1_0.created_at,bf1_0.name,bf1_0.user_id from bookmark_folders bf1_0 where bf1_0.user_id=$1 order by bf1_0.created_at desc
+2026-11-05 02:53:16.826 UTC [224] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/bookmarks/folders'
+2026-11-05 02:53:16.836 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.836 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.837 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.837 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select bf1_0.id,bf1_0.color,bf1_0.created_at,bf1_0.name,bf1_0.user_id from bookmark_folders bf1_0 where bf1_0.user_id=$1 order by bf1_0.created_at desc
+2026-11-05 02:53:16.846 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.846 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.846 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.847 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select bf1_0.id,bf1_0.color,bf1_0.created_at,bf1_0.name,bf1_0.user_id from bookmark_folders bf1_0 where bf1_0.user_id=$1 order by bf1_0.created_at desc
+2026-11-05 02:53:16.850 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.850 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.850 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.851 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select bf1_0.id,bf1_0.color,bf1_0.created_at,bf1_0.name,bf1_0.user_id from bookmark_folders bf1_0 where bf1_0.user_id=$1 order by bf1_0.created_at desc
+2026-11-05 02:53:16.932 UTC [239] app=psql LOG:  statement: SELECT 'RT_END /api/bookmarks/folders'
+2026-11-05 02:53:16.942 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:16.942 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:16.942 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:16.945 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select n1_0.id,n1_0.body,n1_0.created_at,n1_0.is_read,n1_0.itinerary_id,n1_0.precipitation_prob,n1_0.title,n1_0.trip_place_id,n1_0.user_id from notifications n1_0 where n1_0.user_id=$1 and n1_0.is_read=false order by n1_0.created_at desc
+2026-11-05 02:53:17.031 UTC [246] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/notifications'
+2026-11-05 02:53:17.042 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.042 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.042 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.043 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select n1_0.id,n1_0.body,n1_0.created_at,n1_0.is_read,n1_0.itinerary_id,n1_0.precipitation_prob,n1_0.title,n1_0.trip_place_id,n1_0.user_id from notifications n1_0 where n1_0.user_id=$1 and n1_0.is_read=false order by n1_0.created_at desc
+2026-11-05 02:53:17.047 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.047 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.047 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.048 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select n1_0.id,n1_0.body,n1_0.created_at,n1_0.is_read,n1_0.itinerary_id,n1_0.precipitation_prob,n1_0.title,n1_0.trip_place_id,n1_0.user_id from notifications n1_0 where n1_0.user_id=$1 and n1_0.is_read=false order by n1_0.created_at desc
+2026-11-05 02:53:17.051 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.051 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.051 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.052 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select n1_0.id,n1_0.body,n1_0.created_at,n1_0.is_read,n1_0.itinerary_id,n1_0.precipitation_prob,n1_0.title,n1_0.trip_place_id,n1_0.user_id from notifications n1_0 where n1_0.user_id=$1 and n1_0.is_read=false order by n1_0.created_at desc
+2026-11-05 02:53:17.141 UTC [253] app=psql LOG:  statement: SELECT 'RT_END /api/notifications'
+2026-11-05 02:53:17.151 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.152 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.152 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.240 UTC [260] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/auth/me'
+2026-11-05 02:53:17.252 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.253 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.253 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.256 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.256 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.256 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.259 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.259 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.259 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.340 UTC [267] app=psql LOG:  statement: SELECT 'RT_END /api/auth/me'
+2026-11-05 02:53:17.349 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.349 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.349 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.352 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select td1_0.id,td1_0.answer,td1_0.auto_created,td1_0.created_at,td1_0.days,td1_0.dismissed_at,td1_0.draft_json,td1_0.error_message,td1_0.gemini_calls,td1_0.job_ids,td1_0.message,td1_0.question,td1_0.request_source,td1_0.start_date,td1_0.status,td1_0.summary_json,td1_0.trip_id,td1_0.updated_at,td1_0.user_id from trip_drafts td1_0 where td1_0.user_id=$1 and td1_0.auto_created=true and td1_0.dismissed_at is null and td1_0.status in ($2,$3,$4) order by td1_0.created_at desc
+2026-11-05 02:53:17.435 UTC [274] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/trip-drafts/auto'
+2026-11-05 02:53:17.443 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.444 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.444 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.445 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select td1_0.id,td1_0.answer,td1_0.auto_created,td1_0.created_at,td1_0.days,td1_0.dismissed_at,td1_0.draft_json,td1_0.error_message,td1_0.gemini_calls,td1_0.job_ids,td1_0.message,td1_0.question,td1_0.request_source,td1_0.start_date,td1_0.status,td1_0.summary_json,td1_0.trip_id,td1_0.updated_at,td1_0.user_id from trip_drafts td1_0 where td1_0.user_id=$1 and td1_0.auto_created=true and td1_0.dismissed_at is null and td1_0.status in ($2,$3,$4) order by td1_0.created_at desc
+2026-11-05 02:53:17.449 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.449 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.449 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.450 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select td1_0.id,td1_0.answer,td1_0.auto_created,td1_0.created_at,td1_0.days,td1_0.dismissed_at,td1_0.draft_json,td1_0.error_message,td1_0.gemini_calls,td1_0.job_ids,td1_0.message,td1_0.question,td1_0.request_source,td1_0.start_date,td1_0.status,td1_0.summary_json,td1_0.trip_id,td1_0.updated_at,td1_0.user_id from trip_drafts td1_0 where td1_0.user_id=$1 and td1_0.auto_created=true and td1_0.dismissed_at is null and td1_0.status in ($2,$3,$4) order by td1_0.created_at desc
+2026-11-05 02:53:17.452 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.453 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.453 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.454 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select td1_0.id,td1_0.answer,td1_0.auto_created,td1_0.created_at,td1_0.days,td1_0.dismissed_at,td1_0.draft_json,td1_0.error_message,td1_0.gemini_calls,td1_0.job_ids,td1_0.message,td1_0.question,td1_0.request_source,td1_0.start_date,td1_0.status,td1_0.summary_json,td1_0.trip_id,td1_0.updated_at,td1_0.user_id from trip_drafts td1_0 where td1_0.user_id=$1 and td1_0.auto_created=true and td1_0.dismissed_at is null and td1_0.status in ($2,$3,$4) order by td1_0.created_at desc
+2026-11-05 02:53:17.534 UTC [281] app=psql LOG:  statement: SELECT 'RT_END /api/trip-drafts/auto'
+2026-11-05 02:53:17.543 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.543 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.543 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.634 UTC [288] app=psql LOG:  statement: SELECT 'RT_BEGIN /api/users/me'
+2026-11-05 02:53:17.643 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.643 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.643 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.646 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.646 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.647 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.649 UTC [92] app=PostgreSQL JDBC Driver LOG:  statement: BEGIN READ ONLY
+2026-11-05 02:53:17.649 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 where u1_0.id=$1
+2026-11-05 02:53:17.649 UTC [92] app=PostgreSQL JDBC Driver LOG:  execute <unnamed>: COMMIT
+2026-11-05 02:53:17.727 UTC [295] app=psql LOG:  statement: SELECT 'RT_END /api/users/me'

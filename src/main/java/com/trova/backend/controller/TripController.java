@@ -217,9 +217,9 @@ public class TripController {
 
     @GetMapping("/api/trips")
     public List<TripResponse> listTrips(Authentication authentication) {
-        User user = currentUserService.resolve(authentication);
+        Long userId = currentUserService.resolveUserId(authentication);
         // 이름이 같은 여행을 목록에서 구분할 수 없었다(#123) — 장소 수와 가장 많이 나온 지역(최대 2개)을 함께 준다.
-        return tripService.listTripSummaries(user).stream()
+        return tripService.listTripSummaries(userId).stream()
                 .map(s -> TripResponse.from(s.trip(), s.regions()))
                 .toList();
     }

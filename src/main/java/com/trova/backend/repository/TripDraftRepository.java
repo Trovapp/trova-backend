@@ -30,4 +30,8 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
     // 홈 화면에 보여줄 자동 초안 — 닫지 않았고 아직 끝나지 않은 것만, 최신순.
     List<TripDraft> findByUserAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(
             User user, List<TripDraftStatus> statuses);
+
+    // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
+    List<TripDraft> findByUserIdAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(
+            Long userId, List<TripDraftStatus> statuses);
 }

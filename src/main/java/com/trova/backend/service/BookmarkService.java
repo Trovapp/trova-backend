@@ -132,7 +132,12 @@ public class BookmarkService {
     }
 
     public List<FolderWithCount> listFolders(User user) {
-        return bookmarkFolderRepository.findByUserOrderByCreatedAtDesc(user).stream()
+        return listFolders(user.getId());
+    }
+
+    /** 사용자 ID만으로 폴더 목록을 만든다(ADR 0036). */
+    public List<FolderWithCount> listFolders(Long userId) {
+        return bookmarkFolderRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(folder -> new FolderWithCount(folder, bookmarkRepository.countByFolder(folder)))
                 .toList();
     }

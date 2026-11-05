@@ -1,0 +1,15 @@
+# 앱 → toxiproxy → DB. DB 왕복에 지연을 넣어 '요청당 실제 왕복 수'를 기울기로 잰다.
+services:
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.9.0
+    command: [-host=0.0.0.0, -config=/config.json]
+    # 상대 경로는 첫 compose 파일(monitoring/capacity) 기준으로 풀린다.
+    volumes: ['../roundtrips/toxiproxy.json:/config.json:ro']
+    networks: [isolated]
+    depends_on:
+      db:
+        condition: service_healthy
+  app:
+    depends_on: [toxiproxy]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://toxiproxy:15432/capacity

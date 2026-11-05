@@ -13,6 +13,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     void deleteByUser(User user);
 
     List<Notification> findByUserAndIsReadFalseOrderByCreatedAtDesc(User user);
+    // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
+    List<Notification> findByUserIdAndIsReadFalseOrderByCreatedAtDesc(Long userId);
 
     // 같은 Itinerary에 대해 중복 알림을 또 만들지 않기 위한 조회.
     Optional<Notification> findByItinerary(Itinerary itinerary);

@@ -39,8 +39,8 @@ class NotificationControllerDateTest {
                 user, new Itinerary(trip, 1, LocalDate.of(2026, 9, 28)), "비 소식이 있어요", "본문", 0.8, 1L);
         Notification today = new Notification(
                 user, new Itinerary(trip, 2, LocalDate.of(2026, 9, 29)), "비 소식이 있어요", "본문", 0.8, 1L);
-        when(currentUserService.resolve(authentication)).thenReturn(user);
-        when(notificationRepository.findByUserAndIsReadFalseOrderByCreatedAtDesc(user)).thenReturn(List.of(today, yesterday));
+        when(currentUserService.resolveUserId(authentication)).thenReturn(1L);
+        when(notificationRepository.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(1L)).thenReturn(List.of(today, yesterday));
 
         List<NotificationController.NotificationResponse> result = controller.list(authentication);
 

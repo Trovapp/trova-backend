@@ -35,4 +35,9 @@ public interface TripPlaceRepository extends JpaRepository<TripPlace, Long> {
     @Query("select distinct sp.processingJob.sourceUrl from TripPlace tp, SavedPlace sp "
             + "where tp.savedPlaceId = sp.id and tp.itinerary.trip.user = :user and sp.user = :user")
     List<String> findSourceUrlsInTripsOf(@Param("user") User user);
+
+    // 사용자 ID만으로 읽는 조회 API용(ADR 0036).
+    @Query("select distinct sp.processingJob.sourceUrl from TripPlace tp, SavedPlace sp "
+            + "where tp.savedPlaceId = sp.id and tp.itinerary.trip.user.id = :userId and sp.user.id = :userId")
+    List<String> findSourceUrlsInTripsOfUserId(@Param("userId") Long userId);
 }
