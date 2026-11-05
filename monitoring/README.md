@@ -196,3 +196,18 @@ places 18건에서 자원 기준으로 중단. 특정 앱 코드 병목은 미�
 
 후속 [인덱스 ABBA 개선 검증](../docs/monitoring/2026-11-02-index-abba.md):
 같은 20/40 VU 부하에서 인덱스 전후를 반복 비교하고 Grafana·Prometheus 실제 화면을 보존했다.
+
+## 운영 DB 읽기 전용 조회 (#334)
+
+Supabase 연결 풀러는 접속 옵션(`PGOPTIONS`의 `default_transaction_read_only`)을 무시한다. 운영 DB 조회는 이 도구만 쓴다.
+
+```bash
+PROD_DB_ENV_FILE=<운영 DB 환경 파일> python3 monitoring/prod_readonly_psql.py <<'SQL'
+select count(*) from users;
+SQL
+```
+
+- 입력 SQL 전체를 `BEGIN TRANSACTION READ ONLY` 하나로 감싸고, DB 안에서 읽기 전용인지 확인한 뒤 실행하고 `ROLLBACK`한다.
+- COMMIT·BEGIN·SET 등 트랜잭션·설정 변경, psql 메타 명령(`\`), `$$` 블록은 실행 전에 거부한다. 문장당 15초 제한.
+- 자격증명은 출력하지 않는다. 개인정보 대신 개수·분포 같은 집계만 조회한다.
+- 테스트: `cd monitoring && python3 -m unittest test_prod_readonly_psql`
