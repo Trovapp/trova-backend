@@ -1,0 +1,105 @@
+{
+  "/api/places": {
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "statementsPerRequest": 1.0,
+    "byStatement": {
+      "select sp1_0.id,pj1_0.id,pj1_0.source_url,sp1_0.place_name,sp1_0.region,sp1_0.category,sp1_0.latitude,sp1_0.longitude,sp1_0.source_url,sp1_0": 1.0
+    }
+  },
+  "/api/places/pending": {
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "statementsPerRequest": 1.0,
+    "byStatement": {
+      "select pj1_0.id,pj1_0.analysis_finished_at,pj1_0.analysis_status,pj1_0.created_at,pj1_0.current_stage,pj1_0.error_message,pj1_0.retry_count,": 1.0
+    }
+  },
+  "/api/trips": {
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "statementsPerRequest": 1.0,
+    "byStatement": {
+      "select t1_0.id,t1_0.created_at,t1_0.end_date,t1_0.start_date,t1_0.title,t1_0.updated_at,t1_0.user_id from trips t1_0 where t1_0.user_id=? or": 1.0
+    }
+  },
+  "/api/bookmarks": {
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "statementsPerRequest": 1.0,
+    "byStatement": {
+      "select b1_0.id,b1_0.created_at,b1_0.folder_id,b1_0.place_id,b1_0.user_id from bookmarks b1_0 where b1_0.user_id=? order by b1_0.created_at d": 1.0
+    }
+  },
+  "/api/bookmarks/folders": {
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "statementsPerRequest": 1.0,
+    "byStatement": {
+      "select bf1_0.id,bf1_0.color,bf1_0.created_at,bf1_0.name,bf1_0.user_id from bookmark_folders bf1_0 where bf1_0.user_id=? order by bf1_0.creat": 1.0
+    }
+  },
+  "/api/notifications": {
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "statementsPerRequest": 1.0,
+    "byStatement": {
+      "select n1_0.id,n1_0.body,n1_0.created_at,n1_0.is_read,n1_0.itinerary_id,n1_0.precipitation_prob,n1_0.title,n1_0.trip_place_id,n1_0.user_id f": 1.0
+    }
+  },
+  "/api/auth/me": {
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "statementsPerRequest": 3.0,
+    "byStatement": {
+      "BEGIN READ ONLY": 1.0,
+      "select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 wh": 1.0,
+      "COMMIT": 1.0
+    }
+  },
+  "/api/trip-drafts/auto": {
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "statementsPerRequest": 1.0,
+    "byStatement": {
+      "select td1_0.id,td1_0.answer,td1_0.auto_created,td1_0.created_at,td1_0.days,td1_0.dismissed_at,td1_0.draft_json,td1_0.error_message,td1_0.ge": 1.0
+    }
+  },
+  "/api/users/me": {
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "statementsPerRequest": 3.0,
+    "byStatement": {
+      "BEGIN READ ONLY": 1.0,
+      "select u1_0.id,u1_0.created_at,u1_0.nickname,u1_0.profile_image_url,u1_0.provider,u1_0.provider_user_id,u1_0.suspended_at from users u1_0 wh": 1.0,
+      "COMMIT": 1.0
+    }
+  }
+}

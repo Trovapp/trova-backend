@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface TripRepository extends JpaRepository<Trip, Long> {
     List<Trip> findByUserOrderByCreatedAtDesc(User user);
+    // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
+    List<Trip> findByUserIdOrderByCreatedAtDesc(Long userId);
 }

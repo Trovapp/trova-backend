@@ -178,7 +178,7 @@ class BookmarkServiceTest {
     void listFolders는_폴더별_찜_개수를_같이_돌려준다() {
         setUp();
         BookmarkFolder folder = new BookmarkFolder(user, "카페 모음", "#4A90D9");
-        when(bookmarkFolderRepository.findByUserOrderByCreatedAtDesc(user)).thenReturn(java.util.List.of(folder));
+        when(bookmarkFolderRepository.findByUserIdOrderByCreatedAtDesc(user.getId())).thenReturn(java.util.List.of(folder));
         when(bookmarkRepository.countByFolder(folder)).thenReturn(3L);
 
         var result = service.listFolders(user);
