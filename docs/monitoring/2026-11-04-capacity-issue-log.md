@@ -204,3 +204,32 @@ Orca 앱 권한이 간헐적으로만 적용된 것으로 추정. 사용자가 H
   “권한 목록에 Host 추가 + Host 재시작” 조합이 해결책일 가능성이 높다. 몇 시간 뒤에도 유지되는지 계속 확인한다(이전엔 5시간 뒤 재발).
 - 부수 피해: 차단 중 실행한 명령 묶음(`git … && cat >> 문서`)에서 git 실패로 기록 쓰기까지 실행되지 않았다 → 재작성 후 커밋(d49ec45).
   앞으로 git과 파일 쓰기를 한 명령에 `&&`로 묶지 않는다.
+- 12:14 다시 차단(Host 재시작 11:27 후 약 1시간). “Host 전체 디스크 접근 추가 + 재시작”도 영구 해결이 아님 → 해결안 1(레포 이동)로.
+
+### #7 결과 — 레포 이동 (2026-11-05 12:37, 로컬)
+- **사용자 선택**: 해결안 1. `~/trova-repo-move.sh`를 Orca 종료 후 Terminal.app에서 실행 → `~/Downloads/buildlog/trova-backend` → `~/dev/trova-backend`.
+  백업 `~/trova-repo-move-backup-20261105-123747`(Orca 설정·devflow/qaflow 설정 사본).
+- **확인(12:4x)**: 옛 경로 없음. `git worktree list`의 워크트리 40개가 모두 새 경로 기준으로 연결(`prunable` 0).
+  관리자-페이지-터미널의 `.git`이 `~/dev/trova-backend/.git/worktrees/…`를 가리키고 `git status`·빌드·커밋·푸시 정상(602cd22).
+  Claude 메모리는 새 폴더(`-Users-gimtaehyeong-dev-trova-backend`)로 복사됨.
+- git 차단 재발 여부는 계속 본다(이동 후 아직 차단 없음).
+
+## #10 레포 이동 뒤 Orca에서 기존 trova-backend 작업(세션)이 안 열림 (2026-11-05 12:38~, 로컬)
+
+**현상**: 사용자 — “원래 작업하던 오르카에서 세션을 계속 못 연다”. 새 세션은 `~/orca/trova-backend`(12:40에 새로 생긴 **별도 클론**, 워크트리 없음)에서 열렸다.
+
+**원인(확인)**: Orca 1.4.245는 상태를 `profiles/local-default/profile-state.db`(SQLite)에 두고 `orca-data.json`은 **내보내기 사본**일 뿐이다.
+- 이동 스크립트는 `orca-data.json`만 바꿨다(12:37:47).
+- 12:38 Orca가 켜지면서 JSON이 바깥에서 바뀐 것을 감지 → `profile-state-corrupt-…/manifest.json`에 `reason: profile-state-adopt-current-sqlite`로 JSON을 격리하고 **SQLite(옛 경로)를 그대로 채택**, `orca-data.json`을 옛 경로로 다시 내보냄.
+- 그래서 지금 Orca의 trova-backend 레포 등록은 `"path":"/Users/gimtaehyeong/Downloads/buildlog/trova-backend"`(없는 폴더)이고, 새 경로(`~/dev/trova-backend`)는 0건. 그 레포에 딸린 작업들(관리자-페이지-터미널 등)이 열리지 않는다.
+- 12:40에 Orca에 `~/orca/trova-backend`가 따로 등록됐다(같은 GitHub 레포를 새로 클론한 것으로 보임). 이 세션이 그곳에서 열렸다.
+- git 자체와 Claude 대화 기록(`~/.claude/projects/-Users-gimtaehyeong-orca-workspaces-trova-backend-------------/55d0a49e….jsonl` 등, 워크트리 경로 기준)은 그대로라 손실은 없다.
+
+**해결안**
+1. (권장) Orca 화면에서 옛 trova-backend 레포를 지우지 말고 “경로 다시 지정/폴더 찾기”가 있으면 `~/dev/trova-backend`로 지정. 없으면 `~/dev/trova-backend`를 “기존 폴더 가져오기”로 추가 → 워크트리(`~/orca/workspaces/trova-backend/*`)가 다시 보이는지 확인. 앱이 공식 방법으로 상태를 바꾸므로 가장 안전하다. 단, 새로 추가하면 작업 탭·이름 같은 Orca 메타데이터는 새로 붙을 수 있다.
+2. Orca 완전 종료 후 `profile-state.db`(와 `-wal`)를 백업하고 SQLite 안의 옛 경로를 새 경로로 바꾸기. 메타데이터까지 그대로 살지만, Orca 내부 형식을 직접 고치는 것이라 다시 “손상”으로 판단될 위험이 있다.
+3. 임시: `ln -s ~/dev/trova-backend ~/Downloads/buildlog/trova-backend`. 바로 열리지만 다운로드 폴더 경로를 다시 쓰게 되어 #7 권한 차단이 돌아올 수 있다.
+4. 우회: Orca 대신 터미널에서 워크트리로 가서 `claude --resume <세션ID>`로 대화 이어가기(Orca 고치기와 별개로 지금 바로 가능).
+
+추가로 `~/orca/trova-backend`(새 클론)는 정리 대상인지 사용자 확인 필요(지금은 그대로 둠).
+**사용자 선택**: (대기 중)
