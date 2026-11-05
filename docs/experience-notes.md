@@ -2357,3 +2357,14 @@
 - **로컬**(macOS Apple M5) 측정 288관측: 새 프로세스 중앙 Python 34.98ms / Rust 3.02ms, 지속 프로세스 2.43 / 0.80ms. 미디어 없는 입력은 준비 시간 자체가 Python이 짧았다.
 - 그러나 지금 경로에 붙이는 방식(Python → Rust 보조 프로세스, 1회성)은 Python 직접 호출 0.477ms보다 느렸다(지속 1.711ms, 매번 새로 띄우면 5.819ms). Python 최대 RSS도 약 79MiB 늘었다. 로컬 근거로는 **Python 유지**가 맞다. 분석 1건이 약 12초인데 준비 시간은 1ms 안팎이다.
 - 기록 `docs/bench/rust-parts-pilot-local-20261104.md`, 원본 `docs/bench/results/rust-parts-pilot-*-20261104.json`.
+
+## 2026-11-05 조회 API 사용자 확인 DB 왕복 줄이기 (#332)
+
+- 범위: 운영 장소 목록 응답에서 앱 내부 약 165ms가 어디서 생기는지 보고(사용자 요청 "앱 내부 165ms 분해"), 가장 큰 덩어리를 고친다. 선택지 A/B/C 중 사용자 선택 B(사용자 존재 확인을 메모리에 기억).
+- 측정 도구 `monitoring/roundtrips/`: 격리 Postgres `log_statement=all`로 요청당 문장 수, toxiproxy 30ms 지연 ABBA로 실제 왕복 수. 모든 로그인 조회가 본 조회 앞에 사용자 확인 트랜잭션(왕복 2번)을 열고 있었다.
+- 구현: `KnownUsers` + `CurrentUserService.resolveUserId`, 사용자 ID만 필요한 조회 7개에만 적용, 탈퇴 커밋 뒤 제거. ADR 0036.
+- **로컬 격리** 결과(빈 계정): 조회 7개 왕복 약 3.5 → 약 1.25번, +30ms 지연 중앙값 약 107 → 39ms. 대조군 `/api/auth/me` 그대로.
+- PR #333 리뷰(4관점 + 검증) 6건을 이 PR에서 고침: 탈퇴 직전 경합으로 탈퇴한 ID가 다시 기억되는 문제 → 탈퇴 표시+잠금, 커밋 시점·롤백·경합·데이터 있음 테스트 추가, 측정의 "왕복 1번"은 빈 계정 기준임을 명시(데이터 있으면 SELECT 1~5개 남음, 그중 일부는 EAGER `user`), ADR 보완.
+- 검증: `./gradlew build` 통과(테스트 1,056개 실패 0, 리뷰 반영으로 4개 추가).
+- 남은 것: 운영 반영은 11-06 G1 관찰 끝난 뒤(재시작하면 관찰이 초기화), 반영 후 운영 지표로 약 63ms 감소 확인. 다음 후보는 EAGER `user` 로딩 정리.
+- 기록 `docs/monitoring/2026-11-05-db-roundtrips.md`(리뷰 수정·최선 검토 포함), ADR 0036.

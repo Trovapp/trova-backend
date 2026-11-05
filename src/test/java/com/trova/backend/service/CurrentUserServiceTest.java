@@ -117,10 +117,23 @@ class CurrentUserServiceTest {
         when(userRepository.existsById(9L)).thenReturn(true, false);
         currentUserService.resolveUserId(new JwtAuthenticationToken(9L));
 
-        knownUsers.remove(9L);
+        knownUsers.forgetWithdrawn(9L);
 
         assertThatThrownBy(() -> currentUserService.resolveUserId(new JwtAuthenticationToken(9L)))
                 .isInstanceOf(InsufficientAuthenticationException.class);
+    }
+
+    @Test
+    void 존재_확인과_기억하기_사이에_탈퇴가_끝나도_탈퇴한_ID를_다시_기억하지_않는다() {
+        // 존재 확인은 탈퇴 커밋 전이라 true를 받았는데, 기억하기 전에 탈퇴가 커밋되고 제거까지 끝난 순서를 만든다.
+        when(userRepository.existsById(10L)).thenAnswer(invocation -> {
+            knownUsers.forgetWithdrawn(10L);
+            return true;
+        });
+
+        currentUserService.resolveUserId(new JwtAuthenticationToken(10L));
+
+        assertThat(knownUsers.contains(10L)).isFalse();
     }
 
     @Test
