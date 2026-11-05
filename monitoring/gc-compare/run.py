@@ -136,6 +136,8 @@ def main():
             rows.append(row)
             (out / 'runs.json').write_text(json.dumps(rows, indent=2))
             print(json.dumps({k: row[k] for k in ['label', 'k6Ms', 'requests', 'errorRate', 'memoryPeakMiB', 'anonEndMiB', 'swapPeakMiB', 'oomKilled', 'gc']}), flush=True)
+    # 측정 뒤 컨테이너가 남아 있으면 GC 로그가 계속 덧붙는다(2026-11-05 확인) → 끝나면 정리한다.
+    compose({**base_env, 'GC_JAVA_OPTS': 'x'}, 'down', '-v', capture_output=True)
 
 
 if __name__ == '__main__':

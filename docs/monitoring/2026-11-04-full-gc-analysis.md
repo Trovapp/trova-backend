@@ -103,3 +103,22 @@ GC(285) User=0.16s Sys=0.97s Real=8.75s
 - **Sys 0.97초**가 User보다 6배 크다. 커널 작업(스왑에서 메모리 페이지를 다시 읽는 일 등)이 많았다는 신호 → 가설 1(CPU steal)과 2(스왑)가 **둘 다** 작용한 것으로 본다.
   (같은 시각 스왑 입출력 수치는 수집하지 않아 비율은 미확정.)
 - 운영 재시작(11-04 22:04) 후 약 10시간 만에 발생. 이 시각 사용자 요청은 거의 없었다.
+
+## 8. 운영 적용 — G1 GC (운영, 2026-11-05 11:22, 사용자 선택 1번)
+
+- 사전 확인: 진행 중 분석 작업 0건. Serial 시절 GC 로그는 서버 `/opt/trova-backend/gc-logs/serial-20261105/`에 보관.
+- 변경: systemd drop-in `/etc/systemd/system/trova-backend.service.d/gc.conf`(원래 서비스 파일은 그대로)
+  `ExecStart=/usr/bin/java -Xmx384m -Xss256k -XX:+ExitOnOutOfMemoryError -XX:+UseG1GC -Xlog:gc*=info,gc+cpu=info,safepoint=info:file=/opt/trova-backend/gc-logs/gc.log:time,uptime,level,tags:filecount=5,filesize=10m -jar /opt/trova-backend/app.jar`
+  → 재시작·배포 후에도 GC 로그가 계속 남는다(최대 50MB). 배포 스크립트는 app.jar만 바꾸므로 drop-in은 유지된다.
+- 결과: 재시작 11:22:44 → UP 110초(11:24:50). `jcmd VM.flags`에 `-XX:+UseG1GC`, 로그 첫 줄 `Using G1`. 힙 최대 384MiB 그대로.
+  서비스 로그 오류 0, 인증 없는 요청 401 정상.
+- 되돌리기: `sudo rm /etc/systemd/system/trova-backend.service.d/gc.conf && sudo systemctl daemon-reload && sudo systemctl restart trova-backend`
+
+### 관찰 기록
+| 시각(KST) | 경과 | GC 멈춤 수 / 최대 | Full GC | CodeCache GC | java RSS | free | 스왑 사용 |
+|---|---|---|---|---|---|---|---|
+| (Serial, 11-04 23시) | 재시작 후 약 2시간 | — | 긴 멈춤 이력 4.97~9.78초 | Full | 420MiB | 93MiB | 330MiB |
+| 11-05 11:25 | 2분 | — | 0 | 0 | 410MiB | 77MiB | 241MiB |
+| 11-05 11:28 | 5분 | 76회 / 188ms(Young) | 0 | 0 | 408MiB | 79MiB | 245MiB |
+
+CodeCache 정리는 재시작 후 몇 시간~하루 뒤에 일어났다(Serial 이력). 그때 Full GC 없이 처리되는지, 멈춤 최대가 얼마인지가 핵심 확인 항목이다.
