@@ -16,7 +16,8 @@ services:
   app:
     image: eclipse-temurin:21-jre
     cpus: ${APP_CPUS:-0.25}
-    mem_limit: 768m
+    mem_limit: ${APP_MEM:-768m}
+    memswap_limit: ${APP_MEMSWAP:-768m}
     entrypoint: [sh, -c, 'exec java $$GC_JAVA_OPTS -jar /app.jar']
     volumes:
       - ../../build/libs/trova-backend-0.0.1-SNAPSHOT.jar:/app.jar:ro

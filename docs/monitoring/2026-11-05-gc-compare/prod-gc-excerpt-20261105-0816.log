@@ -1,0 +1,26 @@
+[2026-11-05T08:15:22.870+0900][36641.376s][info][gc,start    ] GC(284) Pause Young (Allocation Failure)
+[2026-11-05T08:15:22.874+0900][36641.379s][info][gc,heap     ] GC(284) DefNew: 37747K(41536K)->827K(41536K) Eden: 36928K(36928K)->0K(36928K) From: 819K(4608K)->827K(4608K)
+[2026-11-05T08:15:22.874+0900][36641.379s][info][gc,heap     ] GC(284) Tenured: 62051K(92200K)->62052K(92200K)
+[2026-11-05T08:15:22.874+0900][36641.379s][info][gc,metaspace] GC(284) Metaspace: 141145K(142656K)->141145K(142656K) NonClass: 122946K(123712K)->122946K(123712K) Class: 18199K(18944K)->18199K(18944K)
+[2026-11-05T08:15:22.874+0900][36641.380s][info][gc          ] GC(284) Pause Young (Allocation Failure) 97M->61M(130M) 3.642ms
+[2026-11-05T08:15:22.874+0900][36641.380s][info][gc,cpu      ] GC(284) User=0.00s Sys=0.00s Real=0.00s
+[2026-11-05T08:16:18.832+0900][36697.337s][info][gc,start    ] GC(285) Pause Full (CodeCache GC Threshold)
+[2026-11-05T08:16:18.832+0900][36697.338s][info][gc,phases,start] GC(285) Phase 1: Mark live objects
+[2026-11-05T08:16:27.157+0900][36705.662s][info][gc,phases      ] GC(285) Phase 1: Mark live objects 8324.170ms
+[2026-11-05T08:16:27.157+0900][36705.662s][info][gc,phases,start] GC(285) Phase 2: Compute new object addresses
+[2026-11-05T08:16:27.316+0900][36705.821s][info][gc,phases      ] GC(285) Phase 2: Compute new object addresses 158.835ms
+[2026-11-05T08:16:27.316+0900][36705.821s][info][gc,phases,start] GC(285) Phase 3: Adjust pointers
+[2026-11-05T08:16:27.462+0900][36705.968s][info][gc,phases      ] GC(285) Phase 3: Adjust pointers 146.803ms
+[2026-11-05T08:16:27.462+0900][36705.968s][info][gc,phases,start] GC(285) Phase 4: Move objects
+[2026-11-05T08:16:27.545+0900][36706.051s][info][gc,phases      ] GC(285) Phase 4: Move objects 82.839ms
+[2026-11-05T08:16:27.583+0900][36706.088s][info][gc,heap        ] GC(285) DefNew: 4469K(41536K)->0K(41600K) Eden: 3642K(36928K)->0K(36992K) From: 827K(4608K)->0K(4608K)
+[2026-11-05T08:16:27.583+0900][36706.088s][info][gc,heap        ] GC(285) Tenured: 62052K(92200K)->52147K(92200K)
+[2026-11-05T08:16:27.583+0900][36706.088s][info][gc,metaspace   ] GC(285) Metaspace: 141163K(142720K)->140061K(142720K) NonClass: 122963K(123776K)->122143K(123776K) Class: 18199K(18944K)->17918K(18944K)
+[2026-11-05T08:16:27.583+0900][36706.088s][info][gc             ] GC(285) Pause Full (CodeCache GC Threshold) 64M->50M(130M) 8751.062ms
+[2026-11-05T08:16:27.583+0900][36706.088s][info][gc,cpu         ] GC(285) User=0.16s Sys=0.97s Real=8.75s
+[2026-11-05T08:25:51.474+0900][37269.980s][info][gc,start       ] GC(286) Pause Young (Allocation Failure)
+[2026-11-05T08:25:51.480+0900][37269.986s][info][gc,heap        ] GC(286) DefNew: 36992K(41600K)->447K(41600K) Eden: 36992K(36992K)->0K(36992K) From: 0K(4608K)->447K(4608K)
+[2026-11-05T08:25:51.480+0900][37269.986s][info][gc,heap        ] GC(286) Tenured: 52147K(92200K)->52147K(92200K)
+[2026-11-05T08:25:51.480+0900][37269.986s][info][gc,metaspace   ] GC(286) Metaspace: 140087K(142784K)->140087K(142784K) NonClass: 122168K(123840K)->122168K(123840K) Class: 17918K(18944K)->17918K(18944K)
+[2026-11-05T08:25:51.481+0900][37269.986s][info][gc             ] GC(286) Pause Young (Allocation Failure) 87M->51M(130M) 6.105ms
+[2026-11-05T08:25:51.481+0900][37269.986s][info][gc,cpu         ] GC(286) User=0.01s Sys=0.00s Real=0.01s

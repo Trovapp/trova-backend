@@ -89,10 +89,12 @@ def main():
     ap.add_argument('--vus', default='5')
     ap.add_argument('--sweeper', default='1', help='SweeperThreshold percent (JDK default 15)')
     ap.add_argument('--cpus', default=os.environ.get('APP_CPUS', '0.25'))
+    ap.add_argument('--mem', default='768m', help='container memory limit')
+    ap.add_argument('--memswap', default=None, help='memory+swap limit (default = --mem, no swap)')
     args = ap.parse_args()
     out = Path(os.environ.get('GC_OUT', '/tmp/trova-gc')).resolve()
     out.mkdir(parents=True, exist_ok=False)
-    base_env = {**os.environ, 'APP_CPUS': args.cpus}
+    base_env = {**os.environ, 'APP_CPUS': args.cpus, 'APP_MEM': args.mem, 'APP_MEMSWAP': args.memswap or args.mem}
     rows = []
     with tempfile.TemporaryDirectory(prefix='trova-gc-331-') as private:
         token_path = Path(private) / 'tokens.json'
@@ -117,21 +119,23 @@ def main():
                                stdout=log, stderr=subprocess.STDOUT, check=False)
             end = time.time()
             cg = compose(env, 'exec', '-T', 'app', 'sh', '-c',
-                         'cat /sys/fs/cgroup/memory.peak /sys/fs/cgroup/memory.current; grep -E "^(nr_throttled|throttled_usec|usage_usec)" /sys/fs/cgroup/cpu.stat',
+                         'cat /sys/fs/cgroup/memory.peak /sys/fs/cgroup/memory.current; grep -E "^(anon|file) " /sys/fs/cgroup/memory.stat | tr "\\n" " "; cat /sys/fs/cgroup/memory.swap.peak 2>/dev/null || echo 0; grep -E "^(nr_throttled|throttled_usec|usage_usec)" /sys/fs/cgroup/cpu.stat',
                          capture_output=True, text=True).stdout.split()
             state = subprocess.run(['docker', 'inspect', '-f', '{{.State.OOMKilled}} {{.RestartCount}}',
                                     f'{PROJECT}-app-1'], capture_output=True, text=True).stdout.split()
             k6 = json.loads((logdir / 'k6.json').read_text())['metrics']
-            row = {'label': label, 'variant': variant, 'start': start, 'end': end, 'cpus': args.cpus, 'sweeperThreshold': args.sweeper,
+            row = {'label': label, 'variant': variant, 'start': start, 'end': end, 'cpus': args.cpus, 'mem': args.mem, 'memswap': args.memswap or args.mem, 'sweeperThreshold': args.sweeper,
                    'k6Ms': {k: round(v, 1) for k, v in k6['measured_latency'].items() if k != 'thresholds'},
                    'requests': k6['http_reqs']['count'], 'errorRate': k6['measured_errors']['value'],
                    'memoryPeakMiB': round(int(cg[0]) / 2**20, 1), 'memoryEndMiB': round(int(cg[1]) / 2**20, 1),
-                   'cpuStat': dict(zip(cg[2::2], map(int, cg[3::2]))),
+                   'anonEndMiB': round(int(cg[3]) / 2**20, 1), 'fileEndMiB': round(int(cg[5]) / 2**20, 1),
+                   'swapPeakMiB': round(int(cg[6]) / 2**20, 1),
+                   'cpuStat': dict(zip(cg[7::2], map(int, cg[8::2]))),
                    'oomKilled': state[0] if state else None,
                    'gc': summarize(parse_gc_log(logdir / 'gc.log'))}
             rows.append(row)
             (out / 'runs.json').write_text(json.dumps(rows, indent=2))
-            print(json.dumps({k: row[k] for k in ['label', 'k6Ms', 'requests', 'errorRate', 'memoryPeakMiB', 'gc']}), flush=True)
+            print(json.dumps({k: row[k] for k in ['label', 'k6Ms', 'requests', 'errorRate', 'memoryPeakMiB', 'anonEndMiB', 'swapPeakMiB', 'oomKilled', 'gc']}), flush=True)
 
 
 if __name__ == '__main__':
