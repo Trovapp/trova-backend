@@ -134,8 +134,8 @@ public class PlacesController {
 
     @GetMapping
     public List<PlaceResponse> list(Authentication authentication) {
-        User user = currentUserService.resolve(authentication);
-        List<SavedPlaceListRow> places = savedPlaceRepository.findListRowsByUserId(user.getId());
+        Long userId = currentUserService.resolveUserId(authentication);
+        List<SavedPlaceListRow> places = savedPlaceRepository.findListRowsByUserId(userId);
         // 같은 영상의 결과가 여러 개면 대표 결과의 장소만 내려준다(#87, VideoResults). 데이터는 지우지 않는다.
         return VideoResults.latestRows(places).stream()
                 .map(PlaceResponse::from)
@@ -144,12 +144,12 @@ public class PlacesController {
 
     @GetMapping("/pending")
     public List<PendingJobResponse> pending(Authentication authentication) {
-        User user = currentUserService.resolve(authentication);
+        Long userId = currentUserService.resolveUserId(authentication);
         // FAILED도 포함한다 — 실패한 job은 SavedPlace가 안 생겨서, 여기서 빼면
         // 사용자 입장에서 요청이 이유 없이 사라진 것처럼 보인다.
-        List<ProcessingJob> jobs = processingJobRepository.findByUserAndStatusIn(
-                user, List.of(JobStatus.PENDING, JobStatus.PROCESSING, JobStatus.FAILED));
-        return hideSupersededFailures(user, jobs).stream()
+        List<ProcessingJob> jobs = processingJobRepository.findByUserIdAndStatusIn(
+                userId, List.of(JobStatus.PENDING, JobStatus.PROCESSING, JobStatus.FAILED));
+        return hideSupersededFailures(userId, jobs).stream()
                 .map(job -> PendingJobResponse.from(job, foundPlaceNameStore.get(job.getId())))
                 .toList();
     }
@@ -160,13 +160,13 @@ public class PlacesController {
      * 카드가 두 장이었다. 이후 작업(성공·처리 중·더 최근 실패)이 있으면 예전 실패는 목록에서만 뺀다 — 데이터는 지우지 않는다.
      * 같은 영상인지는 정식 주소로 비교한다(#49 이전 작업은 ?si= 같은 꼬리가 붙어 저장돼 있다).
      */
-    private List<ProcessingJob> hideSupersededFailures(User user, List<ProcessingJob> jobs) {
+    private List<ProcessingJob> hideSupersededFailures(Long userId, List<ProcessingJob> jobs) {
         if (jobs.stream().noneMatch(job -> job.getStatus() == JobStatus.FAILED)) {
             // 처리 목록은 분석 중 몇 초마다 폴링된다 — 실패가 없으면 전체 작업 조회를 하지 않는다.
             return jobs;
         }
         Map<String, Long> latestJobIdByVideo = new HashMap<>();
-        for (ProcessingJob job : processingJobRepository.findByUserOrderByCreatedAtDescIdDesc(user)) {
+        for (ProcessingJob job : processingJobRepository.findByUserIdOrderByCreatedAtDescIdDesc(userId)) {
             latestJobIdByVideo.merge(ShareUrl.videoKey(job.getSourceUrl()), job.getId(), Math::max);
         }
         return jobs.stream()

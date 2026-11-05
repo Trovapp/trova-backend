@@ -122,7 +122,16 @@ public class TripService {
      */
     @Transactional(readOnly = true)
     public List<TripSummary> listTripSummaries(User user) {
-        List<Trip> trips = tripRepository.findByUserOrderByCreatedAtDesc(user);
+        return listTripSummaries(user.getId());
+    }
+
+    /**
+     * 사용자 ID만으로 여행 목록을 만든다(ADR 0036 — 조회 API가 사용자 행을 따로 읽지 않게).
+     * 트랜잭션을 걸지 않는다: 여행 값과 (여행 id, 지역) 튜플만 쓰고 지연 로딩이 없어서, 두 조회를 자동 커밋으로 보내면
+     * COMMIT 왕복 한 번(운영 약 31ms)을 아낀다. 위의 User 버전은 기존 호출부를 위해 읽기 전용 트랜잭션을 유지한다.
+     */
+    public List<TripSummary> listTripSummaries(Long userId) {
+        List<Trip> trips = tripRepository.findByUserIdOrderByCreatedAtDesc(userId);
         if (trips.isEmpty()) {
             return List.of();
         }
@@ -596,11 +605,15 @@ public class TripService {
      * 영상·영상 장소·여행 장소를 한 번씩만 읽어 요청당 쿼리 수를 고정한다.
      */
     public java.util.Set<Long> jobIdsWithExistingTrip(User user, java.util.Collection<ProcessingJob> jobs) {
+        return jobIdsWithExistingTrip(user.getId(), jobs);
+    }
+
+    public java.util.Set<Long> jobIdsWithExistingTrip(Long userId, java.util.Collection<ProcessingJob> jobs) {
         if (jobs.isEmpty()) {
             return java.util.Set.of();
         }
         // 같은 영상을 다시 분석한 작업도 같은 영상으로 본다(VideoKey) — 여행에 들어간 장소의 영상 주소만 한 번에 읽는다(#204).
-        java.util.Set<String> trippedKeys = tripPlaceRepository.findSourceUrlsInTripsOf(user).stream()
+        java.util.Set<String> trippedKeys = tripPlaceRepository.findSourceUrlsInTripsOfUserId(userId).stream()
                 .map(VideoKey::of)
                 .collect(java.util.stream.Collectors.toSet());
         return jobs.stream()

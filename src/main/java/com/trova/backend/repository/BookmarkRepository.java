@@ -13,6 +13,8 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     void deleteByUser(User user);
 
     List<Bookmark> findByUserOrderByCreatedAtDesc(User user);
+    // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
+    List<Bookmark> findByUserIdOrderByCreatedAtDesc(Long userId);
     Optional<Bookmark> findByUserAndPlace(User user, Place place);
     long countByFolder(BookmarkFolder folder);
     List<Bookmark> findByFolder(BookmarkFolder folder);

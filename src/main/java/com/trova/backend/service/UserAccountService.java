@@ -16,6 +16,7 @@ import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserPreferenceRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
 import com.trova.backend.repository.UserRepository;
+import com.trova.backend.security.KnownUsers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class UserAccountService {
     private final ShareKeyRepository shareKeyRepository;
     private final PushSubscriptionRepository pushSubscriptionRepository;
     private final ExpoPushTokenRepository expoPushTokenRepository;
+    private final KnownUsers knownUsers;
 
     public UserAccountService(
             UserRepository userRepository,
@@ -53,7 +55,8 @@ public class UserAccountService {
             TripDraftRepository tripDraftRepository,
             ShareKeyRepository shareKeyRepository,
             PushSubscriptionRepository pushSubscriptionRepository,
-            ExpoPushTokenRepository expoPushTokenRepository
+            ExpoPushTokenRepository expoPushTokenRepository,
+            KnownUsers knownUsers
     ) {
         this.userRepository = userRepository;
         this.savedPlaceRepository = savedPlaceRepository;
@@ -70,6 +73,7 @@ public class UserAccountService {
         this.shareKeyRepository = shareKeyRepository;
         this.pushSubscriptionRepository = pushSubscriptionRepository;
         this.expoPushTokenRepository = expoPushTokenRepository;
+        this.knownUsers = knownUsers;
     }
 
     // 회원을 참조하는 데이터를 전부 지운 뒤 회원을 지운다(탈퇴 시 지체 없이 파기).
@@ -103,5 +107,7 @@ public class UserAccountService {
         // 안드로이드 앱 알림 토큰(#190)도 같은 이유로 함께 지운다.
         expoPushTokenRepository.deleteByUserId(user.getId());
         userRepository.delete(user);
+        // 조회 API가 기억한 사용자 ID도 커밋 뒤 지운다 — 탈퇴한 토큰이 계속 401을 받게(ADR 0036).
+        knownUsers.removeAfterCommit(user.getId());
     }
 }

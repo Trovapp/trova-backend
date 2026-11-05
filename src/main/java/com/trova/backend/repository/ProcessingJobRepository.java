@@ -19,6 +19,9 @@ public interface ProcessingJobRepository extends JpaRepository<ProcessingJob, Lo
 
     List<ProcessingJob> findByUserOrderByCreatedAtDescIdDesc(User user);
     List<ProcessingJob> findByUserAndStatusIn(User user, List<JobStatus> statuses);
+    // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
+    List<ProcessingJob> findByUserIdAndStatusIn(Long userId, List<JobStatus> statuses);
+    List<ProcessingJob> findByUserIdOrderByCreatedAtDescIdDesc(Long userId);
     List<ProcessingJob> findByUserAndSourceUrlAndStatusIn(User user, String sourceUrl, List<JobStatus> statuses);
     boolean existsByUserAndSourceUrlAndIdGreaterThan(User user, String sourceUrl, Long id);
     Optional<ProcessingJob> findByIdAndUser(Long id, User user);

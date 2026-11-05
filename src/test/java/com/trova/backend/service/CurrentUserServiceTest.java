@@ -3,10 +3,12 @@ package com.trova.backend.service;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtAuthenticationToken;
+import com.trova.backend.security.KnownUsers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -19,6 +21,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +30,9 @@ class CurrentUserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Spy
+    private KnownUsers knownUsers = new KnownUsers();
 
     @InjectMocks
     private CurrentUserService currentUserService;
@@ -80,6 +87,45 @@ class CurrentUserServiceTest {
     @Test
     void authentication이_null이면_예외를_던진다() {
         assertThatThrownBy(() -> currentUserService.resolve(null))
+                .isInstanceOf(InsufficientAuthenticationException.class);
+    }
+
+    @Test
+    void 사용자_ID_확인은_처음_한번만_DB를_보고_다음부터는_메모리에서_확인한다() {
+        when(userRepository.existsById(7L)).thenReturn(true);
+
+        assertThat(currentUserService.resolveUserId(new JwtAuthenticationToken(7L))).isEqualTo(7L);
+        assertThat(currentUserService.resolveUserId(new JwtAuthenticationToken(7L))).isEqualTo(7L);
+
+        verify(userRepository, times(1)).existsById(7L);
+    }
+
+    @Test
+    void 없는_사용자의_ID면_인증_예외를_던지고_기억하지_않는다() {
+        when(userRepository.existsById(8L)).thenReturn(false);
+
+        assertThatThrownBy(() -> currentUserService.resolveUserId(new JwtAuthenticationToken(8L)))
+                .isInstanceOf(InsufficientAuthenticationException.class);
+        assertThatThrownBy(() -> currentUserService.resolveUserId(new JwtAuthenticationToken(8L)))
+                .isInstanceOf(InsufficientAuthenticationException.class);
+
+        verify(userRepository, times(2)).existsById(8L);
+    }
+
+    @Test
+    void 탈퇴로_기억에서_빠진_사용자는_다시_DB로_확인한다() {
+        when(userRepository.existsById(9L)).thenReturn(true, false);
+        currentUserService.resolveUserId(new JwtAuthenticationToken(9L));
+
+        knownUsers.remove(9L);
+
+        assertThatThrownBy(() -> currentUserService.resolveUserId(new JwtAuthenticationToken(9L)))
+                .isInstanceOf(InsufficientAuthenticationException.class);
+    }
+
+    @Test
+    void 인증이_없으면_사용자_ID_확인도_예외를_던진다() {
+        assertThatThrownBy(() -> currentUserService.resolveUserId(null))
                 .isInstanceOf(InsufficientAuthenticationException.class);
     }
 }

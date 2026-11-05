@@ -95,8 +95,8 @@ public class BookmarkController {
 
     @GetMapping
     public List<BookmarkResponse> list(Authentication authentication) {
-        User user = currentUserService.resolve(authentication);
-        return bookmarkRepository.findByUserOrderByCreatedAtDesc(user).stream()
+        Long userId = currentUserService.resolveUserId(authentication);
+        return bookmarkRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(BookmarkResponse::from)
                 .toList();
     }
@@ -133,8 +133,8 @@ public class BookmarkController {
 
     @GetMapping("/folders")
     public List<BookmarkFolderResponse> listFolders(Authentication authentication) {
-        User user = currentUserService.resolve(authentication);
-        return bookmarkService.listFolders(user).stream().map(BookmarkFolderResponse::from).toList();
+        Long userId = currentUserService.resolveUserId(authentication);
+        return bookmarkService.listFolders(userId).stream().map(BookmarkFolderResponse::from).toList();
     }
 
     @PostMapping("/folders")
