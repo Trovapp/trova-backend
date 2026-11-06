@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionOperations;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -137,8 +139,18 @@ public class BookmarkService {
 
     /** 사용자 ID만으로 폴더 목록을 만든다(ADR 0036). */
     public List<FolderWithCount> listFolders(Long userId) {
-        return bookmarkFolderRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
-                .map(folder -> new FolderWithCount(folder, bookmarkRepository.countByFolder(folder)))
+        List<BookmarkFolder> folders = bookmarkFolderRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        if (folders.isEmpty()) {
+            return List.of();
+        }
+        // 폴더마다 개수를 따로 세던 N+1 대신 한 쿼리로 센다(#335).
+        Map<Long, Long> counts = new HashMap<>();
+        for (BookmarkRepository.FolderBookmarkCount row
+                : bookmarkRepository.countByFolderIds(folders.stream().map(BookmarkFolder::getId).toList())) {
+            counts.put(row.getFolderId(), row.getBookmarkCount());
+        }
+        return folders.stream()
+                .map(folder -> new FolderWithCount(folder, counts.getOrDefault(folder.getId(), 0L)))
                 .toList();
     }
 
