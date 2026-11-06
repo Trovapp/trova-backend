@@ -178,14 +178,45 @@ class BookmarkServiceTest {
     void listFolders는_폴더별_찜_개수를_같이_돌려준다() {
         setUp();
         BookmarkFolder folder = new BookmarkFolder(user, "카페 모음", "#4A90D9");
-        when(bookmarkFolderRepository.findByUserIdOrderByCreatedAtDesc(user.getId())).thenReturn(java.util.List.of(folder));
-        when(bookmarkRepository.countByFolder(folder)).thenReturn(3L);
+        ReflectionTestUtils.setField(folder, "id", 5L);
+        BookmarkFolder empty = new BookmarkFolder(user, "빈 폴더", "#000000");
+        ReflectionTestUtils.setField(empty, "id", 6L);
+        when(bookmarkFolderRepository.findByUserIdOrderByCreatedAtDesc(user.getId()))
+                .thenReturn(java.util.List.of(folder, empty));
+        // 찜이 없는 폴더는 집계 결과에 없다(group by).
+        when(bookmarkRepository.countByFolderIds(java.util.List.of(5L, 6L)))
+                .thenReturn(java.util.List.of(folderCount(5L, 3L)));
 
         var result = service.listFolders(user);
 
-        assertThat(result).hasSize(1);
+        assertThat(result).hasSize(2);
         assertThat(result.get(0).folder()).isEqualTo(folder);
         assertThat(result.get(0).placeCount()).isEqualTo(3L);
+        assertThat(result.get(1).placeCount()).isZero();
+        verify(bookmarkRepository, never()).countByFolder(any());
+    }
+
+    @Test
+    void 폴더가_없으면_개수를_세지_않는다() {
+        setUp();
+        when(bookmarkFolderRepository.findByUserIdOrderByCreatedAtDesc(user.getId())).thenReturn(java.util.List.of());
+
+        assertThat(service.listFolders(user)).isEmpty();
+        verify(bookmarkRepository, never()).countByFolderIds(any());
+    }
+
+    private static BookmarkRepository.FolderBookmarkCount folderCount(Long folderId, long count) {
+        return new BookmarkRepository.FolderBookmarkCount() {
+            @Override
+            public Long getFolderId() {
+                return folderId;
+            }
+
+            @Override
+            public long getBookmarkCount() {
+                return count;
+            }
+        };
     }
 
     @Test
