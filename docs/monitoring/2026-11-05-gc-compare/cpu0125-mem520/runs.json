@@ -1,0 +1,198 @@
+[
+  {
+    "label": "1-serial",
+    "variant": "serial",
+    "start": 1793841788.836214,
+    "end": 1793842151.232277,
+    "cpus": "0.125",
+    "mem": "520m",
+    "memswap": "1g",
+    "sweeperThreshold": "1",
+    "k6Ms": {
+      "avg": 156.3,
+      "med": 10.2,
+      "p(95)": 644.5,
+      "p(99)": 2699.9,
+      "max": 5560.8
+    },
+    "requests": 837,
+    "errorRate": 0,
+    "memoryPeakMiB": 509.1,
+    "memoryEndMiB": 504.5,
+    "anonEndMiB": 433.6,
+    "fileEndMiB": 67.0,
+    "swapPeakMiB": 0.0,
+    "cpuStat": {
+      "usage_usec": 49505612,
+      "nr_throttled": 3587,
+      "throttled_usec": 721689899
+    },
+    "oomKilled": "false",
+    "gc": {
+      "all": {
+        "count": 182,
+        "maxMs": 2498.505,
+        "sumMs": 31976.1
+      },
+      "codeCache": {
+        "count": 22,
+        "maxMs": 2498.505,
+        "sumMs": 23585.8
+      },
+      "full": {
+        "count": 22,
+        "maxMs": 2498.505,
+        "sumMs": 23585.8
+      },
+      "safepointTotalMs": 36241.3,
+      "safepointMaxMs": 2600.9
+    }
+  },
+  {
+    "label": "2-g1",
+    "variant": "g1",
+    "start": 1793842435.1360261,
+    "end": 1793842797.3813188,
+    "cpus": "0.125",
+    "mem": "520m",
+    "memswap": "1g",
+    "sweeperThreshold": "1",
+    "k6Ms": {
+      "p(99)": 1338.3,
+      "max": 10288.5,
+      "avg": 143.3,
+      "med": 10.2,
+      "p(95)": 403.1
+    },
+    "requests": 841,
+    "errorRate": 0,
+    "memoryPeakMiB": 520.0,
+    "memoryEndMiB": 487.6,
+    "anonEndMiB": 470.4,
+    "fileEndMiB": 0.0,
+    "swapPeakMiB": 29.9,
+    "cpuStat": {
+      "usage_usec": 52820644,
+      "nr_throttled": 3826,
+      "throttled_usec": 855268136
+    },
+    "oomKilled": "false",
+    "gc": {
+      "all": {
+        "count": 137,
+        "maxMs": 900.904,
+        "sumMs": 16219.3
+      },
+      "codeCache": {
+        "count": 21,
+        "maxMs": 206.896,
+        "sumMs": 2379.4
+      },
+      "full": {
+        "count": 0,
+        "maxMs": 0,
+        "sumMs": 0
+      },
+      "safepointTotalMs": 20588.0,
+      "safepointMaxMs": 901.4
+    }
+  },
+  {
+    "label": "3-g1",
+    "variant": "g1",
+    "start": 1793843071.445554,
+    "end": 1793843433.62449,
+    "cpus": "0.125",
+    "mem": "520m",
+    "memswap": "1g",
+    "sweeperThreshold": "1",
+    "k6Ms": {
+      "avg": 110.6,
+      "med": 9.8,
+      "p(95)": 456.5,
+      "p(99)": 1169.5,
+      "max": 5806.0
+    },
+    "requests": 855,
+    "errorRate": 0,
+    "memoryPeakMiB": 520.0,
+    "memoryEndMiB": 515.2,
+    "anonEndMiB": 488.3,
+    "fileEndMiB": 20.5,
+    "swapPeakMiB": 0.0,
+    "cpuStat": {
+      "usage_usec": 50151660,
+      "nr_throttled": 3630,
+      "throttled_usec": 814906560
+    },
+    "oomKilled": "false",
+    "gc": {
+      "all": {
+        "count": 128,
+        "maxMs": 700.243,
+        "sumMs": 15124.0
+      },
+      "codeCache": {
+        "count": 20,
+        "maxMs": 200.463,
+        "sumMs": 1881.1
+      },
+      "full": {
+        "count": 0,
+        "maxMs": 0,
+        "sumMs": 0
+      },
+      "safepointTotalMs": 19251.1,
+      "safepointMaxMs": 700.9
+    }
+  },
+  {
+    "label": "4-serial",
+    "variant": "serial",
+    "start": 1793843716.4415748,
+    "end": 1793844078.154963,
+    "cpus": "0.125",
+    "mem": "520m",
+    "memswap": "1g",
+    "sweeperThreshold": "1",
+    "k6Ms": {
+      "p(99)": 2159.8,
+      "max": 6961.8,
+      "avg": 150.0,
+      "med": 10.5,
+      "p(95)": 498.9
+    },
+    "requests": 839,
+    "errorRate": 0,
+    "memoryPeakMiB": 512.4,
+    "memoryEndMiB": 512.4,
+    "anonEndMiB": 441.8,
+    "fileEndMiB": 67.0,
+    "swapPeakMiB": 0.0,
+    "cpuStat": {
+      "usage_usec": 50384070,
+      "nr_throttled": 3636,
+      "throttled_usec": 759430686
+    },
+    "oomKilled": "false",
+    "gc": {
+      "all": {
+        "count": 187,
+        "maxMs": 1907.559,
+        "sumMs": 30505.3
+      },
+      "codeCache": {
+        "count": 20,
+        "maxMs": 1907.559,
+        "sumMs": 22524.2
+      },
+      "full": {
+        "count": 21,
+        "maxMs": 1907.559,
+        "sumMs": 22825.9
+      },
+      "safepointTotalMs": 33535.7,
+      "safepointMaxMs": 1908.8
+    }
+  }
+]

@@ -1,0 +1,178 @@
+[
+  {
+    "label": "1-serial",
+    "variant": "serial",
+    "start": 1793805184.2124789,
+    "end": 1793805546.221246,
+    "cpus": "0.25",
+    "sweeperThreshold": "1",
+    "k6Ms": {
+      "avg": 26.5,
+      "med": 8.0,
+      "p(95)": 24.8,
+      "p(99)": 519.9,
+      "max": 1725.3
+    },
+    "requests": 891,
+    "errorRate": 0,
+    "memoryPeakMiB": 502.3,
+    "memoryEndMiB": 502.2,
+    "cpuStat": {
+      "usage_usec": 36763579,
+      "nr_throttled": 1144,
+      "throttled_usec": 209145370
+    },
+    "oomKilled": "false",
+    "gc": {
+      "all": {
+        "count": 177,
+        "maxMs": 708.706,
+        "sumMs": 11265.9
+      },
+      "codeCache": {
+        "count": 23,
+        "maxMs": 708.706,
+        "sumMs": 8187.3
+      },
+      "full": {
+        "count": 23,
+        "maxMs": 708.706,
+        "sumMs": 8187.3
+      },
+      "safepointTotalMs": 12051.1,
+      "safepointMaxMs": 718.5
+    }
+  },
+  {
+    "label": "2-g1",
+    "variant": "g1",
+    "start": 1793805645.581095,
+    "end": 1793806007.529751,
+    "cpus": "0.25",
+    "sweeperThreshold": "1",
+    "k6Ms": {
+      "avg": 27.7,
+      "med": 8.8,
+      "p(95)": 53.8,
+      "p(99)": 343.2,
+      "max": 2306.2
+    },
+    "requests": 890,
+    "errorRate": 0,
+    "memoryPeakMiB": 542.8,
+    "memoryEndMiB": 542.7,
+    "cpuStat": {
+      "usage_usec": 38810774,
+      "nr_throttled": 1190,
+      "throttled_usec": 246218584
+    },
+    "oomKilled": "false",
+    "gc": {
+      "all": {
+        "count": 121,
+        "maxMs": 479.69,
+        "sumMs": 6129.5
+      },
+      "codeCache": {
+        "count": 17,
+        "maxMs": 103.144,
+        "sumMs": 808.9
+      },
+      "full": {
+        "count": 0,
+        "maxMs": 0,
+        "sumMs": 0
+      },
+      "safepointTotalMs": 7043.2,
+      "safepointMaxMs": 480.0
+    }
+  },
+  {
+    "label": "3-g1",
+    "variant": "g1",
+    "start": 1793806109.310156,
+    "end": 1793806471.330747,
+    "cpus": "0.25",
+    "sweeperThreshold": "1",
+    "k6Ms": {
+      "avg": 28.2,
+      "med": 8.6,
+      "p(95)": 48.1,
+      "p(99)": 408.2,
+      "max": 2302.5
+    },
+    "requests": 890,
+    "errorRate": 0,
+    "memoryPeakMiB": 543.8,
+    "memoryEndMiB": 540.7,
+    "cpuStat": {
+      "usage_usec": 38876870,
+      "nr_throttled": 1206,
+      "throttled_usec": 247756529
+    },
+    "oomKilled": "false",
+    "gc": {
+      "all": {
+        "count": 144,
+        "maxMs": 283.842,
+        "sumMs": 5725.5
+      },
+      "codeCache": {
+        "count": 18,
+        "maxMs": 185.75,
+        "sumMs": 1169.7
+      },
+      "full": {
+        "count": 0,
+        "maxMs": 0,
+        "sumMs": 0
+      },
+      "safepointTotalMs": 6861.3,
+      "safepointMaxMs": 284.1
+    }
+  },
+  {
+    "label": "4-serial",
+    "variant": "serial",
+    "start": 1793806574.5982022,
+    "end": 1793806936.151158,
+    "cpus": "0.25",
+    "sweeperThreshold": "1",
+    "k6Ms": {
+      "p(99)": 191.3,
+      "max": 2629.7,
+      "avg": 26.5,
+      "med": 9.2,
+      "p(95)": 19.2
+    },
+    "requests": 890,
+    "errorRate": 0,
+    "memoryPeakMiB": 511.8,
+    "memoryEndMiB": 511.0,
+    "cpuStat": {
+      "usage_usec": 36847887,
+      "nr_throttled": 1114,
+      "throttled_usec": 215163237
+    },
+    "oomKilled": "false",
+    "gc": {
+      "all": {
+        "count": 172,
+        "maxMs": 708.338,
+        "sumMs": 7910.1
+      },
+      "codeCache": {
+        "count": 13,
+        "maxMs": 708.338,
+        "sumMs": 3669.5
+      },
+      "full": {
+        "count": 13,
+        "maxMs": 708.338,
+        "sumMs": 3669.5
+      },
+      "safepointTotalMs": 8491.2,
+      "safepointMaxMs": 708.8
+    }
+  }
+]
