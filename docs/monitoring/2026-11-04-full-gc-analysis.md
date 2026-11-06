@@ -195,3 +195,16 @@ G1 최종 확인 기준(Full GC 0, **최대 멈춤 1초 미만**, RSS 계속 증
 3. 서버 키우기: 메모리가 큰 무료 서버(Oracle A1)는 아직 확보하지 못했다.
 4. 그대로 두기: 새벽·한가한 시간대에 하루 몇 번. 사용자 요청이 거의 없는 시간이라 영향이 작다.
 
+**사용자 선택**: 1번(“1”).
+
+## 11. 운영 적용 — 스왑 성향 낮추기와 fwupd 끄기 (운영, 2026-11-06 14:21)
+
+- 변경 전: `vm.swappiness=60`, `fwupd`·`fwupd-refresh.timer` 실행 중. 스왑 사용 543MiB(11-05 20:24 기준), 가용 216MiB.
+- 변경
+  - `/etc/sysctl.d/90-trova-swappiness.conf`에 `vm.swappiness = 10` → `sysctl -p`로 즉시 적용(재부팅 뒤에도 유지).
+  - `systemctl stop` + `mask`: `fwupd`, `fwupd-refresh.timer`(펌웨어 업데이트 데몬, 클라우드 VM에서 쓰지 않음, 스왑 130MiB 사용).
+- 직후: swappiness 10, fwupd inactive·masked, 시스템 스왑 사용 **418MiB**, 가용 230MiB. 앱은 재시작하지 않았다(trova-backend active).
+- 되돌리기: `sudo rm /etc/sysctl.d/90-trova-swappiness.conf && sudo sysctl vm.swappiness=60`, `sudo systemctl unmask fwupd fwupd-refresh.timer && sudo systemctl start fwupd-refresh.timer`
+- 확인할 것: 같은 기록기(`swapwatch.log`)로 적용 뒤 java 스왑 사용이 다시 늘어나는지, 1초 넘는 GC 멈춤과 몰아서 생기는 스왑 입력이 사라지는지.
+  swappiness를 낮춰도 메모리가 정말 모자라면 커널은 여전히 스왑을 쓴다. 그때는 2번(java 힙 밖 메모리)이나 3번(서버)으로 간다.
+
