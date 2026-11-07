@@ -34,7 +34,7 @@ def compose(env, *args, **kw):
     return subprocess.run(['docker', 'compose', '-p', PROJECT, '-f', str(COMPOSE), *args], env=env, **kw)
 
 
-def wait_health(timeout=300):
+def wait_health(timeout=600):  # CPU 0.125에서 기동이 5분 가까이 걸릴 때가 있다(#14)
     end = time.time() + timeout
     while time.time() < end:
         try:
@@ -125,21 +125,27 @@ def main():
     ap.add_argument('--mem', default='520m')
     ap.add_argument('--duration', default='60s')
     ap.add_argument('--think', default='1')
+    ap.add_argument('--threads', default='200', help='Tomcat 최대 처리 스레드(스프링 기본 200)')
+    ap.add_argument('--xmx', default='384m', help='힙 최대(운영과 같은 384m이 기본)')
+    ap.add_argument('--malloc-arenas', default='', help='MALLOC_ARENA_MAX(비우면 glibc 기본)')
+    ap.add_argument('--java-extra', default='', help='JVM 옵션 추가(예: -XX:NativeMemoryTracking=summary)')
+    ap.add_argument('--all-steps', action='store_true', help='기준을 넘어도 앱이 살아 있으면 다음 단계를 잰다')
     ap.add_argument('--keep', action='store_true', help='끝난 뒤 환경을 남긴다(시뮬레이터 확인용)')
     args = ap.parse_args()
     out = Path(os.environ.get('LIMIT_OUT', '/tmp/trova-limit')).resolve()
     out.mkdir(parents=True, exist_ok=False)
     (out / 'gc').mkdir()
     env = {**os.environ, 'APP_CPUS': args.cpus, 'APP_MEM': args.mem, 'APP_MEMSWAP': args.mem,
-           'GC_LOG_DIR': str(out / 'gc'), 'GC_JAVA_OPTS': JAVA}
+           'GC_LOG_DIR': str(out / 'gc'), 'GC_JAVA_OPTS': f"{JAVA.replace('-Xmx384m', '-Xmx' + args.xmx)} {args.java_extra}".strip(),
+           'TOMCAT_THREADS_MAX': args.threads, 'MALLOC_ARENA_MAX': args.malloc_arenas}
     compose(env, 'down', '-v', capture_output=True)
     compose(env, 'up', '-d', check=True, capture_output=True)
     wait_health()
     with open(HERE / 'seed.sql') as sql:
         compose(env, 'exec', '-T', 'db', 'psql', '-q', '-v', 'ON_ERROR_STOP=1', '-U', 'gc', '-d', 'gc',
                 stdin=sql, check=True, capture_output=True)
-    meta = {'cpus': args.cpus, 'mem': args.mem, 'swap': 'none', 'java': JAVA, 'duration': args.duration,
-            'think': args.think, 'users': USERS, 'rule': f'p95<={P95_LIMIT_MS}ms, errors<={ERROR_LIMIT}'}
+    meta = {'cpus': args.cpus, 'mem': args.mem, 'swap': 'none', 'java': env['GC_JAVA_OPTS'], 'duration': args.duration,
+            'think': args.think, 'tomcatThreadsMax': args.threads, 'mallocArenaMax': args.malloc_arenas, 'users': USERS, 'rule': f'p95<={P95_LIMIT_MS}ms, errors<={ERROR_LIMIT}'}
     rows = []
     save = lambda: (out / 'runs.json').write_text(json.dumps({'meta': meta, 'steps': rows}, indent=2, ensure_ascii=False))
     with tempfile.TemporaryDirectory(prefix='trova-limit-342-') as private:
@@ -153,7 +159,7 @@ def main():
             row = run_step(env, out, token_path, f'{i}-vu{vus}', vus, args); rows.append(row); save()
             if row['appRunning'] != 'true':  # 앱이 죽으면(OOM 등) 반복·회복 측정은 의미가 없다
                 break
-            if not row['pass']:
+            if not row['pass'] and not args.all_steps:
                 if prev:
                     rows.append(run_step(env, out, token_path, f'{i}r-vu{prev}', prev, args)); save()
                 rows.append(run_step(env, out, token_path, f'{i}r-vu{vus}', vus, args)); save()
