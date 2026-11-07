@@ -1,0 +1,71 @@
+{
+  "deployment": {
+    "jar_sha256_before": "a4f0ecefabba3d55450e678204445b289ccd5e374ce43f3e607bdac975eb2597",
+    "pid_before": "343521",
+    "config_path": "/opt/trova-backend/application.properties",
+    "started_at_utc": "2026-11-06T08:03:48Z",
+    "status": "applied",
+    "pid_after": "345581",
+    "jar_sha256_after": "a4f0ecefabba3d55450e678204445b289ccd5e374ce43f3e607bdac975eb2597",
+    "health": "UP",
+    "http_bucket_series": 138,
+    "finished_at_utc": "2026-11-06T08:05:57Z"
+  },
+  "local_validation": {
+    "tests": [
+      "HttpHistogramConfigurationTest",
+      "ActuatorExposureTest"
+    ],
+    "tests_passed": 3,
+    "git_diff_check": "passed"
+  },
+  "grafana_validation": {
+    "query": "histogram_quantile(\n  0.95,\n  sum by (le, method, uri) (\n    rate(http_server_requests_seconds_bucket{\n      job=\"trova-prod\",\n      uri!~\"/actuator.*\"\n    }[5m])\n  )\n)",
+    "result": [
+      {
+        "method": "GET",
+        "uri": "/api/notifications",
+        "p95_seconds": 0.1954402381318394
+      },
+      {
+        "method": "GET",
+        "uri": "/api/places",
+        "p95_seconds": 2.053302015793728
+      },
+      {
+        "method": "GET",
+        "uri": "/api/places/pending",
+        "p95_seconds": 1.6953880747937278
+      },
+      {
+        "method": "GET",
+        "uri": "/api/trip-drafts/auto",
+        "p95_seconds": 2.411215956793728
+      },
+      {
+        "method": "GET",
+        "uri": "/api/trips",
+        "p95_seconds": 2.053302015793728
+      },
+      {
+        "method": "GET",
+        "uri": "/api/auth/me",
+        "p95_seconds": 2.411215956793728
+      },
+      {
+        "method": "GET",
+        "uri": "/api/bookmarks",
+        "p95_seconds": 2.411215956793728
+      }
+    ],
+    "timestamp": 1793952413.944855
+  },
+  "notes": [
+    "Existing operating JAR unchanged; added external application.properties and restarted service.",
+    "Pending/processing jobs checked as zero for processing_jobs, trip_drafts and trip_replan_jobs before restart.",
+    "One health endpoint HTTP 503 observed during startup; final health UP.",
+    "Simulator app reopened twice; seven read APIs returned HTTP 200 on the initial open.",
+    "Finite p95 output verifies the pipeline only; very few requests and post-restart warmup are not representative performance evidence.",
+    "Local source edits are not committed or pushed."
+  ]
+}

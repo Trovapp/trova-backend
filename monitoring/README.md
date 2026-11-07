@@ -6,6 +6,9 @@
 
 ## 접속과 읽는 순서
 
+- [첫 실습 — 요청 횟수와 속도](http://localhost:3300/d/trova-first-metric): `up`(수집 성공/실패),
+  성공한 `GET /actuator/health` 누적 횟수, 최근 5분 기준 요청/초를 비교한다.
+  상태 확인 링크를 한 번 열고 15~30초 뒤 누적값을 확인한다. 앱 재시작 시 누적값은 초기화될 수 있다.
 - [처음 보는 대시보드](http://localhost:3300/d/trova-monitoring-lab)
 - [기존 상세 대시보드](http://localhost:3300/d/trova-overview)
 - [수집 상태](http://localhost:9090/targets), [경보 상태](http://localhost:9090/alerts)
@@ -20,7 +23,7 @@
 
 | 지표 | 실제 범위 / 한계 |
 |---|---|
-| HTTP 평균 시간 | 요청 접수 응답. 비동기 분석 완료 시간 아님. 현재 HTTP 히스토그램이 없어 p95 계산 불가 |
+| HTTP 평균 / p95 | 서버 HTTP 처리 시간. 비동기 분석 완료 시간 아님. p95는 HTTP 히스토그램 활성화 후 수집한 데이터로만 계산 |
 | pipeline stage | download/audio/frames/gemini. Python 결과 반환 뒤 기록하므로 실패·강제종료 전체를 포함하지 않음 |
 | queue wait | DB 작업 생성 → 분석 시작. Kafka/내부 전달 경로별 측정, DB 확인 포함 |
 | 외부 API 시간 | 제공자·작업별 호출 기록. 병렬 호출 합은 사용자 대기 시간과 다름 |
@@ -30,6 +33,35 @@
 `increase()`는 구간 경계를 보정해서 소수가 될 수 있고, 최초 계측 이전 표본이 없으면 첫 호출을 놓칠 수 있다.
 표본 1~몇 건으로 p95 개선률이나 처리량을 주장하지 않는다. 새 Java 단계 지표는 지도 검색·선택·검증·저장과 예외 종료까지 계측한다.
 자동 일정 생성 및 강제 종료된 분석은 별도 관찰이 필요하다. 사용자 ID/URL/job ID를 지표 라벨에 추가하지 않는다.
+
+### API별 p95 응답 시간
+
+`application.yml`의 `management.metrics.distribution.percentiles-histogram.http.server.requests=true`로
+HTTP Timer의 버킷을 내보낸다. 평균의 합계·횟수만으로는 과거 p95를 복원할 수 없다.
+히스토그램은 API·응답 코드별 시계열과 메모리 사용을 늘리므로 HTTP에 한정한다.
+
+2026-11-06 운영 적용은 기존 JAR를 교체하지 않고, `monitoring/http-histogram.properties`의 옵션을
+운영 작업 디렉터리 `/opt/trova-backend/application.properties`에 추가해 서비스를 재시작하는 방식이다.
+외부 설정은 JAR 재배포 후에도 남는다. 파일이 이미 존재하면 덮어쓰지 말고 기존 설정과 병합한다.
+옵션을 끄려면 외부 파일에서 해당 속성을 제거하고 코드의 기본 설정도 함께 검토한 뒤 재시작한다.
+이번 적용 직전의 JAR로 되돌릴 때는 이번에 새로 만든 외부 파일을 제거하고 재시작하면 된다.
+
+Grafana 패널: Time series, 단위 seconds (s), Legend `{{method}} {{uri}}`.
+
+```promql
+histogram_quantile(
+  0.95,
+  sum by (le, method, uri) (
+    rate(http_server_requests_seconds_bucket{job="trova-prod",uri!~"/actuator.*"}[5m])
+  )
+) and on() (max(up{job="trova-prod"}) == 1)
+```
+
+API 요청 후 `http_server_requests_seconds_bucket{job="trova-prod"}`가 수집되는지 먼저 확인한다.
+`rate`에는 최소 두 수집 표본이 필요하고, 처음 생성된 시계열의 첫 요청은 증가량에서 놓칠 수 있다.
+요청이 없는 구간의 p95는 정의되지 않아 NaN/빈 그래프로 보일 수 있으며 0으로 채우지 않는다.
+p95는 버킷 경계로 보간한 추정값이고, 소수 요청의 p95를 평소 성능이나 용량으로 해석하지 않는다.
+현재 쿼리는 성공·실패 응답을 모두 포함한다.
 
 ## 실행
 

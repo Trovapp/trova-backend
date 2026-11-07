@@ -88,6 +88,10 @@ management:
   metrics:
     tags:
       application: trova-backend
+    distribution:
+      # HTTP 응답 시간 분포를 내보내 Prometheus에서 API별 p95를 계산한다.
+      percentiles-histogram:
+        http.server.requests: true
 
 app:
   # 영상 분석 작업 대기열(#244, ADR 0021). async(기본) = 서버 안 @Async, kafka = Kafka 토픽 trova.share-jobs.
