@@ -1,0 +1,83 @@
+{
+  "submittedAt": 1794115997.292795,
+  "allDoneAt": 1794116020.367934,
+  "drainS": 23.1,
+  "jobs": [
+    {
+      "id": 534,
+      "status": "DONE",
+      "analysis": "DONE",
+      "created": 1794148399.06643,
+      "updated": 1794148414.096004,
+      "finished": 1794148414.096004,
+      "error": null
+    }
+  ],
+  "submitted": [
+    {
+      "user": 1,
+      "url": "https://www.youtube.com/shorts/dXmuZBBiFGg",
+      "status": 202,
+      "jobId": 534,
+      "alreadyAnalyzed": false,
+      "error": null
+    }
+  ],
+  "apiCalls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "jobId": 534,
+      "success": true,
+      "latencyMs": 3003,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148411.509423,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "jobId": 534,
+      "success": true,
+      "latencyMs": 1610,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148411.642127,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "jobId": 534,
+      "success": true,
+      "latencyMs": 333,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794148412.274439,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "select_place_match",
+      "jobId": 534,
+      "success": true,
+      "latencyMs": 714,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148413.403487,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 4593,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148420.284827,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+{
+  "submittedAt": 1794137643.9890728,
+  "allDoneAt": 1794137694.633237,
+  "drainS": 50.6,
+  "jobs": [
+    {
+      "id": 755,
+      "status": "DONE",
+      "analysis": "DONE",
+      "created": 1794170046.062156,
+      "updated": 1794170091.16495,
+      "finished": 1794170091.16495,
+      "error": null
+    }
+  ],
+  "submitted": [
+    {
+      "user": 11,
+      "url": "https://www.instagram.com/reel/DQRNtv2kvpJ/",
+      "status": 202,
+      "jobId": 755,
+      "alreadyAnalyzed": false,
+      "error": null
+    }
+  ],
+  "apiCalls": [
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 4593,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148420.284827,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 2106,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148607.883423,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft.rule-repair",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 1112,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148610.07539,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 703,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148614.269273,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 1600,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148628.670592,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 10119,
+      "attempts": 3,
+      "waitedMs": 6005,
+      "at": 1794148641.284902,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 3995,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148708.771167,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 4002,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148734.572335,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft.repair",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 4104,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794148739.472263,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 1688,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794150672.371951,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 2004,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794150924.874495,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 1105,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794150960.583192,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 1417,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794151239.981888,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 1313,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794151273.284203,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 1115,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794151506.979418,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 1197,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794151527.47222,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "jobId": 755,
+      "success": true,
+      "latencyMs": 9959,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794170086.788735,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "jobId": 755,
+      "success": true,
+      "latencyMs": 4986,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794170086.963572,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "jobId": 755,
+      "success": true,
+      "latencyMs": 886,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794170088.764472,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "jobId": 755,
+      "success": true,
+      "latencyMs": 208,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794170089.276924,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 3794,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794170097.473221,
+      "error": null
+    }
+  ]
+}
