@@ -1,0 +1,62 @@
+{
+  "uid": "trova-first-metric",
+  "title": "Trova 첫 실습 — 요청 횟수와 속도",
+  "description": "① 수집이 되는지 확인하고 ② 누적 요청 횟수와 ③ 초당 요청 수를 비교합니다. 상태 확인 요청만 측정하며 영상 분석은 실행하지 않습니다.",
+  "tags": ["trova", "learning"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": {"from": "now-15m", "to": "now"},
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "직접 확인하는 순서",
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 5},
+      "options": {
+        "mode": "markdown",
+        "content": "1. 수집 상태가 **1**인지 확인합니다.\n2. [Trova 상태 확인](http://localhost:18080/actuator/health)을 **한 번** 엽니다. `UP`이면 응답 성공입니다. 이 링크는 SSH 터널이 열린 Mac에서 사용합니다.\n3. **15~30초 뒤** 누적 요청 횟수가 늘었는지 확인합니다. 다른 상태 확인 요청도 함께 셉니다.\n4. 초당 요청 수는 최근 5분의 카운터 변화로 계산한 값입니다. 한 번 호출했다고 **1 요청/초**가 되지는 않습니다.\n\n이 화면의 0·1 수집 상태와 0·1·2… 요청 횟수는 서로 다른 메트릭입니다. 수집이 끊기면 요청 횟수·속도는 데이터 없음으로 표시합니다."
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "① 지표 수집 — 1 성공 / 0 실패",
+      "description": "up은 Prometheus의 최근 수집 결과입니다. 0은 앱 장애뿐 아니라 SSH 터널이나 네트워크 문제일 수도 있습니다. 요청 횟수가 아닙니다.",
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"x": 0, "y": 5, "w": 12, "h": 6},
+      "targets": [{"refId": "A", "expr": "up{job=\"trova-prod\"}", "instant": true}],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 0, "noValue": "데이터 없음",
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}
+        },
+        "overrides": []
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "values": false}, "colorMode": "background", "graphMode": "none"}
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "② 성공한 상태 확인 요청 — 누적 횟수",
+      "description": "GET /actuator/health가 HTTP 200으로 끝난 누적 횟수입니다. 앱 재시작으로 초기화될 수 있습니다. 표본이 없거나 수집 실패 시 데이터 없음이며 0으로 대체하지 않습니다.",
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"x": 12, "y": 5, "w": 12, "h": 6},
+      "targets": [{"refId": "A", "expr": "sum(http_server_requests_seconds_count{job=\"trova-prod\",uri=\"/actuator/health\",method=\"GET\",status=\"200\"}) and on() (max(up{job=\"trova-prod\"}) == 1)", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "short", "decimals": 0, "min": 0, "noValue": "데이터 없음", "color": {"mode": "fixed", "fixedColor": "blue"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "values": false}, "colorMode": "value", "graphMode": "none"}
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "③ 상태 확인 요청 속도 — 최근 5분 기준 요청/초",
+      "description": "rate(누적 카운터[5m])는 최근 최대 5분의 수집 표본으로 초당 증가량을 추정합니다. 한 번 요청하면 작은 소수가 나올 수 있고, 요청이 없으면 0입니다. 표본 2개 미만이나 수집 실패는 데이터 없음입니다. 재시작에 의한 카운터 초기화를 보정합니다. 각 시점의 up으로 수집 상태를 확인합니다.",
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"x": 0, "y": 11, "w": 24, "h": 9},
+      "targets": [{"refId": "A", "expr": "sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",uri=\"/actuator/health\",method=\"GET\",status=\"200\"}[5m])) and on() (max(up{job=\"trova-prod\"}) == 1)", "legendFormat": "성공한 상태 확인 요청/초", "range": true}],
+      "fieldConfig": {"defaults": {"unit": "reqps", "min": 0, "noValue": "데이터 없음", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "spanNulls": false}}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single"}}
+    }
+  ]
+}
