@@ -150,8 +150,8 @@ app:
     tag-places-script-path: ${TAG_PLACES_SCRIPT_PATH:pipeline-test/tag_places.py}
     summarize-reviews-script-path: ${SUMMARIZE_REVIEWS_SCRIPT_PATH:pipeline-test/summarize_reviews.py}
     work-dir: ${PIPELINE_WORK_DIR:pipeline-test/work}
-    # 분석 파이썬의 CPU 우선순위(nice, 0~19, 0이면 끔) — 분석이 몰려도 조회 응답이 먼저 CPU를 받게(#345, 문제 기록 #16).
-    nice: ${PIPELINE_NICE:10}
+    # 분석 파이썬의 CPU 우선순위(nice, 0~19, 0이면 끔). 기본 끔 — 운영 측정에서 조회는 나아지지 않고 릴스만 굶어 시간 초과됐다(#347, ADR 0038).
+    nice: ${PIPELINE_NICE:0}
     # 서버가 영상을 내려받는 분석(인스타그램)의 동시 실행 수, 0이면 제한 없음(#345). 몰아 받으면 CPU와 인스타그램 차단이 함께 늘었다.
     download-concurrency: ${PIPELINE_DOWNLOAD_CONCURRENCY:1}
     gemini-api-key: ${GEMINI_API_KEY:}
