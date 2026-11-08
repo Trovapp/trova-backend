@@ -1,0 +1,294 @@
+{
+  "meta": {
+    "base": "https://193-123-161-217.sslip.io",
+    "duration": "60s",
+    "warmup": [
+      20,
+      "60s"
+    ],
+    "rule": "p95<=1000ms, errors<=0.01",
+    "stop": "java 재시작 또는 오류>0.2"
+  },
+  "steps": [
+    {
+      "label": "0-warmup-20",
+      "vus": 20,
+      "start": 1794067566.427783,
+      "end": 1794067628.191512,
+      "p50Ms": 168.2,
+      "p95Ms": 492.2,
+      "p99Ms": 572.7,
+      "maxMs": 690.4,
+      "errorRate": 0,
+      "measuredRequests": 753,
+      "rps": 16.7,
+      "p95ByApiMs": {
+        "/api/bookmarks/folders": 227.9,
+        "/api/places": 258.3,
+        "/api/trips": 242.9,
+        "/api/users/me": 190.4,
+        "/api/places/pending": 161.7,
+        "/api/auth/me": 199.7,
+        "/api/notifications": 184.7,
+        "/api/trips/{id}": 573.6,
+        "/api/bookmarks": 176.8
+      },
+      "before": {
+        "pid": "375535",
+        "active": "active",
+        "restarts": "0",
+        "mem": 534491136,
+        "peak": 541618176,
+        "cpu": 500937484,
+        "availKiB": 174288,
+        "stealTicks": 2446042
+      },
+      "after": {
+        "pid": "375535",
+        "active": "active",
+        "restarts": "0",
+        "mem": 524578816,
+        "peak": 541618176,
+        "cpu": 511331637,
+        "availKiB": 134584,
+        "stealTicks": 2447717
+      },
+      "appSurvived": true,
+      "cpuUsedCores": 0.168,
+      "memoryMiB": 500.3,
+      "memoryPeakMiB": 516.5,
+      "availableMiB": 131.4,
+      "stealCores": 0.271,
+      "gc": {
+        "count": 8,
+        "maxMs": 91.534,
+        "sumMs": 212.9
+      },
+      "pass": true
+    },
+    {
+      "label": "1-vu150",
+      "vus": 150,
+      "start": 1794067633.667943,
+      "end": 1794067696.733984,
+      "p50Ms": 770.7,
+      "p95Ms": 3315.8,
+      "p99Ms": 5499.4,
+      "maxMs": 9912.5,
+      "errorRate": 0,
+      "measuredRequests": 3224,
+      "rps": 71.6,
+      "p95ByApiMs": {
+        "/api/users/me": 1971.6,
+        "/api/trips": 3035.5,
+        "/api/notifications": 2808.0,
+        "/api/trips/{id}": 5570.8,
+        "/api/places/pending": 2716.1,
+        "/api/bookmarks": 2200.5,
+        "/api/auth/me": 2325.6,
+        "/api/bookmarks/folders": 2771.0,
+        "/api/places": 2235.7
+      },
+      "before": {
+        "pid": "375535",
+        "active": "active",
+        "restarts": "0",
+        "mem": 524574720,
+        "peak": 541618176,
+        "cpu": 511338464,
+        "availKiB": 150952,
+        "stealTicks": 2447749
+      },
+      "after": {
+        "pid": "375535",
+        "active": "active",
+        "restarts": "0",
+        "mem": 548667392,
+        "peak": 558448640,
+        "cpu": 539258012,
+        "availKiB": 103260,
+        "stealTicks": 2452816
+      },
+      "appSurvived": true,
+      "cpuUsedCores": 0.443,
+      "memoryMiB": 523.2,
+      "memoryPeakMiB": 532.6,
+      "availableMiB": 100.8,
+      "stealCores": 0.803,
+      "gc": {
+        "count": 25,
+        "maxMs": 193.714,
+        "sumMs": 1251.5
+      },
+      "pass": false
+    },
+    {
+      "label": "2-vu200",
+      "vus": 200,
+      "start": 1794067706.109607,
+      "end": 1794067771.913564,
+      "p50Ms": 1288.1,
+      "p95Ms": 5329.0,
+      "p99Ms": 7877.2,
+      "maxMs": 10001.1,
+      "errorRate": 0.0027,
+      "measuredRequests": 3385,
+      "rps": 75.2,
+      "p95ByApiMs": {
+        "/api/bookmarks": 3058.5,
+        "/api/trips": 3816.9,
+        "/api/trips/{id}": 8190.4,
+        "/api/places": 2695.3,
+        "/api/auth/me": 2880.3,
+        "/api/bookmarks/folders": 4325.9,
+        "/api/users/me": 2736.7,
+        "/api/notifications": 2682.5,
+        "/api/places/pending": 3082.7
+      },
+      "before": {
+        "pid": "375535",
+        "active": "active",
+        "restarts": "0",
+        "mem": 548405248,
+        "peak": 558448640,
+        "cpu": 539320631,
+        "availKiB": 111540,
+        "stealTicks": 2453301
+      },
+      "after": {
+        "pid": "375535",
+        "active": "active",
+        "restarts": "0",
+        "mem": 556433408,
+        "peak": 566272000,
+        "cpu": 565993585,
+        "availKiB": 111360,
+        "stealTicks": 2457451
+      },
+      "appSurvived": true,
+      "cpuUsedCores": 0.405,
+      "memoryMiB": 530.7,
+      "memoryPeakMiB": 540.0,
+      "availableMiB": 108.8,
+      "stealCores": 0.631,
+      "gc": {
+        "count": 31,
+        "maxMs": 120.17,
+        "sumMs": 1127.9
+      },
+      "pass": false
+    },
+    {
+      "label": "3-vu300",
+      "vus": 300,
+      "start": 1794067778.216304,
+      "end": 1794067848.458323,
+      "p50Ms": 7289.3,
+      "p95Ms": 10001.1,
+      "p99Ms": 10001.2,
+      "maxMs": 10002.7,
+      "errorRate": 0.3328,
+      "measuredRequests": 2058,
+      "rps": 45.7,
+      "p95ByApiMs": {
+        "/api/trips": 10001.1,
+        "/api/bookmarks": 10001.1,
+        "/api/notifications": 10001.1,
+        "/api/places/pending": 10001.0,
+        "/api/users/me": 10000.6,
+        "/api/auth/me": 10000.6,
+        "/api/bookmarks/folders": 10001.1,
+        "/api/places": 10000.8,
+        "/api/trips/{id}": 10001.1
+      },
+      "before": {
+        "pid": "375535",
+        "active": "active",
+        "restarts": "0",
+        "mem": 556433408,
+        "peak": 566272000,
+        "cpu": 566001098,
+        "availKiB": 107792,
+        "stealTicks": 2457479
+      },
+      "after": {
+        "pid": "375535",
+        "active": "active",
+        "restarts": "0",
+        "mem": 577896448,
+        "peak": 587644928,
+        "cpu": 598197228,
+        "availKiB": 77324,
+        "stealTicks": 2465144
+      },
+      "appSurvived": true,
+      "cpuUsedCores": 0.458,
+      "memoryMiB": 551.1,
+      "memoryPeakMiB": 560.4,
+      "availableMiB": 75.5,
+      "stealCores": 1.091,
+      "gc": {
+        "count": 26,
+        "maxMs": 298.981,
+        "sumMs": 2266.3
+      },
+      "pass": false
+    },
+    {
+      "label": "z-recovery-1",
+      "vus": 1,
+      "start": 1794067854.900827,
+      "end": 1794067916.264482,
+      "p50Ms": 175.6,
+      "p95Ms": 643.3,
+      "p99Ms": 743.1,
+      "maxMs": 761.0,
+      "errorRate": 0,
+      "measuredRequests": 37,
+      "rps": 0.8,
+      "p95ByApiMs": {
+        "/api/places": 235.5,
+        "/api/auth/me": 155.4,
+        "/api/trips": 232.3,
+        "/api/bookmarks": 213.0,
+        "/api/users/me": 160.8,
+        "/api/trips/{id}": 748.6,
+        "/api/bookmarks/folders": 148.8,
+        "/api/notifications": 166.4,
+        "/api/places/pending": 216.2
+      },
+      "before": {
+        "pid": "375535",
+        "active": "active",
+        "restarts": "0",
+        "mem": 587898880,
+        "peak": 588611584,
+        "cpu": 598461349,
+        "availKiB": 133524,
+        "stealTicks": 2465305
+      },
+      "after": {
+        "pid": "375535",
+        "active": "active",
+        "restarts": "0",
+        "mem": 556040192,
+        "peak": 590417920,
+        "cpu": 600206123,
+        "availKiB": 114804,
+        "stealTicks": 2466364
+      },
+      "appSurvived": true,
+      "cpuUsedCores": 0.028,
+      "memoryMiB": 530.3,
+      "memoryPeakMiB": 563.1,
+      "availableMiB": 112.1,
+      "stealCores": 0.173,
+      "gc": {
+        "count": 2,
+        "maxMs": 198.166,
+        "sumMs": 198.4
+      },
+      "pass": true
+    }
+  ]
+}

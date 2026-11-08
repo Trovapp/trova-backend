@@ -3,7 +3,9 @@
 import http from 'k6/http';
 import { sleep } from 'k6';
 import { Trend, Rate, Counter } from 'k6/metrics';
+// TOKENS: 토큰 문자열 배열(복제 환경, 여행 id = 2×사용자-1) 또는 {token, tripId} 배열(운영 테스트 계정).
 const tokens = JSON.parse(open(__ENV.TOKENS));
+const BASE = __ENV.BASE || 'http://127.0.0.1:18082';
 const latency = new Trend('measured_latency', true);
 const errors = new Rate('measured_errors');
 const requests = new Counter('measured_requests');
@@ -23,9 +25,11 @@ export default function () {
   const user = (__VU - 1) % tokens.length + 1;
   let path = screens[Math.floor(Math.random() * screens.length)];
   const name = path === 'TRIP' ? '/api/trips/{id}' : path;
-  if (path === 'TRIP') path = `/api/trips/${2 * user - 1}`;
-  const r = http.get(`http://127.0.0.1:18082${path}`, {
-    headers: { Authorization: `Bearer ${tokens[user - 1]}` }, timeout: '10s', tags: { name },
+  const entry = tokens[user - 1];
+  const token = typeof entry === 'string' ? entry : entry.token;
+  if (path === 'TRIP') path = `/api/trips/${typeof entry === 'string' ? 2 * user - 1 : entry.tripId}`;
+  const r = http.get(`${BASE}${path}`, {
+    headers: { Authorization: `Bearer ${token}` }, timeout: '10s', tags: { name },
   });
   if (Date.now() - first >= 15000) {
     latency.add(r.timings.duration, { name });
