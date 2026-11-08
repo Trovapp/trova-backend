@@ -42,6 +42,9 @@ services:
       IP_RATE_LIMIT_PER_MINUTE: '0'
       ACTUATOR_EXPOSE: health,prometheus
       APP_INSTANCE_NAME: gc-331
+      SERVER_TOMCAT_THREADS_MAX: ${TOMCAT_THREADS_MAX:-200}  # 스프링 기본값(#13 측정 때만 바꾼다)
+      SERVER_TOMCAT_ACCEPT_COUNT: ${TOMCAT_ACCEPT_COUNT:-100}
+      MALLOC_ARENA_MAX: ${MALLOC_ARENA_MAX:-}  # 비우면 glibc 기본(#14 측정 때만 2)
   gateway:
     image: nginx:alpine
     ports: ['127.0.0.1:18082:18082']
