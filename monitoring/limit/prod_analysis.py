@@ -4,7 +4,7 @@
 usage:
   PROD_SSH=ubuntu@<host> PROD_SSH_KEY=<키> PROD_DB_ENV_FILE=<운영 DB 환경 파일> \\
   python3 monitoring/limit/prod_analysis.py --ids <prod_data ids 출력> --out <새 폴더> --urls <URL 파일> \\
-      [--shares 10] [--browse-vus 50] [--max-minutes 25]
+      [--shares 10] [--browse-vus 50] [--max-minutes 25] [--offset 0]
 
 - 테스트 계정(provider='loadtest') 사용자마다 영상 1개씩 POST /api/shares 로 넣는다(사용자별 결과 재사용을 피함).
   같은 시각에 조회 부하(load.js, --browse-vus명)를 모든 분석이 끝날 때까지 건다(--browse-vus 0이면 조회 없음).
@@ -96,6 +96,7 @@ def main():
     ap.add_argument('--shares', type=int, default=10)
     ap.add_argument('--browse-vus', type=int, default=50)
     ap.add_argument('--max-minutes', type=int, default=25)
+    ap.add_argument('--offset', type=int, default=0, help='분석을 넣을 첫 테스트 사용자 순번(0부터)')
     ap.add_argument('--base', default=BASE)
     args = ap.parse_args()
     out = Path(args.out)
@@ -120,7 +121,7 @@ def main():
         tokens = json.loads(minted.stdout)
         # 조회 부하는 분석을 넣지 않는 뒤쪽 사용자에게(같은 사용자 화면에 분석 중 폴링이 섞이지 않게)
         browse_tokens = Path(private) / 'browse.json'
-        browse_tokens.write_text(json.dumps(tokens[args.shares:] or tokens))
+        browse_tokens.write_text(json.dumps(tokens[args.offset + args.shares:] or tokens))
         os.chmod(browse_tokens, 0o600)
 
         stop = threading.Event()
@@ -139,8 +140,8 @@ def main():
         submitted = []
         t_submit = time.time()
         for i, url in enumerate(urls):
-            code, body = post_share(args.base, tokens[i]['token'], url)
-            submitted.append({'user': i + 1, 'url': url, 'status': code, 'jobId': body.get('jobId') if isinstance(body, dict) else None,
+            code, body = post_share(args.base, tokens[args.offset + i]['token'], url)
+            submitted.append({'user': args.offset + i + 1, 'url': url, 'status': code, 'jobId': body.get('jobId') if isinstance(body, dict) else None,
                               'alreadyAnalyzed': body.get('alreadyAnalyzed') if isinstance(body, dict) else None,
                               'error': body.get('error') if isinstance(body, dict) else None})
         (out / 'submitted.json').write_text(json.dumps(submitted, indent=2, ensure_ascii=False))
