@@ -77,3 +77,4 @@
 | [0035](0035-place-list-user-order-index.md) | 장소 목록 사용자·정렬 복합 인덱스 | 확정 | 2026-11-02 |
 | [0036](0036-known-users-id-cache.md) | 조회 API의 사용자 존재 확인을 메모리에 기억한다 | 확정 | 2026-11-05 |
 | [0037](0037-prod-jvm-memory-and-capacity-decisions.md) | 운영 java의 GC·스왑 설정과 동시 사용자 한계 판단 | 확정 | 2026-11-08 |
+| [0038](0038-analysis-cpu-priority-and-download-concurrency.md) | 영상 분석은 낮은 CPU 우선순위로, 내려받기 분석은 동시에 1개만 | 제안 | 2026-11-08 |
