@@ -50,7 +50,7 @@ public class PipelineRunner {
     private final String geminiApiKey;
     private final ApiCallLogService apiCallLogService;
     private final Duration processTimeout;
-    // 분석이 몰려도 조회 요청이 먼저 CPU를 받게(#345). 0이면 그대로 실행한다. yt-dlp·ffmpeg는 우선순위를 물려받는다.
+    // 분석 파이썬의 CPU 우선순위(#345). 기본 0(끔) — 운영 측정에서 효과가 없었다(#347). yt-dlp·ffmpeg는 우선순위를 물려받는다.
     private final int niceLevel;
     // 서버가 영상을 내려받아 프레임을 뽑는 분석(인스타그램)의 동시 실행 수(#345). null이면 제한 없음.
     private final Semaphore downloadSlots;
@@ -61,7 +61,7 @@ public class PipelineRunner {
             @Value("${app.pipeline.work-dir}") String workDirBase,
             @Value("${app.pipeline.gemini-api-key}") String geminiApiKey,
             ApiCallLogService apiCallLogService,
-            @Value("${app.pipeline.nice:10}") int niceLevel,
+            @Value("${app.pipeline.nice:0}") int niceLevel,
             @Value("${app.pipeline.download-concurrency:1}") int downloadConcurrency
     ) {
         this(scriptPath, workDirBase, geminiApiKey, apiCallLogService, Duration.ofMinutes(TIMEOUT_MINUTES),
