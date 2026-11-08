@@ -14,10 +14,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 @Component
@@ -37,33 +41,77 @@ public class PipelineRunner {
     // 비공개·삭제·로그인 필요라 다시 해도 받을 수 없는 게시물·영상(#257) — run_pipeline.py SOURCE_UNAVAILABLE_MARKER와 같아야 한다.
     public static final String SOURCE_UNAVAILABLE_MARKER = "SOURCE_UNAVAILABLE";
     private static final long PROGRESS_POLL_MILLIS = 500;
+    /** run_pipeline.py YOUTUBE_URL과 같은 기준 — 유튜브는 Gemini가 링크를 직접 보고, 나머지(인스타그램)는 서버가 내려받는다. */
+    private static final Pattern YOUTUBE_URL = Pattern.compile("^https?://(?:www\\.|m\\.)?(?:youtube\\.com|youtu\\.be)/",
+            Pattern.CASE_INSENSITIVE);
 
     private final String scriptPath;
     private final String workDirBase;
     private final String geminiApiKey;
     private final ApiCallLogService apiCallLogService;
     private final Duration processTimeout;
+    // 분석 파이썬의 CPU 우선순위(#345). 기본 0(끔) — 운영 측정에서 효과가 없었다(#347). yt-dlp·ffmpeg는 우선순위를 물려받는다.
+    private final int niceLevel;
+    // 서버가 영상을 내려받아 프레임을 뽑는 분석(인스타그램)의 동시 실행 수(#345). null이면 제한 없음.
+    private final Semaphore downloadSlots;
 
     @Autowired
     public PipelineRunner(
             @Value("${app.pipeline.script-path}") String scriptPath,
             @Value("${app.pipeline.work-dir}") String workDirBase,
             @Value("${app.pipeline.gemini-api-key}") String geminiApiKey,
-            ApiCallLogService apiCallLogService
+            ApiCallLogService apiCallLogService,
+            @Value("${app.pipeline.nice:0}") int niceLevel,
+            @Value("${app.pipeline.download-concurrency:1}") int downloadConcurrency
     ) {
+        this(scriptPath, workDirBase, geminiApiKey, apiCallLogService, Duration.ofMinutes(TIMEOUT_MINUTES),
+                niceLevel, downloadConcurrency);
+    }
+
+    public PipelineRunner(String scriptPath, String workDirBase, String geminiApiKey, ApiCallLogService apiCallLogService) {
         this(scriptPath, workDirBase, geminiApiKey, apiCallLogService, Duration.ofMinutes(TIMEOUT_MINUTES));
     }
 
     PipelineRunner(String scriptPath, String workDirBase, String geminiApiKey,
                    ApiCallLogService apiCallLogService, Duration processTimeout) {
+        this(scriptPath, workDirBase, geminiApiKey, apiCallLogService, processTimeout, 0, 0);
+    }
+
+    PipelineRunner(String scriptPath, String workDirBase, String geminiApiKey,
+                   ApiCallLogService apiCallLogService, Duration processTimeout,
+                   int niceLevel, int downloadConcurrency) {
         if (processTimeout.isNegative() || processTimeout.isZero()) {
             throw new IllegalArgumentException("process timeout must be positive");
+        }
+        if (niceLevel < 0 || niceLevel > 19) {
+            throw new IllegalArgumentException("nice level must be 0..19");
         }
         this.scriptPath = scriptPath;
         this.workDirBase = workDirBase;
         this.geminiApiKey = geminiApiKey;
         this.apiCallLogService = apiCallLogService;
         this.processTimeout = processTimeout;
+        this.niceLevel = niceLevel;
+        this.downloadSlots = downloadConcurrency > 0 ? new Semaphore(downloadConcurrency, true) : null;
+    }
+
+    /** 파이썬 실행 명령. niceLevel이 0보다 크면 nice로 감싼다(리눅스·macOS 모두 /usr/bin/nice). */
+    static List<String> command(int niceLevel, String scriptPath, String url, String workDir) {
+        List<String> command = new ArrayList<>();
+        if (niceLevel > 0) {
+            command.add("nice");
+            command.add("-n");
+            command.add(String.valueOf(niceLevel));
+        }
+        command.add("python3");
+        command.add(scriptPath);
+        command.add(url);
+        command.add(workDir);
+        return command;
+    }
+
+    static boolean needsDownload(String url) {
+        return !YOUTUBE_URL.matcher(url).find();
     }
 
     public PipelineOutput run(String url, Long jobId) {
@@ -72,8 +120,32 @@ public class PipelineRunner {
 
     /** onProgress: 실행 중 파이프라인이 알려준 제목·찾은 장소 이름(#51). 이 메서드를 부른 스레드에서 호출된다. */
     public PipelineOutput run(String url, Long jobId, Consumer<PipelineProgress> onProgress) {
+        Semaphore slots = downloadSlots != null && needsDownload(url) ? downloadSlots : null;
+        if (slots == null) {
+            return runProcess(url, jobId, onProgress);
+        }
+        long waitStartedAt = System.nanoTime();
+        try {
+            slots.acquire();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new PipelineException("내려받기 분석 차례를 기다리다 인터럽트: " + jobId, e);
+        }
+        try {
+            long waitedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - waitStartedAt);
+            if (waitedMs >= 1000) {
+                log.info("ProcessingJob {} 내려받기 분석 차례 대기 {}ms", jobId, waitedMs);
+            }
+            // 실행 시간 제한은 차례를 받은 뒤부터 센다.
+            return runProcess(url, jobId, onProgress);
+        } finally {
+            slots.release();
+        }
+    }
+
+    private PipelineOutput runProcess(String url, Long jobId, Consumer<PipelineProgress> onProgress) {
         Path workDir = Path.of(workDirBase, "job-" + jobId);
-        ProcessBuilder builder = new ProcessBuilder("python3", scriptPath, url, workDir.toString());
+        ProcessBuilder builder = new ProcessBuilder(command(niceLevel, scriptPath, url, workDir.toString()));
         builder.environment().put("GEMINI_API_KEY", geminiApiKey);
 
         File stderrFile = null;
