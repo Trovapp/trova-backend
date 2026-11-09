@@ -34,6 +34,9 @@ spring:
             user-name-attribute: id
 
 app:
+  # 시작 예열(#356)은 테스트에서 끈다 — RANDOM_PORT 테스트에 요청이 섞이지 않게. StartupWarmupTest가 직접 부른다.
+  warmup:
+    enabled: false
   frontend-url: http://localhost:3000
   pipeline:
     script-path: pipeline-test/run_pipeline.py
