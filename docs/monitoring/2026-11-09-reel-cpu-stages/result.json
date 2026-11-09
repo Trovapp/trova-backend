@@ -1,0 +1,208 @@
+[
+  {
+    "url": "https://www.instagram.com/reel/DQRNtv2kvpJ/",
+    "videoBytes": 3964143,
+    "videoExt": ".mp4",
+    "video": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "vp9",
+          "width": 720,
+          "height": 1280,
+          "r_frame_rate": "30/1"
+        }
+      ],
+      "format": {
+        "duration": "17.208000"
+      }
+    },
+    "frames": 8,
+    "wallS": 44.7,
+    "stageWallMs": {
+      "download": 18908,
+      "audio": 4002,
+      "frames": 19395
+    },
+    "stageCpuMs": {
+      "downloadCpuMs": 28,
+      "downloadChildCpuMs": 5949,
+      "audioCpuMs": 4,
+      "audioChildCpuMs": 1491,
+      "framesCpuMs": 106,
+      "framesChildCpuMs": 15112
+    },
+    "commands": [
+      {
+        "stage": "download",
+        "cmd": "yt-dlp",
+        "detail": "",
+        "wallMs": 18701,
+        "cpuMs": 5949
+      },
+      {
+        "stage": "audio",
+        "cmd": "ffprobe",
+        "detail": "probe",
+        "wallMs": 1643,
+        "cpuMs": 480
+      },
+      {
+        "stage": "audio",
+        "cmd": "ffmpeg",
+        "detail": "audio",
+        "wallMs": 2339,
+        "cpuMs": 1012
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffprobe",
+        "detail": "probe",
+        "wallMs": 497,
+        "cpuMs": 377
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffmpeg",
+        "detail": "frames-full",
+        "wallMs": 18160,
+        "cpuMs": 14735
+      }
+    ],
+    "serverTicks": {
+      "busy": 1235,
+      "idle": 4636,
+      "steal": 3746
+    }
+  },
+  {
+    "url": "https://www.instagram.com/reel/DeBanBWpxgq/",
+    "videoBytes": 11649335,
+    "videoExt": ".mp4",
+    "video": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "vp9",
+          "width": 720,
+          "height": 1280,
+          "r_frame_rate": "30/1"
+        }
+      ],
+      "format": {
+        "duration": "32.234000"
+      }
+    },
+    "frames": 8,
+    "wallS": 46.9,
+    "stageWallMs": {
+      "download": 31639,
+      "audio": 1797,
+      "frames": 11336
+    },
+    "stageCpuMs": {
+      "downloadCpuMs": 95,
+      "downloadChildCpuMs": 7662,
+      "audioCpuMs": 3,
+      "audioChildCpuMs": 1725,
+      "framesCpuMs": 35,
+      "framesChildCpuMs": 10460
+    },
+    "commands": [
+      {
+        "stage": "download",
+        "cmd": "yt-dlp",
+        "detail": "",
+        "wallMs": 31495,
+        "cpuMs": 7662
+      },
+      {
+        "stage": "audio",
+        "cmd": "ffprobe",
+        "detail": "probe",
+        "wallMs": 225,
+        "cpuMs": 221
+      },
+      {
+        "stage": "audio",
+        "cmd": "ffmpeg",
+        "detail": "audio",
+        "wallMs": 1565,
+        "cpuMs": 1504
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffprobe",
+        "detail": "probe",
+        "wallMs": 235,
+        "cpuMs": 210
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffprobe",
+        "detail": "packets",
+        "wallMs": 361,
+        "cpuMs": 360
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffmpeg",
+        "detail": "frames-seek",
+        "wallMs": 3491,
+        "cpuMs": 3337
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffmpeg",
+        "detail": "frames-seek",
+        "wallMs": 3021,
+        "cpuMs": 2647
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffmpeg",
+        "detail": "frames-seek",
+        "wallMs": 3170,
+        "cpuMs": 3064
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffmpeg",
+        "detail": "frames-seek",
+        "wallMs": 947,
+        "cpuMs": 842
+      }
+    ],
+    "serverTicks": {
+      "busy": 1336,
+      "idle": 5528,
+      "steal": 3517
+    }
+  },
+  {
+    "url": "https://www.instagram.com/reel/DTum25dgZEX/",
+    "error": "SOURCE_RATE_LIMITED 인스타그램이 요청을 막음(429): Deprecated Feature: Support for Python version 3.10 has been deprecated. Please update to Python 3.11 or above\nERROR: [Instagram] DTum25dgZEX: Unable to download webpage: HTTP Error 429: Too Many Requests (caused by <HTTPError 429: Too Many Requests>)\n",
+    "wallS": 4.7,
+    "stageWallMs": {
+      "download": 4674
+    },
+    "stageCpuMs": {
+      "downloadCpuMs": 1,
+      "downloadChildCpuMs": 4056
+    },
+    "commands": [
+      {
+        "stage": "download",
+        "cmd": "yt-dlp",
+        "detail": "",
+        "wallMs": 4673,
+        "cpuMs": 4056
+      }
+    ],
+    "serverTicks": {
+      "busy": 205,
+      "idle": 360,
+      "steal": 444
+    }
+  }
+]

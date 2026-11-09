@@ -1,0 +1,441 @@
+[
+  {
+    "video_no": "19",
+    "url": "https://www.instagram.com/reel/DEUGXhcSmfA/",
+    "answers": [
+      "요미우돈교자"
+    ],
+    "before": {
+      "places": [
+        "요미우돈교자"
+      ],
+      "timings": {
+        "download": 2172,
+        "audio": 35,
+        "frames": 135,
+        "gemini": 5231
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 406,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 45,
+        "framesCpuMs": 2,
+        "framesChildCpuMs": 602,
+        "geminiCpuMs": 35,
+        "geminiChildCpuMs": 0
+      },
+      "video": "h264,720,1280",
+      "hits": 1
+    },
+    "after": {
+      "places": [
+        "요미우돈교자"
+      ],
+      "timings": {
+        "download": 2115,
+        "audio": 36,
+        "frames": 370,
+        "gemini": 4924
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 405,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 49,
+        "framesCpuMs": 2,
+        "framesChildCpuMs": 394,
+        "geminiCpuMs": 34,
+        "geminiChildCpuMs": 0
+      },
+      "video": "h264,720,1280",
+      "hits": 1
+    }
+  },
+  {
+    "video_no": "20",
+    "url": "https://www.instagram.com/reel/DHyL4IITv4q/",
+    "answers": [
+      "오륙도해맞이공원"
+    ],
+    "after": {
+      "places": [
+        "오륙도해맞이공원",
+        "오륙도 스카이워크"
+      ],
+      "timings": {
+        "download": 1951,
+        "audio": 66,
+        "frames": 203,
+        "gemini": 6636
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 376,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 119,
+        "framesCpuMs": 6,
+        "framesChildCpuMs": 275,
+        "geminiCpuMs": 32,
+        "geminiChildCpuMs": 0
+      },
+      "video": "h264,360,640",
+      "hits": 1
+    },
+    "before": {
+      "places": [
+        "오륙도해맞이공원",
+        "오륙도 스카이워크"
+      ],
+      "timings": {
+        "download": 2455,
+        "audio": 66,
+        "frames": 204,
+        "gemini": 6425
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 378,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 117,
+        "framesCpuMs": 6,
+        "framesChildCpuMs": 275,
+        "geminiCpuMs": 32,
+        "geminiChildCpuMs": 0
+      },
+      "video": "h264,360,640",
+      "hits": 1
+    }
+  },
+  {
+    "video_no": "21",
+    "url": "https://www.instagram.com/reel/C8rEkjCyMG9/",
+    "answers": [
+      "솔내음한정식"
+    ],
+    "before": {
+      "places": [
+        "솔내음한정식 해운대점"
+      ],
+      "timings": {
+        "download": 2448,
+        "frames": 251,
+        "gemini": 6382
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 374,
+        "framesCpuMs": 3,
+        "framesChildCpuMs": 1240,
+        "geminiCpuMs": 32,
+        "geminiChildCpuMs": 0
+      },
+      "video": "h264,720,1280",
+      "hits": 1
+    },
+    "after": {
+      "places": [
+        "솔내음한정식해운대점"
+      ],
+      "timings": {
+        "download": 2170,
+        "frames": 745,
+        "gemini": 5082
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 357,
+        "framesCpuMs": 3,
+        "framesChildCpuMs": 773,
+        "geminiCpuMs": 38,
+        "geminiChildCpuMs": 0
+      },
+      "video": "h264,720,1280",
+      "hits": 1
+    }
+  },
+  {
+    "video_no": "22",
+    "url": "https://www.instagram.com/reel/DWksnFLCR_J/",
+    "answers": [
+      "키에키 로스팅 룸",
+      "푸아루",
+      "소설과농담",
+      "시소 카이막 동문시장점"
+    ],
+    "after": {
+      "places": [
+        "키에키 로스팅 룸",
+        "푸아루",
+        "소설과농담",
+        "시소 카이막 동문시장점"
+      ],
+      "timings": {
+        "download": 2354,
+        "audio": 50,
+        "frames": 169,
+        "gemini": 7485
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 418,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 75,
+        "framesCpuMs": 2,
+        "framesChildCpuMs": 191,
+        "geminiCpuMs": 35,
+        "geminiChildCpuMs": 0
+      },
+      "video": "vp9,540,960",
+      "hits": 4
+    },
+    "before": {
+      "places": [
+        "키에키 로스팅 룸",
+        "푸아루",
+        "소설과농담",
+        "시소 카이막 동문시장점"
+      ],
+      "timings": {
+        "download": 2058,
+        "audio": 53,
+        "frames": 189,
+        "gemini": 6892
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 418,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 80,
+        "framesCpuMs": 2,
+        "framesChildCpuMs": 334,
+        "geminiCpuMs": 29,
+        "geminiChildCpuMs": 0
+      },
+      "video": "vp9,720,1280",
+      "hits": 4
+    }
+  },
+  {
+    "video_no": "23",
+    "url": "https://www.instagram.com/reel/DGnDPoIycOI/",
+    "answers": [
+      "홍시궁",
+      "오원집",
+      "우미네등갈비찜"
+    ],
+    "before": {
+      "places": [
+        "홍시궁",
+        "오원집",
+        "우미네등갈비찜"
+      ],
+      "timings": {
+        "download": 2238,
+        "audio": 33,
+        "frames": 204,
+        "gemini": 5982
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 393,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 47,
+        "framesCpuMs": 2,
+        "framesChildCpuMs": 406,
+        "geminiCpuMs": 34,
+        "geminiChildCpuMs": 0
+      },
+      "video": "vp9,720,1280",
+      "hits": 3
+    },
+    "after": {
+      "places": [
+        "홍시궁",
+        "오원집",
+        "우미네등갈비찜"
+      ],
+      "timings": {
+        "download": 1961,
+        "audio": 35,
+        "frames": 210,
+        "gemini": 6129
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 349,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 45,
+        "framesCpuMs": 2,
+        "framesChildCpuMs": 232,
+        "geminiCpuMs": 36,
+        "geminiChildCpuMs": 0
+      },
+      "video": "vp9,540,960",
+      "hits": 3
+    }
+  },
+  {
+    "video_no": "24",
+    "url": "https://www.instagram.com/reel/DUX2qkMEQAQ/",
+    "answers": [
+      "해연가"
+    ],
+    "after": {
+      "places": [
+        "경포대",
+        "해연가",
+        "강문해변",
+        "세인트존스호텔"
+      ],
+      "timings": {
+        "download": 2688,
+        "audio": 88,
+        "frames": 765,
+        "gemini": 8252
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 510,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 154,
+        "framesCpuMs": 7,
+        "framesChildCpuMs": 1127,
+        "geminiCpuMs": 38,
+        "geminiChildCpuMs": 0
+      },
+      "video": "h264,720,1280",
+      "hits": 1
+    },
+    "before": {
+      "places": [
+        "경포대",
+        "해연가"
+      ],
+      "timings": {
+        "download": 3080,
+        "audio": 84,
+        "frames": 765,
+        "gemini": 5797
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 541,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 153,
+        "framesCpuMs": 7,
+        "framesChildCpuMs": 1125,
+        "geminiCpuMs": 40,
+        "geminiChildCpuMs": 0
+      },
+      "video": "h264,720,1280",
+      "hits": 1
+    }
+  },
+  {
+    "video_no": "25",
+    "url": "https://www.instagram.com/reel/DUSQvwkATzB/",
+    "answers": [
+      ""
+    ],
+    "before": {
+      "places": [
+        "해운대 바다김밥"
+      ],
+      "timings": {
+        "download": 2504,
+        "audio": 72,
+        "frames": 585,
+        "gemini": 5876
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 450,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 123,
+        "framesCpuMs": 6,
+        "framesChildCpuMs": 946,
+        "geminiCpuMs": 34,
+        "geminiChildCpuMs": 0
+      },
+      "video": "vp9,720,1280",
+      "hits": 0
+    },
+    "after": {
+      "places": [
+        "해운대"
+      ],
+      "timings": {
+        "download": 2450,
+        "audio": 73,
+        "frames": 583,
+        "gemini": 4899
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 435,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 124,
+        "framesCpuMs": 6,
+        "framesChildCpuMs": 948,
+        "geminiCpuMs": 35,
+        "geminiChildCpuMs": 0
+      },
+      "video": "vp9,720,1280",
+      "hits": 0
+    }
+  },
+  {
+    "video_no": "26",
+    "url": "https://www.instagram.com/reel/DX-rrm8BHCr/",
+    "answers": [
+      "쇠마실"
+    ],
+    "after": {
+      "places": [
+        "쇠마실"
+      ],
+      "timings": {
+        "download": 2463,
+        "audio": 95,
+        "frames": 697,
+        "gemini": 7787
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 500,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 168,
+        "framesCpuMs": 7,
+        "framesChildCpuMs": 1111,
+        "geminiCpuMs": 40,
+        "geminiChildCpuMs": 0
+      },
+      "video": "h264,720,1280",
+      "hits": 1
+    },
+    "before": {
+      "places": [
+        "쇠마실"
+      ],
+      "timings": {
+        "download": 2268,
+        "audio": 89,
+        "frames": 702,
+        "gemini": 4919
+      },
+      "cpu": {
+        "downloadCpuMs": 2,
+        "downloadChildCpuMs": 497,
+        "audioCpuMs": 1,
+        "audioChildCpuMs": 168,
+        "framesCpuMs": 7,
+        "framesChildCpuMs": 1117,
+        "geminiCpuMs": 27,
+        "geminiChildCpuMs": 0
+      },
+      "video": "h264,720,1280",
+      "hits": 1
+    }
+  }
+]

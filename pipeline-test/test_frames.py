@@ -56,6 +56,12 @@ class SeekCommandTest(unittest.TestCase):
             outputs += [Path(a).name for a in cmd if a.endswith(".jpg")]
         self.assertEqual(outputs, [f"frame_{i:03d}.jpg" for i in range(1, 9)])
 
+    def test_전체_디코딩도_스레드_하나로_연다(self):
+        cmd = frames._full_decode_command(Path("v.mp4"), Path("out"), 8, 512, 2.0)
+        i = cmd.index("-i")
+        self.assertEqual(cmd[i - 2:i], ["-threads", "1"])
+        self.assertIn("fps=1/2.000,scale=512:-1", cmd)
+
     def test_남는_지점이_홀수면_마지막_명령에_하나만_연다(self):
         commands = frames._seek_commands(Path("v.mp4"), Path("out"), [0.5, 1.5, 2.5], 0.0, 512)
         self.assertEqual([c.count("-i") for c in commands], [2, 1])
