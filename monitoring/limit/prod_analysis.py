@@ -28,6 +28,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from prod_run import BASE, CG, HERE, MINT, ssh, wait_health  # noqa: E402
 
 READONLY = Path(__file__).resolve().parent.parent / 'prod_readonly_psql.py'
+# 운영 DB의 시각 열(processing_jobs·api_call_logs)은 시간대 없는 timestamp에 한국 시각으로 저장되고, DB 세션 시간대는 UTC다.
+# 그대로 epoch·to_timestamp와 비교하면 9시간 어긋난다(2026-11-09 r7에서 확인) — 한국 시각으로 해석해 바꾼다.
+DB_TZ = 'Asia/Seoul'
 
 SAMPLE = (f'cur=$(cat {CG}/memory.current); peak=$(cat {CG}/memory.peak 2>/dev/null || echo 0); '
           f'avail=$(grep MemAvailable /proc/meminfo | tr -s " " | cut -d" " -f2); '
@@ -72,8 +75,8 @@ def job_states(job_ids):
     ids = ','.join(str(int(j)) for j in job_ids)
     out = readonly(f"""
 select coalesce(json_agg(json_build_object('id', id, 'status', status, 'analysis', analysis_status,
-  'created', extract(epoch from created_at), 'updated', extract(epoch from updated_at),
-  'finished', extract(epoch from analysis_finished_at), 'error', left(error_message, 120)) order by id), '[]')
+  'created', extract(epoch from created_at at time zone '{DB_TZ}'), 'updated', extract(epoch from updated_at at time zone '{DB_TZ}'),
+  'finished', extract(epoch from analysis_finished_at at time zone '{DB_TZ}'), 'error', left(error_message, 120)) order by id), '[]')
 from processing_jobs where id in ({ids});""")
     return json.loads(next(line for line in out.splitlines() if line.startswith('[')))
 
@@ -179,9 +182,9 @@ def main():
     ids_sql = ','.join(str(int(j)) for j in job_ids) or '0'
     calls = readonly(f"""
 select coalesce(json_agg(json_build_object('provider', provider, 'operation', operation, 'jobId', job_id, 'success', success,
-  'latencyMs', latency_ms, 'attempts', attempts, 'waitedMs', waited_ms, 'at', extract(epoch from created_at),
+  'latencyMs', latency_ms, 'attempts', attempts, 'waitedMs', waited_ms, 'at', extract(epoch from created_at at time zone '{DB_TZ}'),
   'error', left(error_message, 120)) order by created_at), '[]')
-from api_call_logs where created_at >= to_timestamp({int(t_submit) - 5}) and (job_id in ({ids_sql}) or job_id is null);""")
+from api_call_logs where created_at >= (to_timestamp({int(t_submit) - 5}) at time zone '{DB_TZ}') and (job_id in ({ids_sql}) or job_id is null);""")
     result = {'submittedAt': t_submit, 'allDoneAt': t_done, 'drainS': round(t_done - t_submit, 1),
               'jobs': job_states(job_ids), 'submitted': submitted,
               'apiCalls': json.loads(next(line for line in calls.splitlines() if line.startswith('[')))}
