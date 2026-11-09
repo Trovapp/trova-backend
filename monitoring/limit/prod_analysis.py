@@ -36,7 +36,14 @@ SAMPLE = (f'cur=$(cat {CG}/memory.current); peak=$(cat {CG}/memory.peak 2>/dev/n
           f'jrss=$(ps -o rss= -p $pid 2>/dev/null || echo 0); '
           f'py=$(ps -eo rss=,args= | grep -E "python3? .*(pipeline-test|run_pipeline|extract_places)" | grep -v grep | '
           f'awk "{{n++; s+=\\$1}} END {{print n+0, s+0}}"); '
-          f'echo "$(date +%s) $cur $peak $avail $steal $pid $jrss $py"')
+          f'psi=$(for r in cpu memory io; do awk "{{split(\\$5,a,\\"=\\"); printf \\"%s \\", a[2]}}" /proc/pressure/$r; done); '
+          f'vm=$(awk "/^(pgmajfault|pswpin|pswpout) /{{printf \\"%s \\", \\$2}}" /proc/vmstat); '
+          f'cgp=$(awk "{{split(\\$5,a,\\"=\\"); printf \\"%s \\", a[2]}}" {CG}/memory.pressure 2>/dev/null); '
+          f'echo "$(date +%s) $cur $peak $avail $steal $pid $jrss $py $psi $vm $cgp"')
+# 뒤쪽 값(#16 원인 가르기, 2026-11-09): PSI 누적 대기 µs — cpu some/full, memory some/full, io some/full,
+# /proc/vmstat pswpin·pswpout·pgmajfault(누적), java 서비스 cgroup memory.pressure some/full. 구간 차이로 본다.
+PSI_KEYS = ['cpuSomeUs', 'cpuFullUs', 'memSomeUs', 'memFullUs', 'ioSomeUs', 'ioFullUs',
+            'pswpin', 'pswpout', 'pgmajfault', 'svcMemSomeUs', 'svcMemFullUs']
 
 
 def readonly(sql):
@@ -83,7 +90,8 @@ def sampler(stop, path):
                                     'servicePeakMiB': round(int(peak) / 2**20, 1),
                                     'availableMiB': round(int(avail) / 1024, 1), 'stealTicks': int(steal),
                                     'pid': pid, 'javaRssMiB': round(int(jrss) / 1024, 1),
-                                    'pythonProcs': int(pyn), 'pythonRssMiB': round(int(pyrss) / 1024, 1)}) + '\n')
+                                    'pythonProcs': int(pyn), 'pythonRssMiB': round(int(pyrss) / 1024, 1),
+                                    **{k: int(v) for k, v in zip(PSI_KEYS, parts[9:9 + len(PSI_KEYS)])}}) + '\n')
                 f.flush()
             stop.wait(5)
 
