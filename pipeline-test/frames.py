@@ -152,18 +152,24 @@ def extract_frames_full_decode(
         duration = probe_duration(video_path) or float(max_frames)
         interval = max(duration / max_frames, 0.5)
 
-    cmd = [
-        "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-        "-i", str(video_path),
-        "-vf", f"fps=1/{interval:.3f},scale={width}:-1",
-        "-vframes", str(max_frames),
-        str(out_dir / "frame_%03d.jpg"),
-    ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(_full_decode_command(video_path, out_dir, max_frames, width, interval),
+                            capture_output=True, text=True)
     if result.returncode != 0:
         raise SystemExit(f"ffmpeg 프레임 추출 실패: {result.stderr}")
     return sorted(out_dir.glob("frame_*.jpg"))
 
+
+def _full_decode_command(video_path: Path, out_dir: Path, max_frames: int, width: int, interval: float) -> list[str]:
+    """#350: 스레드 수를 정하지 않으면 ffmpeg가 코어 수만큼 디코딩 스레드를 띄운다. 운영(2 vCPU, steal 큼)에서 17초 vp9 720
+    영상의 전체 디코딩이 CPU 14.7초(장면당 28ms)로, 스레드 1개인 지점 이동(장면당 16ms)보다 비쌌다.
+    로컬 측정(같은 영상)에서도 스레드 1개가 CPU 0.65→0.56초로 적었다. 대신 걸린 시간은 늘 수 있다(분석은 백그라운드)."""
+    return [
+        "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+        "-threads", "1", "-i", str(video_path),
+        "-vf", f"fps=1/{interval:.3f},scale={width}:-1",
+        "-vframes", str(max_frames),
+        str(out_dir / "frame_%03d.jpg"),
+    ]
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
