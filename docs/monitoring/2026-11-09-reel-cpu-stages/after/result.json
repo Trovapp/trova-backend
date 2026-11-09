@@ -1,0 +1,182 @@
+[
+  {
+    "url": "https://www.instagram.com/reel/DQRNtv2kvpJ/",
+    "videoBytes": 2423260,
+    "videoExt": ".mp4",
+    "video": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "vp9",
+          "width": 540,
+          "height": 960,
+          "r_frame_rate": "30/1"
+        }
+      ],
+      "format": {
+        "duration": "17.208000"
+      }
+    },
+    "frames": 8,
+    "wallS": 49.6,
+    "stageWallMs": {
+      "download": 41425,
+      "audio": 1130,
+      "frames": 4639
+    },
+    "stageCpuMs": {
+      "downloadCpuMs": 93,
+      "downloadChildCpuMs": 5502,
+      "audioCpuMs": 3,
+      "audioChildCpuMs": 1093,
+      "framesCpuMs": 10,
+      "framesChildCpuMs": 4272
+    },
+    "commands": [
+      {
+        "stage": "download",
+        "cmd": "yt-dlp",
+        "detail": "",
+        "wallMs": 40909,
+        "cpuMs": 5502
+      },
+      {
+        "stage": "audio",
+        "cmd": "ffprobe",
+        "detail": "probe",
+        "wallMs": 224,
+        "cpuMs": 215
+      },
+      {
+        "stage": "audio",
+        "cmd": "ffmpeg",
+        "detail": "audio",
+        "wallMs": 899,
+        "cpuMs": 879
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffprobe",
+        "detail": "probe",
+        "wallMs": 208,
+        "cpuMs": 190
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffmpeg",
+        "detail": "frames-full",
+        "wallMs": 4356,
+        "cpuMs": 4082
+      }
+    ],
+    "serverTicks": {
+      "busy": 1188,
+      "idle": 6833,
+      "steal": 2563
+    }
+  },
+  {
+    "url": "https://www.instagram.com/reel/DeBanBWpxgq/",
+    "videoBytes": 11649335,
+    "videoExt": ".mp4",
+    "video": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "vp9",
+          "width": 720,
+          "height": 1280,
+          "r_frame_rate": "30/1"
+        }
+      ],
+      "format": {
+        "duration": "32.234000"
+      }
+    },
+    "frames": 8,
+    "wallS": 53.4,
+    "stageWallMs": {
+      "download": 23499,
+      "audio": 2442,
+      "frames": 23554
+    },
+    "stageCpuMs": {
+      "downloadCpuMs": 49,
+      "downloadChildCpuMs": 5506,
+      "audioCpuMs": 91,
+      "audioChildCpuMs": 1592,
+      "framesCpuMs": 83,
+      "framesChildCpuMs": 12848
+    },
+    "commands": [
+      {
+        "stage": "download",
+        "cmd": "yt-dlp",
+        "detail": "",
+        "wallMs": 23292,
+        "cpuMs": 5506
+      },
+      {
+        "stage": "audio",
+        "cmd": "ffprobe",
+        "detail": "probe",
+        "wallMs": 1018,
+        "cpuMs": 510
+      },
+      {
+        "stage": "audio",
+        "cmd": "ffmpeg",
+        "detail": "audio",
+        "wallMs": 1310,
+        "cpuMs": 1083
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffprobe",
+        "detail": "probe",
+        "wallMs": 490,
+        "cpuMs": 371
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffprobe",
+        "detail": "packets",
+        "wallMs": 397,
+        "cpuMs": 338
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffmpeg",
+        "detail": "frames-seek",
+        "wallMs": 2365,
+        "cpuMs": 2276
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffmpeg",
+        "detail": "frames-seek",
+        "wallMs": 5696,
+        "cpuMs": 3797
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffmpeg",
+        "detail": "frames-seek",
+        "wallMs": 10743,
+        "cpuMs": 5030
+      },
+      {
+        "stage": "frames",
+        "cmd": "ffmpeg",
+        "detail": "frames-seek",
+        "wallMs": 3257,
+        "cpuMs": 1036
+      }
+    ],
+    "serverTicks": {
+      "busy": 1396,
+      "idle": 6648,
+      "steal": 3447
+    }
+  }
+]
