@@ -1,0 +1,10 @@
+[Unit]
+Description=Trova 오류 순간 기록 1분마다 (#358)
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=1min
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target
