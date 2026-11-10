@@ -1,0 +1,40 @@
+time="2026-11-09T16:41:38+09:00" level=warning msg="There were unknown fields in the options exported in the script" error="json: unknown field \"gracefulStop\""
+time="2026-11-09T16:41:48+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/455\": request timeout"
+time="2026-11-09T16:42:46+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/448\": request timeout"
+
+
+  █ TOTAL RESULTS 
+
+    CUSTOM
+    measured_errors.....................: 0.02%  1 out of 4640
+    measured_latency....................: avg=1.27s    med=863.3ms  p(95)=3.7s  p(99)=5.43s max=9.99s
+      { name:/api/auth/me }.............: avg=836.44ms med=612.36ms p(95)=2.3s  p(99)=3.87s max=5.1s 
+      { name:/api/bookmarks }...........: avg=970.54ms med=674.86ms p(95)=2.88s p(99)=4.37s max=4.92s
+      { name:/api/bookmarks/folders }...: avg=1.21s    med=894.4ms  p(95)=3.22s p(99)=5.36s max=7.07s
+      { name:/api/notifications }.......: avg=922.92ms med=672.57ms p(95)=2.54s p(99)=3.51s max=5.77s
+      { name:/api/places }..............: avg=937.32ms med=685.04ms p(95)=2.44s p(99)=4.19s max=5.61s
+      { name:/api/places/pending }......: avg=809.49ms med=588.15ms p(95)=2.18s p(99)=3.69s max=4.7s 
+      { name:/api/trips }...............: avg=1.23s    med=908.63ms p(95)=3.3s  p(99)=4.63s max=8.41s
+      { name:/api/trips/{id} }..........: avg=2.83s    med=2.56s    p(95)=5.41s p(99)=6.87s max=9.99s
+      { name:/api/users/me }............: avg=905.86ms med=707.21ms p(95)=2.39s p(99)=3.43s max=4.21s
+    measured_requests...................: 4640   20.496832/s
+
+    HTTP
+    http_req_duration...................: avg=1.32s    med=889.99ms p(95)=3.89s p(99)=5.78s max=9.99s
+      { expected_response:true }........: avg=1.32s    med=889.91ms p(95)=3.88s p(99)=5.67s max=8.7s 
+    http_req_failed.....................: 0.04%  2 out of 4836
+    http_reqs...........................: 4836   21.362646/s
+
+    EXECUTION
+    iteration_duration..................: avg=2.33s    med=1.89s    p(95)=4.91s p(99)=6.96s max=11.4s
+    iterations..........................: 4814   21.265463/s
+    vus.................................: 50     min=50        max=50
+    vus_max.............................: 50     min=50        max=50
+
+    NETWORK
+    data_received.......................: 32 MB  140 kB/s
+    data_sent...........................: 394 kB 1.7 kB/s
+
+
+
+time="2026-11-09T16:45:25+09:00" level=error msg="test run was aborted because k6 received a 'terminated' signal"

@@ -1,7 +1,7 @@
 # 0039. 운영 지표는 서버가 직접 보내고, 서버 다운은 외부 헬스 체크로 감지한다 (alloy는 평소 끔)
 
 - 날짜: 2026-11-10
-- 상태: 제안 — 운영 반영 뒤 메모리 비용 측정으로 확정
+- 상태: 확정 — 2026-11-10 운영 반영(427d727), 직접 전송 비용 측정(r10: java +7MiB, 스왑 읽기 3→4회/초)
 - 관련: #358, #355, 문제 기록 #16(`docs/monitoring/2026-11-04-capacity-issue-log.md`), ADR 0037
 
 ## 문제
@@ -53,3 +53,8 @@ VM이 멈추면 `up=0`을 보내지 못하고 끊길 뿐이었다. 다운은 바
 
 운영 반영 뒤 조회 50명만(`prod_analysis.py --shares 0 --min-minutes 10`)을 재서 r9b(alloy 끔, 직접 전송 없음)와 java 메모리·스왑 읽기·조회 p95를 비교한다.
 Grafana `trova-operations` 대시보드 쿼리(`http_server_requests_seconds_*`, `jvm_*`, `process_cpu_usage`)가 그대로 나오는지 보고, `up` 패널은 헬스 체크 결과로 바꾼다.
+
+## 운영 측정 결과 (2026-11-10, r10)
+
+조회 50명만, alloy 끔: 직접 전송 없음(r9b) p95 0.93초·스왑 읽기 3회/초·java 최대 482MiB → 직접 전송(r10) 1.0초·4회/초·489MiB.
+Grafana `trova-operations` 쿼리는 이름·라벨이 그대로 맞았고 `up` 패널만 `probe_success{job="trova-health"}`로 바꿨다.

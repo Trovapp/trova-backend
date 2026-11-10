@@ -1,0 +1,38 @@
+time="2026-11-10T10:53:37+09:00" level=warning msg="There were unknown fields in the options exported in the script" error="json: unknown field \"gracefulStop\""
+
+
+  █ TOTAL RESULTS 
+
+    CUSTOM
+    measured_errors.....................: 0.00%  0 out of 25845
+    measured_latency....................: avg=305.43ms med=184.54ms p(95)=885.88ms p(99)=1.69s    max=5.7s  
+      { name:/api/auth/me }.............: avg=209.63ms med=150.64ms p(95)=508.38ms p(99)=903.27ms max=2.57s 
+      { name:/api/bookmarks }...........: avg=181.62ms med=116.36ms p(95)=543.02ms p(99)=992.19ms max=2.52s 
+      { name:/api/bookmarks/folders }...: avg=244.15ms med=153.88ms p(95)=670.56ms p(99)=1.27s    max=2.63s 
+      { name:/api/notifications }.......: avg=175.26ms med=118.39ms p(95)=492.23ms p(99)=808.62ms max=4.12s 
+      { name:/api/places }..............: avg=242.73ms med=183.07ms p(95)=590.96ms p(99)=1.05s    max=2.68s 
+      { name:/api/places/pending }......: avg=169.72ms med=114.61ms p(95)=494.36ms p(99)=912.04ms max=1.74s 
+      { name:/api/trips }...............: avg=281.26ms med=188.1ms  p(95)=724.75ms p(99)=1.29s    max=3.46s 
+      { name:/api/trips/{id} }..........: avg=747.59ms med=538.14ms p(95)=1.71s    p(99)=2.6s     max=5.7s  
+      { name:/api/users/me }............: avg=214.35ms med=150.53ms p(95)=544.96ms p(99)=1s       max=2.49s 
+    measured_requests...................: 25845  37.45237/s
+
+    HTTP
+    http_req_duration...................: avg=322.26ms med=185.59ms p(95)=932.97ms p(99)=1.91s    max=9.04s 
+      { expected_response:true }........: avg=322.26ms med=185.59ms p(95)=932.97ms p(99)=1.91s    max=9.04s 
+    http_req_failed.....................: 0.00%  0 out of 26066
+    http_reqs...........................: 26066  37.772624/s
+
+    EXECUTION
+    iteration_duration..................: avg=1.32s    med=1.18s    p(95)=1.93s    p(99)=2.91s    max=10.15s
+    iterations..........................: 26021  37.707414/s
+    vus.................................: 50     min=50         max=50
+    vus_max.............................: 50     min=50         max=50
+
+    NETWORK
+    data_received.......................: 175 MB 254 kB/s
+    data_sent...........................: 1.7 MB 2.5 kB/s
+
+
+
+time="2026-11-10T11:05:07+09:00" level=error msg="test run was aborted because k6 received a 'terminated' signal"

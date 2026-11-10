@@ -4,7 +4,7 @@
 usage:
   PROD_SSH=ubuntu@<host> PROD_SSH_KEY=<키> PROD_DB_ENV_FILE=<운영 DB 환경 파일> \\
   python3 monitoring/limit/prod_analysis.py --ids <prod_data ids 출력> --out <새 폴더> --urls <URL 파일> \\
-      [--shares 10] [--browse-vus 50] [--max-minutes 25] [--offset 0]
+      [--shares 10] [--browse-vus 50] [--max-minutes 25] [--min-minutes 0] [--offset 0]
 
 - 테스트 계정(provider='loadtest') 사용자마다 영상 1개씩 POST /api/shares 로 넣는다(사용자별 결과 재사용을 피함).
   같은 시각에 조회 부하(load.js, --browse-vus명)를 모든 분석이 끝날 때까지 건다(--browse-vus 0이면 조회 없음).
@@ -28,6 +28,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from prod_run import BASE, CG, HERE, MINT, ssh, wait_health  # noqa: E402
 
 READONLY = Path(__file__).resolve().parent.parent / 'prod_readonly_psql.py'
+# 운영 DB의 시각 열(processing_jobs·api_call_logs)은 시간대 없는 timestamp에 한국 시각으로 저장되고, DB 세션 시간대는 UTC다.
+# 그대로 epoch·to_timestamp와 비교하면 9시간 어긋난다(2026-11-09 r7에서 확인) — 한국 시각으로 해석해 바꾼다.
+DB_TZ = 'Asia/Seoul'
 
 SAMPLE = (f'cur=$(cat {CG}/memory.current); peak=$(cat {CG}/memory.peak 2>/dev/null || echo 0); '
           f'avail=$(grep MemAvailable /proc/meminfo | tr -s " " | cut -d" " -f2); '
@@ -36,7 +39,14 @@ SAMPLE = (f'cur=$(cat {CG}/memory.current); peak=$(cat {CG}/memory.peak 2>/dev/n
           f'jrss=$(ps -o rss= -p $pid 2>/dev/null || echo 0); '
           f'py=$(ps -eo rss=,args= | grep -E "python3? .*(pipeline-test|run_pipeline|extract_places)" | grep -v grep | '
           f'awk "{{n++; s+=\\$1}} END {{print n+0, s+0}}"); '
-          f'echo "$(date +%s) $cur $peak $avail $steal $pid $jrss $py"')
+          f'psi=$(for r in cpu memory io; do awk "{{split(\\$5,a,\\"=\\"); printf \\"%s \\", a[2]}}" /proc/pressure/$r; done); '
+          f'vm=$(awk "/^(pgmajfault|pswpin|pswpout) /{{printf \\"%s \\", \\$2}}" /proc/vmstat); '
+          f'cgp=$(awk "{{split(\\$5,a,\\"=\\"); printf \\"%s \\", a[2]}}" {CG}/memory.pressure 2>/dev/null); '
+          f'echo "$(date +%s) $cur $peak $avail $steal $pid $jrss $py $psi $vm $cgp"')
+# 뒤쪽 값(#16 원인 가르기, 2026-11-09): PSI 누적 대기 µs — cpu some/full, memory some/full, io some/full,
+# /proc/vmstat pswpin·pswpout·pgmajfault(누적), java 서비스 cgroup memory.pressure some/full. 구간 차이로 본다.
+PSI_KEYS = ['cpuSomeUs', 'cpuFullUs', 'memSomeUs', 'memFullUs', 'ioSomeUs', 'ioFullUs',
+            'pswpin', 'pswpout', 'pgmajfault', 'svcMemSomeUs', 'svcMemFullUs']
 
 
 def readonly(sql):
@@ -65,8 +75,8 @@ def job_states(job_ids):
     ids = ','.join(str(int(j)) for j in job_ids)
     out = readonly(f"""
 select coalesce(json_agg(json_build_object('id', id, 'status', status, 'analysis', analysis_status,
-  'created', extract(epoch from created_at), 'updated', extract(epoch from updated_at),
-  'finished', extract(epoch from analysis_finished_at), 'error', left(error_message, 120)) order by id), '[]')
+  'created', extract(epoch from created_at at time zone '{DB_TZ}'), 'updated', extract(epoch from updated_at at time zone '{DB_TZ}'),
+  'finished', extract(epoch from analysis_finished_at at time zone '{DB_TZ}'), 'error', left(error_message, 120)) order by id), '[]')
 from processing_jobs where id in ({ids});""")
     return json.loads(next(line for line in out.splitlines() if line.startswith('[')))
 
@@ -83,7 +93,8 @@ def sampler(stop, path):
                                     'servicePeakMiB': round(int(peak) / 2**20, 1),
                                     'availableMiB': round(int(avail) / 1024, 1), 'stealTicks': int(steal),
                                     'pid': pid, 'javaRssMiB': round(int(jrss) / 1024, 1),
-                                    'pythonProcs': int(pyn), 'pythonRssMiB': round(int(pyrss) / 1024, 1)}) + '\n')
+                                    'pythonProcs': int(pyn), 'pythonRssMiB': round(int(pyrss) / 1024, 1),
+                                    **{k: int(v) for k, v in zip(PSI_KEYS, parts[9:9 + len(PSI_KEYS)])}}) + '\n')
                 f.flush()
             stop.wait(5)
 
@@ -96,6 +107,7 @@ def main():
     ap.add_argument('--shares', type=int, default=10)
     ap.add_argument('--browse-vus', type=int, default=50)
     ap.add_argument('--max-minutes', type=int, default=25)
+    ap.add_argument('--min-minutes', type=float, default=0, help='분석이 다 끝나도 최소 이만큼은 조회 부하를 유지(--shares 0으로 조회만 잴 때)')
     ap.add_argument('--offset', type=int, default=0, help='분석을 넣을 첫 테스트 사용자 순번(0부터)')
     ap.add_argument('--base', default=BASE)
     args = ap.parse_args()
@@ -155,7 +167,7 @@ def main():
             print(json.dumps({'elapsedS': round(time.time() - t_submit), 'pending': len(pending),
                               'done': sum(1 for s in states if s['status'] == 'DONE'),
                               'failed': sum(1 for s in states if s['status'] == 'FAILED')}), flush=True)
-            if not pending:
+            if not pending and time.time() - t_submit >= args.min_minutes * 60:
                 break
             time.sleep(15)
         t_done = time.time()
@@ -171,9 +183,9 @@ def main():
     ids_sql = ','.join(str(int(j)) for j in job_ids) or '0'
     calls = readonly(f"""
 select coalesce(json_agg(json_build_object('provider', provider, 'operation', operation, 'jobId', job_id, 'success', success,
-  'latencyMs', latency_ms, 'attempts', attempts, 'waitedMs', waited_ms, 'at', extract(epoch from created_at),
+  'latencyMs', latency_ms, 'attempts', attempts, 'waitedMs', waited_ms, 'at', extract(epoch from created_at at time zone '{DB_TZ}'),
   'error', left(error_message, 120)) order by created_at), '[]')
-from api_call_logs where created_at >= to_timestamp({int(t_submit) - 5}) and (job_id in ({ids_sql}) or job_id is null);""")
+from api_call_logs where created_at >= (to_timestamp({int(t_submit) - 5}) at time zone '{DB_TZ}') and (job_id in ({ids_sql}) or job_id is null);""")
     result = {'submittedAt': t_submit, 'allDoneAt': t_done, 'drainS': round(t_done - t_submit, 1),
               'jobs': job_states(job_ids), 'submitted': submitted,
               'apiCalls': json.loads(next(line for line in calls.splitlines() if line.startswith('[')))}
