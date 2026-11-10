@@ -22,9 +22,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * 서버를 켠 직후 첫 홈 조회가 5~10배 느렸다(#356, 2026-11-09 운영: /api/auth/me 1.42초 → 두 번째 0.12초,
@@ -35,22 +32,20 @@ import java.util.concurrent.Executors;
  * - 사용자는 가장 최근 여행의 주인 — 데이터가 없는 사용자면 목록이 비어 일찍 끝나 엔티티 읽기·JSON 변환이 데워지지 않는다
  *   (운영 가장 작은 번호 사용자는 여행·찜 0개였다). 여행이 하나도 없으면 가장 작은 번호의 사용자.
  * - 127.0.0.1이라 IP 요청 제한(IpRateLimitFilter)에서 빠진다. 요청 수 지표(/actuator/prometheus)에는 재시작마다 이만큼 더해진다.
- * - 별도 스레드에서 돌려 시작을 늦추지 않는다. 실패해도 로그만 남긴다. 회차마다 홈 5개는 앱처럼 동시에 보낸다(#362).
+ * - 별도 스레드에서 돌려 시작을 늦추지 않는다. 실패해도 로그만 남긴다.
  */
 @Component
 public class StartupWarmup {
 
     private static final Logger log = LoggerFactory.getLogger(StartupWarmup.class);
 
-    // 앱 홈을 열 때 부르는 순서 그대로: 로그인 확인 → 홈 5개(앱이 동시에 부른다) → 알림·찜 폴더.
-    static final String ME = "/api/auth/me";
-    static final List<String> HOME = List.of(
-            "/api/bookmarks", "/api/trips", "/api/trip-drafts/auto", "/api/places", "/api/places/pending");
-    static final List<String> AFTER = List.of("/api/notifications", "/api/bookmarks/folders");
-    static final List<String> PATHS = paths();
-    // 2회·순서대로일 때 운영 재시작 직후 홈 API가 데워진 서버보다 2~3배 느렸다(#362, 2026-11-10: 0.49~1.18초 vs 0.18~0.40초).
-    // 앱처럼 동시에 보내 동시 처리 경로까지 데우고 횟수를 늘린다. 시작 때 한 번뿐이라 CPU는 그때만 더 쓴다.
-    static final int ROUNDS = 5;
+    // 앱 홈을 열 때 부르는 조회(로그인 확인 → 홈 5개 → 알림·찜 폴더).
+    static final List<String> PATHS = List.of(
+            "/api/auth/me", "/api/bookmarks", "/api/trips", "/api/trip-drafts/auto", "/api/places",
+            "/api/places/pending", "/api/notifications", "/api/bookmarks/folders");
+    // 앱처럼 동시에·5회로 늘린 적이 있다(#363). 첫 화면 효과는 없었고, 운영에서 java가 시작부터 약 45MiB 커져
+    // 영상 분석과 조회가 겹칠 때 조회 오류 31.8%·47.4%(끄면 2~4%)로 무너져 순서대로·2회로 되돌렸다(#368, 2026-11-10).
+    static final int ROUNDS = 2;
 
     private final UserRepository userRepository;
     private final TripRepository tripRepository;
@@ -88,37 +83,14 @@ public class StartupWarmup {
         }
         String token = jwtService.issue(user);
         HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
-        ExecutorService pool = Executors.newFixedThreadPool(HOME.size());
-        try {
-            warm(client, pool, port, token, results);
-        } finally {
-            pool.shutdownNow();
-        }
-        return results;
-    }
-
-    private void warm(HttpClient client, ExecutorService pool, int port, String token, List<Result> results) {
         for (int round = 1; round <= ROUNDS; round++) {
             long roundStart = System.nanoTime();
-            int r = round;
-            results.add(call(client, port, token, r, ME));
-            List<CompletableFuture<Result>> home = HOME.stream()
-                    .map(path -> CompletableFuture.supplyAsync(() -> call(client, port, token, r, path), pool))
-                    .toList();
-            home.forEach(future -> results.add(future.join()));
-            for (String path : AFTER) {
-                results.add(call(client, port, token, r, path));
+            for (String path : PATHS) {
+                results.add(call(client, port, token, round, path));
             }
             log.info("예열 {}회차: {}ms ({})", round, (System.nanoTime() - roundStart) / 1_000_000, summary(results, round));
         }
-    }
-
-    private static List<String> paths() {
-        List<String> all = new ArrayList<>();
-        all.add(ME);
-        all.addAll(HOME);
-        all.addAll(AFTER);
-        return List.copyOf(all);
+        return results;
     }
 
     User warmupUser() {
