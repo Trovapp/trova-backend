@@ -2454,7 +2454,7 @@
 - Grafana(사용자 맥 Chrome에서 진행): 체크 `trova-health` 생성(Seoul 1곳·1분·5초·`"status":"UP"`·5회 중 3회 실패 알림),
   기본 알림 경로 `empty` → `trova-slack-alerts`, alloy `up` 기반 `TrovaCloudScrapeUnavailable` 일시 정지(경보 중이었음).
 - `monitoring/incident-snapshot/`: 1분 타이머로 헬스 실패·메모리 full 대기 10% 이상일 때 OS·JVM·로그를 남기는 스크립트.
-- `prod_analysis.py --min-minutes`: 분석 없이(`--shares 0`) 조회만 정한 시간 동안 재기(r9a/r9b에 사용).
+- (#355 브랜치) `prod_analysis.py --min-minutes`: 분석 없이(`--shares 0`) 조회만 정한 시간 동안 재기(r9a/r9b에 사용).
 
 ### 확인
 - 단위 테스트 3개(켜면 레지스트리 생성·공통 태그·히스토그램 적용 / 끄면 없음 / 초 단위·라벨), `./gradlew build` 통과(로컬).
