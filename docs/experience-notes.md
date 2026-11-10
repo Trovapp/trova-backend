@@ -2440,6 +2440,9 @@
 - 한 것: `StartupWarmup` — 시작 뒤 별도 스레드에서 홈 조회 8개를 127.0.0.1로 2회. 사용자는 가장 최근 여행의 주인(운영 가장 작은 번호 사용자는 여행·찜 0개라 목록이 비어 일찍 끝남), 없으면 가장 작은 번호. 토큰은 메모리에서만, 읽기 전용 GET만. `app.warmup.enabled`(기본 켬, 테스트 끔).
 - 확인(로컬): RANDOM_PORT 통합 실행에서 8개 모두 200, 1회차 142ms → 2회차 18ms. 단위 테스트 4개. 처음 쓴 RANDOM_PORT 테스트는 새 컨텍스트가 캐시를 밀어내 같은 메모리 DB(testdb)를 쓰는 다른 테스트의 표가 create-drop으로 지워져(`ApiSessionCreationIntegrationTest` 2개 실패, main에서는 전부 통과) 컨텍스트 없는 단위 테스트로 바꿨다. `ShareJobKafkaRoundTripTest`는 전체 실행에서 한 번 내장 Kafka 시작 실패, 단독·재실행 통과(변경과 무관).
 - 남은 것: 운영 반영 뒤 재시작 직후 앱 열기로 전후 비교. 요청 수 지표에 재시작마다 16건이 더해진다.
+- 운영 결과(2026-11-10 배포 427d727, 재시작 직후 실기기 첫 열기, `docs/monitoring/2026-11-10-warmup-prod/`):
+  `me` 1.42초 → **0.14초**(따뜻한 서버 0.12초), 홈 API 5개 1.5~2.2초 → **0.49~1.18초**(따뜻한 서버 0.18~0.40초). 사용자 "엄청 빨라졌네".
+  운영 예열 로그 1회차 5.1초 → 2회차 2.2초. DB 연결 풀은 원인 아님(10개 미리 열림, 받기 최대 0.09초). 홈 API가 따뜻한 서버보다 아직 2~3배 느린 이유(동시 요청의 CPU 나눠 쓰기·덜 데워진 경로)는 추정, 예열하지 않는 `POST /api/push/subscriptions`는 평균 2.1초.
 ## 2026-11-10 alloy 대신 서버가 직접 지표 보내기 + 외부 헬스 체크 (#358)
 
 ### 문제와 조건
@@ -2473,3 +2476,6 @@
 - 운영 반영: Grafana Cloud OTLP 주소·토큰을 서버 환경 파일에 넣고 배포 → 대시보드 `trova-operations` 쿼리 확인(`up` 패널은 헬스 체크로 교체),
   끊김 알림 규칙으로 교체, 조회 50명만으로 직접 전송의 메모리 비용 측정(r9b와 비교).
 - 기록 스크립트 설치(README 명령).
+- 운영 반영(2026-11-10 15:08 배포 427d727, UP 135초): 서버 `.env`에 `APP_METRICS_OTLP_*` 추가(토큰 `trova-otlp-metrics`는 화면 캡처 없이 클립보드→파일, 인증 시험 HTTP 200 뒤 맥 파일 삭제).
+  Grafana에 이름·라벨이 alloy 때와 같게 들어옴(`http_server_requests_seconds_*`, `jvm_memory_*_bytes`, `process_cpu_usage`, job/instance=`trova-prod`). 대시보드 `trova-operations`의 `up` 패널 → `probe_success{job="trova-health"}`, 오류율 패널의 `up` 조건 제거.
+  `TrovaCloudScrapeUnavailable`을 `absent_over_time(process_cpu_usage{job="trova-prod"}[5m])`로 바꿔 재개(Slack). 직접 전송 메모리 비용 측정·기록 스크립트 설치는 남음.
