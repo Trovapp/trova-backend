@@ -1,0 +1,7 @@
+[Unit]
+Description=Trova 오류 순간 기록 (#358)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/trova-incident-snapshot
+Nice=10

@@ -2440,3 +2440,36 @@
 - 한 것: `StartupWarmup` — 시작 뒤 별도 스레드에서 홈 조회 8개를 127.0.0.1로 2회. 사용자는 가장 최근 여행의 주인(운영 가장 작은 번호 사용자는 여행·찜 0개라 목록이 비어 일찍 끝남), 없으면 가장 작은 번호. 토큰은 메모리에서만, 읽기 전용 GET만. `app.warmup.enabled`(기본 켬, 테스트 끔).
 - 확인(로컬): RANDOM_PORT 통합 실행에서 8개 모두 200, 1회차 142ms → 2회차 18ms. 단위 테스트 4개. 처음 쓴 RANDOM_PORT 테스트는 새 컨텍스트가 캐시를 밀어내 같은 메모리 DB(testdb)를 쓰는 다른 테스트의 표가 create-drop으로 지워져(`ApiSessionCreationIntegrationTest` 2개 실패, main에서는 전부 통과) 컨텍스트 없는 단위 테스트로 바꿨다. `ShareJobKafkaRoundTripTest`는 전체 실행에서 한 번 내장 Kafka 시작 실패, 단독·재실행 통과(변경과 무관).
 - 남은 것: 운영 반영 뒤 재시작 직후 앱 열기로 전후 비교. 요청 수 지표에 재시작마다 16건이 더해진다.
+## 2026-11-10 alloy 대신 서버가 직접 지표 보내기 + 외부 헬스 체크 (#358)
+
+### 문제와 조건
+- 운영(E2.1.Micro 956MiB)에서 조회 50명만 걸고 alloy(지표만 수집) 켬/끔을 같은 조건으로 쟀다(각 12분, 새로 켠 서버).
+  켬 p50 0.31초·p95 1.8초·스왑 다시 읽기 199회/초·메모리 full 대기 5.1% / 끔 0.19초·0.93초·3회/초·0.8%.
+- 릴스가 겹치면 지표만 켠 alloy에서도 조회 오류 32.4%(r8). alloy를 끈 r6은 0.6%. → alloy 프로세스(약 60MiB)가 결정적.
+
+### 범위
+- 사용자 선택 "1": 평소 alloy를 끈다(stop + disable). 이어서 "그게 최선이야?"에 대한 답으로 직접 전송안을 냈고,
+  "서버로 직접 보내면 서버가 죽었다를 알 수 없으면 안 될 것 같다"는 말에 외부 헬스 체크를 더한 안(1)을 골랐다.
+
+### 선택한 방법과 이유 (비교한 대안 포함)
+- 직접 전송(Micrometer OTLP): 프로세스가 늘지 않고 그래프 값은 같다. 비교: alloy 줄이기(줄일 몫 작음), 오류 때 alloy 자동 켜기(오류 순간이 비고 부담 가중),
+  Grafana가 긁기(지표 주소 공개). 스프링 자동 설정은 OpenTelemetry SDK 모듈(추적 포함)을 요구해 빼고 `OtlpMetricsConfig`로 직접 만들었다.
+- 다운 감지: alloy `up`도 같은 VM 안이라 VM이 멈추면 못 보낸다 → Grafana Synthetic Monitoring(바깥, 무료 한도 안).
+- OS 지표는 평소 그래프 대신 오류 순간 기록 스크립트로 남긴다.
+
+### 한 것
+- `OtlpMetricsConfig`(운영에서만 켬, 60초, 초 단위, job/instance=trova-prod), `TrovaBackendApplication`에서 OTLP 자동 설정 제외, 설정 `app.metrics.otlp.*`.
+- Grafana(사용자 맥 Chrome에서 진행): 체크 `trova-health` 생성(Seoul 1곳·1분·5초·`"status":"UP"`·5회 중 3회 실패 알림),
+  기본 알림 경로 `empty` → `trova-slack-alerts`, alloy `up` 기반 `TrovaCloudScrapeUnavailable` 일시 정지(경보 중이었음).
+- `monitoring/incident-snapshot/`: 1분 타이머로 헬스 실패·메모리 full 대기 10% 이상일 때 OS·JVM·로그를 남기는 스크립트.
+- (#355 브랜치) `prod_analysis.py --min-minutes`: 분석 없이(`--shares 0`) 조회만 정한 시간 동안 재기(r9a/r9b에 사용).
+
+### 확인
+- 단위 테스트 3개(켜면 레지스트리 생성·공통 태그·히스토그램 적용 / 끄면 없음 / 초 단위·라벨), `./gradlew build` 통과(로컬).
+- 헬스 체크: 저장 전 Seoul에서 시험 성공(운영).
+- 기록 스크립트: 운영 임시 폴더에서 기준 0으로 강제 실행 → 3개 파일, 약 7초(운영). 기준 미달 때는 아무것도 남기지 않음.
+
+### 남은 것
+- 운영 반영: Grafana Cloud OTLP 주소·토큰을 서버 환경 파일에 넣고 배포 → 대시보드 `trova-operations` 쿼리 확인(`up` 패널은 헬스 체크로 교체),
+  끊김 알림 규칙으로 교체, 조회 50명만으로 직접 전송의 메모리 비용 측정(r9b와 비교).
+- 기록 스크립트 설치(README 명령).
