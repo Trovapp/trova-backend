@@ -4,7 +4,7 @@
 usage:
   PROD_SSH=ubuntu@<host> PROD_SSH_KEY=<키> PROD_DB_ENV_FILE=<운영 DB 환경 파일> \\
   python3 monitoring/limit/prod_analysis.py --ids <prod_data ids 출력> --out <새 폴더> --urls <URL 파일> \\
-      [--shares 10] [--browse-vus 50] [--max-minutes 25] [--offset 0]
+      [--shares 10] [--browse-vus 50] [--max-minutes 25] [--min-minutes 0] [--offset 0]
 
 - 테스트 계정(provider='loadtest') 사용자마다 영상 1개씩 POST /api/shares 로 넣는다(사용자별 결과 재사용을 피함).
   같은 시각에 조회 부하(load.js, --browse-vus명)를 모든 분석이 끝날 때까지 건다(--browse-vus 0이면 조회 없음).
@@ -107,6 +107,7 @@ def main():
     ap.add_argument('--shares', type=int, default=10)
     ap.add_argument('--browse-vus', type=int, default=50)
     ap.add_argument('--max-minutes', type=int, default=25)
+    ap.add_argument('--min-minutes', type=float, default=0, help='분석이 다 끝나도 최소 이만큼은 조회 부하를 유지(--shares 0으로 조회만 잴 때)')
     ap.add_argument('--offset', type=int, default=0, help='분석을 넣을 첫 테스트 사용자 순번(0부터)')
     ap.add_argument('--base', default=BASE)
     args = ap.parse_args()
@@ -166,7 +167,7 @@ def main():
             print(json.dumps({'elapsedS': round(time.time() - t_submit), 'pending': len(pending),
                               'done': sum(1 for s in states if s['status'] == 'DONE'),
                               'failed': sum(1 for s in states if s['status'] == 'FAILED')}), flush=True)
-            if not pending:
+            if not pending and time.time() - t_submit >= args.min_minutes * 60:
                 break
             time.sleep(15)
         t_done = time.time()
