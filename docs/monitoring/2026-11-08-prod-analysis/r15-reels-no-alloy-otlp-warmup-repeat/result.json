@@ -1,0 +1,140 @@
+{
+  "submittedAt": 1794317377.616582,
+  "allDoneAt": 1794318843.3167338,
+  "drainS": 1465.7,
+  "jobs": [
+    {
+      "id": 3226,
+      "status": "FAILED",
+      "analysis": "FAILED",
+      "created": 1794317385.170188,
+      "updated": 1794317705.567113,
+      "finished": 1794317705.567113,
+      "error": "파이프라인 실행 시간 초과: https://www.instagram.com/reel/DeBanBWpxgq/"
+    },
+    {
+      "id": 3227,
+      "status": "FAILED",
+      "analysis": "FAILED",
+      "created": 1794317399.675755,
+      "updated": 1794318308.765113,
+      "finished": 1794318308.765113,
+      "error": "파이프라인 실행 시간 초과: https://www.instagram.com/reel/DTum25dgZEX/"
+    },
+    {
+      "id": 3228,
+      "status": "DONE",
+      "analysis": "DONE",
+      "created": 1794317404.572293,
+      "updated": 1794318011.832872,
+      "finished": 1794318011.832872,
+      "error": null
+    },
+    {
+      "id": 3229,
+      "status": "FAILED",
+      "analysis": "FAILED",
+      "created": 1794317408.083159,
+      "updated": 1794318831.972405,
+      "finished": 1794318831.972405,
+      "error": "파이프라인 실행 실패(exit=1): [pipeline] 인스타그램 받는 중(영상 + 게시물 정보): https://www.instagram.com/reel/DJ_ep7OyQJq/\nTraceback (most rec"
+    },
+    {
+      "id": 3230,
+      "status": "FAILED",
+      "analysis": "FAILED",
+      "created": 1794317412.372192,
+      "updated": 1794318569.383559,
+      "finished": 1794318569.383559,
+      "error": "파이프라인 실행 실패(exit=1): [pipeline] 인스타그램 받는 중(영상 + 게시물 정보): https://www.instagram.com/reel/DQRNtv2kvpJ/\nTraceback (most rec"
+    }
+  ],
+  "submitted": [
+    {
+      "user": 1,
+      "url": "https://www.instagram.com/reel/DeBanBWpxgq/",
+      "status": 202,
+      "jobId": 3226,
+      "alreadyAnalyzed": false,
+      "error": null
+    },
+    {
+      "user": 2,
+      "url": "https://www.instagram.com/reel/DTum25dgZEX/",
+      "status": 202,
+      "jobId": 3227,
+      "alreadyAnalyzed": false,
+      "error": null
+    },
+    {
+      "user": 3,
+      "url": "https://www.instagram.com/reel/DfWYZGAq7Ft/",
+      "status": 202,
+      "jobId": 3228,
+      "alreadyAnalyzed": false,
+      "error": null
+    },
+    {
+      "user": 4,
+      "url": "https://www.instagram.com/reel/DJ_ep7OyQJq/",
+      "status": 202,
+      "jobId": 3229,
+      "alreadyAnalyzed": false,
+      "error": null
+    },
+    {
+      "user": 5,
+      "url": "https://www.instagram.com/reel/DQRNtv2kvpJ/",
+      "status": 202,
+      "jobId": 3230,
+      "alreadyAnalyzed": false,
+      "error": null
+    }
+  ],
+  "apiCalls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "jobId": 3228,
+      "success": true,
+      "latencyMs": 52896,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794318003.880555,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "jobId": 3228,
+      "success": true,
+      "latencyMs": 6299,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794318004.868245,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "jobId": 3228,
+      "success": true,
+      "latencyMs": 2706,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794318009.582109,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 28400,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794318051.873628,
+      "error": null
+    }
+  ]
+}
