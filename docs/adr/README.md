@@ -78,4 +78,4 @@
 | [0036](0036-known-users-id-cache.md) | 조회 API의 사용자 존재 확인을 메모리에 기억한다 | 확정 | 2026-11-05 |
 | [0037](0037-prod-jvm-memory-and-capacity-decisions.md) | 운영 java의 GC·스왑 설정과 동시 사용자 한계 판단 | 확정 | 2026-11-08 |
 | [0038](0038-analysis-cpu-priority-and-download-concurrency.md) | 내려받기 영상 분석은 동시에 1개만 (낮은 CPU 우선순위는 운영 측정 뒤 끔) | 확정 | 2026-11-08 |
-| [0039](0039-direct-otlp-metrics-and-external-health-check.md) | 운영 지표는 서버가 직접 보내고, 서버 다운은 외부 헬스 체크로 감지한다 (alloy는 평소 끔) | 제안 | 2026-11-10 |
+| [0039](0039-direct-otlp-metrics-and-external-health-check.md) | 운영 지표는 서버가 직접 보내고, 서버 다운은 외부 헬스 체크로 감지한다 (alloy는 평소 끔) | 확정 | 2026-11-10 |

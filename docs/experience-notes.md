@@ -2465,7 +2465,7 @@
 - Grafana(사용자 맥 Chrome에서 진행): 체크 `trova-health` 생성(Seoul 1곳·1분·5초·`"status":"UP"`·5회 중 3회 실패 알림),
   기본 알림 경로 `empty` → `trova-slack-alerts`, alloy `up` 기반 `TrovaCloudScrapeUnavailable` 일시 정지(경보 중이었음).
 - `monitoring/incident-snapshot/`: 1분 타이머로 헬스 실패·메모리 full 대기 10% 이상일 때 OS·JVM·로그를 남기는 스크립트.
-- (#355 브랜치) `prod_analysis.py --min-minutes`: 분석 없이(`--shares 0`) 조회만 정한 시간 동안 재기(r9a/r9b에 사용).
+- (#355) `prod_analysis.py --min-minutes`: 분석 없이(`--shares 0`) 조회만 정한 시간 동안 재기(r9a/r9b에 사용).
 
 ### 확인
 - 단위 테스트 3개(켜면 레지스트리 생성·공통 태그·히스토그램 적용 / 끄면 없음 / 초 단위·라벨), `./gradlew build` 통과(로컬).
@@ -2475,7 +2475,7 @@
 ### 남은 것
 - 운영 반영: Grafana Cloud OTLP 주소·토큰을 서버 환경 파일에 넣고 배포 → 대시보드 `trova-operations` 쿼리 확인(`up` 패널은 헬스 체크로 교체),
   끊김 알림 규칙으로 교체, 조회 50명만으로 직접 전송의 메모리 비용 측정(r9b와 비교).
-- 기록 스크립트 설치(README 명령).
+- ~~기록 스크립트 설치~~ → 2026-11-10 15:18 운영에 설치(`trova-incident-snapshot.timer`, 1분). 첫 실행 성공, 정상일 때 기록 없음 확인.
 - 운영 반영(2026-11-10 15:08 배포 427d727, UP 135초): 서버 `.env`에 `APP_METRICS_OTLP_*` 추가(토큰 `trova-otlp-metrics`는 화면 캡처 없이 클립보드→파일, 인증 시험 HTTP 200 뒤 맥 파일 삭제).
   Grafana에 이름·라벨이 alloy 때와 같게 들어옴(`http_server_requests_seconds_*`, `jvm_memory_*_bytes`, `process_cpu_usage`, job/instance=`trova-prod`). 대시보드 `trova-operations`의 `up` 패널 → `probe_success{job="trova-health"}`, 오류율 패널의 `up` 조건 제거.
   `TrovaCloudScrapeUnavailable`을 `absent_over_time(process_cpu_usage{job="trova-prod"}[5m])`로 바꿔 재개(Slack). 직접 전송 메모리 비용 측정·기록 스크립트 설치는 남음.
@@ -2486,3 +2486,28 @@
 - 방법: 회차마다 `me` → 홈 5개를 앱처럼 동시에(스레드 5개) → 알림·찜 폴더, 2회 → 5회. 비교: 주기적으로 데워 두기(계속 CPU 사용, JVM은 한 번 데우면 식지 않아 불필요), 그대로 두기.
 - 확인(로컬): 단위 테스트 5개(동시 요청 수 2 이상 확인 추가), `./gradlew build` 통과.
 - 남은 것: 배포 뒤 재시작 직후 앱 열기로 홈 API 서버 처리 시간 비교, 예열 로그 회차별 시간.
+
+## 2026-11-09~10 영상 분석 중 조회 붕괴(#16)의 원인 가르기 (#355)
+
+### 문제와 조건
+- 운영(E2.1.Micro 956MiB)에서 쇼츠5·릴스5 + 조회 50명이면 조회 오류 50~73%. 릴스 CPU를 54% 줄여도(#350) 68.9%라, CPU가 원인이라는 판단이 맞지 않았다.
+
+### 범위
+- 사용자 선택: 쇼츠만/릴스만 나눠 재고 `/proc/pressure`·스왑·major fault를 함께 기록(#355). 이어서 alloy 끄고(r6), 지표만(r7·r8), 조회만 켬/끔(r9) 순서로 각 단계 사용자가 번호로 고름.
+
+### 선택한 방법과 이유 (비교한 대안 포함)
+- 원인 가르기에 메모리 대기(PSI)를 더한 것: CPU 사용률·steal만으로는 "CPU를 못 받음"과 "메모리 때문에 멈춤"을 구분할 수 없었다.
+- r8이 인스타그램 차단으로 조건이 흔들리자, 인스타그램이 필요 없는 조회만 비교(r9)로 바꿨다. 대안: 다음 날 릴스로 재측정(차단 반복 위험), 기록만.
+
+### 한 것
+- `prod_analysis.py`: PSI·스왑·major fault 표본, DB 시각을 한국 시각으로 해석(ecf413d, r4~r7의 Gemini 호출 수는 무효), `--min-minutes`(조회만 재기).
+- 측정 r5~r9(문제 기록 #16 하위 절), 원본 `docs/monitoring/2026-11-08-prod-analysis/r5-*`~`r9b-*`.
+
+### 확인 (모두 운영 서버)
+- 릴스만 + alloy 전부: 조회 오류 79.7%, 메모리 full 33% / alloy 끔: 0.6%, 7.8%.
+- alloy 지표만: 릴스(1개만 실행) 32.4%·22.8%, 조회만 0%·p95 1.8초·스왑 읽기 199회/초 / alloy 끔 조회만 p95 0.93초·3회/초.
+- r7은 인스타그램 차단으로 무효. r8도 4개 차단(13시간 쉰 뒤에도).
+
+### 남은 것
+- ~~직접 전송 메모리 비용~~ → r10: java +7MiB, 스왑 읽기 3→4회/초(측정 흔들림 수준), ADR 0039 확정.
+- alloy를 끈 지금 상태에서 조회 50 + 릴스 5 재확인(11-10 저녁, 인스타 차단이면 r6으로 대신).
