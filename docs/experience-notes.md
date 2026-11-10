@@ -2480,6 +2480,13 @@
   Grafana에 이름·라벨이 alloy 때와 같게 들어옴(`http_server_requests_seconds_*`, `jvm_memory_*_bytes`, `process_cpu_usage`, job/instance=`trova-prod`). 대시보드 `trova-operations`의 `up` 패널 → `probe_success{job="trova-health"}`, 오류율 패널의 `up` 조건 제거.
   `TrovaCloudScrapeUnavailable`을 `absent_over_time(process_cpu_usage{job="trova-prod"}[5m])`로 바꿔 재개(Slack). 직접 전송 메모리 비용 측정·기록 스크립트 설치는 남음.
 
+## 2026-11-10 예열을 앱처럼 홈 API 동시 요청으로, 5회 (#362)
+
+- 범위: #356 운영 결과에서 홈 API가 데워진 서버보다 2~3배 느렸다(0.49~1.18초 vs 0.18~0.40초). 사용자 선택 1(동시 요청·횟수 늘리기).
+- 방법: 회차마다 `me` → 홈 5개를 앱처럼 동시에(스레드 5개) → 알림·찜 폴더, 2회 → 5회. 비교: 주기적으로 데워 두기(계속 CPU 사용, JVM은 한 번 데우면 식지 않아 불필요), 그대로 두기.
+- 확인(로컬): 단위 테스트 5개(동시 요청 수 2 이상 확인 추가), `./gradlew build` 통과.
+- 남은 것: 배포 뒤 재시작 직후 앱 열기로 홈 API 서버 처리 시간 비교, 예열 로그 회차별 시간.
+
 ## 2026-11-09~10 영상 분석 중 조회 붕괴(#16)의 원인 가르기 (#355)
 
 ### 문제와 조건
