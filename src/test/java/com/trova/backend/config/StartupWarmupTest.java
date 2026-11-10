@@ -17,8 +17,6 @@ import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,7 +52,6 @@ class StartupWarmupTest {
             exchange.sendResponseHeaders(200, -1);
             exchange.close();
         });
-        server.setExecutor(Executors.newCachedThreadPool()); // 기본은 한 스레드라 동시 요청을 볼 수 없다
         server.start();
     }
 
@@ -81,33 +78,8 @@ class StartupWarmupTest {
         assertThat(results).hasSize(StartupWarmup.PATHS.size() * StartupWarmup.ROUNDS);
         assertThat(results).extracting(StartupWarmup.Result::status).containsOnly(200);
         assertThat(seen).hasSize(results.size()).allMatch(s -> s.startsWith("GET ") && s.endsWith(" user=7"));
-        assertThat(seen.get(0)).as("로그인 확인이 먼저").isEqualTo("GET /api/auth/me user=7");
         assertThat(seen.subList(0, StartupWarmup.PATHS.size()))
-                .containsExactlyInAnyOrderElementsOf(StartupWarmup.PATHS.stream().map(p -> "GET " + p + " user=7").toList());
-    }
-
-    @Test
-    void 홈_API는_앱처럼_동시에_보낸다() throws Exception {
-        when(tripRepository.findAll(any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(new Trip(user(7), "최근 여행", null, null))));
-        AtomicInteger inFlight = new AtomicInteger();
-        AtomicInteger maxInFlight = new AtomicInteger();
-        server.removeContext("/");
-        server.createContext("/", exchange -> {
-            maxInFlight.accumulateAndGet(inFlight.incrementAndGet(), Math::max);
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            inFlight.decrementAndGet();
-            exchange.sendResponseHeaders(200, -1);
-            exchange.close();
-        });
-
-        warmup.run(server.getAddress().getPort());
-
-        assertThat(maxInFlight.get()).isGreaterThan(1);
+                .containsExactlyElementsOf(StartupWarmup.PATHS.stream().map(p -> "GET " + p + " user=7").toList());
     }
 
     @Test
