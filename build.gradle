@@ -37,6 +37,7 @@ dependencies {
 		exclude group: 'org.xerial.snappy', module: 'snappy-java'
 	}
 	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'io.micrometer:micrometer-registry-otlp'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'org.bsc.langgraph4j:langgraph4j-core:1.8.13'
 	implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
