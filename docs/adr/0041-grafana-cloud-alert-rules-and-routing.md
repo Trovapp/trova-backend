@@ -48,7 +48,7 @@ ADR 0039로 alloy를 끄고 서버가 지표를 직접 보내게 된 뒤, 경보
 
 - 20건 미만일 때 한 사람에게 계속 500이 나는 경우는 5xx 경보가 못 잡는다(ERROR 로그 경보와 Synthetic이 대신).
 - 재시작 뒤 어떤 API의 첫 5xx 1건은 OTLP 카운터의 첫 표본이라 `increase()`에 잡히지 않는다.
-- 서버 메모리·스왑·PSI·CPU steal 지표는 아직 없어 경보가 없다(앱이 `/proc`를 읽어 보내는 작업 예정).
+- 서버 메모리·스왑·PSI·CPU steal 지표는 이 결정 당시 없었다 → 뒤에 [ADR 0042](0042-host-metrics-from-proc-in-app.md)로 지표가 생겼고, 메모리 압박 경보 `HighMemoryPressure`(그룹 `trova-host`)는 그쪽 근거를 따른다.
 - Slack 실제 화면(이모지·링크)은 테스트 발송 전이라 확인하지 않았다(템플릿 미리보기로만 확인).
 
 ## 다시 볼 조건
