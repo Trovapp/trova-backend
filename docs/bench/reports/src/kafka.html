@@ -1,6 +1,6 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Trova Kafka 대기열 도입 전후 비교와 성능</title><link rel="stylesheet" href="style.css"></head><body>
 <h1>Kafka 영상 분석 대기열 도입: 전후 비교와 성능</h1>
-<div class="meta">Trova 백엔드 · 2026-11-11 작성 · 운영 반영 2026-10-30(PR #246) · 결정 기록 ADR 0021</div>
+<div class="meta">Trova 백엔드 · 2026-11-12 갱신 · 운영 반영 2026-10-30(PR #246), 자동 초안 2026-11-11(PR #391) · 결정 기록 ADR 0021</div>
 
 <div class="lead"><b>한 줄 결론.</b> 영상 분석 시작을 서버 안 대기열(@Async)에서 Aiven 무료 Kafka로 옮기고, 브로커가 안 되면 서버 안 대기열로 자동으로 넘기게 했다. 얻은 것은 속도가 아니라 <b>재시작에 강한 처리</b>다. 처리 중 강제 종료해도 같은 작업을 다시 받아 끝까지 처리했다. 대가는 운영에서 분석 시작까지 약 0.2초가 더 걸리는 것이다.</div>
 
@@ -77,13 +77,38 @@
 <tr><td>브로커 전체가 멈추면 오프셋이 초기화됨</td><td>Aiven 전원 중단 뒤 관측</td><td>무손실이라고 말하지 않음. 15분 뒤 실패 정리는 남겨 둠</td></tr>
 </table>
 
-<h2>6. 결정과 한계, 남은 일</h2>
+<h2>6. 확장: 자동 일정 초안도 Kafka로 (2026-11-11, #390)</h2>
+<p>영상 분석이 끝난 뒤 자동으로 일정 초안을 만드는 단계가 아직 서버 안 대기열이라, 재시작하면 초안이 사라지고 15분 뒤 실패로 정리됐다. 같은 대기열 구조로 옮겨 <b>공유 → 분석 → 초안</b>이 끝까지 Kafka를 거친다.</p>
+<table>
+<tr><th>항목</th><th>내용</th></tr>
+<tr><td>토픽·그룹</td><td><code>trova.draft-jobs</code>(파티션 2, 무료 토픽 5개 중 2개째), 그룹 <code>trova-draft-jobs</code>, 동시 처리 1</td></tr>
+<tr><td>브로커 장애</td><td>영상 분석과 같은 규칙: 5초 뒤 서버 안 대기열로 넘김, 1분 건너뜀, 지표 <code>trova.queue.draft.fallback</code></td></tr>
+<tr><td>중복 방지</td><td>다시 받은 초안은 상태를 보고 PENDING·PROCESSING만 만든다. 끝난 초안·답 기다리는 초안은 Gemini를 부르지 않고 건너뜀. 같은 초안은 서버 안에서 한 번에 하나</td></tr>
+</table>
+<h3>운영 강제 종료 실험 (2026-11-12, 배포 c4f4d5a, 테스트 계정)</h3>
+<table>
+<tr><th>시각(KST)</th><th>일</th></tr>
+<tr><td>00:15:47</td><td>릴스 공유 접수 → Kafka로 분석 시작(대기 0.3초)</td></tr>
+<tr><td>00:16:16</td><td>분석 완료(29초) → 초안 116을 Kafka로 보냄</td></tr>
+<tr><td>00:16:19</td><td>초안 116이 만드는 중일 때 앱을 <b>SIGKILL로 강제 종료</b></td></tr>
+<tr><td>00:16:24 → 00:18:24</td><td>systemd 재시작, 앱 시작 113초</td></tr>
+<tr><td>00:18:32</td><td>초안 리스너가 파티션을 다시 받음</td></tr>
+<tr><td><b>00:18:48</b></td><td><b>초안 116 완료(READY)</b>: 커밋되지 않은 메시지를 다시 받아 끝까지 만듦. 강제 종료부터 2분 29초</td></tr>
+</table>
+<ul>
+<li>다시 받는 비용: Gemini 기록은 다시 만든 호출 1번(14.1초). 죽기 전에 시작된 호출 1번은 끊겨 기록되지 않은 것으로 본다(추정).</li>
+<li>강제 종료 없는 같은 날 초안 2건은 Kafka 리스너에서 6~7초에 완료됐다.</li>
+<li>도입 전이었다면 같은 상황에서 초안은 사라지고 15분 뒤 실패로 정리됐다.</li>
+</ul>
+
+<h2>7. 결정과 한계, 남은 일</h2>
 <p>운영은 Kafka를 그대로 쓴다(ADR 0021). 사용자 약 12명 규모에서 처리량 이득은 없다. 얻는 것은 재시작에 강한 처리와, 서버를 늘릴 때 설정만 바꾸면 되는 구조다.</p>
 <ul>
 <li><b>한계:</b> 외부 의존이 하나 늘었다(Aiven). 무료 플랜은 오래 안 쓰면 꺼진다는 기록이 있지만 공식으로 확인하지 못했다. 꺼져도 자동 넘기기로 공유는 막히지 않는다.</li>
 <li><b>한계:</b> 중복 실행 방지는 서버 한 대 안에서만 보장한다.</li>
 <li><b>한계:</b> 비교는 낮은 부하에서 영상 3종으로만 했다. 실제 트래픽의 실패율·처리량으로 일반화하지 않는다.</li>
 <li><b>남은 일:</b> 무료 Oracle A1(2 OCPU·12GB)을 확보하면 브로커를 그쪽으로 옮길지 다시 본다.</li>
+<li><b>남은 일:</b> 사용자가 직접 만드는 초안과 일정 재구성도 같은 구조로 옮긴다. 실패 작업 토픽과 소비 지연 경보를 붙인다.</li>
 <li><b>남은 일:</b> 운영 공유가 쌓이면 경로별 대기 중앙값과 1초 안에 시작한 비율을 기록한다.</li>
 </ul>
 <p class="src">근거(레포): docs/adr/0021-share-job-queue-kafka-optional.md · docs/bench/expanded-system-comparison-20261101.md · docs/bench/system-comparison-summary-20261101.md · docs/bench/spring-ai-kafka-performance.md · 원자료 docs/bench/results/production-queue-expanded-20261101.json</p>

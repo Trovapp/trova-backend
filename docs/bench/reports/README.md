@@ -29,7 +29,7 @@ python3 -m venv /tmp/trova-report-venv
 
 이력서·면접용으로 두 도입을 따로 정리한 보고서다. 숫자는 위 보고서와 같은 원자료(`docs/bench/results/`)와 ADR 0020·0021에서 옮겼고 새 측정은 없다.
 
-- `trova-kafka-queue-before-after-20261111.pdf` — Kafka 대기열(ADR 0021): 재시작에 강한 처리, 운영 분석 시작 +약 0.2초, 브로커 장애 시 자동 넘기기
+- `trova-kafka-queue-before-after-20261111.pdf` — Kafka 대기열(ADR 0021): 재시작에 강한 처리, 운영 분석 시작 +약 0.2초, 브로커 장애 시 자동 넘기기, 자동 초안 확장(#390)과 운영 강제 종료 실험(11-12)
 - `trova-spring-ai-2-before-after-20261111.pdf` — Spring AI 2(ADR 0020): 속도 차이 입증 못 함, 숨은 재시도(최대 15회) 제거, 운영 HTTP/2 시간 초과 → HTTP/1.1
 
 원본은 `src/*.html`(공용 `src/style.css`). 재생성:
