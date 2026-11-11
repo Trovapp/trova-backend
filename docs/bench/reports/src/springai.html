@@ -1,0 +1,93 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Trova Spring AI 2 도입 전후 비교와 성능</title><link rel="stylesheet" href="style.css"></head><body>
+<h1>Spring AI 2 도입: 전후 비교와 성능</h1>
+<div class="meta">Trova 백엔드 · 2026-11-11 작성 · 운영 반영 2026-10-31(PR #245, #254) · 결정 기록 ADR 0020</div>
+
+<div class="lead"><b>한 줄 결론.</b> Java에서 Gemini를 부르는 텍스트·JSON 클라이언트를 직접 만든 REST에서 Spring AI 2 <code>ChatModel</code>로 옮겼다. 속도는 그대로다(차이가 측정 흔들림 안). 얻은 것은 <b>재시도를 한 곳으로 모은 것</b>과 호출 시간·토큰 지표 자동 수집이다. 기본 재시도를 그대로 뒀다면 한 요청이 Gemini를 최대 15번 불러 무료 한도를 몇 배로 썼을 것이다. 운영에서 HTTP/2 시간 초과(6/6)가 나서 HTTP/1.1로 고정해 해결했다.</div>
+
+<h2>1. 한눈에 보기</h2>
+<table>
+<tr><th>항목</th><th>전: 직접 만든 REST</th><th>후: Spring AI 2</th><th>환경</th></tr>
+<tr><td>짧은 JSON 요청 응답(중앙값)</td><td class="n">913ms</td><td class="n">719ms</td><td>로컬, 각 20회</td></tr>
+<tr><td>같은 회차 짝지은 차이 95% 범위</td><td colspan="2">−311 ~ +13ms(0을 포함 → 속도 이득이라고 말하지 않음)</td><td>로컬</td></tr>
+<tr><td>한 요청이 부를 수 있는 Gemini 최대 횟수</td><td colspan="2">라이브러리 기본값 그대로면 최대 15회 → 우리 코드 3회만</td><td>로컬</td></tr>
+<tr><td>운영 일정 초안 Gemini 호출</td><td colspan="2">도입 직후 6/6 시간 초과(20.3초) → HTTP/1.1 고정 뒤 1/1 성공(5.1초)</td><td>운영</td></tr>
+<tr><td>JAR 크기</td><td class="n">71.2MB</td><td class="n">95.9MB</td><td>로컬</td></tr>
+<tr><td>시작 뒤 RSS(평균)</td><td class="n">383MB</td><td class="n">400MB</td><td>로컬</td></tr>
+<tr><td>호출 시간·토큰 지표</td><td>직접 만들어야 함</td><td><code>gen_ai_client_*</code> 자동</td><td>–</td></tr>
+<tr><td>추가 비용</td><td>0원</td><td>0원(Apache 2.0, 모델은 그대로 Gemini 무료)</td><td>–</td></tr>
+</table>
+<div class="cv"><b>이력서용 한 줄:</b> Gemini 호출을 Spring AI 2로 옮기며 라이브러리 두 겹의 숨은 재시도(최대 15회 호출)를 찾아 끄고 재시도를 한 곳으로 모았다. 운영에서 HTTP/2 전부 시간 초과(6/6)를 HTTP/1.1 고정으로 해결했다(속도는 같음, 추가 비용 0원).</div>
+
+<h2>2. 왜 도입했나</h2>
+<ul>
+<li><b>문제:</b> Gemini 클라이언트 4개가 요청·응답 레코드, 시간 제한, 재시도를 각자 만들었다(567줄). 모델이나 옵션을 바꾸려면 네 곳을 고쳐야 했다.</li>
+<li><b>비용:</b> Spring AI는 Apache 2.0 라이브러리라 무료다. 비용은 지금처럼 Gemini 호출 수로만 생긴다(ADR 0002).</li>
+<li><b>다음 단계 준비:</b> 대화 도구 호출(<code>@Tool</code>)·구조화 출력·임베딩을 직접 만들지 않고 쓸 수 있다.</li>
+<li><b>검토한 다른 방법:</b> REST 유지(의존성은 안 늘지만 도구 호출·지표를 계속 직접 만들어야 함), LangChain4j(레포가 Spring Boot 중심이고 Boot 4 공식 지원·관측 연동은 Spring AI가 더 직접적), 자동 설정 그대로 사용(키 없는 테스트·로컬에서 서버가 안 뜨고 재시도가 두 겹으로 남음).</li>
+</ul>
+
+<h2>3. 전후 구조</h2>
+<table>
+<tr><th>항목</th><th>전: 직접 만든 REST</th><th>후: Spring AI 2</th></tr>
+<tr><td>호출 코드</td><td>클라이언트 4개가 각자 RestClient로 요청·응답 조립</td><td>텍스트(<code>GeminiTextClientImpl</code>)·JSON(<code>GeminiJsonClientImpl</code>)이 <code>ChatModel</code>을 씀. 인터페이스는 그대로</td></tr>
+<tr><td>라이브러리</td><td>없음</td><td><code>spring-ai-starter-model-google-genai</code>(BOM 2.0.2)</td></tr>
+<tr><td>설정</td><td>클라이언트마다 따로</td><td>자동 설정을 끄고 <code>SpringAiConfig</code>에서 직접 만듦(키가 비면 Vertex AI로 가서 서버가 안 뜨는 문제를 피함)</td></tr>
+<tr><td>재시도</td><td>클라이언트마다 따로</td><td><b>JSON 클라이언트의 3회만.</b> Spring AI RetryTemplate 10회 → 0회, SDK 재시도 5회 → 1회</td></tr>
+<tr><td>HTTP</td><td>HTTP/1.1</td><td>OkHttp를 HTTP/1.1로 고정하고 전체 20초·연결·읽기·쓰기 제한을 직접 검(#254)</td></tr>
+<tr><td>지표</td><td>없음</td><td>호출 시간·토큰이 Prometheus로 나감. 프롬프트·응답 본문은 남기지 않음</td></tr>
+<tr><td>범위 밖</td><td colspan="2">Python 파이프라인(yt-dlp·오디오·장소 추출)은 그대로. 장소 추출 정확도가 좋아졌다고 주장하지 않음</td></tr>
+</table>
+
+<h2>4. 성능 측정</h2>
+<h3>응답 시간 (2026-11-01, 로컬 Mac·Java 21, 같은 모델·temperature 0.1·짧은 JSON 요청, 각 워밍업 1회 + 측정 20회)</h3>
+<table>
+<tr><th>지표</th><th>REST</th><th>Spring AI 2</th></tr>
+<tr><td>중앙값</td><td class="n">913.17ms</td><td class="n">719.33ms</td></tr>
+<tr><td>1사분위 / 3사분위</td><td class="n">759.61 / 1,104.08ms</td><td class="n">633.10 / 1,031.03ms</td></tr>
+<tr><td>평균</td><td class="n">2,798.47ms</td><td class="n">2,423.58ms</td></tr>
+<tr><td>최소 / 최대</td><td class="n">602.43 / 15,385.11ms</td><td class="n">544.86 / 15,154.69ms</td></tr>
+<tr><td>성공</td><td class="n">20/20</td><td class="n">20/20</td></tr>
+<tr><td>토큰 합(측정 20회)</td><td class="n">404</td><td class="n">404</td></tr>
+</table>
+<ul>
+<li>라운드마다 먼저 부르는 쪽을 바꾸고, 호출 사이 8초를 두고, 앱·SDK·라이브러리 재시도를 모두 껐다.</li>
+<li>같은 라운드끼리 짝지은 차이(Spring AI − REST)의 중앙값은 −136.10ms, 짝을 유지한 재표집 5,000회의 중앙 95% 범위는 −311.32 ~ +12.64ms다. <b>0을 포함하므로 속도가 빨라졌다고 말하지 않는다.</b></li>
+<li>평균이 중앙값보다 큰 것은 양쪽 모두 10초대 응답이 섞였기 때문이다. 응답 시간은 거의 Gemini 처리 시간이다.</li>
+<li>이전 소표본(2026-10-30, 각 4~6회)도 중앙값 902ms → 892ms로 같았다.</li>
+</ul>
+<h3>재시도 상한 (2026-10-29, 로컬, 도입 중 발견)</h3>
+<table>
+<tr><th>상황</th><th>재시도 겹침</th><th>결과</th></tr>
+<tr><td>라이브러리 기본값 그대로</td><td>SDK 5회 × Spring AI 10회 × 우리 코드 3회</td><td>한 요청이 Gemini를 최대 15번 부를 수 있음. 20초 제한인데 한 호출이 41초 걸림</td></tr>
+<tr><td>두 겹을 끄고 우리 코드 3회만</td><td>3회</td><td>모든 호출이 20.1초 안에서 끊김</td></tr>
+</table>
+<h3>자원 (2026-10-29, 로컬, -Xmx384m, 같은 개발 DB, 각 2회)</h3>
+<table>
+<tr><th>항목</th><th>기준</th><th>Spring AI</th><th>차이</th></tr>
+<tr><td>JAR</td><td class="n">71.2MB</td><td class="n">95.9MB</td><td class="n">+24.7MB</td></tr>
+<tr><td>시작 20초 뒤 RSS</td><td class="n">374 / 392MB</td><td class="n">399 / 400MB</td><td class="n">평균 +16MB</td></tr>
+<tr><td>non-heap</td><td class="n">135 / 138MB</td><td class="n">144 / 142MB</td><td class="n">약 +7MB</td></tr>
+<tr><td>불러온 클래스</td><td class="n">21,810</td><td class="n">약 22,730</td><td class="n">약 +920</td></tr>
+<tr><td>시작 시간</td><td class="n">3.73 / 3.47초</td><td class="n">3.65 / 4.27초</td><td>비슷</td></tr>
+</table>
+
+<h2>5. 운영에서 겪은 문제와 해결</h2>
+<table>
+<tr><th>시점</th><th>무엇</th><th>결과</th></tr>
+<tr><td>2026-10-31 배포(15c1406)</td><td>첫 실사용 "영상으로 일정 짜기" 2회</td><td>Gemini 호출 6/6 전부 20.3초 시간 초과(합 120.8초). 같은 시각 맥에서 REST 직접 호출은 200 응답·0.2초</td></tr>
+<tr><td>원인</td><td>운영 서버 + google-genai(OkHttp) HTTP/2 연결이 응답을 못 받음</td><td>예전 클라이언트와 같은 HTTP/1.1만 쓰도록 <code>customHttpClient</code>를 넘김(#253 → #254)</td></tr>
+<tr><td>같은 날 재배포(2b1b56e)</td><td>같은 시나리오(당일·영상 1개·장소 7곳)</td><td>Gemini 1/1 성공 5.1초, 토큰 입력 926·출력 325. 앱에 초안(서울 6곳)이 뜸. 배포 뒤 UP까지 108초</td></tr>
+</table>
+<p>주의: HTTP/1.1 클라이언트를 넘기면 SDK가 시간 제한을 걸어 주지 않는다. 그래서 <code>SpringAiConfig.http1Client()</code>에서 직접 건다. 이 클라이언트를 빼면 같은 장애가 다시 난다(ADR 0020).</p>
+
+<h2>6. 결정과 한계, 남은 일</h2>
+<p>Gemini 텍스트·JSON 호출은 Spring AI 2로 유지하고, 재시도는 우리 코드 한 곳에서만 한다(ADR 0020).</p>
+<ul>
+<li><b>한계:</b> 속도 이득은 입증하지 못했다. 이득은 코드·설정·지표 쪽이다.</li>
+<li><b>한계:</b> JAR가 약 25MB, 메모리가 약 16MB 늘었다. 956MB 서버에서 감당할 수 있는 크기로 봤다.</li>
+<li><b>한계:</b> 응답 비교는 로컬 짧은 요청 각 20회다. 운영 호출 실패율은 아직 표본이 적어 제시하지 않는다.</li>
+<li><b>남은 일:</b> 운영 호출이 쌓이면 <code>gen_ai_client_operation_seconds</code>로 중앙값·실패율 기록.</li>
+<li><b>남은 일:</b> 다음 단계(대화 도구 호출 → <code>@Tool</code>, 임베딩·pgvector)는 1단계를 운영에서 본 뒤 정한다.</li>
+</ul>
+<p class="src">근거(레포): docs/adr/0020-spring-ai-for-gemini-calls.md · docs/bench/expanded-system-comparison-20261101.md · docs/bench/spring-ai-kafka-performance.md · 원자료 docs/bench/results/client-latency-expanded-20261101.json</p>
+</body></html>

@@ -1,0 +1,90 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Trova Kafka 대기열 도입 전후 비교와 성능</title><link rel="stylesheet" href="style.css"></head><body>
+<h1>Kafka 영상 분석 대기열 도입: 전후 비교와 성능</h1>
+<div class="meta">Trova 백엔드 · 2026-11-11 작성 · 운영 반영 2026-10-30(PR #246) · 결정 기록 ADR 0021</div>
+
+<div class="lead"><b>한 줄 결론.</b> 영상 분석 시작을 서버 안 대기열(@Async)에서 Aiven 무료 Kafka로 옮기고, 브로커가 안 되면 서버 안 대기열로 자동으로 넘기게 했다. 얻은 것은 속도가 아니라 <b>재시작에 강한 처리</b>다. 처리 중 강제 종료해도 같은 작업을 다시 받아 끝까지 처리했다. 대가는 운영에서 분석 시작까지 약 0.2초가 더 걸리는 것이다.</div>
+
+<h2>1. 한눈에 보기</h2>
+<table>
+<tr><th>항목</th><th>전: 서버 안 대기열</th><th>후: Kafka</th><th>환경</th></tr>
+<tr><td>처리 중 서버 재시작</td><td>대기 작업 사라짐, 15분 뒤 실패 처리</td><td>약 37초 뒤 다시 받아 끝까지 처리</td><td>로컬</td></tr>
+<tr><td>작업 생성 → 분석 시작(중앙값)</td><td class="n">234.5ms</td><td class="n">440.0ms</td><td>운영, 각 6건</td></tr>
+<tr><td>공유 응답(중앙값, 맥 왕복 포함)</td><td class="n">388ms</td><td class="n">636ms</td><td>운영, 각 6건</td></tr>
+<tr><td>작업 생성 → 분석 저장 완료(중앙값)</td><td class="n">11.9초</td><td class="n">12.8초</td><td>운영, 각 6건</td></tr>
+<tr><td>브로커가 꺼졌을 때 공유</td><td>해당 없음</td><td>5초 뒤 접수, 서버 안 대기열에서 분석 완료</td><td>로컬·운영</td></tr>
+<tr><td>JAR 크기</td><td class="n">71.2MB</td><td class="n">83.9MB</td><td>로컬</td></tr>
+<tr><td>추가 비용</td><td>0원</td><td>0원(Aiven 무료 플랜)</td><td>–</td></tr>
+</table>
+<div class="cv"><b>이력서용 한 줄:</b> 영상 분석 시작을 교체 가능한 대기열로 모으고 운영을 Aiven 무료 Kafka로 옮겨, 처리 중 재시작에도 작업을 다시 받아 끝내게 했다. 브로커 장애 때는 서버 안 대기열로 자동 전환해 공유가 막히지 않는다(추가 비용 0원).</div>
+
+<h2>2. 왜 도입했나</h2>
+<ul>
+<li><b>문제:</b> 서버 안 대기열은 메모리에만 있다. 배포·재시작 때 기다리던 영상 분석이 사라지고, 15분 뒤에야 실패로 정리됐다(#43).</li>
+<li><b>비용 0원 원칙(ADR 0002):</b> 유료 관리형 대기열은 쓰지 않는다.</li>
+<li><b>브로커를 운영 서버에 두지 않은 이유:</b> 로컬에서 힙을 256MB로 줄여도 Kafka 컨테이너가 297~327MB를 썼다. 운영 서버는 956MB인데 앱이 이미 약 400MB를 쓴다.</li>
+<li><b>Aiven 무료 플랜:</b> 토픽 5개, 토픽당 파티션 2개, 125KiB/s. 이 서비스 규모에 충분하다. 로컬 Docker로 "교체 가능한 구조"만 보이는 대신, 운영에서 실제로 돌려 본 경험을 남기려고 운영에 연결했다.</li>
+<li><b>검토한 다른 방법:</b> DB 테이블 대기열(<code>FOR UPDATE SKIP LOCKED</code>)은 추가 인프라 없이 재시작에 강하지만 Kafka 구조를 보이는 쪽을 골랐다. 브로커를 같은 서버에 띄우려면 서버를 키워야 해서(유료) 기각했다.</li>
+</ul>
+
+<h2>3. 전후 구조</h2>
+<p>분석 시작을 <code>ShareJobQueue.enqueue(jobId)</code> 하나로 모으고, 설정 <code>APP_QUEUE_TYPE</code> 하나로 구현을 고른다.</p>
+<table>
+<tr><th>단계</th><th>전: 서버 안 대기열(async)</th><th>후: Kafka(운영)</th></tr>
+<tr><td>접수</td><td>공유 API가 스레드 풀에 바로 넣음</td><td>토픽 <code>trova.share-jobs</code>(파티션 2, 값 = 작업 id)로 보냄</td></tr>
+<tr><td>처리</td><td>서버 안 <code>pipelineTaskExecutor</code></td><td>리스너가 동시 2건, 한 번에 1건씩</td></tr>
+<tr><td>끝낼 때</td><td>기록 없음</td><td>분석이 끝난 뒤 오프셋 커밋</td></tr>
+<tr><td>서버 재시작</td><td>대기 작업 사라짐</td><td>커밋 안 된 작업을 다시 받음</td></tr>
+<tr><td>중복 방지</td><td>해당 없음</td><td>끝났거나 지워진 작업은 건너뜀. 기본 재처리 9회는 끔(Gemini를 다시 부르지 않게)</td></tr>
+<tr><td>브로커 장애</td><td>해당 없음</td><td>5초 기다린 뒤 서버 안 대기열로 넘김. 1분 동안 Kafka 건너뜀</td></tr>
+<tr><td>지표</td><td>없음</td><td>경로별 대기 <code>trova_queue_wait{path}</code>, 넘긴 횟수 <code>trova.queue.fallback</code>, Grafana 패널</td></tr>
+</table>
+
+<h2>4. 성능 측정</h2>
+<p>Kafka는 처리를 빠르게 하지 않았다. 분석 시작까지 약 0.2초가 더 걸리고, 분석 자체는 Gemini 응답 시간이 대부분이라 차이를 가리지 못했다.</p>
+<h3>운영 비교 (2026-11-01, Oracle E2.1.Micro + Aiven, 영상 3종 × 경로별 2회, 워밍업 제외 각 6건, 15/15건 성공)</h3>
+<table>
+<tr><th>지표(중앙값)</th><th>서버 안 대기열</th><th>Kafka</th><th>차이·해석</th></tr>
+<tr><td>작업 생성 → 분석 시작</td><td class="n">234.5ms</td><td class="n">440.0ms</td><td>+205.5ms. 같은 영상끼리 짝지은 차이 중앙값 177.5ms(81~1,309ms)</td></tr>
+<tr><td>공유 HTTP 응답</td><td class="n">388.1ms</td><td class="n">636.4ms</td><td>+248.3ms</td></tr>
+<tr><td>분석 시작 → 저장 완료</td><td class="n">11.69초</td><td class="n">12.06초</td><td>Gemini 응답 흔들림 안</td></tr>
+<tr><td>작업 생성 → 저장 완료</td><td class="n">11.92초</td><td class="n">12.76초</td><td>검증 단계 실행 횟수가 달라(2회 대 3회) 대기열만의 효과로 보지 않음</td></tr>
+<tr><td>관찰 시점 java RSS</td><td class="n">320.4MiB</td><td class="n">300.6MiB</td><td>메모리 통제 안 함. 예전 소표본은 반대 방향</td></tr>
+</table>
+<h3>전달 비용만 따로 (로컬, 내장 Kafka, 각 20회)</h3>
+<p>대기열에 넣고 처리 메서드에 들어가기까지 중앙값 0.055ms → 6.63ms. DB·Gemini·네트워크를 뺀 순수 전달 비용이다.</p>
+<h3>자원 (로컬, -Xmx384m, 각 2회)</h3>
+<table>
+<tr><th>항목</th><th>기준</th><th>Kafka 모드</th></tr>
+<tr><td>JAR</td><td class="n">71.2MB</td><td>83.9MB(+12.8MB). 압축 라이브러리 zstd·snappy를 빼기 전에는 93.6MB</td></tr>
+<tr><td>시작 20초 뒤 non-heap</td><td class="n">138MB</td><td>152MB(+14MB)</td></tr>
+<tr><td>RSS</td><td class="n">386 / 414MB</td><td>408 / 410MB(흔들림 안)</td></tr>
+</table>
+<h3>장애 대응 실측</h3>
+<table>
+<tr><th>상황</th><th>고치기 전</th><th>고친 뒤</th><th>환경</th></tr>
+<tr><td>브로커가 꺼진 뒤 공유</td><td>Kafka 기본 설정이면 61초 뒤 503(<code>max.block.ms</code> 60초)</td><td>5초 뒤 202 접수 → 서버 안 대기열에서 분석 완료</td><td>로컬</td></tr>
+<tr><td>처리 중 <code>kill -9</code> 후 재시작</td><td>(서버 안 대기열) 작업 사라짐</td><td>약 37초 뒤 다시 받아 완료</td><td>로컬</td></tr>
+<tr><td>같은 작업이 두 경로로 들어옴</td><td>중복 실행 가능(#261 재현)</td><td>실행 1회·저장 1개(#263)</td><td>로컬, 실제 Kafka·별도 JVM</td></tr>
+</table>
+
+<h2>5. 운영에서 겪은 문제와 해결</h2>
+<table>
+<tr><th>문제</th><th>발견</th><th>해결</th></tr>
+<tr><td>브로커가 꺼지면 공유가 1분 동안 멈춤</td><td>로컬에서 브로커를 끄니 61초 뒤 503</td><td>보내기 대기를 5초로 줄이고, 실패하면 서버 안 대기열로 넘김. 1분 동안 Kafka 건너뛰기(#246)</td></tr>
+<tr><td>Kafka 확인이 늦으면 같은 작업이 두 경로로 들어올 수 있음</td><td>확인 지연 시나리오를 로컬에서 재현(#261)</td><td>서버 한 대 안에서 같은 작업은 한 번만 실행, 재시작 복구는 유지(#263)</td></tr>
+<tr><td>재시작 뒤 첫 공유가 느림</td><td>운영 첫 공유 대기 3.9초, 연결이 열린 뒤 1.2초</td><td>연결을 새로 여는 비용이라 그대로 둠. 경로별 대기 지표와 Grafana 패널로 지켜봄(#250, #252)</td></tr>
+<tr><td>종료 뒤 다시 받기까지 약 37초</td><td>로컬 <code>kill -9</code> 실험</td><td>이전 소비자가 그룹에서 빠지는 시간(세션 제한 기본 45초)이라 그대로 둠</td></tr>
+<tr><td>브로커 전체가 멈추면 오프셋이 초기화됨</td><td>Aiven 전원 중단 뒤 관측</td><td>무손실이라고 말하지 않음. 15분 뒤 실패 정리는 남겨 둠</td></tr>
+</table>
+
+<h2>6. 결정과 한계, 남은 일</h2>
+<p>운영은 Kafka를 그대로 쓴다(ADR 0021). 사용자 약 12명 규모에서 처리량 이득은 없다. 얻는 것은 재시작에 강한 처리와, 서버를 늘릴 때 설정만 바꾸면 되는 구조다.</p>
+<ul>
+<li><b>한계:</b> 외부 의존이 하나 늘었다(Aiven). 무료 플랜은 오래 안 쓰면 꺼진다는 기록이 있지만 공식으로 확인하지 못했다. 꺼져도 자동 넘기기로 공유는 막히지 않는다.</li>
+<li><b>한계:</b> 중복 실행 방지는 서버 한 대 안에서만 보장한다.</li>
+<li><b>한계:</b> 비교는 낮은 부하에서 영상 3종으로만 했다. 실제 트래픽의 실패율·처리량으로 일반화하지 않는다.</li>
+<li><b>남은 일:</b> 무료 Oracle A1(2 OCPU·12GB)을 확보하면 브로커를 그쪽으로 옮길지 다시 본다.</li>
+<li><b>남은 일:</b> 운영 공유가 쌓이면 경로별 대기 중앙값과 1초 안에 시작한 비율을 기록한다.</li>
+</ul>
+<p class="src">근거(레포): docs/adr/0021-share-job-queue-kafka-optional.md · docs/bench/expanded-system-comparison-20261101.md · docs/bench/system-comparison-summary-20261101.md · docs/bench/spring-ai-kafka-performance.md · 원자료 docs/bench/results/production-queue-expanded-20261101.json</p>
+</body></html>
