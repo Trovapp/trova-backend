@@ -5,17 +5,18 @@
 결정 배경은 [ADR 0039](../../docs/adr/0039-direct-otlp-metrics-and-external-health-check.md)(지표 직접 전송·외부 헬스 체크),
 [ADR 0041](../../docs/adr/0041-grafana-cloud-alert-rules-and-routing.md)(경보 기준·알림 정책), 대응은 [docs/runbooks](../../docs/runbooks/README.md).
 
-받은 시점: 2026-11-11 KST — 경보 정비·Runbook 링크 추가 뒤, `trova-essentials`는 version 3(패널 20·21 범례·쿼리 수정 뒤).
+받은 시점: 2026-11-11 KST 오후 — 서버 메모리 지표(`host_*`, #379) 배포와 r23 측정 뒤. `trova-essentials`는 version 5(읽는 법 안내, CPU steal·iowait, 서버 여유 메모리·스왑·PSI 패널 추가), 경보 그룹 `trova-host` 추가.
 
 | 파일 | Cloud 위치 | 내용 |
 |---|---|---|
-| `dashboards/trova-essentials.json` | 대시보드 "Trova 필수 모니터링" | 요약 5개 + 시스템·JVM·애플리케이션·비즈니스. 평소 보는 화면, 경보 링크가 여기로 온다 |
+| `dashboards/trova-essentials.json` | 대시보드 "Trova 필수 모니터링" | 요약 5개 + 시스템(CPU·메모리·스왑·PSI)·JVM·애플리케이션·비즈니스. 평소 보는 화면, 경보 링크가 여기로 온다 |
 | `dashboards/trova-operations.json` | "Trova 운영 모니터링" | 예전 운영 화면(11개 패널, 지표 이름은 직접 전송과 같아 그대로 나옴) |
 | `dashboards/trova-logs.json` | "Trova 운영 로그" | Loki 로그. alloy를 평소 꺼 두므로 대부분 비어 있음 |
 | `dashboards/trova-traces.json` | "Trova 요청 추적" | Tempo 추적. 위와 같은 이유로 대부분 비어 있음 |
 | `alerting/rules-trova-http.json` | 경보 그룹 `trova-http` | HighHttp5xxErrorRate(critical), HighHttpLatencyP95(warning) |
 | `alerting/rules-trova-cloud-logs.json` | `trova-cloud-logs` | TrovaApplicationErrorLogs(warning, `logback_events_total` 기준) |
 | `alerting/rules-trova-cloud-availability.json` | `trova-cloud-availability` | TrovaCloudScrapeUnavailable(warning) |
+| `alerting/rules-trova-host.json` | `trova-host` | HighMemoryPressure(warning, PSI memory full 5분 > 20%, 2분 지속) — 기준 근거는 ADR 0042·`docs/runbooks/memory-pressure.md`(PR #381) |
 | `alerting/notification-policies.json` | 알림 정책 | 묶음·반복 주기(critical 1시간, warning 4시간) |
 | `alerting/contact-points.json` | 연락처 `trova-slack-alerts` | Slack. **webhook 주소는 `[REDACTED]`** — 복구할 때 Slack 앱에서 다시 넣는다 |
 | `alerting/templates.json`, `trova.slack.tmpl` | 알림 템플릿 `trova.slack` | Slack 메시지 틀(같은 내용, `.tmpl`은 읽기용) |

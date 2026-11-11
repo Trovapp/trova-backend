@@ -15,6 +15,22 @@
       "type": "row"
     },
     {
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 28,
+      "options": {
+        "content": "**읽는 법:** **서버 응답(헬스 체크)과 여유 메모리는 낮으면 나쁘고, 나머지 대부분은 높으면 나쁘다.** 초당 요청 수·java 메모리(RSS)는 좋고 나쁨이 없고, **갑자기 변하거나 계속 오르기만 하면** 확인한다.",
+        "mode": "markdown"
+      },
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "grafanacloud-prom"
@@ -47,7 +63,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 1
+        "y": 3
       },
       "id": 2,
       "options": {
@@ -112,7 +128,7 @@
         "h": 4,
         "w": 5,
         "x": 4,
-        "y": 1
+        "y": 3
       },
       "id": 3,
       "options": {
@@ -177,7 +193,7 @@
         "h": 4,
         "w": 5,
         "x": 9,
-        "y": 1
+        "y": 3
       },
       "id": 4,
       "options": {
@@ -241,7 +257,7 @@
         "h": 4,
         "w": 5,
         "x": 14,
-        "y": 1
+        "y": 3
       },
       "id": 5,
       "options": {
@@ -306,7 +322,7 @@
         "h": 4,
         "w": 5,
         "x": 19,
-        "y": 1
+        "y": 3
       },
       "id": 6,
       "options": {
@@ -339,7 +355,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 7
       },
       "id": 7,
       "panels": [],
@@ -380,7 +396,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 6
+        "y": 8
       },
       "id": 8,
       "options": {
@@ -448,7 +464,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 6
+        "y": 8
       },
       "id": 9,
       "options": {
@@ -513,7 +529,7 @@
         "h": 7,
         "w": 4,
         "x": 16,
-        "y": 6
+        "y": 8
       },
       "id": 10,
       "options": {
@@ -540,13 +556,166 @@
       "type": "gauge"
     },
     {
-      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "steal: 무료 서버에서 다른 사용자에게 빼앗긴 CPU. iowait: 디스크(스왑 포함)를 기다린 CPU. 높으면 나쁨.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
-          "custom": {},
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 20,
+        "y": 8
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "100*sum(rate(host_cpu_time_seconds_total{job=\"trova-prod\",mode=\"steal\"}[5m]))/2",
+          "legendFormat": "steal",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "100*sum(rate(host_cpu_time_seconds_total{job=\"trova-prod\",mode=\"iowait\"}[5m]))/2",
+          "legendFormat": "iowait",
+          "refId": "B"
+        }
+      ],
+      "title": "CPU steal·iowait",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "여유 메모리(available)는 낮으면 나쁨 — 2026-11 측정에서 무너질 때 43~66MiB, 조회만 50명일 때 최저 약 136MiB. java 실제 메모리(RSS)는 평소 약 410~500MiB, 계속 오르기만 하면 확인.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 15
+      },
+      "id": 29,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "host_memory_available_bytes{job=\"trova-prod\"}",
+          "legendFormat": "서버 여유(available)",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "host_process_memory_rss_bytes{job=\"trova-prod\"}",
+          "legendFormat": "java 실제(RSS)",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "host_swap_used_bytes{job=\"trova-prod\"}",
+          "legendFormat": "스왑 사용량",
+          "refId": "C"
+        }
+      ],
+      "title": "서버 여유 메모리·java 메모리",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "스왑 읽기(in)가 계속 높으면 메모리가 모자라 디스크에서 다시 읽는 중 — 느려짐의 직접 원인. 조회만 50명일 때 초당 약 40, 무너질 때 수백.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -562,18 +731,126 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 4,
-        "x": 20,
-        "y": 6
+        "w": 8,
+        "x": 8,
+        "y": 15
       },
-      "id": 11,
+      "id": 30,
       "options": {
-        "content": "**아직 수집 안 함**\n\n서버 메모리·스왑·PSI(메모리 대기)·CPU steal은 앱이 `/proc`를 읽어 보내도록 추가 예정(메모리 측정 후).\n\n그 전에는 서버에서 `free -m`, `cat /proc/pressure/memory`로 확인.",
-        "mode": "markdown"
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
       },
-      "targets": [],
-      "title": "서버 메모리·스왑·네트워크",
-      "type": "text"
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "sum(rate(host_swap_pages_total{job=\"trova-prod\",direction=\"in\"}[5m]))",
+          "legendFormat": "읽기(in)",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "sum(rate(host_swap_pages_total{job=\"trova-prod\",direction=\"out\"}[5m]))",
+          "legendFormat": "쓰기(out)",
+          "refId": "B"
+        }
+      ],
+      "title": "스왑 읽기·쓰기(초당 페이지)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "full: 모든 프로그램이 동시에 메모리를 기다린 시간 비율(서버가 사실상 멈춤). 빨간 선 20% = HighMemoryPressure 경보 기준. 평소 1~6%, 무너질 때 26~36%.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2,
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 20
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 15
+      },
+      "id": 31,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "100*sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\",resource=\"memory\",type=\"full\"}[5m]))",
+          "legendFormat": "메모리 full",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "100*sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\",resource=\"memory\",type=\"some\"}[5m]))",
+          "legendFormat": "메모리 some",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "100*sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\",resource=\"cpu\",type=\"some\"}[5m]))",
+          "legendFormat": "CPU some",
+          "refId": "C"
+        }
+      ],
+      "title": "PSI — 자원을 기다리며 멈춘 시간(5분 평균)",
+      "type": "timeseries"
     },
     {
       "collapsed": false,
@@ -581,7 +858,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 22
       },
       "id": 12,
       "panels": [],
@@ -620,7 +897,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 14
+        "y": 23
       },
       "id": 13,
       "options": {
@@ -696,7 +973,7 @@
         "h": 7,
         "w": 5,
         "x": 8,
-        "y": 14
+        "y": 23
       },
       "id": 14,
       "options": {
@@ -754,7 +1031,7 @@
         "h": 7,
         "w": 6,
         "x": 13,
-        "y": 14
+        "y": 23
       },
       "id": 15,
       "options": {
@@ -821,7 +1098,7 @@
         "h": 7,
         "w": 5,
         "x": 19,
-        "y": 14
+        "y": 23
       },
       "id": 16,
       "options": {
@@ -862,7 +1139,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 30
       },
       "id": 17,
       "panels": [],
@@ -901,7 +1178,7 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 22
+        "y": 31
       },
       "id": 18,
       "options": {
@@ -959,7 +1236,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 22
+        "y": 31
       },
       "id": 19,
       "options": {
@@ -1026,7 +1303,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 22
+        "y": 31
       },
       "id": 20,
       "options": {
@@ -1102,7 +1379,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 22
+        "y": 31
       },
       "id": 21,
       "options": {
@@ -1178,7 +1455,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 38
       },
       "id": 22,
       "options": {
@@ -1210,7 +1487,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 46
       },
       "id": 23,
       "panels": [],
@@ -1246,7 +1523,7 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 38
+        "y": 47
       },
       "id": 24,
       "options": {
@@ -1307,7 +1584,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 38
+        "y": 47
       },
       "id": 25,
       "options": {
@@ -1385,7 +1662,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 38
+        "y": 47
       },
       "id": 26,
       "options": {
@@ -1443,7 +1720,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 38
+        "y": 47
       },
       "id": 27,
       "options": {
@@ -1483,5 +1760,5 @@
   "timezone": "browser",
   "title": "Trova 필수 모니터링",
   "uid": "trova-essentials",
-  "version": 3
+  "version": 5
 }
