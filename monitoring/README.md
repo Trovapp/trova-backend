@@ -98,6 +98,9 @@ Grafana 파일과 API 백업은 이 Mac의 `/tmp/trova-monitoring-305-backup`에
 
 ## 경보와 검증
 
+> 운영 경보(Slack으로 오는 것)는 Grafana Cloud에 있다 — 저장본 [grafana-cloud/](grafana-cloud/README.md), 기준 [ADR 0041](../docs/adr/0041-grafana-cloud-alert-rules-and-routing.md),
+> 대응 [docs/runbooks](../docs/runbooks/README.md). 아래는 로컬 Prometheus(docker)용 규칙이다.
+
 `TrovaProductionScrapeUnavailable`: 운영 수집 실패/대상 누락이 1분 지속되면 발생하고 복구되면 해제한다.
 이는 Prometheus의 경보 규칙이며 이메일/메신저 전송은 연결하지 않았다. Prometheus 자체가 꺼지면
 평가도 멈춘다. 24시간 감시나 알림 전달 검증을 완료했다고 표현하지 않는다.

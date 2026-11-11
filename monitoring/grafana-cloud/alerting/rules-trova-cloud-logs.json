@@ -1,0 +1,102 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "trova-cloud-logs",
+      "folder": "",
+      "interval": "1m",
+      "rules": [
+        {
+          "uid": "dg3ouxifq4g00e",
+          "title": "TrovaApplicationErrorLogs",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "editorMode": "code",
+                "expr": "sum(increase(logback_events_total{job=\"trova-prod\", level=\"error\"}[10m]))",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        2.5
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "KeepLast",
+          "for": "2m",
+          "annotations": {
+            "context": "로그 본문은 Grafana에 없습니다(Loki 수집 꺼짐, ADR 0039). 서버 journalctl -u trova-backend로 확인하세요.",
+            "current_value": "{{ with $values.A }}{{ printf \"%.0f\" .Value }}건{{ end }}",
+            "dashboard_url": "https://indigostork3365.grafana.net/d/trova-essentials",
+            "description": "HTTP 500 없이 백그라운드 작업만 실패한 경우도 잡습니다. 한두 건의 일시 오류(외부 API 시간 초과 등)로 울리지 않게 10분 3건 이상으로 정했습니다. 지표가 없으면 NoData → Normal(OK)이며, 지표 끊김은 TrovaCloudScrapeUnavailable이 맡습니다.",
+            "pending": "2분",
+            "runbook_url": "https://github.com/Trovapp/trova-backend/blob/main/docs/runbooks/application-error-logs.md",
+            "summary": "최근 10분 동안 앱 ERROR 로그가 3건 이상 기록됐습니다(logback_events_total 지표 기준).",
+            "threshold": "3건 이상",
+            "title": "앱 ERROR 로그 증가",
+            "value_label": "최근 10분 ERROR 로그",
+            "window": "최근 10분"
+          },
+          "labels": {
+            "environment": "production",
+            "service": "trova-backend",
+            "severity": "warning"
+          },
+          "isPaused": false
+        }
+      ]
+    }
+  ]
+}

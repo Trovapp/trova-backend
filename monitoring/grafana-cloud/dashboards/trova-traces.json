@@ -1,0 +1,107 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [
+    {
+      "title": "메트릭",
+      "type": "link",
+      "url": "https://indigostork3365.grafana.net/d/trova-operations"
+    },
+    {
+      "title": "로그",
+      "type": "link",
+      "url": "https://indigostork3365.grafana.net/d/trova-logs"
+    },
+    {
+      "title": "Tempo 검색",
+      "type": "link",
+      "url": "https://indigostork3365.grafana.net/explore?schemaVersion=1&panes=%7B%22A%22%3A%7B%22datasource%22%3A%22grafanacloud-traces%22%2C%22queries%22%3A%5B%7B%22refId%22%3A%22A%22%2C%22datasource%22%3A%7B%22type%22%3A%22tempo%22%2C%22uid%22%3A%22grafanacloud-traces%22%7D%2C%22queryType%22%3A%22traceql%22%2C%22query%22%3A%22%7B+resource.service.name+%3D+%5C%22trova-backend%5C%22+%7D%22%2C%22limit%22%3A20%2C%22tableType%22%3A%22traces%22%7D%5D%2C%22range%22%3A%7B%22from%22%3A%22now-1h%22%2C%22to%22%3A%22now%22%7D%7D%7D&orgId=1"
+    }
+  ],
+  "panels": [
+    {
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "한 요청 안에서 HTTP·DB·외부 호출이 얼마나 걸렸는지 보는 화면입니다. 기본 신규 트레이스 샘플링은 **10%**입니다. 모든 요청이나 Python 내부 단계가 기록되는 것은 아닙니다.\n\n[Tempo Explore에서 검색](https://indigostork3365.grafana.net/explore?schemaVersion=1&panes=%7B%22A%22%3A%7B%22datasource%22%3A%22grafanacloud-traces%22%2C%22queries%22%3A%5B%7B%22refId%22%3A%22A%22%2C%22datasource%22%3A%7B%22type%22%3A%22tempo%22%2C%22uid%22%3A%22grafanacloud-traces%22%7D%2C%22queryType%22%3A%22traceql%22%2C%22query%22%3A%22%7B+resource.service.name+%3D+%5C%22trova-backend%5C%22+%7D%22%2C%22limit%22%3A20%2C%22tableType%22%3A%22traces%22%7D%5D%2C%22range%22%3A%7B%22from%22%3A%22now-1h%22%2C%22to%22%3A%22now%22%7D%7D%7D&orgId=1) · [검증용 상태 확인 요청의 5개 span 보기](https://indigostork3365.grafana.net/explore?schemaVersion=1&panes=%7B%22A%22%3A%7B%22datasource%22%3A%22grafanacloud-traces%22%2C%22queries%22%3A%5B%7B%22refId%22%3A%22A%22%2C%22datasource%22%3A%7B%22type%22%3A%22tempo%22%2C%22uid%22%3A%22grafanacloud-traces%22%7D%2C%22queryType%22%3A%22traceId%22%2C%22query%22%3A%224fc5ff2caed94022bfc0d1688520a1b1%22%7D%5D%2C%22range%22%3A%7B%22from%22%3A%22now-1h%22%2C%22to%22%3A%22now%22%7D%7D%7D&orgId=1)\n\n아래 목록의 Trace ID를 열거나 위 링크로 들어가 실행 시간 막대를 확인하세요. 검증용 상태 확인 요청의 시간은 실제 사용자 API 성능을 대표하지 않습니다.",
+        "mode": "markdown"
+      },
+      "title": "요청 추적 보는 법",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "tempo",
+        "uid": "grafanacloud-traces"
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "tempo",
+            "uid": "grafanacloud-traces"
+          },
+          "limit": 20,
+          "query": "{ resource.service.name = \"trova-backend\" }",
+          "queryType": "traceql",
+          "refId": "A",
+          "tableType": "traces"
+        }
+      ],
+      "title": "최근 트레이스 — trova-backend",
+      "type": "table"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 42,
+  "tags": [
+    "trova",
+    "production",
+    "traces"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "Asia/Seoul",
+  "title": "Trova 요청 추적",
+  "uid": "trova-traces",
+  "version": 1,
+  "weekStart": ""
+}

@@ -1,0 +1,102 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "trova-cloud-availability",
+      "folder": "",
+      "interval": "1m",
+      "rules": [
+        {
+          "uid": "fg3ljpj1nelmoe",
+          "title": "TrovaCloudScrapeUnavailable",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "editorMode": "code",
+                "expr": "absent_over_time(process_cpu_usage{job=\"trova-prod\"}[5m]) or vector(0)",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0.5
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "KeepLast",
+          "for": "2m",
+          "annotations": {
+            "context": "이 동안 다른 지표 경보(5xx, p95, ERROR 로그)는 데이터가 없어 판단하지 못합니다. 서버 다운 여부는 Synthetic trova-health를 같이 보세요.",
+            "current_value": "{{ with $values.A }}{{ if gt .Value 0.5 }}없음{{ else }}있음{{ end }}{{ end }}",
+            "dashboard_url": "https://indigostork3365.grafana.net/d/trova-essentials",
+            "description": "#358, ADR 0039. alloy 없이 앱이 직접 전송합니다. 일시적인 전송 지연으로 울리지 않게 지속 조건 2분을 더했습니다.",
+            "pending": "2분",
+            "runbook_url": "https://github.com/Trovapp/trova-backend/blob/main/docs/runbooks/cloud-scrape-unavailable.md",
+            "summary": "서버가 OTLP로 직접 보내는 지표(process_cpu_usage)가 5분 넘게 들어오지 않고, 그 상태가 2분 더 이어졌습니다.",
+            "threshold": "5분 동안 표본 0개",
+            "title": "서버 지표 수신 중단",
+            "value_label": "최근 5분 지표 수신",
+            "window": "최근 5분"
+          },
+          "labels": {
+            "environment": "production",
+            "service": "trova-backend",
+            "severity": "warning"
+          },
+          "isPaused": false
+        }
+      ]
+    }
+  ]
+}
