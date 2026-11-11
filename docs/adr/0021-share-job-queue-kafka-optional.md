@@ -39,3 +39,18 @@
 - 기본(async)에서는 Kafka에 연결하지 않는다. Kafka 모드는 브로커가 꺼져 있어도 서버가 뜬다.
 - 브로커 꺼짐: 넘기기 전에는 공유가 6초 뒤 503으로 끝났다. 넘긴 뒤에는 5초 뒤 202로 접수되고, 서버 안 대기열에서 분석이 끝까지 돌았다(DONE).
 - 처리 중 강제 종료(`kill -9`) 뒤 다시 띄우면, 커밋되지 않은 메시지를 다시 받아 같은 작업을 끝까지 처리했다. 다시 받기까지 약 37초 걸렸는데, 이전 소비자가 그룹에서 빠지는 시간(세션 제한 기본 45초)으로 보인다.
+
+## 확장: 자동 일정 초안도 같은 대기열 구조로 (2026-11-11, #390)
+- 근거: 사용자 "카프카 넣을곳이나 카프카를 위해 넣을 기능들 있을까?" → 후보 중 1번(자동 초안) "1".
+- 문제: 공유 → 영상 분석은 Kafka라 재시작해도 다시 받지만, 분석이 끝난 뒤 자동 초안(`AutoDraftService` → `TripPlannerService.process`)은
+  서버 안 `planTaskExecutor`였다. 재시작하면 초안이 사라지고 15분 뒤 `OrphanedJobRecoveryService`가 실패로 정리했다.
+- 결정:
+  - 자동 초안 시작은 `DraftJobQueue.enqueue(draftId)`로 넣는다. 구현은 같은 설정 `app.queue.type`으로 고른다(async 기본, 운영 kafka).
+  - 토픽 `trova.draft-jobs`(파티션 2, Aiven 무료 토픽 5개 중 2개째), 그룹 `trova-draft-jobs`, 동시 처리 1(`app.queue.kafka.draft-concurrency`).
+  - 보내기 실패 규칙은 공유 대기열과 같다 — 5초 기다린 뒤 서버 안 대기열로 넘기고(지표 `trova.queue.draft.fallback`), 1분 동안 Kafka 건너뜀.
+  - 다시 받은 초안은 `TripPlannerService.processNow`가 상태를 보고, PENDING·PROCESSING만 만든다. 끝났거나(READY·APPROVED·FAILED)
+    답을 기다리는(NEEDS_INPUT) 초안은 Gemini를 부르지 않고 건너뛴다. 같은 초안은 서버 한 대 안에서 한 번에 하나만 돈다.
+  - 사용자가 직접 만든 초안(`TripDraftController`)과 일정 재구성은 아직 서버 안 대기열이다 — 화면에서 기다리는 흐름이라 다음 단계로 둔다.
+- 확인(로컬, 내장 Kafka): 보내기 → 리스너 → 초안 만들기, 받은 소비자가 커밋 없이 닫힌 뒤 새 리스너가 같은 초안을 다시 받음,
+  끝난 초안·답 기다리는 초안 건너뛰기, 처리 중 죽은(PROCESSING) 초안 이어서 만들기. 운영 서버에서 재시작 실험은 하지 않았다.
+- 대가: Kafka 소비자 하나(스레드 1)가 더 붙는다. 초안이 토픽에서 15분 넘게 기다리면 예전처럼 실패로 정리된다.

@@ -21,6 +21,12 @@ public class KafkaQueueConfig {
         return TopicBuilder.name(KafkaShareJobQueue.TOPIC).partitions(2).replicas(replicas).build();
     }
 
+    // 일정 초안(#390). 동시 처리는 1이지만 무료 플랜 상한(2)에 맞춰 두면 나중에 설정만 바꿔 늘릴 수 있다.
+    @Bean
+    public NewTopic draftJobsTopic(@Value("${app.queue.kafka.replicas:1}") int replicas) {
+        return TopicBuilder.name(KafkaDraftJobQueue.TOPIC).partitions(2).replicas(replicas).build();
+    }
+
     /**
      * Spring Kafka 기본 오류 처리는 같은 메시지를 9번 더 돌린다. 분석은 실패를 작업 상태로 남기고 끝나므로 여기까지 오는 건
      * DB 오류 같은 경우뿐인데, 다시 돌리면 Gemini를 또 부를 수 있어 다시 돌리지 않고 로그만 남긴다(남은 작업은 OrphanedJobRecoveryService가 정리).
