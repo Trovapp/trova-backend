@@ -5,7 +5,7 @@
 결정 배경은 [ADR 0039](../../docs/adr/0039-direct-otlp-metrics-and-external-health-check.md)(지표 직접 전송·외부 헬스 체크),
 [ADR 0041](../../docs/adr/0041-grafana-cloud-alert-rules-and-routing.md)(경보 기준·알림 정책), 대응은 [docs/runbooks](../../docs/runbooks/README.md).
 
-받은 시점: 2026-11-11 KST 오후 — 서버 메모리 지표(`host_*`, #379) 배포와 r23 측정 뒤. `trova-essentials`는 version 5(읽는 법 안내, CPU steal·iowait, 서버 여유 메모리·스왑·PSI 패널 추가), 경보 그룹 `trova-host` 추가.
+받은 시점: 2026-11-12 KST 새벽(#394) — `trova-essentials` version 7(대기열 — Kafka 줄: 처리 못 한 메시지·넘김·실패 작업), 경보 그룹 `trova-kafka` 추가. 그 전: 2026-11-11 KST 오후 — 서버 메모리 지표(`host_*`, #379) 배포와 r23 측정 뒤. `trova-essentials`는 version 5(읽는 법 안내, CPU steal·iowait, 서버 여유 메모리·스왑·PSI 패널 추가), 경보 그룹 `trova-host` 추가.
 
 | 파일 | Cloud 위치 | 내용 |
 |---|---|---|
@@ -17,6 +17,7 @@
 | `alerting/rules-trova-cloud-logs.json` | `trova-cloud-logs` | TrovaApplicationErrorLogs(warning, `logback_events_total` 기준) |
 | `alerting/rules-trova-cloud-availability.json` | `trova-cloud-availability` | TrovaCloudScrapeUnavailable(warning) |
 | `alerting/rules-trova-host.json` | `trova-host` | HighMemoryPressure(warning, PSI memory full 5분 > 20%, 2분 지속) — 기준 근거는 ADR 0042·`docs/runbooks/memory-pressure.md`(PR #381) |
+| `alerting/rules-trova-kafka.json` | `trova-kafka` | TrovaKafkaConsumerLag(warning, 토픽별 처리 못 한 메시지 > 3개 15분), TrovaKafkaDeadLetter(warning, 실패 작업 토픽으로 보낸 메시지 15분 > 0) — `docs/runbooks/kafka-queue.md` |
 | `alerting/notification-policies.json` | 알림 정책 | 묶음·반복 주기(critical 1시간, warning 4시간) |
 | `alerting/contact-points.json` | 연락처 `trova-slack-alerts` | Slack. **webhook 주소는 `[REDACTED]`** — 복구할 때 Slack 앱에서 다시 넣는다 |
 | `alerting/templates.json`, `trova.slack.tmpl` | 알림 템플릿 `trova.slack` | Slack 메시지 틀(같은 내용, `.tmpl`은 읽기용) |

@@ -1745,6 +1745,135 @@
       ],
       "title": "외부 API 호출 수(1시간)",
       "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 54
+      },
+      "id": 32,
+      "panels": [],
+      "title": "대기열 — Kafka(영상 분석·일정 초안)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "Kafka 토픽에 쌓였지만 아직 처리하지 못한 메시지 수(소비 지연). 높으면 나쁨. 평소 0, 경보는 3개 초과가 15분.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "axisSoftMax": 5,
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 55
+      },
+      "id": 33,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "sum by (topic) (kafka_consumer_fetch_manager_records_lag{job=\"trova-prod\", topic=~\"trova\\\\.[a-z-]+\"})",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ],
+      "title": "처리 못 한 메시지(토픽별)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "브로커가 받지 못해 서버 안 대기열로 넘긴 수, 리스너가 처리하지 못해 실패 작업 토픽으로 보낸 수. 둘 다 평소 0이고 높으면 나쁨.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "axisSoftMax": 5,
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 55
+      },
+      "id": 34,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "sum(increase(trova_queue_fallback_total{job=\"trova-prod\"}[15m]))",
+          "legendFormat": "넘김: 영상 분석",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "sum(increase(trova_queue_draft_fallback_total{job=\"trova-prod\"}[15m]))",
+          "legendFormat": "넘김: 일정 초안",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "sum by (topic) (increase(trova_queue_dead_letter_total{job=\"trova-prod\"}[15m]))",
+          "legendFormat": "실패 작업: {{topic}}",
+          "refId": "C"
+        }
+      ],
+      "title": "서버 안 대기열로 넘김·실패 작업(15분)",
+      "type": "timeseries"
     }
   ],
   "refresh": "1m",
@@ -1760,5 +1889,5 @@
   "timezone": "browser",
   "title": "Trova 필수 모니터링",
   "uid": "trova-essentials",
-  "version": 5
+  "version": 7
 }

@@ -1,0 +1,188 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "trova-kafka",
+      "folder": "",
+      "interval": "1m",
+      "rules": [
+        {
+          "uid": "fg3zo9rr8jthcb",
+          "title": "TrovaKafkaConsumerLag",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "editorMode": "code",
+                "expr": "sum by (topic) (kafka_consumer_fetch_manager_records_lag{job=\"trova-prod\", topic=~\"trova\\\\.[a-z-]+\"})",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        3
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "KeepLast",
+          "for": "15m",
+          "annotations": {
+            "current_value": "{{ with $values.A }}{{ printf \"%.0f\" .Value }}개{{ end }}",
+            "dashboard_url": "https://indigostork3365.grafana.net/d/trova-essentials",
+            "description": "영상 분석·일정 초안이 들어오는 속도를 처리가 못 따라가거나, 리스너가 한 작업에 멈춰 있다는 신호입니다. 공유 한도(사용자당 하루 20건)와 동시 처리(분석 2·초안 1)로는 평소 몇 분 안에 0으로 돌아옵니다. 서버가 아예 죽은 경우는 헬스 체크 경보가 맡습니다(그때는 이 지표가 나오지 않음).",
+            "pending": "15분",
+            "runbook_url": "https://github.com/Trovapp/trova-backend/blob/main/docs/runbooks/kafka-queue.md",
+            "summary": "{{ $labels.topic }} 토픽에서 아직 처리하지 못한 메시지가 3개를 넘었고, 그 상태가 15분 이어졌습니다.",
+            "threshold": "3개",
+            "title": "Kafka 대기 작업 쌓임",
+            "value_label": "처리 못 한 메시지",
+            "window": "지금"
+          },
+          "labels": {
+            "environment": "production",
+            "service": "trova-backend",
+            "severity": "warning"
+          },
+          "isPaused": false
+        },
+        {
+          "uid": "cg3zo9s1fmwaof",
+          "title": "TrovaKafkaDeadLetter",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "editorMode": "code",
+                "expr": "sum by (topic) (increase(trova_queue_dead_letter_total{job=\"trova-prod\"}[15m]))",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "KeepLast",
+          "annotations": {
+            "current_value": "{{ with $values.A }}{{ printf \"%.0f\" .Value }}건{{ end }}",
+            "dashboard_url": "https://indigostork3365.grafana.net/d/trova-essentials",
+            "description": "분석·초안 실패는 보통 작업 상태(FAILED)로 남고 여기까지 오지 않습니다. 이 경보는 DB 오류나 잘못된 메시지처럼 처리 자체가 깨진 경우입니다. 해당 작업은 다시 돌리지 않으며(Gemini 재호출 방지), 15분 뒤 실패로 정리됩니다. 서버 로그의 \"실패 작업 토픽으로\"를 먼저 보세요.",
+            "pending": "바로",
+            "runbook_url": "https://github.com/Trovapp/trova-backend/blob/main/docs/runbooks/kafka-queue.md",
+            "summary": "{{ $labels.topic }} 리스너가 처리하지 못한 메시지를 실패 작업 토픽(trova.dead-letters)으로 보냈습니다(최근 15분).",
+            "threshold": "0건 초과",
+            "title": "Kafka 실패 작업 발생",
+            "value_label": "실패 작업",
+            "window": "최근 15분"
+          },
+          "labels": {
+            "environment": "production",
+            "service": "trova-backend",
+            "severity": "warning"
+          },
+          "isPaused": false
+        }
+      ]
+    }
+  ]
+}
