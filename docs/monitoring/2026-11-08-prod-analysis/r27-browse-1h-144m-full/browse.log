@@ -1,0 +1,44 @@
+time="2026-11-11T20:17:30+09:00" level=warning msg="There were unknown fields in the options exported in the script" error="json: unknown field \"gracefulStop\""
+time="2026-11-11T20:17:41+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2371\": request timeout"
+time="2026-11-11T20:17:43+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2327\": request timeout"
+time="2026-11-11T20:17:47+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2331\": request timeout"
+time="2026-11-11T20:17:49+09:00" level=warning msg="Request Failed" error="request timeout"
+time="2026-11-11T20:17:50+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2350\": request timeout"
+time="2026-11-11T20:17:54+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2353\": request timeout"
+
+
+  █ TOTAL RESULTS 
+
+    CUSTOM
+    measured_errors.....................: 0.00%  4 out of 149172
+    measured_latency....................: avg=232.06ms med=143.05ms p(95)=585.62ms p(99)=1.19s    max=10s  
+      { name:/api/auth/me }.............: avg=160.15ms med=110.65ms p(95)=335.64ms p(99)=679.21ms max=3.88s
+      { name:/api/bookmarks }...........: avg=122.56ms med=78.41ms  p(95)=289.66ms p(99)=599.46ms max=4.38s
+      { name:/api/bookmarks/folders }...: avg=173.56ms med=113.7ms  p(95)=399.75ms p(99)=835.44ms max=8.84s
+      { name:/api/notifications }.......: avg=121.22ms med=77.2ms   p(95)=284.57ms p(99)=593.22ms max=3.2s 
+      { name:/api/places }..............: avg=186.66ms med=146.34ms p(95)=387.38ms p(99)=698.12ms max=9.19s
+      { name:/api/places/pending }......: avg=120.41ms med=76.3ms   p(95)=281.16ms p(99)=601.34ms max=4.81s
+      { name:/api/trips }...............: avg=209.34ms med=148.5ms  p(95)=436.73ms p(99)=870.34ms max=8.38s
+      { name:/api/trips/{id} }..........: avg=586.02ms med=464.45ms p(95)=1.17s    p(99)=1.94s    max=10s  
+      { name:/api/users/me }............: avg=158.42ms med=111.15ms p(95)=334.79ms p(99)=600.1ms  max=5.79s
+    measured_requests...................: 149172 40.409968/s
+
+    HTTP
+    http_req_duration...................: avg=234.77ms med=143.12ms p(95)=590.93ms p(99)=1.21s    max=10s  
+      { expected_response:true }........: avg=234.38ms med=143.12ms p(95)=590.62ms p(99)=1.21s    max=9.88s
+    http_req_failed.....................: 0.00%  6 out of 149328
+    http_reqs...........................: 149328 40.452227/s
+
+    EXECUTION
+    iteration_duration..................: avg=1.23s    med=1.14s    p(95)=1.59s    p(99)=2.22s    max=11.5s
+    iterations..........................: 149286 40.44085/s
+    vus.................................: 50     min=50          max=50
+    vus_max.............................: 50     min=50          max=50
+
+    NETWORK
+    data_received.......................: 993 MB 269 kB/s
+    data_sent...........................: 9.5 MB 2.6 kB/s
+
+
+
+time="2026-11-11T21:19:02+09:00" level=error msg="test run was aborted because k6 received a 'terminated' signal"
