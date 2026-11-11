@@ -2570,3 +2570,12 @@
 - 한 것: `docs/runbooks/high-http-5xx.md` — 장애 개요 → 최초 확인(필수 대시보드 순서) → 로그 분석(로그 수집기가 없어 서버 journalctl·오류 순간 기록) → 원인 6가지별 지표·로그·복구 → 복구(재시작·롤백은 사용자 승인 뒤) → 정상화 확인 → 사후 분석.
 - 확인: 문서 안 명령의 DB 표 이름(`processing_jobs`)·상태 값을 코드와 운영 읽기 전용 조회로 확인. 대시보드·경보 이름은 Grafana Cloud 실제 저장본 기준.
 - 남은 것: 서버 메모리·PSI 지표가 대시보드에 없어 4절 자원 확인은 서버 명령으로 한다(앱 `/proc` 게이지 추가 시 갱신). 다른 경보(p95·오류 로그·지표 끊김) Runbook은 아직 없음.
+
+## 2026-11-11 나머지 경보 Runbook 3개 (#375)
+
+- 범위: 사용자 선택 "3" — #373(5xx)에 이어 HighHttpLatencyP95·TrovaApplicationErrorLogs·TrovaCloudScrapeUnavailable Runbook과 목록(`docs/runbooks/README.md`).
+- 한 것: 경보 조건은 Grafana Cloud 실제 규칙(쿼리·for·NoData·annotations)을 API로 읽어 그대로 적었다. 공통 명령(자원 확인·재시작·롤백)은 5xx Runbook을 가리킨다.
+  - p95: 이 서버에서 가장 흔한 장애 모양(분석과 조회 겹침)이라 원인 표 첫 줄을 메모리 압박으로.
+  - ERROR 로그: Grafana에는 개수만 가므로 서버 journalctl로 본문 보기 → 로거 패키지별 원인 표.
+  - 지표 수신 중단: 헬스 체크(외부)로 "앱이 죽었나 / 보내기만 막혔나"부터 가른다.
+- 남은 것: 경보에 runbook_url 달기(머지 뒤 Grafana Cloud에서), 서버 메모리·PSI 지표가 생기면 자원 확인 절 갱신.
