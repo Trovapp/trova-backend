@@ -1,0 +1,58 @@
+time="2026-11-11T17:22:47+09:00" level=warning msg="There were unknown fields in the options exported in the script" error="json: unknown field \"gracefulStop\""
+time="2026-11-11T17:22:58+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2256\": request timeout"
+time="2026-11-11T17:22:59+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2271\": request timeout"
+time="2026-11-11T17:23:02+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2230\": request timeout"
+time="2026-11-11T17:23:02+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2269\": request timeout"
+time="2026-11-11T17:23:02+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2275\": request timeout"
+time="2026-11-11T17:23:02+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2231\": request timeout"
+time="2026-11-11T17:23:02+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2272\": request timeout"
+time="2026-11-11T17:23:03+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2269\": request timeout"
+time="2026-11-11T17:23:48+09:00" level=warning msg="Request Failed" error="request timeout"
+time="2026-11-11T17:23:49+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2257\": request timeout"
+time="2026-11-11T17:23:50+09:00" level=warning msg="Request Failed" error="request timeout"
+time="2026-11-11T17:23:50+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2273\": request timeout"
+time="2026-11-11T17:23:50+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2243\": request timeout"
+time="2026-11-11T17:23:51+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2233\": request timeout"
+time="2026-11-11T17:23:51+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2244\": request timeout"
+time="2026-11-11T17:23:51+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2235\": request timeout"
+time="2026-11-11T17:23:51+09:00" level=warning msg="Request Failed" error="request timeout"
+time="2026-11-11T17:23:51+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2230\": request timeout"
+time="2026-11-11T17:23:51+09:00" level=warning msg="Request Failed" error="request timeout"
+time="2026-11-11T17:23:51+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/notifications\": request timeout"
+time="2026-11-11T17:23:51+09:00" level=warning msg="Request Failed" error="request timeout"
+
+
+  █ TOTAL RESULTS 
+
+    CUSTOM
+    measured_errors.....................: 0.52%  18 out of 3407
+    measured_latency....................: avg=2.03s med=1.17s    p(95)=6.51s p(99)=9.23s  max=10s  
+      { name:/api/auth/me }.............: avg=1.52s med=790.97ms p(95)=5.9s  p(99)=8.23s  max=9.85s
+      { name:/api/bookmarks }...........: avg=1.43s med=804.05ms p(95)=5.33s p(99)=7.96s  max=8.6s 
+      { name:/api/bookmarks/folders }...: avg=2.02s med=1.37s    p(95)=5.99s p(99)=9.29s  max=9.86s
+      { name:/api/notifications }.......: avg=1.42s med=814ms    p(95)=5.01s p(99)=6.82s  max=10s  
+      { name:/api/places }..............: avg=1.39s med=814.67ms p(95)=5.14s p(99)=7.32s  max=10s  
+      { name:/api/places/pending }......: avg=1.28s med=718.43ms p(95)=4.2s  p(99)=6.92s  max=8.77s
+      { name:/api/trips }...............: avg=1.93s med=1.34s    p(95)=5.28s p(99)=8.63s  max=9.85s
+      { name:/api/trips/{id} }..........: avg=4.61s med=4.12s    p(95)=9.29s p(99)=10s    max=10s  
+      { name:/api/users/me }............: avg=1.46s med=946.64ms p(95)=4.41s p(99)=7.12s  max=8.2s 
+    measured_requests...................: 3407   51.519496/s
+
+    HTTP
+    http_req_duration...................: avg=2.01s med=1.22s    p(95)=6.22s p(99)=9.17s  max=10s  
+      { expected_response:true }........: avg=1.97s med=1.22s    p(95)=6.08s p(99)=8.65s  max=9.86s
+    http_req_failed.....................: 0.49%  21 out of 4261
+    http_reqs...........................: 4261   64.433394/s
+
+    EXECUTION
+    iteration_duration..................: avg=3.05s med=2.27s    p(95)=7.29s p(99)=10.17s max=11s  
+    iterations..........................: 4261   64.433394/s
+    vus.................................: 34     min=34         max=200
+    vus_max.............................: 200    min=200        max=200
+
+    NETWORK
+    data_received.......................: 28 MB  430 kB/s
+    data_sent...........................: 669 kB 10 kB/s
+
+
+
