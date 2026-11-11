@@ -35,7 +35,7 @@ Slack 알림의 "Runbook" 링크가 이 문서다. 위에서부터 순서대로 
 1. **한눈에 보기**: 서버 응답(헬스 체크)이 1인가, 5xx 오류율·p95가 언제부터 올랐나.
 2. **애플리케이션**: 초당 요청 수 — 요청이 갑자기 늘었나(부하) 그대로인가(코드·외부 문제). "API별 p95"에서 어떤 API인지.
 3. **JVM**: 힙 committed가 상한(144MiB) 가까이 붙었나, GC 멈춤이 0.5초를 자주 넘나.
-4. **시스템**: CPU·코어당 부하. (서버 메모리·스왑·PSI는 아직 대시보드에 없다 → 4-5에서 서버로 확인)
+4. **시스템**: CPU·코어당 부하, 서버 여유 메모리·스왑 읽기·PSI·CPU steal. PSI 메모리 full이 20%를 넘으면 [memory-pressure.md](memory-pressure.md)도 본다.
 5. **오류 로그·DB 연결**: ERROR 로그가 같이 늘었나, DB 연결 대기가 0이 아닌가.
 6. **최근 변경**: 최근 배포·설정 변경이 있었나.
    ```
@@ -74,7 +74,7 @@ ssh -i ~/.ssh/oracle_buildlog_vm ubuntu@193.123.161.217 'ls -t /var/log/trova-in
 ```
 ssh -i ~/.ssh/oracle_buildlog_vm ubuntu@193.123.161.217 'free -m; cat /proc/pressure/memory; uptime; ps -o pid,rss,etime,args -C java | cut -c1-120; sudo journalctl -u trova-backend --since "-30min" --no-pager | grep -ci OutOfMemory'
 ```
-- `/proc/pressure/memory`의 `full avg10`이 10% 이상이면 메모리 대기로 느려지는 중이다(2026-11 측정에서 무너질 때 20~35%).
+- 대시보드 "PSI" 그래프(5분 평균)에서 메모리 full이 20%를 넘으면 메모리 대기로 느려지는 중이다(2026-11 측정에서 멀쩡할 때 최대 21%, 무너질 때 26~36%). 서버의 `full avg10`은 최근 10초 값이라 더 크게 출렁인다.
 - 같은 VM에 safeKor 수집기가 있다. 그 비밀 파일은 열지 않는다.
 
 ## 5. 장애 복구
