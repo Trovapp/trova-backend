@@ -56,7 +56,7 @@ class TripReplanAdmissionTest {
         when(jobs.save(any())).thenReturn(saved);
         CurrentUserService users = mock(CurrentUserService.class);
         when(users.resolve(any())).thenReturn(user);
-        controller = new TripReplanController(users, trips, jobs, worker, quota);
+        controller = new TripReplanController(users, trips, jobs, worker::process, quota);
     }
 
     private Long submit() {

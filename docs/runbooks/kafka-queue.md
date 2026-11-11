@@ -4,7 +4,7 @@ Slack 알림의 "Runbook" 링크가 이 문서다. 운영에 영향을 주는 �
 
 - 대시보드: Grafana "Trova 필수 모니터링" 맨 아래 "대기열 — Kafka" 줄 — https://indigostork3365.grafana.net/d/trova-essentials
 - 서버 접속: `ssh -i ~/.ssh/oracle_buildlog_vm ubuntu@193.123.161.217` (systemd `trova-backend`)
-- 브로커: Aiven 무료 Kafka `kafka-trovapp`(토픽 5개·토픽당 파티션 2·125KiB/s). 콘솔은 사용자 계정
+- 브로커: Aiven 무료 Kafka `kafka-trovapp`(토픽 5개 중 4개 사용·토픽당 파티션 2·125KiB/s). 콘솔은 사용자 계정
 - 관련 결정: ADR 0021(대기열 구조·넘기기, 자동 초안 확장 #390, 실패 작업 토픽 #394)
 
 ## 1. 장애 개요
@@ -17,7 +17,8 @@ Slack 알림의 "Runbook" 링크가 이 문서다. 운영에 영향을 주는 �
 | 토픽 | 그룹 | 동시 처리 | 무엇 |
 |---|---|---|---|
 | `trova.share-jobs` | `trova-share-jobs` | 2 | 공유 → 영상 분석 |
-| `trova.draft-jobs` | `trova-draft-jobs` | 1 | 분석 완료 → 자동 일정 초안 |
+| `trova.draft-jobs` | `trova-draft-jobs` | 1 | 일정 초안(분석 뒤 자동 + 사용자가 직접 만든 것) |
+| `trova.replan-jobs` | `trova-replan-jobs` | 1 | 일정 재구성(비 예보 등으로 장소 바꾸기, #396) |
 | `trova.dead-letters` | (읽는 리스너 없음) | – | 위 두 리스너가 처리하지 못한 메시지. 헤더에 원래 토픽·예외 종류·메시지 |
 
 ```promql
@@ -43,7 +44,8 @@ sum by (topic) (increase(trova_queue_dead_letter_total{job="trova-prod"}[15m]))
 2. 처리 중인 작업이 있나(운영 DB는 읽기 전용 도구로만):
    ```
    echo "select status, current_stage, count(*), min(updated_at) from processing_jobs where status in ('PENDING','PROCESSING') group by 1,2;
-   select status, count(*), min(updated_at) from trip_drafts where status in ('PENDING','PROCESSING') group by 1;" \
+   select status, count(*), min(updated_at) from trip_drafts where status in ('PENDING','PROCESSING') group by 1;
+   select status, count(*), min(updated_at) from trip_replan_jobs where status in ('PENDING','PROCESSING') group by 1;" \
      | PROD_DB_ENV_FILE=<운영 DB 환경 파일> python3 monitoring/prod_readonly_psql.py
    ```
 3. 리스너 로그:

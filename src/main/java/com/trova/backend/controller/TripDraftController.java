@@ -4,6 +4,7 @@ import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.TripDraft;
 import com.trova.backend.entity.TripDraftStatus;
 import com.trova.backend.entity.User;
+import com.trova.backend.queue.DraftJobQueue;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.service.CurrentUserService;
@@ -35,16 +36,20 @@ public class TripDraftController {
     private final TripDraftApprovalService tripDraftApprovalService;
     private final ProcessingJobRepository processingJobRepository;
     private final TripService tripService;
+    // 초안 만들기는 대기열로(#396) — 운영은 Kafka라 만드는 중에 서버가 재시작돼도 다시 받아 끝까지 한다.
+    private final DraftJobQueue draftJobQueue;
 
     public TripDraftController(CurrentUserService currentUserService, TripPlannerService tripPlannerService,
                                TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService,
-                               ProcessingJobRepository processingJobRepository, TripService tripService) {
+                               ProcessingJobRepository processingJobRepository, TripService tripService,
+                               DraftJobQueue draftJobQueue) {
         this.currentUserService = currentUserService;
         this.tripPlannerService = tripPlannerService;
         this.tripDraftRepository = tripDraftRepository;
         this.tripDraftApprovalService = tripDraftApprovalService;
         this.processingJobRepository = processingJobRepository;
         this.tripService = tripService;
+        this.draftJobQueue = draftJobQueue;
     }
 
     /** choice: SPLIT(모든 영상, 지역별로 날 나누기) / ONLY(jobIds의 영상만). */
@@ -81,7 +86,7 @@ public class TripDraftController {
         return tripPlannerService.create(user, request == null ? null : request.jobIds(),
                         request == null ? null : request.message())
                 .<ResponseEntity<?>>map(draft -> {
-                    tripPlannerService.process(draft.getId());
+                    draftJobQueue.enqueue(draft.getId());
                     return ResponseEntity.status(HttpStatus.ACCEPTED)
                             .body(new CreateDraftResponse(draft.getId(), draft.getStatus().name()));
                 })
@@ -97,7 +102,7 @@ public class TripDraftController {
         return switch (outcome) {
             case OK -> {
                 // answer의 트랜잭션이 커밋된 뒤에 시작해야 처리 스레드가 바뀐 영상 목록을 읽는다.
-                tripPlannerService.process(id);
+                draftJobQueue.enqueue(id);
                 yield ResponseEntity.accepted().build();
             }
             case NOT_FOUND -> ResponseEntity.notFound().build();

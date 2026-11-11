@@ -103,4 +103,24 @@ class TripReplanJobLifecycleServiceIntegrationTest {
         assertThat(reloaded.getStatus()).isEqualTo(JobStatus.FAILED);
         assertThat(reloaded.getErrorMessage()).hasSize(2000).isEqualTo("x".repeat(2000));
     }
+
+    // #396 Kafka로 같은 작업을 다시 받을 수 있다 — 끝난 작업은 다시 시작하지 않는다.
+    @Test
+    void startProcessing은_끝난_작업이면_null이고_상태를_바꾸지_않는다() {
+        TripReplanJob job = newJob();
+        lifecycleService.markProcessing(job.getId());
+        lifecycleService.markDone(job.getId(), "{}");
+
+        assertThat(lifecycleService.startProcessing(job.getId())).isNull();
+        assertThat(tripReplanJobRepository.findById(job.getId()).orElseThrow().getStatus()).isEqualTo(JobStatus.DONE);
+    }
+
+    @Test
+    void startProcessing은_처리_중에_서버가_죽은_작업이면_이어서_시작한다() {
+        TripReplanJob job = newJob();
+        lifecycleService.markProcessing(job.getId());
+
+        assertThat(lifecycleService.startProcessing(job.getId())).isNotNull();
+        assertThat(lifecycleService.startProcessing(-1L)).as("지워진 작업").isNull();
+    }
 }
