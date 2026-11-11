@@ -1,0 +1,470 @@
+{
+  "submittedAt": 1794364288.0192268,
+  "allDoneAt": 1794365070.711952,
+  "drainS": 782.7,
+  "jobs": [
+    {
+      "id": 4456,
+      "status": "DONE",
+      "analysis": "DONE",
+      "created": 1794364301.06838,
+      "updated": 1794364516.966998,
+      "finished": 1794364516.966998,
+      "error": null
+    },
+    {
+      "id": 4457,
+      "status": "DONE",
+      "analysis": "DONE",
+      "created": 1794364315.967028,
+      "updated": 1794364873.163496,
+      "finished": 1794364873.163496,
+      "error": null
+    },
+    {
+      "id": 4458,
+      "status": "DONE",
+      "analysis": "DONE",
+      "created": 1794364318.273129,
+      "updated": 1794364643.479946,
+      "finished": 1794364643.479946,
+      "error": null
+    },
+    {
+      "id": 4459,
+      "status": "DONE",
+      "analysis": "DONE",
+      "created": 1794364321.373882,
+      "updated": 1794364955.667522,
+      "finished": 1794364955.667522,
+      "error": null
+    },
+    {
+      "id": 4460,
+      "status": "DONE",
+      "analysis": "DONE",
+      "created": 1794364324.071369,
+      "updated": 1794365058.61482,
+      "finished": 1794365058.61482,
+      "error": null
+    }
+  ],
+  "submitted": [
+    {
+      "user": 1,
+      "url": "https://www.instagram.com/reel/DeBanBWpxgq/",
+      "status": 202,
+      "jobId": 4456,
+      "alreadyAnalyzed": false,
+      "error": null
+    },
+    {
+      "user": 2,
+      "url": "https://www.instagram.com/reel/DTum25dgZEX/",
+      "status": 202,
+      "jobId": 4457,
+      "alreadyAnalyzed": false,
+      "error": null
+    },
+    {
+      "user": 3,
+      "url": "https://www.instagram.com/reel/DfWYZGAq7Ft/",
+      "status": 202,
+      "jobId": 4458,
+      "alreadyAnalyzed": false,
+      "error": null
+    },
+    {
+      "user": 4,
+      "url": "https://www.instagram.com/reel/DJ_ep7OyQJq/",
+      "status": 202,
+      "jobId": 4459,
+      "alreadyAnalyzed": false,
+      "error": null
+    },
+    {
+      "user": 5,
+      "url": "https://www.instagram.com/reel/DQRNtv2kvpJ/",
+      "status": 202,
+      "jobId": 4460,
+      "alreadyAnalyzed": false,
+      "error": null
+    }
+  ],
+  "apiCalls": [
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "jobId": 4456,
+      "success": true,
+      "latencyMs": 5988,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364505.868865,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "jobId": 4456,
+      "success": true,
+      "latencyMs": 10321,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364506.080245,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "jobId": 4456,
+      "success": true,
+      "latencyMs": 3321,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364513.487878,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "jobId": 4456,
+      "success": true,
+      "latencyMs": 397,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364514.867251,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 18203,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364542.383202,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "jobId": 4458,
+      "success": true,
+      "latencyMs": 3803,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364638.186855,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "jobId": 4458,
+      "success": true,
+      "latencyMs": 4486,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364638.998802,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "jobId": 4458,
+      "success": true,
+      "latencyMs": 694,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364641.669936,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 5997,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364652.87613,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "jobId": 4457,
+      "success": true,
+      "latencyMs": 6474,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364869.070242,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "jobId": 4457,
+      "success": true,
+      "latencyMs": 6134,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364869.365113,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search",
+      "jobId": 4457,
+      "success": true,
+      "latencyMs": 412,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364870.881374,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 5997,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364883.681533,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 9763,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364940.984816,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 6410,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364941.373382,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 609,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364942.987033,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 692,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364943.067681,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 702,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364943.069227,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 803,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364943.174628,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 790,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364943.18332,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 897,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364943.277964,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 196,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364943.468506,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 108,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364943.573764,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 100,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364943.780857,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 98,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364944.37429,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 87,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364944.76449,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 101,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794364944.969142,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "verify_places",
+      "jobId": 4459,
+      "success": true,
+      "latencyMs": 5105,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364954.078456,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 1612,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794364960.383997,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.collect",
+      "jobId": 4460,
+      "success": true,
+      "latencyMs": 4292,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794365052.589347,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "extract_places.filter",
+      "jobId": 4460,
+      "success": true,
+      "latencyMs": 3046,
+      "attempts": 1,
+      "waitedMs": 0,
+      "at": 1794365052.968041,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "address_search",
+      "jobId": 4460,
+      "success": true,
+      "latencyMs": 1200,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794365055.076019,
+      "error": null
+    },
+    {
+      "provider": "kakao",
+      "operation": "keyword_search_near",
+      "jobId": 4460,
+      "success": true,
+      "latencyMs": 120,
+      "attempts": null,
+      "waitedMs": null,
+      "at": 1794365057.184081,
+      "error": null
+    },
+    {
+      "provider": "gemini",
+      "operation": "trip-plan.draft",
+      "jobId": null,
+      "success": true,
+      "latencyMs": 12481,
+      "attempts": 3,
+      "waitedMs": 6034,
+      "at": 1794365071.935087,
+      "error": null
+    }
+  ]
+}

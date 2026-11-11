@@ -43,8 +43,8 @@ public class StartupWarmup {
     static final List<String> PATHS = List.of(
             "/api/auth/me", "/api/bookmarks", "/api/trips", "/api/trip-drafts/auto", "/api/places",
             "/api/places/pending", "/api/notifications", "/api/bookmarks/folders");
-    // 앱처럼 동시에·5회로 늘린 적이 있다(#363). 첫 화면 효과는 없었고, 운영에서 java가 시작부터 약 45MiB 커져
-    // 영상 분석과 조회가 겹칠 때 조회 오류 31.8%·47.4%(끄면 2~4%)로 무너져 순서대로·2회로 되돌렸다(#368, 2026-11-10).
+    // 앱처럼 동시에·5회로 늘린 적이 있다(#363). 첫 화면 효과가 없어 순서대로·2회로 되돌렸다(#368).
+    // 영상 분석 중 조회가 무너지는 것도 예열 탓으로 봤지만, 예열을 끈 운영 측정에서도 똑같이 무너져 원인이 아니었다(#370, 2026-11-11).
     static final int ROUNDS = 2;
 
     private final UserRepository userRepository;
