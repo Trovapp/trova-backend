@@ -6,6 +6,7 @@ import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.TripDraft;
 import com.trova.backend.entity.User;
 import com.trova.backend.planner.PlanRequestParser;
+import com.trova.backend.queue.DraftJobQueue;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripDraftRepository;
@@ -32,20 +33,20 @@ public class AutoDraftService {
     private final SavedPlaceRepository savedPlaceRepository;
     private final TripDraftRepository tripDraftRepository;
     private final TripService tripService;
-    private final TripPlannerService tripPlannerService;
+    private final DraftJobQueue draftJobQueue;
 
     public AutoDraftService(@Value("${app.auto-draft.enabled:true}") boolean enabled,
                              ProcessingJobRepository processingJobRepository,
                              SavedPlaceRepository savedPlaceRepository,
                              TripDraftRepository tripDraftRepository,
                              TripService tripService,
-                             TripPlannerService tripPlannerService) {
+                             DraftJobQueue draftJobQueue) {
         this.enabled = enabled;
         this.processingJobRepository = processingJobRepository;
         this.savedPlaceRepository = savedPlaceRepository;
         this.tripDraftRepository = tripDraftRepository;
         this.tripService = tripService;
-        this.tripPlannerService = tripPlannerService;
+        this.draftJobQueue = draftJobQueue;
     }
 
     /** 분석이 끝난 직후 부른다. 어떤 예외도 밖으로 던지지 않는다 — 분석 결과는 초안과 상관없이 완료다. */
@@ -56,7 +57,8 @@ public class AutoDraftService {
                 return;
             }
             try {
-                tripPlannerService.process(draftId);
+                // 운영은 Kafka(#390) — 초안을 만드는 중에 서버가 재시작돼도 다시 받아 끝까지 만든다.
+                draftJobQueue.enqueue(draftId);
             } catch (TaskRejectedException e) {
                 tripDraftRepository.deleteById(draftId);
                 log.warn("ProcessingJob {} 자동 초안 대기열이 가득 차 건너뜀", jobId);

@@ -24,10 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * 일정 에이전트(#106): 요청 해석 → 고른 영상들의 장소 모으기 → (영상 지역이 멀면) 질문하고 멈춤 →
@@ -42,6 +44,9 @@ public class TripPlannerService {
     public static final String ANSWER_ONLY = "ONLY";
     static final String SPLIT_NOTE = "영상 지역이 서로 멀리 떨어져 있어요. 하루에는 한 지역의 장소만 넣고, 지역별로 날을 나누세요.";
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final Set<TripDraftStatus> RUNNABLE = EnumSet.of(TripDraftStatus.PENDING, TripDraftStatus.PROCESSING);
+
+    private final Object[] draftLocks = createDraftLocks();
 
     private final TripDraftRepository tripDraftRepository;
     private final ProcessingJobRepository processingJobRepository;
@@ -113,8 +118,29 @@ public class TripPlannerService {
 
     @Async("planTaskExecutor")
     public void process(Long draftId) {
+        processNow(draftId);
+    }
+
+    /**
+     * 부른 스레드에서 끝까지 만든다. Kafka 리스너(#390)는 처리가 끝난 뒤 메시지를 완료로 표시해야 서버가 중간에 죽었을 때
+     * 같은 초안을 다시 받으므로 @Async를 거치지 않고 이걸 부른다.
+     * 같은 초안은 서버 한 대 안에서 한 번에 하나만 돈다(Kafka 확인이 늦어 서버 안 대기열과 두 경로로 들어온 경우, ADR 0024와 같은 방식).
+     * 다시 받았을 때 이미 끝났거나(READY·APPROVED·FAILED) 사용자 답을 기다리는(NEEDS_INPUT) 초안은 Gemini를 다시 부르지 않고 건너뛴다.
+     * PROCESSING은 처리 중 서버가 죽은 경우라 이어서 만든다.
+     */
+    public void processNow(Long draftId) {
+        synchronized (draftLocks[Math.floorMod(draftId.hashCode(), draftLocks.length)]) {
+            processSerially(draftId);
+        }
+    }
+
+    private void processSerially(Long draftId) {
         TripDraft draft = tripDraftRepository.findById(draftId).orElse(null);
         if (draft == null) {
+            return;
+        }
+        if (!RUNNABLE.contains(draft.getStatus())) {
+            log.info("TripDraft {} 중복 처리 건너뜀({})", draftId, draft.getStatus());
             return;
         }
         try {
@@ -196,6 +222,14 @@ public class TripPlannerService {
             draft.markFailed("일정 초안을 만들지 못했어요. 잠시 후 다시 시도해주세요.");
             tripDraftRepository.save(draft);
         }
+    }
+
+    private static Object[] createDraftLocks() {
+        Object[] locks = new Object[64];
+        for (int i = 0; i < locks.length; i++) {
+            locks[i] = new Object();
+        }
+        return locks;
     }
 
     static final String AUTO_HOURS_NOTE = "자동으로 짠 초안이라 영업시간은 아직 확인하지 않았어요. '조건 바꿔 다시 짜기'로 다시 짜면 확인해요.";

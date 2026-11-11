@@ -293,4 +293,43 @@ class TripPlannerServiceTest {
                 TripPlannerService.AUTO_HOURS_NOTE,
                 "이동 시간은 직선거리로 어림했어요.");
     }
+
+    // #390 Kafka로 같은 초안을 다시 받을 수 있다 — 끝난 초안은 Gemini를 다시 부르지 않는다.
+    @Test
+    void 이미_끝난_초안을_다시_받으면_Gemini를_부르지_않고_건너뛴다() {
+        TripDraft draft = autoDraft(List.of(1L));
+        draft.markReady("{}", "{}");
+
+        service.processNow(9L);
+
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.READY);
+        verify(parser, never()).parse(any());
+        verify(graph, never()).run(org.mockito.ArgumentMatchers.anyInt(), any(), anyList(), anyList());
+        verify(drafts, never()).save(any());
+    }
+
+    @Test
+    void 사용자_답을_기다리는_초안은_다시_받아도_건너뛴다() {
+        TripDraft draft = draft(List.of(1L));
+        draft.markNeedsInput("멀어요", "{}");
+
+        service.processNow(9L);
+
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.NEEDS_INPUT);
+        verify(parser, never()).parse(any());
+    }
+
+    @Test
+    void 처리_중에_서버가_죽은_초안은_다시_받으면_이어서_만든다() {
+        TripDraft draft = autoDraft(List.of(1L));
+        draft.markProcessing();
+        ProcessingJob empty = job(1L);
+        when(saved.findByProcessingJob(empty)).thenReturn(List.of());
+
+        service.processNow(9L);
+
+        verify(parser).parse(any());
+        assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.FAILED);
+        assertThat(draft.getErrorMessage()).contains("저장된 장소가 없어요");
+    }
 }
