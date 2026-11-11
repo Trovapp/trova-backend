@@ -24,3 +24,16 @@ python3 -m venv /tmp/trova-report-venv
 `trova-plain-performance-20261101.pdf`는 용어 설명과 운영 결과 중심의3쪽 보고서다. 기존6쪽 상세 보고서는 보존한다. 새 운영 전후는11.884→16.745초로 악화했으며 각1회/변경후재시작이라는 조건을 함께 표시한다. 영상분석 Python과 일정생성 Spring AI 경로를 구분하고, 일정 AI의 시간대 기록4.021→5.406초와 변경후시도1/대기0도 명시한다.
 
 같은 내보내기 venv와 한글 TTF로 `python docs/bench/scripts/build_plain_performance_pdf.py`를 실행한다. 저장된 원본만 읽으며 API/서버/DB에 접근하지 않는다. 출력 옆 `.sources.json`에 원본/결과 해시를 기록한다.3쪽 한글/숫자/여백 및 렌더시각검수는 `plain-performance-validation-20261101.json`,전체build는 `plain-report-build-20261101.json` 참고. 운영보충조회도구는 별도 `read_operational_supplement.py`이며 명시적 비공개 env와READ ONLY DB만 사용하고 초안본문을 출력하지 않는다.
+
+## 도입별 전후 비교 PDF (2026-11-11, #388)
+
+이력서·면접용으로 두 도입을 따로 정리한 보고서다. 숫자는 위 보고서와 같은 원자료(`docs/bench/results/`)와 ADR 0020·0021에서 옮겼고 새 측정은 없다.
+
+- `trova-kafka-queue-before-after-20261111.pdf` — Kafka 대기열(ADR 0021): 재시작에 강한 처리, 운영 분석 시작 +약 0.2초, 브로커 장애 시 자동 넘기기, 자동 초안 확장(#390)과 운영 강제 종료 실험(11-12)
+- `trova-spring-ai-2-before-after-20261111.pdf` — Spring AI 2(ADR 0020): 속도 차이 입증 못 함, 숨은 재시도(최대 15회) 제거, 운영 HTTP/2 시간 초과 → HTTP/1.1
+
+원본은 `src/*.html`(공용 `src/style.css`). 재생성:
+```bash
+C="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+"$C" --headless=new --no-pdf-header-footer --user-data-dir=/tmp/trova-pdf --print-to-pdf=out.pdf "file://$PWD/docs/bench/reports/src/kafka.html"
+```

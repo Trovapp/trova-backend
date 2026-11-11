@@ -1,0 +1,15 @@
+@page { size: A4; margin: 16mm 15mm; }
+body { font-family: "Apple SD Gothic Neo", "AppleGothic", sans-serif; color:#1d1d1f; font-size: 10.5pt; line-height:1.55; }
+h1 { font-size: 19pt; margin: 0 0 2mm; }
+.meta { color:#6e6e73; font-size:9pt; margin-bottom:6mm; }
+h2 { font-size: 13pt; margin: 7mm 0 2mm; padding-bottom:1.5mm; border-bottom:1.5px solid #d2d2d7; break-after: avoid; }
+h3 { font-size: 11pt; margin: 4mm 0 1.5mm; break-after: avoid; }
+table { border-collapse: collapse; width:100%; margin: 2mm 0 3mm; font-size:9.3pt; break-inside: avoid; }
+th, td { border:1px solid #d2d2d7; padding: 1.6mm 2mm; text-align:left; vertical-align:top; }
+th { background:#f2f2f5; font-weight:600; }
+td.n { text-align:right; white-space:nowrap; }
+.lead { background:#f5f7fb; border-left:3px solid #3a6ee8; padding:3mm 4mm; margin: 2mm 0 4mm; }
+.cv { background:#eef7ee; border-left:3px solid #2e8b57; padding:2.5mm 4mm; margin:3mm 0; }
+code { font-family: Menlo, monospace; font-size:8.6pt; background:#f2f2f5; padding:0 1mm; border-radius:2px; }
+ul { margin: 1mm 0 2mm; padding-left: 5mm; } li { margin: 0.6mm 0; }
+.src { color:#6e6e73; font-size:8.5pt; }
