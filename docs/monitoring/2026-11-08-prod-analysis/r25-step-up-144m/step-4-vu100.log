@@ -1,0 +1,37 @@
+time="2026-11-11T17:20:29+09:00" level=warning msg="There were unknown fields in the options exported in the script" error="json: unknown field \"gracefulStop\""
+
+
+  █ TOTAL RESULTS 
+
+    CUSTOM
+    measured_errors.....................: 0.00%  0 out of 3342
+    measured_latency....................: avg=367.52ms med=208.8ms  p(95)=1.07s    p(99)=2.09s max=9.26s 
+      { name:/api/auth/me }.............: avg=325.43ms med=168.84ms p(95)=626.92ms p(99)=2.17s max=8.92s 
+      { name:/api/bookmarks }...........: avg=223.31ms med=140.56ms p(95)=771.54ms p(99)=1.27s max=1.66s 
+      { name:/api/bookmarks/folders }...: avg=318.18ms med=188.82ms p(95)=798.84ms p(99)=2.11s max=2.69s 
+      { name:/api/notifications }.......: avg=223.3ms  med=150.17ms p(95)=604.22ms p(99)=1.03s max=1.23s 
+      { name:/api/places }..............: avg=304.98ms med=195.27ms p(95)=698.74ms p(99)=1.64s max=9.26s 
+      { name:/api/places/pending }......: avg=233.73ms med=144.35ms p(95)=769.41ms p(99)=1.7s  max=2.09s 
+      { name:/api/trips }...............: avg=337.62ms med=229.3ms  p(95)=857.09ms p(99)=1.59s max=2.55s 
+      { name:/api/trips/{id} }..........: avg=793.28ms med=646.22ms p(95)=1.58s    p(99)=2.89s max=3.39s 
+      { name:/api/users/me }............: avg=259.89ms med=166.7ms  p(95)=745.69ms p(99)=1.83s max=2.56s 
+    measured_requests...................: 3342   50.005018/s
+
+    HTTP
+    http_req_duration...................: avg=385.21ms med=209.79ms p(95)=1.16s    p(99)=2.08s max=9.45s 
+      { expected_response:true }........: avg=385.21ms med=209.79ms p(95)=1.16s    p(99)=2.08s max=9.45s 
+    http_req_failed.....................: 0.00%  0 out of 4303
+    http_reqs...........................: 4303   64.38408/s
+
+    EXECUTION
+    iteration_duration..................: avg=1.41s    med=1.21s    p(95)=2.29s    p(99)=4.19s max=10.45s
+    iterations..........................: 4303   64.38408/s
+    vus.................................: 1      min=1         max=100
+    vus_max.............................: 100    min=100       max=100
+
+    NETWORK
+    data_received.......................: 29 MB  429 kB/s
+    data_sent...........................: 479 kB 7.2 kB/s
+
+
+

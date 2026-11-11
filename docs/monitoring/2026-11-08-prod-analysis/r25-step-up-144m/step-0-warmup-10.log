@@ -1,0 +1,37 @@
+time="2026-11-11T17:16:36+09:00" level=warning msg="There were unknown fields in the options exported in the script" error="json: unknown field \"gracefulStop\""
+
+
+  █ TOTAL RESULTS 
+
+    CUSTOM
+    measured_errors.....................: 0.00%  0 out of 121
+    measured_latency....................: avg=242.8ms  med=194.78ms p(95)=593.94ms p(99)=701.73ms max=719.02ms
+      { name:/api/auth/me }.............: avg=156.9ms  med=154.37ms p(95)=207.51ms p(99)=212.39ms max=213.61ms
+      { name:/api/bookmarks }...........: avg=161.77ms med=161.77ms p(95)=195.66ms p(99)=198.67ms max=199.42ms
+      { name:/api/bookmarks/folders }...: avg=180.52ms med=172.7ms  p(95)=307.48ms p(99)=378.99ms max=396.87ms
+      { name:/api/notifications }.......: avg=150.84ms med=144.72ms p(95)=190.76ms p(99)=197.2ms  max=198.82ms
+      { name:/api/places }..............: avg=222.99ms med=199.3ms  p(95)=331ms    p(99)=504.97ms max=584.21ms
+      { name:/api/places/pending }......: avg=109.14ms med=107.35ms p(95)=147.49ms p(99)=149.06ms max=149.46ms
+      { name:/api/trips }...............: avg=215.11ms med=213.62ms p(95)=283.96ms p(99)=299.3ms  max=303.13ms
+      { name:/api/trips/{id} }..........: avg=543.9ms  med=561.18ms p(95)=711.33ms p(99)=717.48ms max=719.02ms
+      { name:/api/users/me }............: avg=169.53ms med=152.28ms p(95)=259.66ms p(99)=264.08ms max=265.18ms
+    measured_requests...................: 121    3.918063/s
+
+    HTTP
+    http_req_duration...................: avg=233.03ms med=178.41ms p(95)=583.82ms p(99)=713.14ms max=811.64ms
+      { expected_response:true }........: avg=233.03ms med=178.41ms p(95)=583.82ms p(99)=713.14ms max=811.64ms
+    http_req_failed.....................: 0.00%  0 out of 242
+    http_reqs...........................: 242    7.836126/s
+
+    EXECUTION
+    iteration_duration..................: avg=1.25s    med=1.18s    p(95)=1.62s    p(99)=2.13s    max=2.27s   
+    iterations..........................: 242    7.836126/s
+    vus.................................: 10     min=10       max=10
+    vus_max.............................: 10     min=10       max=10
+
+    NETWORK
+    data_received.......................: 1.7 MB 55 kB/s
+    data_sent...........................: 38 kB  1.2 kB/s
+
+
+
