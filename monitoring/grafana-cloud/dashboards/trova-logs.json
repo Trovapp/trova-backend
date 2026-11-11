@@ -1,0 +1,136 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [
+    {
+      "targetBlank": false,
+      "title": "메트릭 대시보드",
+      "type": "link",
+      "url": "https://indigostork3365.grafana.net/d/trova-operations"
+    }
+  ],
+  "panels": [
+    {
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "트루바 앱 서비스 로그입니다. **시간 범위를 사고 시각으로 맞추고**, WARN/ERROR의 메시지와 예외 스택을 확인하세요. 로그인 토큰·이메일 등 알려진 패턴은 전송 전에 마스킹합니다. 새 로그가 없으면 목록이 늘지 않습니다. 로그가 없다는 것만으로 정상·장애를 판단하지 마세요.",
+        "mode": "markdown"
+      },
+      "title": "로그 읽는 방법",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "grafanacloud-logs"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 3
+      },
+      "id": 2,
+      "options": {
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "grafanacloud-logs"
+          },
+          "editorMode": "code",
+          "expr": "{job=\"trova-prod\", service_name=\"trova-backend\", level=~\"WARN|ERROR\"}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "WARN · ERROR 로그",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "grafanacloud-logs"
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 3,
+      "options": {
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "grafanacloud-logs"
+          },
+          "editorMode": "code",
+          "expr": "{job=\"trova-prod\", service_name=\"trova-backend\"}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "전체 앱 로그 — 최신순",
+      "type": "logs"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 42,
+  "tags": [
+    "trova",
+    "production",
+    "logs"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Trova 운영 로그",
+  "uid": "trova-logs",
+  "version": 1,
+  "weekStart": ""
+}

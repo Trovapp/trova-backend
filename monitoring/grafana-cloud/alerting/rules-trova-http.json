@@ -1,0 +1,227 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "trova-http",
+      "folder": "",
+      "interval": "1m",
+      "rules": [
+        {
+          "uid": "bg3xrebsavta8f",
+          "title": "HighHttp5xxErrorRate",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "editorMode": "code",
+                "expr": "100 * (sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*\", status=~\"5..\"}[5m])) or vector(0))\n  / sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*\"}[5m]))\nand on()\n  sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*\"}[5m])) >= 20",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "B",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "editorMode": "code",
+                "expr": "sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*\"}[5m]))",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "B"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        10
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "KeepLast",
+          "for": "2m",
+          "annotations": {
+            "context": "최근 5분 API 요청 {{ with $values.B }}{{ printf \"%.0f\" .Value }}{{ end }}건(/actuator 제외). 5분 요청이 20건 미만이면 평가하지 않습니다.",
+            "current_value": "{{ with $values.A }}{{ printf \"%.1f\" .Value }}%{{ end }}",
+            "dashboard_url": "https://indigostork3365.grafana.net/d/trova-essentials",
+            "description": "측정 범위(최근 5분)는 비율을 계산하는 창이고, 지속 조건(2분)은 그 비율이 10%를 넘은 상태가 1분 간격 평가에서 2분 동안 계속돼야 발생한다는 뜻입니다. 5분 요청이 20건 미만이거나 지표가 없으면 NoData로 보고 Normal(OK) 처리합니다. 지표 끊김은 TrovaCloudScrapeUnavailable, 서버 다운은 Synthetic trova-health가 맡습니다.",
+            "pending": "2분",
+            "runbook_url": "https://github.com/Trovapp/trova-backend/blob/main/docs/runbooks/high-http-5xx.md",
+            "summary": "최근 5분 동안 API 요청 중 5xx 비율이 10%를 넘었고, 그 상태가 2분 연속 이어졌습니다.",
+            "threshold": "10%",
+            "title": "HTTP 5xx 오류율 증가",
+            "value_label": "현재 오류율",
+            "window": "최근 5분"
+          },
+          "labels": {
+            "environment": "production",
+            "service": "trova-backend",
+            "severity": "critical"
+          },
+          "isPaused": false
+        },
+        {
+          "uid": "cg3xrec190pvka",
+          "title": "HighHttpLatencyP95",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "editorMode": "code",
+                "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"trova-prod\", uri!~\"/actuator.*|/api/shares\"}[5m])))\nand on()\n  sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*|/api/shares\"}[5m])) >= 20",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "B",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "editorMode": "code",
+                "expr": "sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*|/api/shares\"}[5m]))",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "B"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        2
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "KeepLast",
+          "for": "5m",
+          "annotations": {
+            "context": "최근 5분 API 요청 {{ with $values.B }}{{ printf \"%.0f\" .Value }}{{ end }}건(/actuator, /api/shares 제외). 5분 요청이 20건 미만이면 평가하지 않습니다.",
+            "current_value": "{{ with $values.A }}{{ printf \"%.2f\" .Value }}초{{ end }}",
+            "dashboard_url": "https://indigostork3365.grafana.net/d/trova-essentials",
+            "description": "이 서버에서는 메모리 압박(스왑) 때 5xx보다 응답 지연이 먼저 나타납니다(11-08~11-11 부하 측정에서 5xx는 0건, p95는 3~10초). 부하 측정 중에는 사일런스를 걸어 두세요.",
+            "pending": "5분",
+            "runbook_url": "https://github.com/Trovapp/trova-backend/blob/main/docs/runbooks/high-http-latency-p95.md",
+            "summary": "최근 5분 API 요청의 p95 응답 시간이 2초를 넘었고, 그 상태가 5분 연속 이어졌습니다.",
+            "threshold": "2초",
+            "title": "API p95 응답 시간 증가",
+            "value_label": "현재 p95",
+            "window": "최근 5분"
+          },
+          "labels": {
+            "environment": "production",
+            "service": "trova-backend",
+            "severity": "warning"
+          },
+          "isPaused": false
+        }
+      ]
+    }
+  ]
+}
