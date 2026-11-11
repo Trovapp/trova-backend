@@ -36,7 +36,7 @@ histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{j
 
 | 원인 | 신호 | 확인 | 대응 |
 |---|---|---|---|
-| **영상 분석과 조회 겹침(메모리)** | 분석 진행 중, 힙 상한 근접, GC 멈춤 증가 | 서버 `cat /proc/pressure/memory`의 `full avg10` ≥ 10%, `free -m`의 available < 100MiB | 분석이 끝나면 대개 회복한다(분석은 동시에 1개, ADR 0038). 반복되면 사후 분석에 기록하고 용량 대책 검토 |
+| **영상 분석과 조회 겹침(메모리)** | 분석 진행 중, 힙 상한 근접, GC 멈춤 증가 | 대시보드 PSI 메모리 full(5분 평균) > 20%(`HighMemoryPressure`가 먼저 울렸을 것), 서버 여유 메모리 < 100MiB, 스왑 읽기 초당 수백 | 분석이 끝나면 대개 회복한다(분석은 동시에 1개, ADR 0038). 반복되면 사후 분석에 기록하고 용량 대책 검토 |
 | **CPU 부족(steal)** | CPU 100%, 코어당 부하 > 1, 분석 없음 | 서버 `top -bn1 | head -5`의 `st`(steal) | 무료 서버 몫 문제라 기다린다. 오래 가면 기록(ADR 0037: 한계는 CPU) |
 | **특정 API의 느린 쿼리** | 한 API만 p95 상승 | `journalctl`에서 그 경로, DB 연결 대기 | 이슈로 남기고 쿼리·인덱스 확인(ADR 0034·0035 참고) |
 | **DB 응답 지연** | 모든 API 상승 + DB 연결 대기 > 0 | `HikariPool` 로그 | Supabase 상태 확인. 대개 스스로 회복 |

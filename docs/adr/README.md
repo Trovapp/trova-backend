@@ -81,3 +81,4 @@
 | [0039](0039-direct-otlp-metrics-and-external-health-check.md) | 운영 지표는 서버가 직접 보내고, 서버 다운은 외부 헬스 체크로 감지한다 (alloy는 평소 끔) | 확정 | 2026-11-10 |
 | [0040](0040-prod-heap-cap-144m.md) | 운영 java 힙 상한을 384MiB에서 144MiB로 낮춘다 (0037의 힙 결정을 바꿈) | 확정 | 2026-11-11 |
 | [0041](0041-grafana-cloud-alert-rules-and-routing.md) | Grafana Cloud 경보는 임계값·지속 조건·최소 요청 수로 울리고, 알림 정책은 심각도별로 반복한다 | 확정 | 2026-11-11 |
+| [0042](0042-host-metrics-from-proc-in-app.md) | 서버 메모리·스왑·PSI·CPU steal은 앱이 /proc에서 읽어 지표 전송에 싣는다 | 확정 | 2026-11-11 |
