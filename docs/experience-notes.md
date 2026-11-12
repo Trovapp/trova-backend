@@ -2682,3 +2682,12 @@
 - 확인(로컬, 내장 Kafka): 영상 42(PENDING)·초안 7(PROCESSING)·재구성 9(PENDING)가 실제 `Kafka*Queue` → 브로커 → 리스너 `processNow`까지 도달(약 1.9초), 서버 안 대기열 `process`는 0번.
 - 한계: 저장소·처리 서비스는 가짜다. 실제 DB 조회 조건은 `StuckJobRequeueServiceIntegrationTest`(H2), 실제 처리·재시작은 운영 실험(#404)이 맡는다.
 
+## 2026-11-12 앱 시작 시간·메모리 비교: AppCDS·Spring AOT (#410)
+
+- 범위: 사용자 "아니면 러스트를 도입하면?" → 제안 중 "1"(시작 시간 줄이기 먼저 재보기, 로컬).
+- 방법 비교: Rust 전체 재작성(몇 달, 이미 부품 비교에서 Python 유지 결론 #312) / GraalVM native(라이브러리 호환 확인 필요) / AppCDS·Spring AOT(코드 그대로) → 셋째부터 잼.
+- 한 것: 로컬 Docker(Java 21, 956MiB, 운영 JVM 옵션)에서 CPU 0.25·2로 기본·CDS·AOT·AOT+CDS 각 3회. 개발 DB(운영과 다른 프로젝트임을 접속 계정으로 확인), async 대기열, 다시 보내기 끔, 외부 API 호출 없음.
+- 확인(로컬): CPU 0.25에서 UP 기본 137.6초 → CDS 79.3초(−42%) → AOT+CDS 62.5초(−55%), RSS −42MiB. 운영 실측 시작은 108~117초.
+- 알게 된 것: AOT는 `app.queue.type` 등 설정 조건을 빌드 때 고정해 운영 중 Kafka 빼기(Runbook)를 막는다. CDS 파일은 운영 서버(x86, 같은 JDK)에서 만들어야 한다.
+- 기록: `docs/bench/startup-cds-aot-20261112.md`, 원자료·스크립트 `docs/bench/results/startup-cds-aot-20261112/`. 운영 미반영.
+
