@@ -115,8 +115,8 @@
 
 ## 검증 계획 (고른 선택지를 구현할 때)
 - 구현 때 한 것(로컬): 단위 6개(`StuckJobRequeueServiceTest` — 고르는 시간 범위, 대기열별 보내기·지표, 한 번만, 기록 지우기, 한 건 실패해도 계속),
-  H2 통합 2개(`StuckJobRequeueServiceIntegrationTest` — 실제 조회로 1분·5분·10분·20분·DONE·NEEDS_INPUT 구분). Kafka 왕복은 기존
-  `*KafkaRoundTripTest`가 enqueue → 리스너 → 같은 작업 다시 받기를 이미 보므로 따로 더하지 않았다. 운영 실험은 아래 1번이 남았다.
+  H2 통합 2개(`StuckJobRequeueServiceIntegrationTest` — 실제 조회로 1분·5분·10분·20분·DONE·NEEDS_INPUT 구분). 틈 a는 내장 Kafka 왕복 `StuckJobRequeueKafkaRoundTripTest`(#406)로 확인 —
+  대기열에 아무것도 넣지 않은 채(= 저장 뒤 보내기 전 종료) 다시 보내기를 한 번 돌리면 영상·초안·재구성 세 작업이 실제 Kafka 대기열 → 내장 브로커 → 리스너 `processNow`까지 가고, 서버 안 대기열로는 넘어가지 않는다. 운영 실험은 아래 1번이 남았다.
 - 단위 테스트(한글 이름)
   - 3번: `void PENDING이_2분_넘게_멈추면_다시_보낸다()`, `void 다시_보내기는_작업당_한_번만()`, `void 15분_지나면_다시_보내지_않고_FAILED()`,
     `void 갱신이_최근인_PROCESSING은_건드리지_않는다()`.
@@ -128,7 +128,7 @@
 - 운영 실험(테스트 계정, Gemini 사용량 먼저 확인, QA·측정과 동시에 하지 않음)
   1. 틈 b: 운영 서버에서 Aiven 브로커 주소로 나가는 연결을 잠깐 막는다(iptables OUTPUT DROP, 실험 뒤 즉시 해제) → 공유 → `trova.queue.fallback` 증가 확인
      → 분석이 PROCESSING일 때 `systemctl kill -s SIGKILL` → 연결 막기 해제 → 재시작 뒤 몇 분 안에 다시 보내져 DONE인지(지금 동작이면 15분 뒤 FAILED).
-  2. 틈 a: 코드로 재현하기 어렵다 — 테스트 계정으로 PENDING 행을 직접 만들지 않고, 로컬 왕복 테스트로 대신한다.
+  2. 틈 a: 코드로 재현하기 어렵다 — 테스트 계정으로 PENDING 행을 직접 만들지 않고, 로컬 왕복 테스트로 대신한다. → 완료(#406, 위 "구현 때 한 것").
   3. 기록: 시작~완료 시간, Gemini 호출 수, 다시 보낸 횟수 지표를 `docs/experience-notes.md`에 로컬·운영 구분해 남긴다.
 - **운영 확인(2026-11-12, 18dd819, 테스트 계정, #404) — 틈 b가 닫혔다.**
   - 10:58:22 운영 서버 OUTPUT에서 Aiven Kafka 포트(tcp 26991)만 REJECT → 10:58:24 릴스 공유(작업 5669) → 5초 뒤 "Kafka에 넣지 못해 서버 안 대기열로 넘김"
