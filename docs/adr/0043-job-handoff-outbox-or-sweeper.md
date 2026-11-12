@@ -130,6 +130,12 @@
      → 분석이 PROCESSING일 때 `systemctl kill -s SIGKILL` → 연결 막기 해제 → 재시작 뒤 몇 분 안에 다시 보내져 DONE인지(지금 동작이면 15분 뒤 FAILED).
   2. 틈 a: 코드로 재현하기 어렵다 — 테스트 계정으로 PENDING 행을 직접 만들지 않고, 로컬 왕복 테스트로 대신한다.
   3. 기록: 시작~완료 시간, Gemini 호출 수, 다시 보낸 횟수 지표를 `docs/experience-notes.md`에 로컬·운영 구분해 남긴다.
+- **운영 확인(2026-11-12, 18dd819, 테스트 계정, #404) — 틈 b가 닫혔다.**
+  - 10:58:22 운영 서버 OUTPUT에서 Aiven Kafka 포트(tcp 26991)만 REJECT → 10:58:24 릴스 공유(작업 5669) → 5초 뒤 "Kafka에 넣지 못해 서버 안 대기열로 넘김"
+  - 10:58:30 PROCESSING → 10:58:35 `systemctl kill -s SIGKILL` → 연결 막기 해제. 작업은 메모리에만 있었으므로 Kafka 재수신 대상이 아니다.
+  - 11:06:47 `StuckJobRequeueService`가 "멈춘 작업 다시 보냄: share 5669"(마지막 갱신 뒤 8분 17초) → 11:07:17 **DONE**(공유부터 8분 53초).
+  - 예전 동작이면 10:58:30 + 15분 = 11:13:30에 FAILED("처리가 중단됐어요")였다. 지표 `trova_queue_requeued_total{queue="share"}` 1.
+  - Gemini는 다시 한 분석 2번(collect·filter) + 자동 초안 1번. 죽기 전 첫 분석은 Gemini 호출 기록이 남기 전에 끊겼다.
 
 ## 다시 볼 조건
 - 서버가 두 대 이상이 되면: 3번의 같은 JVM 잠금 가정이 깨지므로 행 잠금(`SKIP LOCKED`)이나 2번을 다시 본다(0024·0025와 같은 조건).
