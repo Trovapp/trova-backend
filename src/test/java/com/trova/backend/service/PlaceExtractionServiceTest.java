@@ -72,13 +72,45 @@ class PlaceExtractionServiceTest {
     void setUp() {
         // 기본은 호출한 스레드에서 바로 실행 — 동시 실행 자체를 보는 테스트만 실제 스레드 풀로 따로 만든다.
         placeExtractionService = serviceWith(Runnable::run);
-        org.mockito.Mockito.lenient().when(lifecycleService.completeAnalysis(any(), any(), any())).thenReturn(true);
+        org.mockito.Mockito.lenient().when(lifecycleService.completeAnalysis(any(), any(), any(), any())).thenReturn(true);
     }
 
     private PlaceExtractionService serviceWith(Executor geocodingTaskExecutor) {
         return new PlaceExtractionService(lifecycleService, pipelineRunner, kakaoGeocodingService,
                 placeSelectionRunner, placeVerificationRunner, foundPlaceNameStore, autoDraftService, geocodingTaskExecutor,
                 new PipelineStageMetrics(registry), mock(QueueWaitMetrics.class));
+    }
+
+    private static GeocodingResult at(String name, double lat, double lng) {
+        return new GeocodingResult(lat, lng, name, null, null, null, null, null, null);
+    }
+
+    @Test
+    void 영상_중심에서_먼_체인점은_바꾸지_않고_중심_근처_같은_상호_지점을_표시한다() {
+        // 홍대 영상의 이삭토스트가 5.7km 떨어진 명동성당점으로 잡혔다(안드로이드 사용성 테스트 2026-11-12, #414).
+        GeocodingResult hongdae1 = at("트릭아이뮤지엄", 37.5537, 126.9221);
+        GeocodingResult hongdae2 = at("코코넛박스", 37.5550, 126.9230);
+        GeocodingResult hongdae3 = at("나이키 홍대", 37.5560, 126.9240);
+        GeocodingResult myeongdong = at("이삭토스트 서울명동성당점", 37.5634, 126.9869);
+        GeocodingResult hongdaeIsaac = at("이삭토스트 홍대점", 37.5545, 126.9225);
+        org.mockito.Mockito.when(kakaoGeocodingService.findBranchNear(
+                        eq("이삭토스트 서울명동성당점"), org.mockito.ArgumentMatchers.anyDouble(),
+                        org.mockito.ArgumentMatchers.anyDouble(), org.mockito.ArgumentMatchers.anyInt(), anyLong()))
+                .thenReturn(java.util.Optional.of(hongdaeIsaac));
+
+        java.util.Map<Integer, String> result = placeExtractionService.findNearbyBranches(
+                1L, List.of(hongdae1, myeongdong, hongdae2, hongdae3));
+
+        // 지점 자체가 목적지일 수도 있어 자동으로 바꾸지 않는다(리뷰 C3) — 순번 1에 근처 지점 이름만 남긴다.
+        org.assertj.core.api.Assertions.assertThat(result).containsExactly(java.util.Map.entry(1, "이삭토스트 홍대점"));
+    }
+
+    @Test
+    void 장소가_3곳보다_적으면_중심을_정하지_않고_그대로_둔다() {
+        List<GeocodingResult> two = List.of(at("A", 37.55, 126.92), at("B", 37.56, 126.99));
+
+        org.assertj.core.api.Assertions.assertThat(placeExtractionService.findNearbyBranches(1L, two)).isEmpty();
+        org.mockito.Mockito.verifyNoInteractions(kakaoGeocodingService);
     }
 
     @Test
@@ -103,7 +135,7 @@ class PlaceExtractionServiceTest {
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.SELECTING);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.VERIFYING);
         order.verify(lifecycleService).updateStage(jobId, ProcessingStage.SAVING);
-        order.verify(lifecycleService).completeAnalysis(eq(jobId), any(), any());
+        order.verify(lifecycleService).completeAnalysis(eq(jobId), any(), any(), any());
         verify(autoDraftService).startFor(jobId);
         assertThat(registry.get("trova.analysis.execution").tag("outcome", "success").timer().count()).isEqualTo(1);
         for (String stage : List.of("preparing", "extracting", "geocoding", "selecting", "verifying", "saving")) {
@@ -161,7 +193,7 @@ class PlaceExtractionServiceTest {
 
         verify(lifecycleService).setTitle(jobId, "그냥 일상 브이로그");
         verify(lifecycleService).markAnalysisFailed(jobId, ProcessingJob.NO_PLACES_MESSAGE);
-        verify(lifecycleService, never()).completeAnalysis(any(), any(), any());
+        verify(lifecycleService, never()).completeAnalysis(any(), any(), any(), any());
         verify(kakaoGeocodingService, never()).searchCandidates(any(), any(), any(), anyLong());
         assertThat(registry.get("trova.analysis.execution").tag("outcome", "no_places").timer().count()).isEqualTo(1);
     }
@@ -298,7 +330,7 @@ class PlaceExtractionServiceTest {
 
         placeExtractionService.process(jobId);
 
-        verify(lifecycleService).completeAnalysis(eq(jobId), any(), any());
+        verify(lifecycleService).completeAnalysis(eq(jobId), any(), any(), any());
         verify(lifecycleService, never()).markAnalysisFailed(any(), any());
         assertThat(registry.get("trova.analysis.execution").tag("outcome", "success").timer().count()).isEqualTo(1);
     }
@@ -312,7 +344,7 @@ class PlaceExtractionServiceTest {
                 .thenReturn(new PipelineOutput("부산", List.of(place)));
         when(kakaoGeocodingService.searchCandidates(any(), any(), any(), eq(jobId)))
                 .thenReturn(GeocodingResult.coordinatesOnly(35.1, 129.1));
-        when(lifecycleService.completeAnalysis(eq(jobId), any(), any())).thenReturn(false);
+        when(lifecycleService.completeAnalysis(eq(jobId), any(), any(), any())).thenReturn(false);
         placeExtractionService.process(jobId);
         verify(autoDraftService, never()).startFor(jobId);
         verify(lifecycleService, never()).markAnalysisFailed(any(), any());
@@ -326,7 +358,7 @@ class PlaceExtractionServiceTest {
         when(pipelineRunner.run(any(), eq(jobId), any())).thenReturn(new PipelineOutput("부산", List.of(place)));
         when(kakaoGeocodingService.searchCandidates(any(), any(), any(), eq(jobId)))
                 .thenReturn(GeocodingResult.coordinatesOnly(35.1, 129.1));
-        when(lifecycleService.completeAnalysis(eq(jobId), any(), any())).thenThrow(new RuntimeException("DB unavailable"));
+        when(lifecycleService.completeAnalysis(eq(jobId), any(), any(), any())).thenThrow(new RuntimeException("DB unavailable"));
 
         placeExtractionService.process(jobId);
 

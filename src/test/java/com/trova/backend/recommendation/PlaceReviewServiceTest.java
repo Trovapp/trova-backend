@@ -264,4 +264,15 @@ class PlaceReviewServiceTest {
         assertThat(result.get().phone()).isNull();
         assertThat(place.getPhoneCheckedAt()).isNull();
     }
+
+    @Test
+    void 요약에_넘기는_리뷰에만_별점을_붙이고_빈_리뷰는_뺀다() {
+        GooglePlacesDetailsResponse details = new GooglePlacesDetailsResponse("p", List.of(
+                new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("빙수가 맛있어요"), 5),
+                new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("줄이 길어요")),
+                new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText(" "), 1)));
+
+        assertThat(PlaceReviewService.ratedReviewTexts(details)).containsExactly("[별점 5] 빙수가 맛있어요", "줄이 길어요");
+        assertThat(PlaceReviewService.ratedReviewTexts(new GooglePlacesDetailsResponse("p", null))).isEmpty();
+    }
 }

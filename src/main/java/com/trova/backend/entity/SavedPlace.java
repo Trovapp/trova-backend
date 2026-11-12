@@ -73,6 +73,12 @@ public class SavedPlace {
     @Column(name = "kakao_place_url")
     private String kakaoPlaceUrl;
 
+    // 다른 장소들과 멀리 떨어져 있고 영상 근처에 같은 가게의 다른 지점이 있을 때 그 지점 이름(#414).
+    // 예전엔 자동으로 그 지점으로 바꿨지만, 지점 자체가 목적지(스타벅스 더북한강R점)이거나 다른 도시를 함께 도는
+    // 영상에서 틀리게 바뀌어 사용자가 "찾아서 고치기"로 직접 고르도록 표시만 한다.
+    @Column(name = "nearby_branch_name")
+    private String nearbyBranchName;
+
     // 일정 에이전트가 휴무·영업시간을 확인하려고 Google에서 받아 둔 정보(#106). 장소당 한 번만 받는다 —
     // 근처에 맞는 Google 장소가 없거나 영업시간이 없어도 확인 시각을 남겨 다시 묻지 않는다.
     @Column(name = "google_place_id")
@@ -151,6 +157,11 @@ public class SavedPlace {
     public String getRoadAddress() { return roadAddress; }
     public String getKakaoCategoryName() { return kakaoCategoryName; }
     public String getKakaoPlaceUrl() { return kakaoPlaceUrl; }
+    public String getNearbyBranchName() { return nearbyBranchName; }
+
+    public void suggestNearbyBranch(String branchName) {
+        this.nearbyBranchName = branchName;
+    }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public String getGooglePlaceId() { return googlePlaceId; }
     public String getOpeningPeriods() { return openingPeriods; }
@@ -205,5 +216,6 @@ public class SavedPlace {
         this.googlePlaceId = googlePlaceId;
         this.openingPeriods = null;
         this.hoursCheckedAt = null;
+        this.nearbyBranchName = null;
     }
 }

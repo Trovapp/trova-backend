@@ -81,7 +81,7 @@ class PlaceExtractionDeduplicationTest {
             assertThat(release.await(5, TimeUnit.SECONDS)).isTrue();
             return new PipelineOutput("김해", List.of(place));
         });
-        doAnswer(inv -> { done.set(true); return true; }).when(lifecycle).completeAnalysis(eq(42L), any(), any());
+        doAnswer(inv -> { done.set(true); return true; }).when(lifecycle).completeAnalysis(eq(42L), any(), any(), any());
         ExecutorService workers = Executors.newFixedThreadPool(2);
         try {
             Future<?> first = workers.submit(() -> dispatch(service, firstPath));
@@ -101,7 +101,7 @@ class PlaceExtractionDeduplicationTest {
             workers.shutdownNow();
         }
         verify(pipeline, times(1)).run(any(), eq(42L), any());
-        verify(lifecycle, times(1)).completeAnalysis(eq(42L), any(), any());
+        verify(lifecycle, times(1)).completeAnalysis(eq(42L), any(), any(), any());
         verify(drafts, times(1)).startFor(42L);
         verify(waitMetrics, times(1)).recordKnownCreatedAt(any(), eq(firstPath));
     }
@@ -120,7 +120,7 @@ class PlaceExtractionDeduplicationTest {
         when(lifecycle.startAnalysisWithMetadata(42L)).thenReturn(null);
         service().processNow(42L, QueuePath.KAFKA);
         verify(pipeline, never()).run(any(), any(), any());
-        verify(lifecycle, never()).completeAnalysis(any(), any(), any());
+        verify(lifecycle, never()).completeAnalysis(any(), any(), any(), any());
         verify(waitMetrics, never()).recordKnownCreatedAt(any(), any());
     }
 
@@ -160,7 +160,7 @@ class PlaceExtractionDeduplicationTest {
         dispatch(service, QueuePath.KAFKA);
         verify(pipeline, times(1)).run(any(), eq(42L), any());
         verify(lifecycle, times(1)).markAnalysisFailed(42L, "controlled failure");
-        verify(lifecycle, never()).completeAnalysis(any(), any(), any());
+        verify(lifecycle, never()).completeAnalysis(any(), any(), any(), any());
         verify(drafts, never()).startFor(any());
     }
 
@@ -180,7 +180,7 @@ class PlaceExtractionDeduplicationTest {
         verify(lifecycle, times(2)).startAnalysisWithMetadata(42L);
         verify(lifecycle, never()).markAnalysisFailed(any(), any());
         verify(pipeline, never()).run(any(), any(), any());
-        verify(lifecycle, never()).completeAnalysis(any(), any(), any());
+        verify(lifecycle, never()).completeAnalysis(any(), any(), any(), any());
         verify(drafts, never()).startFor(any());
     }
 }

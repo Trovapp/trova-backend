@@ -80,7 +80,7 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
         return withRetry(() -> doGetDetails(googlePlaceId, PHONE_FIELD_MASK));
     }
 
-    private static final String HOURS_SEARCH_FIELD_MASK = "places.id,places.location,places.regularOpeningHours";
+    private static final String HOURS_SEARCH_FIELD_MASK = "places.id,places.displayName,places.location,places.regularOpeningHours";
 
     @Override
     public GooglePlacesHoursResponse searchTextWithHours(

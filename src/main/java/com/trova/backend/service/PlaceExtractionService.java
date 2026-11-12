@@ -14,6 +14,7 @@ import com.trova.backend.pipeline.PlaceSelectionRunner;
 import com.trova.backend.pipeline.PlaceVerification;
 import com.trova.backend.pipeline.PlaceVerificationRunner;
 import com.trova.backend.queue.QueuePath;
+import com.trova.backend.replan.GeoUtils;
 import com.trova.backend.queue.QueueWaitMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -137,7 +139,10 @@ public class PlaceExtractionService {
                 log.info("ProcessingJob {} Python 자원: {}", jobId, resourceLine);
             }
 
-            lifecycleService.setTitle(jobId, output.title());
+            // 결과에 제목이 없으면 진행 중에 받은 제목을 지우지 않는다(#414).
+            if (output.title() != null) {
+                lifecycleService.setTitle(jobId, output.title());
+            }
 
             // 장소가 0곳이면 완료로 끝내지 않는다 — 결과 화면에 보여줄 게 없고, 영상 기록(저장된 장소 기준)에도
             // 남지 않아 사용자가 무슨 일이 있었는지 알 수 없었다(#55). 실패로 남겨 처리 중 목록에서 이유를 보여준다.
@@ -181,6 +186,7 @@ public class PlaceExtractionService {
             timing.stage(ProcessingStage.SELECTING);
             lifecycleService.updateStage(jobId, ProcessingStage.SELECTING);
             geocodedList = selectAmongAlternatives(jobId, extractedList, geocodedList);
+            Map<Integer, String> nearbyBranches = findNearbyBranches(jobId, geocodedList);
 
             timing.stage(ProcessingStage.VERIFYING);
             lifecycleService.updateStage(jobId, ProcessingStage.VERIFYING);
@@ -188,7 +194,9 @@ public class PlaceExtractionService {
 
             timing.stage(ProcessingStage.SAVING);
             lifecycleService.updateStage(jobId, ProcessingStage.SAVING);
-            if (!lifecycleService.completeAnalysis(jobId, extractedList, geocodedList)) {
+            List<GeocodingResult> verified = geocodedList;
+            nearbyBranches.keySet().removeIf(i -> verified.get(i).latitude() == null); // 검증으로 좌표를 버린 곳은 표시하지 않는다
+            if (!lifecycleService.completeAnalysis(jobId, extractedList, geocodedList, nearbyBranches)) {
                 log.info("ProcessingJob {} 결과 저장 건너뜀(더 이상 분석 진행 상태가 아님)", jobId);
                 timing.finish(PipelineStageMetrics.Outcome.DISCARDED);
                 return;
@@ -238,6 +246,48 @@ public class PlaceExtractionService {
      * 교체하며, 어느 후보도 안 맞다고 판단하면(null) 좌표를 비운다(틀린 좌표보다
      * 없는 게 낫다는 원칙과 동일). 재검토 대상이 없으면 호출 자체를 생략한다.
      */
+    // 영상 속 다른 장소들의 중심에서 이보다 멀면 체인점 지점을 잘못 골랐을 수 있다고 본다(#414).
+    static final double OUTLIER_KM = 3.0;
+    static final int BRANCH_SEARCH_RADIUS_METERS = 3000;
+
+    /**
+     * 다른 지점일 수 있는 체인점 찾기(#414). 카카오 검색은 위치 조건 없이 1등을 고르므로, 홍대 영상의 이삭토스트가 5.7km 떨어진
+     * 명동성당점으로 잡혔다. 좌표가 있는 장소가 3곳 이상일 때 중심(위도·경도 중앙값)에서 3km 넘게 떨어진 장소는
+     * 중심 3km 안에 같은 상호가 있는지 찾아 그 지점 이름을 돌려준다(결과 순번 → 지점 이름).
+     * 자동으로 바꾸지는 않는다 — 지점 자체가 목적지이거나 여러 도시를 도는 영상에서 틀리게 바뀌어(리뷰 C3),
+     * 앱이 "다른 지점일 수 있어요"로 보여 주고 사용자가 고른다.
+     */
+    Map<Integer, String> findNearbyBranches(Long jobId, List<GeocodingResult> geocodedList) {
+        Map<Integer, String> branches = new HashMap<>();
+        List<GeocodingResult> located = geocodedList.stream().filter(g -> g.latitude() != null).toList();
+        if (located.size() < 3) {
+            return branches;
+        }
+        double centerLat = median(located.stream().map(GeocodingResult::latitude).toList());
+        double centerLng = median(located.stream().map(GeocodingResult::longitude).toList());
+        for (int i = 0; i < geocodedList.size(); i++) {
+            GeocodingResult g = geocodedList.get(i);
+            if (g.latitude() == null || g.matchedName() == null
+                    || GeoUtils.haversineKm(centerLat, centerLng, g.latitude(), g.longitude()) <= OUTLIER_KM) {
+                continue;
+            }
+            int index = i;
+            kakaoGeocodingService.findBranchNear(g.matchedName(), centerLat, centerLng, BRANCH_SEARCH_RADIUS_METERS, jobId)
+                    .filter(branch -> !branch.matchedName().equals(g.matchedName()))
+                    .ifPresent(branch -> {
+                        log.info("ProcessingJob {} 다른 지점일 수 있음: {} (근처 {})", jobId, g.matchedName(), branch.matchedName());
+                        branches.put(index, branch.matchedName());
+                    });
+        }
+        return branches;
+    }
+
+    private static double median(List<Double> values) {
+        List<Double> sorted = values.stream().sorted().toList();
+        int mid = sorted.size() / 2;
+        return sorted.size() % 2 == 1 ? sorted.get(mid) : (sorted.get(mid - 1) + sorted.get(mid)) / 2;
+    }
+
     private List<GeocodingResult> selectAmongAlternatives(
             Long jobId, List<ExtractedPlace> extractedList, List<GeocodingResult> geocodedList
     ) {

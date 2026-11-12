@@ -11,7 +11,7 @@ public record SavedPlaceListRow(
         String placeName, String region, String category, Double latitude, Double longitude,
         String sourceUrl, String title, SourcePlatform sourcePlatform, LocalDateTime createdAt,
         Integer dayNumber, Integer orderInDay, String phone, String address, String roadAddress,
-        String kakaoCategoryName, String kakaoPlaceUrl, String videoNotes
+        String kakaoCategoryName, String kakaoPlaceUrl, String videoNotes, String nearbyBranchName
 ) {
     public List<String> videoNoteLines() {
         return videoNotes == null || videoNotes.isBlank() ? List.of() : List.of(videoNotes.split("\n"));

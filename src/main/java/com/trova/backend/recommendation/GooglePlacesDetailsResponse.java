@@ -16,7 +16,10 @@ public record GooglePlacesDetailsResponse(String id, List<Review> reviews, Strin
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Review(ReviewText text) {
+    public record Review(ReviewText text, Integer rating) {
+        public Review(ReviewText text) {
+            this(text, null);
+        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

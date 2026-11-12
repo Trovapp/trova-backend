@@ -92,6 +92,11 @@ public class TripDraft {
     @Column(name = "dismissed_at")
     private LocalDateTime dismissedAt;
 
+    // 이 초안에 들어간 영상 장소의 위치를 사용자가 바로잡은 시각(#414). 초안을 자동으로 다시 만들지 않고(ADR 0006 —
+    // 바로잡기는 외부 API를 새로 부르지 않는다) 앱이 "위치가 바뀌었어요 · 다시 짜기"를 보여 사용자가 고른다.
+    @Column(name = "places_changed_at")
+    private LocalDateTime placesChangedAt;
+
     protected TripDraft() {
     }
 
@@ -146,6 +151,18 @@ public class TripDraft {
         touch(TripDraftStatus.PENDING);
     }
 
+    /**
+     * 초안에 들어간 영상 장소의 위치가 바뀌었다고 표시한다(#414). 상태·내용은 그대로 둔다 — 만드는 중이어도
+     * 표시가 남아 끝난 뒤 앱이 다시 짜기를 권한다. 승인했거나 닫은 초안은 표시하지 않는다.
+     */
+    public boolean markPlacesChanged() {
+        if (tripId != null || dismissedAt != null) {
+            return false;
+        }
+        this.placesChangedAt = LocalDateTime.now();
+        return true;
+    }
+
     public void markApproved(Long tripId) {
         this.tripId = tripId;
         touch(TripDraftStatus.APPROVED);
@@ -184,4 +201,5 @@ public class TripDraft {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public boolean isAutoCreated() { return autoCreated; }
     public LocalDateTime getDismissedAt() { return dismissedAt; }
+    public LocalDateTime getPlacesChangedAt() { return placesChangedAt; }
 }

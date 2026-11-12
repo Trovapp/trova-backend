@@ -21,7 +21,7 @@ public interface SavedPlaceRepository extends JpaRepository<SavedPlace, Long> {
             select new com.trova.backend.repository.SavedPlaceListRow(
                 p.id, j.id, j.sourceUrl, p.placeName, p.region, p.category, p.latitude, p.longitude,
                 p.sourceUrl, p.title, p.sourcePlatform, p.createdAt, p.dayNumber, p.orderInDay,
-                p.phone, p.address, p.roadAddress, p.kakaoCategoryName, p.kakaoPlaceUrl, p.videoNotes)
+                p.phone, p.address, p.roadAddress, p.kakaoCategoryName, p.kakaoPlaceUrl, p.videoNotes, p.nearbyBranchName)
             from SavedPlace p join p.processingJob j
             where p.user.id = :userId
             order by p.createdAt desc, p.id desc

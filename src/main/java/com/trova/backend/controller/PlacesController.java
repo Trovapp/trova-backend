@@ -69,7 +69,9 @@ public class PlacesController {
             String phone, String address, String roadAddress,
             String kakaoCategoryName, String kakaoPlaceUrl,
             // 영상에서 말한 내용(#104). 없으면 빈 배열.
-            List<String> videoNotes
+            List<String> videoNotes,
+            // 다른 지점일 수 있을 때 영상 근처의 같은 가게 지점 이름(#414). 없으면 null.
+            String nearbyBranchName
     ) {
         static PlaceResponse from(SavedPlaceListRow place) {
             return new PlaceResponse(
@@ -77,7 +79,7 @@ public class PlacesController {
                     place.latitude(), place.longitude(), place.sourceUrl(), place.title(),
                     place.sourcePlatform().name(), place.createdAt().toString(), place.dayNumber(), place.orderInDay(),
                     place.phone(), place.address(), place.roadAddress(), place.kakaoCategoryName(), place.kakaoPlaceUrl(),
-                    place.videoNoteLines()
+                    place.videoNoteLines(), place.nearbyBranchName()
             );
         }
 
@@ -89,7 +91,7 @@ public class PlacesController {
                     place.getDayNumber(), place.getOrderInDay(),
                     place.getPhone(), place.getAddress(), place.getRoadAddress(),
                     place.getKakaoCategoryName(), place.getKakaoPlaceUrl(),
-                    place.getVideoNotes()
+                    place.getVideoNotes(), place.getNearbyBranchName()
             );
         }
     }

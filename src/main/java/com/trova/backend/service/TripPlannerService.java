@@ -188,7 +188,7 @@ public class TripPlannerService {
             // — 사용자가 '조건 바꿔 다시 짜기'로 만든 초안은 그대로 조회
             int calls = draft.isAutoCreated() ? 0 : openingHoursService.fillMissing(visits);
             TripPlanGraph.Outcome outcome = tripPlanGraph.run(request.days(), request.startDate(), visits,
-                    split ? List.of(SPLIT_NOTE) : List.of());
+                    planNotes(split, draft));
             draft.addGeminiCalls(outcome.geminiCalls());
             if (outcome.draft().isEmpty()) {
                 log.warn("TripDraft {} 초안 생성 실패: {}", draftId, outcome.failure());
@@ -243,6 +243,23 @@ public class TripPlannerService {
                 .map(note -> note.startsWith(DraftGenerator.NO_HOURS_NOTE_PREFIX) ? AUTO_HOURS_NOTE : note)
                 .toList();
         return new DraftGenerator.Draft(plan.days(), plan.excluded(), plan.lodging(), notes);
+    }
+
+    /**
+     * 생성 프롬프트에 붙일 메모. 사용자가 직접 만든 초안이면 날짜·기간을 뗀 "더 바라는 점"을 넣는다(#414) —
+     * 장소는 영상 속 목록에서만 고르므로(목록 밖 장소 금지) 목록 안에서 반영하라고 적는다.
+     */
+    static List<String> planNotes(boolean split, TripDraft draft) {
+        List<String> notes = new ArrayList<>();
+        if (split) {
+            notes.add(SPLIT_NOTE);
+        }
+        String preference = draft.isAutoCreated() ? "" : PlanRequestParser.preference(draft.getMessage());
+        if (!preference.isBlank()) {
+            notes.add("사용자가 바라는 점: \"" + preference + "\" — 아래 장소 목록 안에서 최대한 반영하세요"
+                    + "(예: 식당을 점심·저녁 시간대로 옮기기). 목록에 없는 장소가 필요한 요청이면 그 부분은 무시하세요.");
+        }
+        return notes;
     }
 
     private static boolean isLodging(SavedPlace p) {

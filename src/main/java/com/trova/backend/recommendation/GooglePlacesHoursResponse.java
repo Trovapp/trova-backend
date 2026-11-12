@@ -12,7 +12,12 @@ import java.util.List;
 public record GooglePlacesHoursResponse(List<Place> places) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Place(String id, Location location, OpeningHours regularOpeningHours) {
+    public record Place(String id, Location location, OpeningHours regularOpeningHours, DisplayName displayName) {
+    }
+
+    /** 이름이 맞는 가게인지 확인하려고 받는다(#414). places.displayName은 기본 필드라 요금 등급이 바뀌지 않는다. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record DisplayName(String text) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
