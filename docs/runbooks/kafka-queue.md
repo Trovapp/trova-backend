@@ -26,7 +26,7 @@ Slack 알림의 "Runbook" 링크가 이 문서다. 운영에 영향을 주는 �
 sum by (topic) (kafka_consumer_fetch_manager_records_lag{job="trova-prod", topic=~"trova\\.[a-z-]+"})
 # 실패 작업 — 서버가 뜰 때 토픽별로 0을 미리 만들어 두어 첫 1건도 increase가 센다
 sum by (topic) (increase(trova_queue_dead_letter_total{job="trova-prod"}[15m]))
-# 멈춘 작업 다시 보내기(ADR 0043) — 저장됐지만 대기열에 없던 작업. 0이 아니면 그 시각 전후 재시작·브로커 장애를 본다
+# 멈춘 작업 다시 보내기(ADR 0043) — 저장됐지만 대기열에 없던 작업. 0이 아니면 그 시각 전후 재시작·브로커 장애를 본다(대시보드 "넘김·실패 작업·다시 보냄" 패널)
 sum by (queue) (increase(trova_queue_requeued_total{job="trova-prod"}[1h]))
 ```
 

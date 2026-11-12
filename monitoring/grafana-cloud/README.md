@@ -5,7 +5,7 @@
 결정 배경은 [ADR 0039](../../docs/adr/0039-direct-otlp-metrics-and-external-health-check.md)(지표 직접 전송·외부 헬스 체크),
 [ADR 0041](../../docs/adr/0041-grafana-cloud-alert-rules-and-routing.md)(경보 기준·알림 정책), 대응은 [docs/runbooks](../../docs/runbooks/README.md).
 
-받은 시점: 2026-11-12 KST(#396) — `trova-essentials` version 8(넘김 패널에 일정 재구성 추가). 그 전 #394: version 7(대기열 — Kafka 줄: 처리 못 한 메시지·넘김·실패 작업), 경보 그룹 `trova-kafka` 추가. 그 전: 2026-11-11 KST 오후 — 서버 메모리 지표(`host_*`, #379) 배포와 r23 측정 뒤. `trova-essentials`는 version 5(읽는 법 안내, CPU steal·iowait, 서버 여유 메모리·스왑·PSI 패널 추가), 경보 그룹 `trova-host` 추가.
+받은 시점: 2026-11-12 KST(#402) — `trova-essentials` version 9(넘김 패널에 "다시 보냄" 선 추가, ADR 0043). 그 전 #396: version 8(넘김 패널에 일정 재구성 추가). 그 전 #394: version 7(대기열 — Kafka 줄: 처리 못 한 메시지·넘김·실패 작업), 경보 그룹 `trova-kafka` 추가. 그 전: 2026-11-11 KST 오후 — 서버 메모리 지표(`host_*`, #379) 배포와 r23 측정 뒤. `trova-essentials`는 version 5(읽는 법 안내, CPU steal·iowait, 서버 여유 메모리·스왑·PSI 패널 추가), 경보 그룹 `trova-host` 추가.
 
 | 파일 | Cloud 위치 | 내용 |
 |---|---|---|
