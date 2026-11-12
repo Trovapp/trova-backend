@@ -81,7 +81,7 @@ class PlaceReviewServiceTest {
                 )));
         ReviewSummary generated = new ReviewSummary(
                 "전반적으로 만족도가 높은 곳이에요.", List.of("친절함"), List.of(), null, null, List.of(), List.of());
-        when(reviewSummaryRunner.run(eq(List.of("좋아요", "친절해요")), anyLong())).thenReturn(generated);
+        when(reviewSummaryRunner.run(eq(List.of("[장소] 카페A (cafe)", "좋아요", "친절해요")), anyLong())).thenReturn(generated);
 
         Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
 
@@ -104,7 +104,7 @@ class PlaceReviewServiceTest {
                         new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("리뷰3")),
                         new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("리뷰4"))
                 )));
-        when(reviewSummaryRunner.run(eq(List.of("리뷰1", "리뷰2", "리뷰3", "리뷰4")), anyLong()))
+        when(reviewSummaryRunner.run(eq(List.of("[장소] 카페A (cafe)", "리뷰1", "리뷰2", "리뷰3", "리뷰4")), anyLong()))
                 .thenReturn(new ReviewSummary("요약", List.of(), List.of(), null, null, List.of(), List.of()));
 
         Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);

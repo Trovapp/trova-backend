@@ -101,13 +101,48 @@ public class ProcessingJobLifecycleService {
             return false;
         }
         savedPlaceRepository.deleteAll(savedPlaceRepository.findByProcessingJob(job));
+        List<SavedPlace> relocatedBefore = relocatedInEarlierAnalyses(job);
         for (int i = 0; i < extracted.size(); i++) {
             SavedPlace place = createPlace(job, extracted.get(i), geocoded.get(i));
             place.suggestNearbyBranch(nearbyBranches.get(i));
+            inheritRelocation(place, relocatedBefore);
             savedPlaceRepository.save(place);
         }
         job.markAnalysisDone();
         return true;
+    }
+
+    /** 같은 사용자가 같은 영상을 전에 분석한 결과 중 위치를 직접 바로잡은 장소. 최근 분석이 앞에 온다. */
+    private List<SavedPlace> relocatedInEarlierAnalyses(ProcessingJob job) {
+        if (job.getUser() == null) {
+            return List.of();
+        }
+        String video = VideoKey.of(job.getSourceUrl());
+        return savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(job.getUser()).stream()
+                .filter(p -> p.getRelocatedFromName() != null && p.getLatitude() != null)
+                .filter(p -> !p.getProcessingJob().getId().equals(job.getId()))
+                .filter(p -> VideoKey.of(p.getProcessingJob().getSourceUrl()).equals(video))
+                .toList();
+    }
+
+    /**
+     * 다시 분석한 장소 이름이 예전에 바로잡기 전 이름(또는 바로잡은 뒤 이름)과 같으면 그 위치를 이어받는다(#416,
+     * 사용자 결정 2026-11-12). 이름이 달라지면 이어받지 못한다 — 추측으로 맞추지 않는다.
+     */
+    private static void inheritRelocation(SavedPlace place, List<SavedPlace> relocatedBefore) {
+        String name = normalizeName(place.getPlaceName());
+        if (name.isEmpty()) {
+            return;
+        }
+        relocatedBefore.stream()
+                .filter(p -> name.equals(normalizeName(p.getRelocatedFromName()))
+                        || name.equals(normalizeName(p.getPlaceName())))
+                .findFirst()
+                .ifPresent(place::inheritRelocation);
+    }
+
+    private static String normalizeName(String name) {
+        return name == null ? "" : name.replaceAll("\\s+", "");
     }
 
     private SavedPlace createPlace(ProcessingJob job, ExtractedPlace extracted, GeocodingResult geocoded) {

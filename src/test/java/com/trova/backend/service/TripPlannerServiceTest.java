@@ -343,4 +343,41 @@ class TripPlannerServiceTest {
         assertThat(TripPlannerService.planNotes(true, auto)).containsExactly(TripPlannerService.SPLIT_NOTE);
         assertThat(TripPlannerService.planNotes(false, new TripDraft(owner, List.of(1L), "이 영상들로 일정 짜줘"))).isEmpty();
     }
+
+    private ProcessingJob jobOf(long id, String url) {
+        ProcessingJob job = mock(ProcessingJob.class);
+        when(job.getId()).thenReturn(id);
+        when(job.getSourceUrl()).thenReturn(url);
+        return job;
+    }
+
+    @Test
+    void 영상을_다시_분석하면_초안의_영상_번호를_가장_최근_분석으로_알려준다() {
+        // 다시 분석하면 새 작업이 생기는데 초안은 예전 작업을 가리켜 "조건 바꿔 다시 짜기"가 0/5로 열렸다(#416).
+        ProcessingJob old = jobOf(10L, "https://www.youtube.com/shorts/abc");
+        ProcessingJob again = jobOf(25L, "https://youtube.com/shorts/abc?si=xyz");
+        ProcessingJob other = jobOf(11L, "https://www.youtube.com/shorts/other");
+        TripDraft draft = TripDraft.auto(user, List.of(10L, 11L), "당일치기");
+        draft.markReady(null, "{}");
+        when(jobs.findAllById(List.of(10L, 11L))).thenReturn(List.of(old, other));
+        List<SavedPlace> places = List.of(
+                new SavedPlace(again, user, "새 결과", null, "cafe", 35.1, 129.1),
+                new SavedPlace(old, user, "옛 결과", null, "cafe", 35.1, 129.1),
+                new SavedPlace(other, user, "다른 영상", null, "cafe", 35.1, 129.1));
+        when(saved.findByUserOrderByCreatedAtDescIdDesc(user)).thenReturn(places);
+
+        assertThat(service.currentJobIds(draft)).containsExactly(25L, 11L);
+    }
+
+    @Test
+    void 만드는_중이거나_여행이_된_초안은_영상_번호를_다시_찾지_않는다() {
+        TripDraft pending = TripDraft.auto(user, List.of(10L), "당일치기");
+        TripDraft approved = TripDraft.auto(user, List.of(10L), "당일치기");
+        approved.markReady(null, "{}");
+        approved.markApproved(3L);
+
+        assertThat(service.currentJobIds(pending)).containsExactly(10L);
+        assertThat(service.currentJobIds(approved)).containsExactly(10L);
+        verify(saved, never()).findByUserOrderByCreatedAtDescIdDesc(any());
+    }
 }

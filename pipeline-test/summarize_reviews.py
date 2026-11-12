@@ -35,6 +35,9 @@ pros/cons/tips/checklist는 각각 최대 4개까지만 담고, 리뷰에 근거
 
 리뷰 앞의 [별점 N]은 그 리뷰를 쓴 사람이 준 별점(1~5)입니다. 다음 규칙을 지키세요.
 - 이 장소가 아닌 다른 가게나 다른 메뉴 이야기(같은 건물의 다른 가게 등)는 쓰지 마세요.
+- "요약할 장소"가 주어졌는데 리뷰가 그 장소 자체가 아니라 그 안에 입점한 가게 한 곳 이야기뿐이면(예: 백화점 리뷰가
+  전부 안에 있는 식당 이야기), 위 규칙 대신 highlights를 "이곳 안에 있는 (가게 종류) 후기가 많아요."로 시작하고
+  그 가게 이야기임이 드러나게 쓰세요. 장소 전체의 특징인 것처럼 쓰지 마세요.
 - 여러 리뷰에서 반복된 내용을 먼저 쓰세요. 리뷰 하나에만 나온 불만은 cons에 최대 1개만 쓰세요.
 - 리뷰끼리 내용이 서로 어긋나면(예: 매장 안 식사 가능/포장만 가능) 한쪽만 단정하지 말고 checklist에 확인할 것으로 쓰세요.
 - 모든 문장의 끝은 "~해요", "~있어요"처럼 해요체로 통일하세요.
@@ -70,14 +73,30 @@ def _validate_summary(payload) -> dict:
     return payload
 
 
+PLACE_PREFIX = "[장소] "
+
+
+def split_place(review_texts: list[str]) -> tuple[str | None, list[str]]:
+    """첫 항목이 "[장소] 이름"이면 리뷰가 아니라 요약할 장소다. 롯데백화점 부산본점의 요약이 안에 있는 철판요리
+    식당 이야기로만 채워졌다 — 어느 장소의 리뷰인지 모델이 몰랐다(수정 확인 QA 2026-11-12, #416)."""
+    if review_texts and review_texts[0].startswith(PLACE_PREFIX):
+        return review_texts[0][len(PLACE_PREFIX):].strip() or None, review_texts[1:]
+    return None, review_texts
+
+
 def summarize_reviews(review_texts: list[str], model: str = DEFAULT_MODEL) -> dict:
     if not review_texts:
         raise ValueError("review_texts가 비어있습니다")
     api_key = load_api_key()
+    place, review_texts = split_place(review_texts)
+    if not review_texts:
+        raise ValueError("review_texts가 비어있습니다")
     parts = [
         {"text": f"리뷰 목록: {json.dumps(review_texts, ensure_ascii=False)}"},
         {"text": SUMMARY_PROMPT},
     ]
+    if place:
+        parts.insert(0, {"text": f"요약할 장소: {place}"})
 
     def _parse(text: str) -> dict:
         try:

@@ -265,4 +265,37 @@ class ProcessingJobLifecycleServiceIntegrationTest {
         assertThat(lifecycleService.startAnalysis(job.getId())).isEqualTo(job.getSourceUrl());
         assertThat(processingJobRepository.findById(job.getId()).orElseThrow().getStatus()).isEqualTo(JobStatus.PROCESSING);
     }
+
+    @Test
+    void 같은_영상을_다시_분석하면_직접_바로잡은_위치를_이어받는다() {
+        // 모모스커피 부산본점을 도모헌점으로 고친 뒤 다시 분석하면 부산본점으로 돌아갔다(수정 확인 QA 2026-11-12, #416).
+        ExtractedPlace cafe = new ExtractedPlace("모모스커피", "부산", "cafe", 0.9, null, null, List.of("모모스커피"));
+        ExtractedPlace beach = new ExtractedPlace("해운대", "부산", "attraction", 0.9, null, null, List.of("해운대"));
+        GeocodingResult mainBranch = new GeocodingResult(
+                35.2196, 129.0864, "모모스커피 부산본점", null, "부산 금정구", null, "음식점 > 카페", null, List.of());
+        GeocodingResult beachSpot = GeocodingResult.coordinatesOnly(35.1587, 129.1604);
+
+        ProcessingJob first = newJob();
+        lifecycleService.startAnalysis(first.getId());
+        lifecycleService.completeAnalysis(first.getId(), List.of(cafe, beach), List.of(mainBranch, beachSpot));
+        SavedPlace fixed = savedPlaceRepository.findByProcessingJob(first).stream()
+                .filter(p -> p.getPlaceName().equals("모모스커피 부산본점")).findFirst().orElseThrow();
+        fixed.relocateTo("모모스커피 도모헌점", 35.1400, 129.1100, "부산 수영구", null, "gp-domoheon");
+        savedPlaceRepository.save(fixed);
+
+        ProcessingJob again = processingJobRepository.save(
+                new ProcessingJob(first.getUser(), "https://youtu.be/lifecycle?si=again", SourcePlatform.YOUTUBE));
+        lifecycleService.startAnalysis(again.getId());
+        lifecycleService.completeAnalysis(again.getId(), List.of(cafe, beach), List.of(mainBranch, beachSpot));
+
+        List<SavedPlace> result = savedPlaceRepository.findByProcessingJob(again);
+        SavedPlace inherited = result.stream().filter(p -> p.getPlaceName().startsWith("모모스")).findFirst().orElseThrow();
+        assertThat(inherited.getPlaceName()).isEqualTo("모모스커피 도모헌점");
+        assertThat(inherited.getLatitude()).isEqualTo(35.1400);
+        assertThat(inherited.getGooglePlaceId()).isEqualTo("gp-domoheon");
+        assertThat(inherited.getRelocatedFromName()).isEqualTo("모모스커피 부산본점");
+        SavedPlace untouched = result.stream().filter(p -> p.getPlaceName().equals("해운대")).findFirst().orElseThrow();
+        assertThat(untouched.getLatitude()).isEqualTo(35.1587);
+        assertThat(untouched.getRelocatedFromName()).isNull();
+    }
 }

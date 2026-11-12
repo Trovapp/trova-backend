@@ -77,10 +77,29 @@ def youtube_title(url: str) -> str | None:
     try:
         request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept-Language": "ko-KR,ko;q=0.9"})
         with urllib.request.urlopen(request, timeout=15) as response:
-            return title_from_html(response.read(600_000).decode("utf-8", "replace"))
+            return title_from_stream(response)
     except Exception as exc:
         print(f"[pipeline] 페이지 제목 조회 실패: {exc}", file=sys.stderr)
         return None
+
+
+PAGE_READ_LIMIT = 3_000_000
+PAGE_CHUNK = 200_000
+
+
+def title_from_stream(response) -> str | None:
+    """페이지를 조금씩 읽다가 og:title이 나오면 멈춘다. 처음엔 앞 600KB만 읽었는데, 운영에서 받은 쇼츠 페이지는
+    2.2MB이고 제목 태그가 786KB 지점에 있어 계속 "제목 없음"이었다(수정 확인 QA 2026-11-12, #416)."""
+    data = b""
+    while len(data) < PAGE_READ_LIMIT:
+        chunk = response.read(PAGE_CHUNK)
+        if not chunk:
+            break
+        data += chunk
+        title = title_from_html(data.decode("utf-8", "replace"))
+        if title:
+            return title
+    return None
 
 
 OG_TITLE = re.compile(r'<meta\s+(?:property|name)="og:title"\s+content="([^"]*)"', re.IGNORECASE)

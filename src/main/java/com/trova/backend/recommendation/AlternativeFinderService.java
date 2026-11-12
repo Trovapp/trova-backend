@@ -91,6 +91,10 @@ public class AlternativeFinderService {
 
     private static final LocalTime MORNING_UNTIL = LocalTime.of(10, 30);
 
+    static boolean isRestaurant(String category) {
+        return category != null && (category.equals("restaurant") || category.endsWith("_restaurant"));
+    }
+
     static boolean isMorningFriendly(String category) {
         if (category == null) {
             return false;
@@ -111,9 +115,11 @@ public class AlternativeFinderService {
             return Optional.of(List.of());
         }
 
+        // 필터를 안 걸었어도 식당 자리의 대안은 식당에서 찾는다 — 10:20 돼지국밥집의 대안이 호텔 6곳·백화점·
+        // 지하철역이었다(수정 확인 QA 2026-11-12, #416).
         String includedType = filter.category() != null
                 ? GoogleTypeMapper.toGoogleType(filter.category()).orElse(null)
-                : null;
+                : (isRestaurant(target.getCategory()) ? "restaurant" : null);
 
         // next는 검색 성공 여부와 무관하게 항상 구해둔다(검색이 실패해도 형제 조회는
         // 이미 끝나 있어야 이후 로직이 next 유무를 일관되게 판단할 수 있다).
@@ -166,6 +172,14 @@ public class AlternativeFinderService {
                 .filter(p -> !tripNames.contains(normalizeName(p.getName())))
                 .filter(p -> inTrip.stream().noneMatch(t -> sameNamedNearby(p, t)))
                 .toList();
+
+        // 필터 없이 찾을 때 숙소·역·학교는 대신 갈 곳이 아니라 뺀다(빈 시간 추천과 같은 규칙, #416).
+        // 바꾸려는 곳이 숙소·역이면 같은 종류가 대안이므로 그대로 둔다.
+        if (filter.category() == null && !GapRecommendationService.NOT_A_STOP.contains(target.getCategory())) {
+            candidates = candidates.stream()
+                    .filter(p -> !GapRecommendationService.NOT_A_STOP.contains(p.getCategory()))
+                    .toList();
+        }
 
         long tagStart = System.currentTimeMillis();
         if (Boolean.TRUE.equals(filter.indoorOnly())) {
