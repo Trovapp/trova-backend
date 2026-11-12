@@ -22,6 +22,11 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
 
     List<TripDraft> findByStatusInAndUpdatedAtBefore(List<TripDraftStatus> statuses, LocalDateTime threshold);
 
+    // 멈춘 초안 다시 보내기용(ADR 0043).
+    @Query("select d.id from TripDraft d where d.status = :status and d.updatedAt > :from and d.updatedAt < :to")
+    List<Long> findIdsByStatusAndUpdatedAtBetween(
+            @Param("status") TripDraftStatus status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+
     void deleteByUser(User user);
 
     // 자동 생성 초안 중 같은 영상으로 또 만들지 않았는지 확인할 때 쓴다(#136).

@@ -26,6 +26,8 @@ Slack 알림의 "Runbook" 링크가 이 문서다. 운영에 영향을 주는 �
 sum by (topic) (kafka_consumer_fetch_manager_records_lag{job="trova-prod", topic=~"trova\\.[a-z-]+"})
 # 실패 작업 — 서버가 뜰 때 토픽별로 0을 미리 만들어 두어 첫 1건도 increase가 센다
 sum by (topic) (increase(trova_queue_dead_letter_total{job="trova-prod"}[15m]))
+# 멈춘 작업 다시 보내기(ADR 0043) — 저장됐지만 대기열에 없던 작업. 0이 아니면 그 시각 전후 재시작·브로커 장애를 본다
+sum by (queue) (increase(trova_queue_requeued_total{job="trova-prod"}[1h]))
 ```
 
 **왜 3개·15분인가:** 공유는 사용자당 하루 20건이고, 분석은 한 건에 30초~5분(동시 2), 초안은 6~20초(동시 1)다.
@@ -58,7 +60,7 @@ sum by (topic) (increase(trova_queue_dead_letter_total{job="trova-prod"}[15m]))
 | 원인 | 보이는 것 | 복구 방향 |
 |---|---|---|
 | **1. 작업이 몰림** | 공유가 한꺼번에 많이 들어옴, 처리 중 작업이 계속 바뀜, 지연이 줄어드는 중 | 기다린다. 처리량 상한(분석 동시 2)은 서버 메모리 때문(ADR 0040) |
-| **2. 한 작업이 멈춤** | 같은 작업이 오래 PROCESSING, "파이프라인 시작" 뒤 로그가 없음 | Python 자식 프로세스·Gemini 응답 대기 확인(`ps -o pid,etime,args -C python3`). 15분 뒤 자동 정리(OrphanedJobRecoveryService) |
+| **2. 한 작업이 멈춤** | 같은 작업이 오래 PROCESSING, "파이프라인 시작" 뒤 로그가 없음 | Python 자식 프로세스·Gemini 응답 대기 확인(`ps -o pid,etime,args -C python3`). 8분 넘게 갱신이 없으면 한 번 다시 보내고(StuckJobRequeueService), 15분 뒤 자동 정리(OrphanedJobRecoveryService) |
 | **3. 리스너가 그룹에서 빠짐** | `partitions revoked`가 반복, 지연이 줄지 않음 | 서버 재시작 검토(사용자 승인). 처리 중이던 메시지는 다시 받는다 |
 | **4. 브로커 문제** | "Kafka에 넣지 못해" 로그, 넘김 증가 | Aiven 콘솔에서 서비스 상태 확인. 무료 플랜은 꺼졌다 켜지면 토픽 데이터가 빌 수 있다(ADR 0021) |
 | **5. 실패 작업(DLT)** | "실패 작업 토픽으로" 로그에 topic·value(작업 id)·예외 | 대부분 DB 연결 문제. 아래 4절로 원래 작업 상태를 본다 |
@@ -67,7 +69,8 @@ sum by (topic) (increase(trova_queue_dead_letter_total{job="trova-prod"}[15m]))
 
 **순서: 원인 확인 → 사용자 승인 → 실행 → 5절 확인.** 운영을 바꾸는 명령은 사용자가 직접 실행한다.
 
-- **실패 작업 토픽의 메시지는 자동으로 다시 돌리지 않는다** — 분석·초안을 다시 돌리면 Gemini를 또 부른다.
+- **실패 작업 토픽의 메시지를 읽어 다시 돌리지는 않는다** — 분석·초안을 다시 돌리면 Gemini를 또 부른다. 다만 그 작업 행이 PENDING(3분)·PROCESSING(8분)으로 남아 있으면
+  `StuckJobRequeueService`가 작업당 한 번 다시 보낸다(ADR 0043, 로그 "멈춘 작업 다시 보냄").
   값(작업 id 또는 초안 id)과 원래 토픽은 로그 "실패 작업 토픽으로" 줄에 있다. 그 작업은 15분 뒤 FAILED로 정리되고,
   사용자는 앱에서 다시 시도할 수 있다. 관리자가 영상 분석을 다시 돌리려면 관리자 재시도 API를 쓴다(ADR 0026).
 - **재시작**(약 2분 앱 멈춤): 처리 중이던 메시지는 커밋 전이라 다시 받는다(분석: #244 확인, 초안: 2026-11-12 운영 SIGKILL 실험).
