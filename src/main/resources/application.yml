@@ -122,7 +122,7 @@ app:
   # 사용자별 하루 호출 한도(#33, 한국 시간 자정 기준) — 넘으면 429.
   # Gemini 무료 한도는 전체 사용자 공유, Google Places는 무료 크레딧 초과 시 과금이라 한 사용자가 소진하지 못하게 막는다.
   quota:
-    shares-per-day: ${QUOTA_SHARES_PER_DAY:20}
+    shares-per-day: ${QUOTA_SHARES_PER_DAY:10}
     place-calls-per-day: ${QUOTA_PLACE_CALLS_PER_DAY:100}
   # IP별 분당 요청 수 제한(#239) — 넘으면 429. 앱 폴링(5초)보다 넉넉하게 감으로 정함(실측 아님), 0이면 끈다. 서버 안(127.0.0.1) 요청은 세지 않는다.
   rate-limit:

@@ -35,7 +35,7 @@ public class DailyQuotaService {
     @Autowired
     public DailyQuotaService(
             ProcessingJobRepository processingJobRepository,
-            @Value("${app.quota.shares-per-day:20}") int sharesPerDay,
+            @Value("${app.quota.shares-per-day:10}") int sharesPerDay,
             @Value("${app.quota.place-calls-per-day:100}") int placeCallsPerDay
     ) {
         this(processingJobRepository, sharesPerDay, placeCallsPerDay, Clock.systemDefaultZone());
