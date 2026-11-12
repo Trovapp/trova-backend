@@ -82,3 +82,4 @@
 | [0040](0040-prod-heap-cap-144m.md) | 운영 java 힙 상한을 384MiB에서 144MiB로 낮춘다 (0037의 힙 결정을 바꿈) | 확정 | 2026-11-11 |
 | [0041](0041-grafana-cloud-alert-rules-and-routing.md) | Grafana Cloud 경보는 임계값·지속 조건·최소 요청 수로 울리고, 알림 정책은 심각도별로 반복한다 | 확정 | 2026-11-11 |
 | [0042](0042-host-metrics-from-proc-in-app.md) | 서버 메모리·스왑·PSI·CPU steal은 앱이 /proc에서 읽어 지표 전송에 싣는다 | 확정 | 2026-11-11 |
+| [0043](0043-job-handoff-outbox-or-sweeper.md) | 작업 저장과 Kafka 전달 사이 유실 막기 — 아웃박스 대신 멈춘 작업 다시 보내기(`StuckJobRequeueService`) | 확정 | 2026-11-12 |

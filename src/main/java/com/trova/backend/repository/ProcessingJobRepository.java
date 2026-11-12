@@ -28,5 +28,10 @@ public interface ProcessingJobRepository extends JpaRepository<ProcessingJob, Lo
     void deleteByUser(User user);
     // 서버 재시작 등으로 대기열에서 사라진 작업 정리용(#43).
     List<ProcessingJob> findByStatusInAndUpdatedAtBefore(List<JobStatus> statuses, java.time.LocalDateTime updatedBefore);
+
+    // 멈춘 작업 다시 보내기용 — 정리기가 FAILED로 바꾸기 전(from 이후)이면서 오래 갱신 없는(to 이전) 작업 id(ADR 0043).
+    @Query("select j.id from ProcessingJob j where j.status = :status and j.updatedAt > :from and j.updatedAt < :to")
+    List<Long> findIdsByStatusAndUpdatedAtBetween(
+            @Param("status") JobStatus status, @Param("from") java.time.LocalDateTime from, @Param("to") java.time.LocalDateTime to);
     long countByUserAndCreatedAtGreaterThanEqual(User user, java.time.LocalDateTime from);
 }
