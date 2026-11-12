@@ -26,6 +26,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -603,6 +604,40 @@ public class TripService {
                     TripDayRetimer.retime(optimized);
                     tripPlaceRepository.saveAll(optimized);
                     return optimized;
+                });
+    }
+
+    public record ScheduleEntry(Long id, LocalTime visitStartTime, LocalTime visitEndTime) {
+    }
+
+    /**
+     * 동선 다듬기 되돌리기(#414). 다듬기 전에 앱이 받아 둔 순서·시간을 그대로 돌려놓는다 — 되돌리기가 없어 결과가
+     * 마음에 안 들면 하나씩 고쳐야 했다(안드로이드 사용성 테스트 2026-11-12). 그날 장소와 목록이 정확히 같을 때만
+     * 적용한다(그 사이 장소가 추가·삭제됐으면 되돌릴 대상이 달라 거절).
+     */
+    @Transactional
+    public Optional<List<TripPlace>> restoreDay(User user, Long tripId, int day, List<ScheduleEntry> entries) {
+        return tripRepository.findById(tripId)
+                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
+                .flatMap(itinerary -> {
+                    List<TripPlace> places = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary);
+                    Map<Long, TripPlace> byId = new HashMap<>();
+                    places.forEach(p -> byId.put(p.getId(), p));
+                    if (entries == null || entries.size() != places.size()
+                            || entries.stream().map(ScheduleEntry::id).distinct().count() != places.size()
+                            || !entries.stream().allMatch(e -> byId.containsKey(e.id()))) {
+                        return Optional.empty();
+                    }
+                    List<TripPlace> restored = new ArrayList<>();
+                    for (int i = 0; i < entries.size(); i++) {
+                        ScheduleEntry e = entries.get(i);
+                        TripPlace p = byId.get(e.id());
+                        p.restoreSchedule(i + 1, e.visitStartTime(), e.visitEndTime());
+                        restored.add(p);
+                    }
+                    tripPlaceRepository.saveAll(restored);
+                    return Optional.of(restored);
                 });
     }
 

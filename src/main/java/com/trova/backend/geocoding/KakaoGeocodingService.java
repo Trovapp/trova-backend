@@ -1,11 +1,13 @@
 package com.trova.backend.geocoding;
 
+import com.trova.backend.recommendation.PlaceNameMatch;
 import com.trova.backend.service.ApiCallLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -153,6 +155,33 @@ public class KakaoGeocodingService {
         }
         String road = point.roadAddress() != null ? point.roadAddress().addressName() : null;
         return GeocodingResult.addressOnly(y, x, point.addressName(), road);
+    }
+
+    /**
+     * 같은 상호의 다른 지점을 중심 좌표 근처에서 찾는다(#414). 홍대 영상의 "Isaac Toast"가 위치 조건 없는 검색 1등인
+     * 명동성당점으로 잡혔다 — 영상 속 다른 장소들의 중심 근처에 같은 상호가 있으면 그 지점을 쓴다.
+     */
+    public Optional<GeocodingResult> findBranchNear(String matchedName, double latitude, double longitude,
+                                                    int radiusMeters, Long jobId) {
+        long start = System.currentTimeMillis();
+        try {
+            KakaoKeywordSearchResponse near = kakaoLocalApiClient.searchKeywordNear(
+                    PlaceNameMatch.brandQuery(matchedName), longitude, latitude, radiusMeters);
+            apiCallLogService.record("kakao", "keyword_search_near", jobId, System.currentTimeMillis() - start,
+                    true, null, null, null, null);
+            if (near == null || near.documents() == null) {
+                return Optional.empty();
+            }
+            return near.documents().stream()
+                    .filter(d -> PlaceNameMatch.sameBusiness(matchedName, d.placeName()))
+                    .findFirst()
+                    .map(GeocodingResult::fromDocument);
+        } catch (Exception e) {
+            apiCallLogService.record("kakao", "keyword_search_near", jobId, System.currentTimeMillis() - start,
+                    false, e.getMessage(), null, null, null);
+            log.warn("중심 근처 지점 검색 실패(name={})", matchedName, e);
+            return Optional.empty();
+        }
     }
 
     private GeocodingResult search(String query, Long jobId) {

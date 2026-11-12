@@ -81,6 +81,37 @@ class PlaceExtractionServiceTest {
                 new PipelineStageMetrics(registry), mock(QueueWaitMetrics.class));
     }
 
+    private static GeocodingResult at(String name, double lat, double lng) {
+        return new GeocodingResult(lat, lng, name, null, null, null, null, null, null);
+    }
+
+    @Test
+    void 영상_중심에서_먼_체인점은_중심_근처_같은_상호_지점으로_바꾼다() {
+        // 홍대 영상의 이삭토스트가 5.7km 떨어진 명동성당점으로 잡혔다(안드로이드 사용성 테스트 2026-11-12, #414).
+        GeocodingResult hongdae1 = at("트릭아이뮤지엄", 37.5537, 126.9221);
+        GeocodingResult hongdae2 = at("코코넛박스", 37.5550, 126.9230);
+        GeocodingResult hongdae3 = at("나이키 홍대", 37.5560, 126.9240);
+        GeocodingResult myeongdong = at("이삭토스트 서울명동성당점", 37.5634, 126.9869);
+        GeocodingResult hongdaeIsaac = at("이삭토스트 홍대점", 37.5545, 126.9225);
+        org.mockito.Mockito.when(kakaoGeocodingService.findBranchNear(
+                        eq("이삭토스트 서울명동성당점"), org.mockito.ArgumentMatchers.anyDouble(),
+                        org.mockito.ArgumentMatchers.anyDouble(), org.mockito.ArgumentMatchers.anyInt(), anyLong()))
+                .thenReturn(java.util.Optional.of(hongdaeIsaac));
+
+        List<GeocodingResult> result = placeExtractionService.moveOutlierBranches(
+                1L, List.of(hongdae1, myeongdong, hongdae2, hongdae3));
+
+        org.assertj.core.api.Assertions.assertThat(result).containsExactly(hongdae1, hongdaeIsaac, hongdae2, hongdae3);
+    }
+
+    @Test
+    void 장소가_3곳보다_적으면_중심을_정하지_않고_그대로_둔다() {
+        List<GeocodingResult> two = List.of(at("A", 37.55, 126.92), at("B", 37.56, 126.99));
+
+        org.assertj.core.api.Assertions.assertThat(placeExtractionService.moveOutlierBranches(1L, two)).isEqualTo(two);
+        org.mockito.Mockito.verifyNoInteractions(kakaoGeocodingService);
+    }
+
     @Test
     void 정상_처리시_단계가_순서대로_기록된다() {
         Long jobId = 1L;

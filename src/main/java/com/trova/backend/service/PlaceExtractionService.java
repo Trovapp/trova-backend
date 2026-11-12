@@ -14,6 +14,7 @@ import com.trova.backend.pipeline.PlaceSelectionRunner;
 import com.trova.backend.pipeline.PlaceVerification;
 import com.trova.backend.pipeline.PlaceVerificationRunner;
 import com.trova.backend.queue.QueuePath;
+import com.trova.backend.replan.GeoUtils;
 import com.trova.backend.queue.QueueWaitMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,6 +182,7 @@ public class PlaceExtractionService {
             timing.stage(ProcessingStage.SELECTING);
             lifecycleService.updateStage(jobId, ProcessingStage.SELECTING);
             geocodedList = selectAmongAlternatives(jobId, extractedList, geocodedList);
+            geocodedList = moveOutlierBranches(jobId, geocodedList);
 
             timing.stage(ProcessingStage.VERIFYING);
             lifecycleService.updateStage(jobId, ProcessingStage.VERIFYING);
@@ -238,6 +240,45 @@ public class PlaceExtractionService {
      * 교체하며, 어느 후보도 안 맞다고 판단하면(null) 좌표를 비운다(틀린 좌표보다
      * 없는 게 낫다는 원칙과 동일). 재검토 대상이 없으면 호출 자체를 생략한다.
      */
+    // 영상 속 다른 장소들의 중심에서 이보다 멀면 체인점 지점을 잘못 골랐을 수 있다고 본다(#414).
+    static final double OUTLIER_KM = 3.0;
+    static final int BRANCH_SEARCH_RADIUS_METERS = 3000;
+
+    /**
+     * 체인점 지점 바로잡기(#414). 카카오 검색은 위치 조건 없이 1등을 고르므로, 홍대 영상의 이삭토스트가 5.7km 떨어진
+     * 명동성당점으로 잡혔다. 좌표가 있는 장소가 3곳 이상일 때 중심(위도·경도 중앙값)에서 3km 넘게 떨어진 장소는
+     * 중심 3km 안에 같은 상호가 있는지 찾아 있으면 그 지점으로 바꾼다. 같은 상호가 없으면(진짜 먼 곳) 그대로 둔다.
+     */
+    List<GeocodingResult> moveOutlierBranches(Long jobId, List<GeocodingResult> geocodedList) {
+        List<GeocodingResult> located = geocodedList.stream().filter(g -> g.latitude() != null).toList();
+        if (located.size() < 3) {
+            return geocodedList;
+        }
+        double centerLat = median(located.stream().map(GeocodingResult::latitude).toList());
+        double centerLng = median(located.stream().map(GeocodingResult::longitude).toList());
+        List<GeocodingResult> result = new ArrayList<>(geocodedList);
+        for (int i = 0; i < result.size(); i++) {
+            GeocodingResult g = result.get(i);
+            if (g.latitude() == null || g.matchedName() == null
+                    || GeoUtils.haversineKm(centerLat, centerLng, g.latitude(), g.longitude()) <= OUTLIER_KM) {
+                continue;
+            }
+            int index = i;
+            kakaoGeocodingService.findBranchNear(g.matchedName(), centerLat, centerLng, BRANCH_SEARCH_RADIUS_METERS, jobId)
+                    .ifPresent(branch -> {
+                        log.info("ProcessingJob {} 지점 바로잡기: {} → {}", jobId, g.matchedName(), branch.matchedName());
+                        result.set(index, branch);
+                    });
+        }
+        return result;
+    }
+
+    private static double median(List<Double> values) {
+        List<Double> sorted = values.stream().sorted().toList();
+        int mid = sorted.size() / 2;
+        return sorted.size() % 2 == 1 ? sorted.get(mid) : (sorted.get(mid - 1) + sorted.get(mid)) / 2;
+    }
+
     private List<GeocodingResult> selectAmongAlternatives(
             Long jobId, List<ExtractedPlace> extractedList, List<GeocodingResult> geocodedList
     ) {

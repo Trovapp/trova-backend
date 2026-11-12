@@ -37,4 +37,14 @@ public final class PlaceNameMatch {
         }
         return joined.replaceAll("[^\\p{L}\\p{N}]", "").toLowerCase(Locale.ROOT);
     }
+
+    /** 검색어로 쓸 상호 — 지점 단어("…점")를 뗀 원래 이름(띄어쓰기 유지). */
+    public static String brandQuery(String name) {
+        String[] tokens = name.trim().split("\\s+");
+        if (tokens.length <= 1) {
+            return name.trim();
+        }
+        String joined = Arrays.stream(tokens).filter(t -> !t.endsWith("점")).collect(Collectors.joining(" "));
+        return joined.isEmpty() ? name.trim() : joined;
+    }
 }

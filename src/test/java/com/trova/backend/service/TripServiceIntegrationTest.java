@@ -607,6 +607,55 @@ class TripServiceIntegrationTest {
     }
 
     @Test
+    void 빈_시간에_넣은_장소는_앞_장소가_끝난_뒤_시간이_붙는다() {
+        // 빈 시간 추천으로 넣은 장소가 시간 없이 들어가 동선 다듬기 뒤 맨 끝으로 밀렸다(안드로이드 사용성 테스트 2026-11-12, #414).
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "서울 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-gap-a", "아침", "cafe", null, null, null, 37.5500, 126.9200, null));
+        placeRepository.save(new Place("trip-place-test-gap-b", "오후", "attraction", null, null, null, 37.5510, 126.9210, null));
+        placeRepository.save(new Place("trip-place-test-gap-new", "미쓰족발", "korean_restaurant", null, null, null, 37.5505, 126.9205, null));
+        TripPlace a = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-gap-a").orElseThrow();
+        TripPlace b = tripService.addPlaceToDay(user, trip.getId(), 1, "trip-place-test-gap-b").orElseThrow();
+        tripService.updateDetails(user, a.getId(), LocalTime.of(10, 0), LocalTime.of(11, 30), null, null);
+        tripService.updateDetails(user, b.getId(), LocalTime.of(13, 0), LocalTime.of(14, 0), null, null);
+
+        TripPlace inserted = tripService.insertPlaceAfter(user, a.getId(), "trip-place-test-gap-new").orElseThrow();
+
+        assertThat(inserted.getVisitStartTime()).isEqualTo(LocalTime.of(11, 40));
+        assertThat(inserted.getVisitEndTime()).isEqualTo(LocalTime.of(12, 40));
+    }
+
+    @Test
+    void 동선_다듬기를_되돌리면_이전_순서와_시간으로_돌아간다() {
+        User user = newUser();
+        Trip trip = tripService.createTrip(user, "서울 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        placeRepository.save(new Place("trip-place-test-undo-a", "가", null, null, null, null, 37.5000, 127.0000, null));
+        placeRepository.save(new Place("trip-place-test-undo-b", "나", null, null, null, null, 37.6000, 127.0000, null));
+        placeRepository.save(new Place("trip-place-test-undo-c", "다", null, null, null, null, 37.5010, 127.0000, null));
+        List<TripService.ScheduleEntry> before = new java.util.ArrayList<>();
+        LocalTime[] starts = {LocalTime.of(9, 0), LocalTime.of(11, 0), null};
+        String[] ids = {"trip-place-test-undo-a", "trip-place-test-undo-b", "trip-place-test-undo-c"};
+        for (int i = 0; i < ids.length; i++) {
+            TripPlace p = tripService.addPlaceToDay(user, trip.getId(), 1, ids[i]).orElseThrow();
+            if (starts[i] != null) {
+                tripService.updateDetails(user, p.getId(), starts[i], starts[i].plusHours(1), null, null);
+            }
+            before.add(new TripService.ScheduleEntry(p.getId(), starts[i], starts[i] == null ? null : starts[i].plusHours(1)));
+        }
+        tripService.optimizeRoute(user, trip.getId(), 1).orElseThrow();
+
+        List<TripPlace> restored = tripService.restoreDay(user, trip.getId(), 1, before).orElseThrow();
+
+        assertThat(restored).extracting(TripPlace::getId).containsExactlyElementsOf(before.stream().map(TripService.ScheduleEntry::id).toList());
+        TripPlace third = tripPlaceRepository.findById(before.get(2).id()).orElseThrow();
+        assertThat(third.getVisitOrder()).isEqualTo(3);
+        assertThat(third.getVisitStartTime()).isNull();
+        assertThat(tripPlaceRepository.findById(before.get(1).id()).orElseThrow().getVisitStartTime()).isEqualTo(LocalTime.of(11, 0));
+        // 목록이 달라졌으면(장소 수가 다름) 되돌리지 않는다.
+        assertThat(tripService.restoreDay(user, trip.getId(), 1, before.subList(0, 2))).isEmpty();
+    }
+
+    @Test
     void 여행_날짜를_바꾸면_예전_날짜의_비_알림을_지운다() {
         // 예전 날짜 기준으로 만든 비 알림은 날짜가 바뀌면 틀린 안내가 된다(#181)
         User user = newUser();
