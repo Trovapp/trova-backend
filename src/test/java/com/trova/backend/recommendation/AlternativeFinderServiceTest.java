@@ -323,6 +323,72 @@ class AlternativeFinderServiceTest {
     }
 
     @Test
+    void 필터_없이_찾으면_숙소와_역은_후보에서_빠진다() {
+        // 10:20 식당 자리의 대안이 호텔 6곳·지하철역이었다(수정 확인 QA 2026-11-12, #416).
+        User owner = user();
+        TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
+        when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+
+        var rawHotel = new GooglePlacesNearbySearchResponse.Place(
+                "gp-hotel", new GooglePlacesNearbySearchResponse.Place.DisplayName("어느 호텔"),
+                List.of("hotel"), 4.4, 5000, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.501, 127.0), "주소1");
+        var rawStation = new GooglePlacesNearbySearchResponse.Place(
+                "gp-station", new GooglePlacesNearbySearchResponse.Place.DisplayName("어느 역"),
+                List.of("subway_station"), 4.0, 900, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.502, 127.0), "주소2");
+        var rawCafe = new GooglePlacesNearbySearchResponse.Place(
+                "gp-cafe", new GooglePlacesNearbySearchResponse.Place.DisplayName("대안카페"),
+                List.of("cafe"), 4.2, 50, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.503, 127.0), "주소3");
+        List<GooglePlacesNearbySearchResponse.Place> raws = List.of(rawHotel, rawStation, rawCafe);
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raws));
+        when(placeCatalogService.upsertAll(raws)).thenReturn(List.of(
+                new Place("gp-hotel", "어느 호텔", "hotel", 4.4, 5000, null, 37.501, 127.0, "주소1"),
+                new Place("gp-station", "어느 역", "subway_station", 4.0, 900, null, 37.502, 127.0, "주소2"),
+                new Place("gp-cafe", "대안카페", "cafe", 4.2, 50, null, 37.503, 127.0, "주소3")));
+        when(personalizationService.retrieveAndScore(eq(owner), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result).isPresent();
+        assertThat(result.get()).extracting(AlternativeCandidate::googlePlaceId).containsExactly("gp-cafe");
+    }
+
+    @Test
+    void 식당_자리는_필터가_없어도_식당에서_대안을_찾는다() {
+        User owner = user();
+        Trip trip = new Trip(owner, "여행", null, null);
+        Itinerary itinerary = new Itinerary(trip, 1, null);
+        TripPlace place = new TripPlace(
+                itinerary, "돼지국밥집", null, "korean_restaurant", 37.5, 127.0, null, null, 1, PlaceSource.NORMAL, null);
+        setId(place, 1L);
+        when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(place));
+
+        var raw = new GooglePlacesNearbySearchResponse.Place(
+                "gp-r", new GooglePlacesNearbySearchResponse.Place.DisplayName("다른 국밥집"),
+                List.of("korean_restaurant"), 4.3, 50, null,
+                new GooglePlacesNearbySearchResponse.Place.Location(37.501, 127.001), "주소");
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "restaurant"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(raw)));
+        when(placeCatalogService.upsertAll(List.of(raw))).thenReturn(List.of(
+                new Place("gp-r", "다른 국밥집", "korean_restaurant", 4.3, 50, null, 37.501, 127.001, "주소")));
+        when(personalizationService.retrieveAndScore(eq(owner), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result).isPresent();
+        assertThat(result.get()).extracting(AlternativeCandidate::googlePlaceId).containsExactly("gp-r");
+    }
+
+    @Test
     void 교체_대상_자기_자신은_후보에서_제외된다() {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);

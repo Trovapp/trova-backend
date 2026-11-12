@@ -34,7 +34,7 @@ public class GapRecommendationService {
     private static final LocalTime LUNCH_TO = LocalTime.of(14, 0);
     private static final LocalTime DINNER_FROM = LocalTime.of(17, 0);
     private static final LocalTime DINNER_TO = LocalTime.of(20, 0);
-    private static final Set<String> NOT_A_STOP = Set.of(
+    static final Set<String> NOT_A_STOP = Set.of(
             "lodging", "hotel", "motel", "hostel", "guest_house", "resort_hotel", "extended_stay_hotel",
             "subway_station", "train_station", "transit_station", "bus_station", "light_rail_station", "airport",
             "university", "school", "primary_school", "secondary_school", "parking", "gas_station");
