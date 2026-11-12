@@ -5,6 +5,7 @@ import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingStage;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.geocoding.GeocodingResult;
+import com.trova.backend.geocoding.KakaoCategory;
 import com.trova.backend.pipeline.ExtractedPlace;
 import com.trova.backend.pipeline.ItineraryAssignment;
 import com.trova.backend.repository.ProcessingJobRepository;
@@ -84,6 +85,13 @@ public class ProcessingJobLifecycleService {
     /** 외부 호출이 모두 끝난 뒤, 미완료 부분 결과 교체와 완료 상태를 함께 커밋한다. */
     @Transactional
     public boolean completeAnalysis(Long jobId, List<ExtractedPlace> extracted, List<GeocodingResult> geocoded) {
+        return completeAnalysis(jobId, extracted, geocoded, Map.of());
+    }
+
+    /** nearbyBranches: 결과 순번 → 영상 근처의 같은 가게 지점 이름(다른 지점일 수 있다는 표시, #414). */
+    @Transactional
+    public boolean completeAnalysis(Long jobId, List<ExtractedPlace> extracted, List<GeocodingResult> geocoded,
+                                    Map<Integer, String> nearbyBranches) {
         if (extracted.isEmpty() || extracted.size() != geocoded.size()) {
             throw new IllegalArgumentException("분석 결과와 지오코딩 결과의 크기가 일치해야 합니다");
         }
@@ -94,7 +102,9 @@ public class ProcessingJobLifecycleService {
         }
         savedPlaceRepository.deleteAll(savedPlaceRepository.findByProcessingJob(job));
         for (int i = 0; i < extracted.size(); i++) {
-            savedPlaceRepository.save(createPlace(job, extracted.get(i), geocoded.get(i)));
+            SavedPlace place = createPlace(job, extracted.get(i), geocoded.get(i));
+            place.suggestNearbyBranch(nearbyBranches.get(i));
+            savedPlaceRepository.save(place);
         }
         job.markAnalysisDone();
         return true;
@@ -109,7 +119,7 @@ public class ProcessingJobLifecycleService {
                 job.getUser(),
                 placeName,
                 extracted.region(),
-                extracted.category(),
+                KakaoCategory.resolve(geocoded.kakaoCategoryName(), extracted.category()),
                 geocoded.latitude(),
                 geocoded.longitude(),
                 extracted.dayNumber(),

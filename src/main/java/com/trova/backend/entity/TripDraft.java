@@ -92,6 +92,11 @@ public class TripDraft {
     @Column(name = "dismissed_at")
     private LocalDateTime dismissedAt;
 
+    // 이 초안에 들어간 영상 장소의 위치를 사용자가 바로잡은 시각(#414). 초안을 자동으로 다시 만들지 않고(ADR 0006 —
+    // 바로잡기는 외부 API를 새로 부르지 않는다) 앱이 "위치가 바뀌었어요 · 다시 짜기"를 보여 사용자가 고른다.
+    @Column(name = "places_changed_at")
+    private LocalDateTime placesChangedAt;
+
     protected TripDraft() {
     }
 
@@ -147,18 +152,14 @@ public class TripDraft {
     }
 
     /**
-     * 초안에 들어간 장소 정보가 바뀌었을 때(위치 바로잡기) 같은 행을 다시 만들게 대기열로 돌린다(#414).
-     * 읽어 둔 일수·출발일은 그대로 두어 요청 해석을 다시 하지 않는다. 승인했거나 닫았거나 아직 만드는 중이면 그대로 둔다
-     * — 만드는 중이면 끝날 때 이미 바뀐 장소를 읽는다.
+     * 초안에 들어간 영상 장소의 위치가 바뀌었다고 표시한다(#414). 상태·내용은 그대로 둔다 — 만드는 중이어도
+     * 표시가 남아 끝난 뒤 앱이 다시 짜기를 권한다. 승인했거나 닫은 초안은 표시하지 않는다.
      */
-    public boolean requeueForPlaceChange() {
-        if (tripId != null || dismissedAt != null
-                || (status != TripDraftStatus.READY && status != TripDraftStatus.FAILED)) {
+    public boolean markPlacesChanged() {
+        if (tripId != null || dismissedAt != null) {
             return false;
         }
-        this.draftJson = null;
-        this.errorMessage = null;
-        touch(TripDraftStatus.PENDING);
+        this.placesChangedAt = LocalDateTime.now();
         return true;
     }
 
@@ -200,4 +201,5 @@ public class TripDraft {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public boolean isAutoCreated() { return autoCreated; }
     public LocalDateTime getDismissedAt() { return dismissedAt; }
+    public LocalDateTime getPlacesChangedAt() { return placesChangedAt; }
 }

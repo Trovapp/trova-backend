@@ -332,4 +332,15 @@ class TripPlannerServiceTest {
         assertThat(draft.getStatus()).isEqualTo(TripDraftStatus.FAILED);
         assertThat(draft.getErrorMessage()).contains("저장된 장소가 없어요");
     }
+
+    @Test
+    void 직접_만든_초안의_바라는_점만_일정_생성_메모로_넘긴다() {
+        User owner = new User("kakao", "9", "테스터", null);
+        TripDraft manual = new TripDraft(owner, List.of(1L), "2026-11-14 1박 2일 바다 위주로");
+        TripDraft auto = TripDraft.auto(owner, List.of(1L), "1박 2일");
+
+        assertThat(TripPlannerService.planNotes(false, manual)).singleElement().asString().contains("\"바다 위주로\"");
+        assertThat(TripPlannerService.planNotes(true, auto)).containsExactly(TripPlannerService.SPLIT_NOTE);
+        assertThat(TripPlannerService.planNotes(false, new TripDraft(owner, List.of(1L), "이 영상들로 일정 짜줘"))).isEmpty();
+    }
 }
