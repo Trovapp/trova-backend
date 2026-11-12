@@ -10,9 +10,9 @@ import com.trova.backend.entity.User;
 import com.trova.backend.replan.TripReplanGraph;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.TripReplanJobRepository;
+import com.trova.backend.queue.ReplanJobQueue;
 import com.trova.backend.service.OrphanedJobRecoveryService;
 import com.trova.backend.service.CurrentUserService;
-import com.trova.backend.service.TripReplanJobService;
 import com.trova.backend.service.DailyQuotaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +34,7 @@ public class TripReplanController {
     private final CurrentUserService currentUserService;
     private final TripRepository tripRepository;
     private final TripReplanJobRepository tripReplanJobRepository;
-    private final TripReplanJobService tripReplanJobService;
+    private final ReplanJobQueue replanJobQueue;
     private final DailyQuotaService dailyQuotaService;
     private final Object[] submissionLocks = createSubmissionLocks();
 
@@ -50,13 +50,13 @@ public class TripReplanController {
             CurrentUserService currentUserService,
             TripRepository tripRepository,
             TripReplanJobRepository tripReplanJobRepository,
-            TripReplanJobService tripReplanJobService,
+            ReplanJobQueue replanJobQueue,
             DailyQuotaService dailyQuotaService
     ) {
         this.currentUserService = currentUserService;
         this.tripRepository = tripRepository;
         this.tripReplanJobRepository = tripReplanJobRepository;
-        this.tripReplanJobService = tripReplanJobService;
+        this.replanJobQueue = replanJobQueue;
         this.dailyQuotaService = dailyQuotaService;
     }
 
@@ -150,7 +150,8 @@ public class TripReplanController {
         dailyQuotaService.consumePlaceCall(user);
         TripReplanJob job = tripReplanJobRepository.save(new TripReplanJob(user, trip, indoorOnly, allPlaces));
         try {
-            tripReplanJobService.process(job.getId());
+            // 운영은 Kafka(#396) — 재구성 중에 서버가 재시작돼도 다시 받아 끝까지 한다.
+            replanJobQueue.enqueue(job.getId());
         } catch (TaskRejectedException e) {
             // 거절된 작업을 남기면 위의 중복 방지가 5분 동안 이 유령 작업을 계속 돌려준다(#31).
             tripReplanJobRepository.delete(job);

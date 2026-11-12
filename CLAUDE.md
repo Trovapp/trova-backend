@@ -35,7 +35,7 @@ STT 방식 결정 배경(Whisper 셀프호스팅 대신 Gemini 오디오 직접 
 ## API 설계 원칙
 
 - 외부 API 호출(Gemini, 카카오, yt-dlp 등)이 포함된 처리는 반드시 비동기(`@Async`)로 처리
-- 영상 분석 시작은 `ShareJobQueue.enqueue`로만 넣는다(직접 `process()` 호출 금지). 자동 일정 초안도 `DraftJobQueue.enqueue`로(#390). 코드 기본 `async`, 운영은 `APP_QUEUE_TYPE=kafka`(Aiven 무료, 브로커 실패 시 async로 넘김) — 브로커를 운영 서버에 같이 띄우지 않는다(docs/adr/0021)
+- 영상 분석 시작은 `ShareJobQueue.enqueue`로만 넣는다(직접 `process()` 호출 금지). 일정 초안(자동·직접)은 `DraftJobQueue.enqueue`, 일정 재구성은 `ReplanJobQueue.enqueue`로(#390, #396). 코드 기본 `async`, 운영은 `APP_QUEUE_TYPE=kafka`(Aiven 무료, 브로커 실패 시 async로 넘김) — 브로커를 운영 서버에 같이 띄우지 않는다(docs/adr/0021)
 - 일정 재구성의 새 접수는 기존 장소 요청 한도에 포함하고, 같은 여행의 동시 접수는 단일 JVM에서 직렬화한다(기존 작업 재사용은 차감하지 않음, docs/adr/0025).
 - 같은 장소의 상세/요약/전화 조회는 `PlaceReviewService`에서 진행 중 작업을 공유한다. 단일 JVM 범위이며 실패 후 독립 재시도는 허용한다(docs/adr/0027).
 - 사용자 ID만 필요한 자주 불리는 조회 API는 `CurrentUserService.resolveUserId`로 사용자 존재를 메모리(`KnownUsers`)에서 확인한다. 단일 JVM 범위, 탈퇴 커밋 뒤 제거(docs/adr/0036).

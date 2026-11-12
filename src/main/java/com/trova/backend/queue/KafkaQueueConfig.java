@@ -35,6 +35,12 @@ public class KafkaQueueConfig {
         return TopicBuilder.name(KafkaDraftJobQueue.TOPIC).partitions(2).replicas(replicas).build();
     }
 
+    // 일정 재구성(#396). 무료 토픽 4개째.
+    @Bean
+    public NewTopic replanJobsTopic(@Value("${app.queue.kafka.replicas:1}") int replicas) {
+        return TopicBuilder.name(KafkaReplanJobQueue.TOPIC).partitions(2).replicas(replicas).build();
+    }
+
     // 실패 작업 토픽(#394). 원래 토픽이 여러 개라 하나로 모은다(원래 토픽은 헤더 kafka_dlt-original-topic). 무료 토픽 3개째.
     @Bean
     public NewTopic deadLettersTopic(@Value("${app.queue.kafka.replicas:1}") int replicas) {
@@ -53,6 +59,6 @@ public class KafkaQueueConfig {
                 (record, exception) -> new TopicPartition(DEAD_LETTERS_TOPIC, -1));
         publisher.excludeHeader(DeadLetterPublishingRecoverer.HeaderNames.HeadersToAdd.EX_STACKTRACE);
         return new DefaultErrorHandler(new DeadLetterRecoverer(publisher, meterRegistry,
-                List.of(KafkaShareJobQueue.TOPIC, KafkaDraftJobQueue.TOPIC)), new FixedBackOff(0L, 0L));
+                List.of(KafkaShareJobQueue.TOPIC, KafkaDraftJobQueue.TOPIC, KafkaReplanJobQueue.TOPIC)), new FixedBackOff(0L, 0L));
     }
 }

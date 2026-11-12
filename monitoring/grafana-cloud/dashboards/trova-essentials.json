@@ -1867,6 +1867,15 @@
             "type": "prometheus",
             "uid": "grafanacloud-prom"
           },
+          "expr": "sum(increase(trova_queue_replan_fallback_total{job=\"trova-prod\"}[15m]))",
+          "legendFormat": "넘김: 일정 재구성",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
           "expr": "sum by (topic) (increase(trova_queue_dead_letter_total{job=\"trova-prod\"}[15m]))",
           "legendFormat": "실패 작업: {{topic}}",
           "refId": "C"
@@ -1889,5 +1898,5 @@
   "timezone": "browser",
   "title": "Trova 필수 모니터링",
   "uid": "trova-essentials",
-  "version": 7
+  "version": 8
 }

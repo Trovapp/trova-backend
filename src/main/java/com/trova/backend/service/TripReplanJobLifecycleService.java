@@ -1,5 +1,6 @@
 package com.trova.backend.service;
 
+import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripReplanJob;
 import com.trova.backend.entity.User;
@@ -24,6 +25,20 @@ public class TripReplanJobLifecycleService {
     @Transactional
     public JobContext markProcessing(Long jobId) {
         TripReplanJob job = getJob(jobId);
+        job.markProcessing();
+        return new JobContext(job.getUser(), job.getTrip(), job.isIndoorOnly(), job.isAllPlaces());
+    }
+
+    /**
+     * 처리를 시작해도 되는 작업이면 PROCESSING으로 바꾸고 문맥을 돌려준다. 이미 끝났거나(DONE·FAILED) 지워진 작업이면 null(#396) —
+     * Kafka로 같은 작업을 다시 받았을 때 재구성을 다시 돌리지 않는다. PROCESSING은 처리 중 서버가 죽은 경우라 이어서 한다.
+     */
+    @Transactional
+    public JobContext startProcessing(Long jobId) {
+        TripReplanJob job = tripReplanJobRepository.findById(jobId).orElse(null);
+        if (job == null || (job.getStatus() != JobStatus.PENDING && job.getStatus() != JobStatus.PROCESSING)) {
+            return null;
+        }
         job.markProcessing();
         return new JobContext(job.getUser(), job.getTrip(), job.isIndoorOnly(), job.isAllPlaces());
     }

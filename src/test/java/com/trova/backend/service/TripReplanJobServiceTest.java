@@ -53,7 +53,7 @@ class TripReplanJobServiceTest {
     @Test
     void 성공하면_결과가_JSON으로_직렬화되어_markDone에_전달된다() throws Exception {
         TripReplanJobLifecycleService.JobContext context = newContext(1L, 10L, true);
-        when(lifecycleService.markProcessing(5L)).thenReturn(context);
+        when(lifecycleService.startProcessing(5L)).thenReturn(context);
 
         AlternativeCandidate candidate = new AlternativeCandidate(
                 99L, "g-99", "실내카페", "cafe", 4.7, 200, 37.501, 127.001, "서울",
@@ -72,7 +72,7 @@ class TripReplanJobServiceTest {
 
     @Test
     void 실패하면_예외메시지로_markFailed가_호출된다() {
-        when(lifecycleService.markProcessing(6L))
+        when(lifecycleService.startProcessing(6L))
                 .thenThrow(new IllegalStateException("TripReplanJob을 찾을 수 없습니다: 6"));
 
         tripReplanJobService.process(6L);
@@ -83,7 +83,7 @@ class TripReplanJobServiceTest {
     @Test
     void 진행률_콜백이_updateProgress로_전달된다() throws Exception {
         TripReplanJobLifecycleService.JobContext context = newContext(2L, 11L, true);
-        when(lifecycleService.markProcessing(7L)).thenReturn(context);
+        when(lifecycleService.startProcessing(7L)).thenReturn(context);
 
         ArgumentCaptor<TripReplanProgressListener> listenerCaptor =
                 ArgumentCaptor.forClass(TripReplanProgressListener.class);
@@ -94,5 +94,17 @@ class TripReplanJobServiceTest {
         listenerCaptor.getValue().onProgress(2, 5);
 
         verify(lifecycleService).updateProgress(7L, 2, 5);
+    }
+
+    @Test
+    void 이미_끝난_작업을_다시_받으면_재구성을_돌리지_않는다() {
+        when(lifecycleService.startProcessing(8L)).thenReturn(null);
+
+        tripReplanJobService.processNow(8L);
+
+        verify(tripReplanGraph, org.mockito.Mockito.never()).run(any(), any(), org.mockito.ArgumentMatchers.anyBoolean(),
+                org.mockito.ArgumentMatchers.anyBoolean(), any());
+        verify(lifecycleService, org.mockito.Mockito.never()).markDone(org.mockito.ArgumentMatchers.anyLong(), any());
+        verify(lifecycleService, org.mockito.Mockito.never()).markFailed(org.mockito.ArgumentMatchers.anyLong(), any());
     }
 }
