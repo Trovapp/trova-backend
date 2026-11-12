@@ -1813,7 +1813,7 @@
         "type": "prometheus",
         "uid": "grafanacloud-prom"
       },
-      "description": "브로커가 받지 못해 서버 안 대기열로 넘긴 수, 리스너가 처리하지 못해 실패 작업 토픽으로 보낸 수. 둘 다 평소 0이고 높으면 나쁨.",
+      "description": "브로커가 받지 못해 서버 안 대기열로 넘긴 수, 리스너가 처리하지 못해 실패 작업 토픽으로 보낸 수, 저장됐지만 대기열에 없어 다시 보낸 수(ADR 0043). 모두 평소 0이고 높으면 나쁨.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1879,9 +1879,18 @@
           "expr": "sum by (topic) (increase(trova_queue_dead_letter_total{job=\"trova-prod\"}[15m]))",
           "legendFormat": "실패 작업: {{topic}}",
           "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "sum by (queue) (increase(trova_queue_requeued_total{job=\"trova-prod\"}[15m]))",
+          "legendFormat": "다시 보냄: {{queue}}",
+          "refId": "E"
         }
       ],
-      "title": "서버 안 대기열로 넘김·실패 작업(15분)",
+      "title": "서버 안 대기열로 넘김·실패 작업·다시 보냄(15분)",
       "type": "timeseries"
     }
   ],
@@ -1898,5 +1907,5 @@
   "timezone": "browser",
   "title": "Trova 필수 모니터링",
   "uid": "trova-essentials",
-  "version": 8
+  "version": 9
 }
