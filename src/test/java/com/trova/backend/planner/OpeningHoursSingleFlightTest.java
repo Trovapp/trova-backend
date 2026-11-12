@@ -46,7 +46,7 @@ class OpeningHoursSingleFlightTest {
 
     private GooglePlacesHoursResponse response() {
         return new GooglePlacesHoursResponse(List.of(new GooglePlacesHoursResponse.Place("google-id",
-                new GooglePlacesHoursResponse.Location(35.0, 129.0), null)));
+                new GooglePlacesHoursResponse.Location(35.0, 129.0), null, null)));
     }
 
     private record Call(Thread thread, AtomicInteger count, AtomicReference<Throwable> error, AtomicBoolean interrupted) { }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.time.Clock;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +27,9 @@ public class PlanRequestParser {
     private static final Pattern SAME_DAY = Pattern.compile("당일|하루\\s*(?:코스|일정|여행)?");
     private static final Pattern ISO_DATE = Pattern.compile("(\\d{4})-(\\d{1,2})-(\\d{1,2})");
     private static final Pattern MONTH_DAY = Pattern.compile("(\\d{1,2})\\s*월\\s*(\\d{1,2})\\s*일");
+    // "이 영상들로 … 짜 줘"처럼 요청 자체를 말하는 부분 — 바라는 점이 아니다.
+    private static final Pattern REQUEST_FILLER = Pattern.compile(
+            "이\\s*영상(?:들)?\\s*(?:으로|로)|(?:일정|코스)?\\s*(?:짜|만들어)\\s*(?:줘|주세요|줄래)");
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final GeminiJsonClient geminiJsonClient;
@@ -54,6 +58,21 @@ public class PlanRequestParser {
             return new PlanRequest(days.get(), startDate, "CODE");
         }
         return parseWithAi(text, startDate).orElse(new PlanRequest(1, startDate, "DEFAULT"));
+    }
+
+    /**
+     * 요청 문장에서 날짜·기간 표현을 뗀 나머지(사용자가 더 바라는 점). "조건 바꿔 다시 짜기"의 "더 바라는 점"을 앱이
+     * "출발일 기간 바라는 점" 한 문장으로 보내는데, 일수·날짜만 읽고 나머지는 버려져 일정에 반영되지 않았다(#414).
+     */
+    public static String preference(String message) {
+        if (message == null) {
+            return "";
+        }
+        String rest = message;
+        for (Pattern p : List.of(ISO_DATE, MONTH_DAY, NIGHTS_DAYS, DAYS_ONLY, SAME_DAY, REQUEST_FILLER)) {
+            rest = p.matcher(rest).replaceAll(" ");
+        }
+        return rest.replaceAll("\\s+", " ").strip();
     }
 
     public static Optional<Integer> parseDays(String text) {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.recommendation.GooglePlacesApiClient;
 import com.trova.backend.recommendation.GooglePlacesHoursResponse;
+import com.trova.backend.recommendation.PlaceNameMatch;
 import com.trova.backend.replan.GeoUtils;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.service.ApiCallLogService;
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -115,10 +115,14 @@ public class OpeningHoursService {
         if (response == null || response.places() == null) {
             return Optional.empty();
         }
+        // 반경 안에서 가장 가까운 것만 고르면 같은 건물의 다른 가게(이삭토스트 자리의 설빙)가 잡혀 그 가게 리뷰가
+        // 요약됐다(#414). 이름이 맞는 결과만 남기고, 그중 검색 순위가 높은(앞의) 것을 쓴다.
         return response.places().stream()
                 .filter(p -> p.location() != null && p.location().latitude() != null && p.location().longitude() != null)
                 .filter(p -> distanceMeters(place, p) <= MATCH_RADIUS_METERS)
-                .min(Comparator.comparingDouble(p -> distanceMeters(place, p)));
+                .filter(p -> PlaceNameMatch.sameBusiness(place.getPlaceName(),
+                        p.displayName() == null ? null : p.displayName().text()))
+                .findFirst();
     }
 
     private static double distanceMeters(SavedPlace place, GooglePlacesHoursResponse.Place p) {

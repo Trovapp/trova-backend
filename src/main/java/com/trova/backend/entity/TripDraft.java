@@ -146,6 +146,22 @@ public class TripDraft {
         touch(TripDraftStatus.PENDING);
     }
 
+    /**
+     * 초안에 들어간 장소 정보가 바뀌었을 때(위치 바로잡기) 같은 행을 다시 만들게 대기열로 돌린다(#414).
+     * 읽어 둔 일수·출발일은 그대로 두어 요청 해석을 다시 하지 않는다. 승인했거나 닫았거나 아직 만드는 중이면 그대로 둔다
+     * — 만드는 중이면 끝날 때 이미 바뀐 장소를 읽는다.
+     */
+    public boolean requeueForPlaceChange() {
+        if (tripId != null || dismissedAt != null
+                || (status != TripDraftStatus.READY && status != TripDraftStatus.FAILED)) {
+            return false;
+        }
+        this.draftJson = null;
+        this.errorMessage = null;
+        touch(TripDraftStatus.PENDING);
+        return true;
+    }
+
     public void markApproved(Long tripId) {
         this.tripId = tripId;
         touch(TripDraftStatus.APPROVED);

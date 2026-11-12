@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -86,6 +87,17 @@ public class AlternativeFinderService {
         this.apiCallLogService = apiCallLogService;
         this.placeEmbeddingService = placeEmbeddingService;
         this.personalizationService = personalizationService;
+    }
+
+    private static final LocalTime MORNING_UNTIL = LocalTime.of(10, 30);
+
+    static boolean isMorningFriendly(String category) {
+        if (category == null) {
+            return false;
+        }
+        return category.contains("cafe") || category.contains("coffee") || category.contains("bakery")
+                || category.contains("breakfast") || category.contains("brunch") || category.contains("sandwich")
+                || category.contains("dessert") || category.contains("tea_house");
     }
 
     public Optional<List<AlternativeCandidate>> findAlternatives(User user, Long tripPlaceId, AlternativeFilter filter) {
@@ -169,6 +181,16 @@ public class AlternativeFinderService {
                     .toList();
         }
 
+        // 아침 자리(10:30 전)를 바꾸면 고깃집이 09:00에 들어갔다(안드로이드 사용성 테스트 2026-11-12, #414) —
+        // 음식점·전체에서 찾을 때 아침이면 카페·빵집·브런치처럼 아침에 갈 만한 곳만 남긴다. 하나도 없으면 그대로 둔다.
+        if (target.getVisitStartTime() != null && target.getVisitStartTime().isBefore(MORNING_UNTIL)
+                && (includedType == null || "restaurant".equals(includedType))) {
+            List<Place> morning = candidates.stream().filter(p -> isMorningFriendly(p.getCategory())).toList();
+            if (!morning.isEmpty()) {
+                candidates = morning;
+            }
+        }
+
         long embeddingStart = System.currentTimeMillis();
         placeEmbeddingService.ensureEmbeddings(candidates);
         long embeddingMs = System.currentTimeMillis() - embeddingStart;
@@ -199,7 +221,11 @@ public class AlternativeFinderService {
                 }
             }
 
-            if (filter.maxDistanceKm() != null && distanceToNextKm != null && distanceToNextKm > filter.maxDistanceKm()) {
+            // 다음 장소가 없으면(그날 마지막·유일한 장소) 거리 조건이 통째로 무시돼 "1km"를 골라도 2km 결과가 나왔다(#414) —
+            // 그때는 바꿀 장소에서 잰다.
+            double filterKm = distanceToNextKm != null ? distanceToNextKm
+                    : haversineKm(candidate.getLatitude(), candidate.getLongitude(), target.getLatitude(), target.getLongitude());
+            if (filter.maxDistanceKm() != null && filterKm > filter.maxDistanceKm()) {
                 continue;
             }
             if (filter.maxTravelMinutes() != null && estimatedTravelMinutes != null

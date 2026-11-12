@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.trova.backend.entity.*;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
+import com.trova.backend.recommendation.PlaceNameMatch;
 import com.trova.backend.recommendation.PlaceSearchService;
+import com.trova.backend.planner.TravelTime;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.NotificationRepository;
 import com.trova.backend.repository.PlaceRepository;
@@ -289,7 +291,7 @@ public class TripService {
                         }
                     }
                     List<Place> candidates = placeSearchService.search(detailsSearchQuery(saved.getPlaceName(), saved.getRegion()));
-                    Optional<Place> match = pickMatch(saved.getLatitude(), saved.getLongitude(), candidates);
+                    Optional<Place> match = pickMatch(saved.getPlaceName(), saved.getLatitude(), saved.getLongitude(), candidates);
                     if (match.isEmpty()) {
                         log.info("영상 장소 찜 연결 실패 — 근처 검색 결과 없음(savedPlaceId={}, name={}, 후보 {}곳)",
                                 saved.getId(), saved.getPlaceName(), candidates.size());
@@ -438,7 +440,13 @@ public class TripService {
      * 좌표가 없는 여행 장소는 확인할 방법이 없어 지역을 붙인 검색의 1등을 그대로 쓴다.
      */
     static Optional<Place> pickMatch(TripPlace tripPlace, List<Place> candidates) {
-        return pickMatch(tripPlace.getLatitude(), tripPlace.getLongitude(), candidates);
+        return pickMatch(tripPlace.getPlaceName(), tripPlace.getLatitude(), tripPlace.getLongitude(), candidates);
+    }
+
+    /** 이름이 맞는 결과만 본다 — 3km 안의 첫 결과면 같은 건물·근처 다른 가게가 연결돼 그 리뷰가 요약됐다(#414). */
+    static Optional<Place> pickMatch(String name, Double latitude, Double longitude, List<Place> candidates) {
+        return pickMatch(latitude, longitude, candidates.stream()
+                .filter(c -> PlaceNameMatch.sameBusiness(name, c.getName())).toList());
     }
 
     static Optional<Place> pickMatch(Double latitude, Double longitude, List<Place> candidates) {
@@ -486,6 +494,25 @@ public class TripService {
                             newPlace.getLatitude(), newPlace.getLongitude(), null, newPlace.getAddress(),
                             after.getVisitOrder() + 1, PlaceSource.NORMAL, null);
                     inserted.applyGooglePlaceId(newPlace.getGooglePlaceId());
+                    // 빈 시간에 넣은 장소에 시간이 없어 목록 맨 끝으로 밀리고 동선 다듬기가 시간을 못 매겼다(#414) —
+                    // 앞 장소가 떠난 뒤 이동 시간 다음부터 60분(다음 장소 도착 전까지)으로 넣는다. 뒤 장소 시간은 그대로 둔다.
+                    if (after.getVisitEndTime() != null) {
+                        LocalTime start = after.getVisitEndTime().plusMinutes(TravelTime.minutes(
+                                after.getLatitude(), after.getLongitude(), newPlace.getLatitude(), newPlace.getLongitude()));
+                        LocalTime end = start.plusMinutes(TripDayRetimer.DEFAULT_STAY_MINUTES);
+                        TripPlace next = siblings.stream().filter(p -> p.getVisitOrder() == after.getVisitOrder() + 2)
+                                .findFirst().orElse(null);
+                        if (next != null && next.getVisitStartTime() != null) {
+                            LocalTime latestEnd = next.getVisitStartTime().minusMinutes(TravelTime.minutes(
+                                    newPlace.getLatitude(), newPlace.getLongitude(), next.getLatitude(), next.getLongitude()));
+                            if (latestEnd.isAfter(start) && latestEnd.isBefore(end)) {
+                                end = latestEnd;
+                            }
+                        }
+                        if (!end.isBefore(start)) {
+                            inserted.applyDetails(start, end, null, null);
+                        }
+                    }
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, newPlace, SignalType.GAP_INSERTED));
                     placeEmbeddingService.ensureEmbeddings(List.of(newPlace));
                     return tripPlaceRepository.save(inserted);
@@ -567,7 +594,7 @@ public class TripService {
                     List<TripPlace> withCoords = places.stream()
                             .filter(p -> p.getLatitude() != null && p.getLongitude() != null).toList();
                     List<TripPlace> optimized = new ArrayList<>(RouteOptimizer.optimizeKeepingFixed(
-                            withCoords, p -> "restaurant".equals(p.getCategory()), TripPlace::getLatitude, TripPlace::getLongitude));
+                            withCoords, p -> TripDayRetimer.isRestaurant(p.getCategory()), TripPlace::getLatitude, TripPlace::getLongitude));
                     places.stream().filter(p -> p.getLatitude() == null || p.getLongitude() == null).forEach(optimized::add);
                     for (int i = 0; i < optimized.size(); i++) {
                         optimized.get(i).applyVisitOrder(i + 1);
