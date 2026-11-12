@@ -298,4 +298,38 @@ class ProcessingJobLifecycleServiceIntegrationTest {
         assertThat(untouched.getLatitude()).isEqualTo(35.1587);
         assertThat(untouched.getRelocatedFromName()).isNull();
     }
+
+    @Test
+    void 다시_분석에서_이름이_조금_다르게_뽑혀도_가까우면_바로잡은_위치를_이어받는다() {
+        // 청사포를 바로잡은 뒤 다시 분석하니 "청사포다릿돌전망대"로 뽑혀 위치가 바뀌었다(2차 수정 확인 QA 2026-11-12, #418).
+        ExtractedPlace port = new ExtractedPlace("청사포", "부산", "attraction", 0.9, null, null, List.of("청사포"));
+        ProcessingJob first = newJob();
+        lifecycleService.startAnalysis(first.getId());
+        lifecycleService.completeAnalysis(first.getId(), List.of(port), List.of(GeocodingResult.coordinatesOnly(35.1610, 129.1915)));
+        SavedPlace fixed = savedPlaceRepository.findByProcessingJob(first).get(0);
+        fixed.relocateTo("청사포", 35.1604, 129.1923, "부산광역시 해운대구 중동 591-7", null, "gp-port");
+        savedPlaceRepository.save(fixed);
+
+        // 가까운 전망대(약 560m)와 정거장(약 120m)이 같이 뽑히고, 이름만 비슷하고 먼 곳도 하나 있다.
+        ExtractedPlace deck = new ExtractedPlace("청사포다릿돌전망대", "부산", "attraction", 0.9, null, null, List.of());
+        ExtractedPlace stop = new ExtractedPlace("해운대블루라인파크 청사포정거장", "부산", "attraction", 0.9, null, null, List.of());
+        ExtractedPlace far = new ExtractedPlace("청사포횟집 서면점", "부산", "restaurant", 0.9, null, null, List.of());
+        ProcessingJob again = processingJobRepository.save(
+                new ProcessingJob(first.getUser(), "https://youtu.be/lifecycle?si=again2", SourcePlatform.YOUTUBE));
+        lifecycleService.startAnalysis(again.getId());
+        lifecycleService.completeAnalysis(again.getId(), List.of(far, deck, stop), List.of(
+                GeocodingResult.coordinatesOnly(35.1577, 129.0590),
+                GeocodingResult.coordinatesOnly(35.1642, 129.1963),
+                GeocodingResult.coordinatesOnly(35.1612, 129.1914)));
+
+        List<SavedPlace> result = savedPlaceRepository.findByProcessingJob(again);
+        List<SavedPlace> inherited = result.stream().filter(p -> p.getRelocatedFromName() != null).toList();
+        // 바로잡은 위치 하나는 한 장소만 이어받는다 — 먼저 나온 전망대가 받고 정거장은 그대로다.
+        assertThat(inherited).hasSize(1);
+        assertThat(inherited.get(0).getPlaceName()).isEqualTo("청사포");
+        assertThat(inherited.get(0).getLatitude()).isEqualTo(35.1604);
+        assertThat(inherited.get(0).getGooglePlaceId()).isEqualTo("gp-port");
+        assertThat(result).extracting(SavedPlace::getPlaceName)
+                .contains("청사포횟집 서면점", "해운대블루라인파크 청사포정거장");
+    }
 }
