@@ -1,0 +1,50 @@
+time="2026-11-13T14:58:58+09:00" level=warning msg="There were unknown fields in the options exported in the script" error="json: unknown field \"gracefulStop\""
+time="2026-11-13T14:59:09+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2755\": request timeout"
+time="2026-11-13T14:59:09+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2770\": request timeout"
+time="2026-11-13T14:59:09+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2761\": request timeout"
+time="2026-11-13T14:59:09+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/notifications\": request timeout"
+time="2026-11-13T14:59:09+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2762\": request timeout"
+time="2026-11-13T14:59:09+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2774\": request timeout"
+time="2026-11-13T14:59:09+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/bookmarks\": request timeout"
+time="2026-11-13T14:59:09+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2765\": request timeout"
+time="2026-11-13T14:59:09+09:00" level=warning msg="Request Failed" error="request timeout"
+time="2026-11-13T14:59:13+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2746\": request timeout"
+time="2026-11-13T14:59:14+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips\": request timeout"
+time="2026-11-13T14:59:15+09:00" level=warning msg="Request Failed" error="Get \"https://193-123-161-217.sslip.io/api/trips/2785\": request timeout"
+
+
+  █ TOTAL RESULTS 
+
+    CUSTOM
+    measured_errors.....................: 94.90% 6219 out of 6553
+    measured_latency....................: avg=191.34ms med=45.26ms p(95)=295.1ms  p(99)=3.99s max=10s  
+      { name:/api/auth/me }.............: avg=136.86ms med=44.72ms p(95)=184.29ms p(99)=2.82s max=4.7s 
+      { name:/api/bookmarks }...........: avg=228.33ms med=46.41ms p(95)=1.35s    p(99)=4.12s max=6.3s 
+      { name:/api/bookmarks/folders }...: avg=201.87ms med=45.17ms p(95)=217.01ms p(99)=3.81s max=9.08s
+      { name:/api/notifications }.......: avg=121.66ms med=45.14ms p(95)=155.22ms p(99)=1.96s max=5.57s
+      { name:/api/places }..............: avg=146.01ms med=45.23ms p(95)=282.01ms p(99)=2.39s max=7.01s
+      { name:/api/places/pending }......: avg=159.36ms med=46.29ms p(95)=322.42ms p(99)=3.14s max=6.18s
+      { name:/api/trips }...............: avg=173.05ms med=44.74ms p(95)=194.36ms p(99)=3.78s max=10s  
+      { name:/api/trips/{id} }..........: avg=338.41ms med=45.15ms p(95)=2.96s    p(99)=5.99s max=10s  
+      { name:/api/users/me }............: avg=188.23ms med=45.99ms p(95)=797ms    p(99)=3.52s max=7.79s
+    measured_requests...................: 6553   71.716946/s
+
+    HTTP
+    http_req_duration...................: avg=317.24ms med=45.92ms p(95)=2.07s    p(99)=5.71s max=10s  
+      { expected_response:true }........: avg=2.8s     med=2.3s    p(95)=6.98s    p(99)=8.96s max=9.79s
+    http_req_failed.....................: 91.25% 6284 out of 6886
+    http_reqs...........................: 6886   75.361344/s
+
+    EXECUTION
+    iteration_duration..................: avg=1.33s    med=1.04s   p(95)=3.27s    p(99)=7.25s max=11.8s
+    iterations..........................: 6791   74.321651/s
+    vus.................................: 100    min=100          max=100
+    vus_max.............................: 100    min=100          max=100
+
+    NETWORK
+    data_received.......................: 5.6 MB 61 kB/s
+    data_sent...........................: 473 kB 5.2 kB/s
+
+
+
+time="2026-11-13T15:00:30+09:00" level=error msg="test run was aborted because k6 received a 'terminated' signal"

@@ -1,0 +1,42 @@
+[
+  {
+    "user": 1,
+    "url": "https://www.instagram.com/reel/DeBanBWpxgq/",
+    "status": 429,
+    "jobId": null,
+    "alreadyAnalyzed": null,
+    "error": "{\"message\":\"요청이 너무 많아요. 1분 뒤 다시 시도해 주세요.\"}"
+  },
+  {
+    "user": 2,
+    "url": "https://www.instagram.com/reel/DTum25dgZEX/",
+    "status": 429,
+    "jobId": null,
+    "alreadyAnalyzed": null,
+    "error": "{\"message\":\"요청이 너무 많아요. 1분 뒤 다시 시도해 주세요.\"}"
+  },
+  {
+    "user": 3,
+    "url": "https://www.instagram.com/reel/DfWYZGAq7Ft/",
+    "status": 429,
+    "jobId": null,
+    "alreadyAnalyzed": null,
+    "error": "{\"message\":\"요청이 너무 많아요. 1분 뒤 다시 시도해 주세요.\"}"
+  },
+  {
+    "user": 4,
+    "url": "https://www.instagram.com/reel/DJ_ep7OyQJq/",
+    "status": 429,
+    "jobId": null,
+    "alreadyAnalyzed": null,
+    "error": "{\"message\":\"요청이 너무 많아요. 1분 뒤 다시 시도해 주세요.\"}"
+  },
+  {
+    "user": 5,
+    "url": "https://www.instagram.com/reel/DQRNtv2kvpJ/",
+    "status": 429,
+    "jobId": null,
+    "alreadyAnalyzed": null,
+    "error": "{\"message\":\"요청이 너무 많아요. 1분 뒤 다시 시도해 주세요.\"}"
+  }
+]
