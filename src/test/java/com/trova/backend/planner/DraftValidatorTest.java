@@ -70,7 +70,7 @@ class DraftValidatorTest {
     }
 
     @Test
-    void 하루_8곳은_ERROR_하루_1곳은_WARNING이고_일수가_다르면_ERROR() {
+    void 하루_8곳은_ERROR_장소가_넉넉한데_1곳인_날도_ERROR이고_일수가_다르면_ERROR() {
         List<DraftGenerator.Item> many = new java.util.ArrayList<>();
         SavedPlace[] all = new SavedPlace[9];
         for (int i = 0; i < 9; i++) {
@@ -87,7 +87,8 @@ class DraftValidatorTest {
                 .containsExactlyInAnyOrder(
                         org.assertj.core.groups.Tuple.tuple("DAYS", DraftValidator.Severity.ERROR),
                         org.assertj.core.groups.Tuple.tuple("DAY_TOO_FULL", DraftValidator.Severity.ERROR),
-                        org.assertj.core.groups.Tuple.tuple("DAY_TOO_LIGHT", DraftValidator.Severity.WARNING));
+                        // 9곳을 2일에 나눌 수 있는데 1곳인 날 — 예전엔 WARNING이라 AI 수정이 돌지 않았다(#414).
+                        org.assertj.core.groups.Tuple.tuple("DAY_UNBALANCED", DraftValidator.Severity.ERROR));
     }
 
     @Test

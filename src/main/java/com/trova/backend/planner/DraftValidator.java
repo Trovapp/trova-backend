@@ -100,6 +100,11 @@ public final class DraftValidator {
                 // 장소가 날마다 2곳씩 나눌 만큼 있는데 빈 날이 있으면 고쳐야 한다(#108 재측정: 3일 요청에 [5, 3, 0]).
                 out.add(new Violation("EMPTY_DAY", Severity.ERROR, day.day(), null,
                         day.day() + "일차가 비어 있음 — 다른 날 장소를 나눠 넣어야 함"));
+            } else if (items.size() < DAY_MIN && scheduled >= DAY_MIN * draft.days().size()) {
+                // 장소가 날마다 2곳씩 나눌 만큼 있는데 한 곳뿐인 날도 고쳐야 한다 — 1박 2일 4곳이 [1, 3]으로 나뉘어도
+                // 경고뿐이라 AI 수정이 돌지 않았다(안드로이드 사용성 테스트 2026-11-12, #414).
+                out.add(new Violation("DAY_UNBALANCED", Severity.ERROR, day.day(), null,
+                        day.day() + "일차 " + items.size() + "곳 — 다른 날 장소를 나눠 넣어야 함"));
             } else if (items.size() < DAY_MIN && total > 1) {
                 out.add(new Violation("DAY_TOO_LIGHT", Severity.WARNING, day.day(), null, day.day() + "일차 " + items.size() + "곳"));
             }

@@ -47,13 +47,35 @@ class TripDayRetimerTest {
     }
 
     @Test
-    void 시간이_없는_장소가_있으면_시간을_건드리지_않는다() {
-        TripPlace timed = place("A", 37.5665, 126.9780, "12:00", "13:00");
+    void 시간이_없는_장소는_60분_머무는_것으로_같이_매긴다() {
+        // 빈 시간에 넣은 장소(시간 없음) 하나 때문에 동선 다듬기 뒤 시간이 거꾸로 남았다(#414).
         TripPlace untimed = place("B", 37.5765, 126.9780, null, null);
+        TripPlace timed = place("A", 37.5665, 126.9780, "12:00", "13:00");
 
-        TripDayRetimer.retime(List.of(timed, untimed));
+        TripDayRetimer.retime(List.of(untimed, timed));
 
-        assertThat(timed.getVisitStartTime()).isEqualTo(LocalTime.of(12, 0));
-        assertThat(untimed.getVisitStartTime()).isNull();
+        assertThat(untimed.getVisitStartTime()).isEqualTo(LocalTime.of(12, 0));
+        assertThat(untimed.getVisitEndTime()).isEqualTo(LocalTime.of(13, 0));
+        assertThat(timed.getVisitStartTime()).isEqualTo(LocalTime.of(13, 10));
+        assertThat(timed.getVisitEndTime()).isEqualTo(LocalTime.of(14, 10));
+    }
+
+    @Test
+    void 모든_장소에_시간이_없으면_그대로_둔다() {
+        TripPlace a = place("A", 37.5665, 126.9780, null, null);
+        TripPlace b = place("B", 37.5765, 126.9780, null, null);
+
+        TripDayRetimer.retime(List.of(a, b));
+
+        assertThat(a.getVisitStartTime()).isNull();
+        assertThat(b.getVisitStartTime()).isNull();
+    }
+
+    @Test
+    void 구글_세부_식당_타입도_식당으로_본다() {
+        assertThat(TripDayRetimer.isRestaurant("korean_restaurant")).isTrue();
+        assertThat(TripDayRetimer.isRestaurant("restaurant")).isTrue();
+        assertThat(TripDayRetimer.isRestaurant("cafe")).isFalse();
+        assertThat(TripDayRetimer.isRestaurant(null)).isFalse();
     }
 }

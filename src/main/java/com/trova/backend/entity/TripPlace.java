@@ -115,6 +115,13 @@ public class TripPlace {
         this.visitOrder = visitOrder;
     }
 
+    /** 되돌리기(#414) — 저장해 둔 순서·시간을 그대로 돌려놓는다. 시간이 없던 장소는 없던 대로(null) 돌린다. */
+    public void restoreSchedule(int visitOrder, LocalTime visitStartTime, LocalTime visitEndTime) {
+        this.visitOrder = visitOrder;
+        this.visitStartTime = visitStartTime;
+        this.visitEndTime = visitEndTime;
+    }
+
     public void applyGooglePlaceId(String googlePlaceId) {
         this.googlePlaceId = googlePlaceId;
     }

@@ -73,6 +73,17 @@ public class SavedPlace {
     @Column(name = "kakao_place_url")
     private String kakaoPlaceUrl;
 
+    // 다른 장소들과 멀리 떨어져 있고 영상 근처에 같은 가게의 다른 지점이 있을 때 그 지점 이름(#414).
+    // 예전엔 자동으로 그 지점으로 바꿨지만, 지점 자체가 목적지(스타벅스 더북한강R점)이거나 다른 도시를 함께 도는
+    // 영상에서 틀리게 바뀌어 사용자가 "찾아서 고치기"로 직접 고르도록 표시만 한다.
+    // 사용자가 위치를 바로잡기 전의 이름(영상에서 뽑힌 이름). 같은 영상을 다시 분석했을 때 이 이름의 장소에
+    // 바로잡은 위치를 이어받게 한다(#416). 바로잡은 적이 없으면 null.
+    @Column(name = "relocated_from_name")
+    private String relocatedFromName;
+
+    @Column(name = "nearby_branch_name")
+    private String nearbyBranchName;
+
     // 일정 에이전트가 휴무·영업시간을 확인하려고 Google에서 받아 둔 정보(#106). 장소당 한 번만 받는다 —
     // 근처에 맞는 Google 장소가 없거나 영업시간이 없어도 확인 시각을 남겨 다시 묻지 않는다.
     @Column(name = "google_place_id")
@@ -151,6 +162,11 @@ public class SavedPlace {
     public String getRoadAddress() { return roadAddress; }
     public String getKakaoCategoryName() { return kakaoCategoryName; }
     public String getKakaoPlaceUrl() { return kakaoPlaceUrl; }
+    public String getNearbyBranchName() { return nearbyBranchName; }
+
+    public void suggestNearbyBranch(String branchName) {
+        this.nearbyBranchName = branchName;
+    }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public String getGooglePlaceId() { return googlePlaceId; }
     public String getOpeningPeriods() { return openingPeriods; }
@@ -194,6 +210,9 @@ public class SavedPlace {
      */
     public void relocateTo(String placeName, Double latitude, Double longitude, String address,
                            String phone, String googlePlaceId) {
+        if (this.relocatedFromName == null) {
+            this.relocatedFromName = this.placeName;
+        }
         this.placeName = placeName;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -205,5 +224,19 @@ public class SavedPlace {
         this.googlePlaceId = googlePlaceId;
         this.openingPeriods = null;
         this.hoursCheckedAt = null;
+        this.nearbyBranchName = null;
     }
+
+    /**
+     * 같은 영상을 다시 분석한 결과에, 이전에 사용자가 바로잡아 둔 위치를 이어받는다(#416). 다시 분석하면 새 장소가
+     * 만들어져 직접 고친 위치가 원래대로 돌아갔다(수정 확인 QA 2026-11-12). 외부 API는 부르지 않는다.
+     */
+    public void inheritRelocation(SavedPlace previous) {
+        String original = previous.relocatedFromName;
+        relocateTo(previous.placeName, previous.latitude, previous.longitude, previous.address,
+                previous.phone, previous.googlePlaceId);
+        this.relocatedFromName = original;
+    }
+
+    public String getRelocatedFromName() { return relocatedFromName; }
 }

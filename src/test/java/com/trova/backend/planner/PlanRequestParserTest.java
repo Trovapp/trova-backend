@@ -24,6 +24,16 @@ class PlanRequestParserTest {
     private final PlanRequestParser parser = new PlanRequestParser(gemini, clock);
 
     @Test
+    void 날짜와_기간과_요청_문구를_떼고_바라는_점만_남긴다() {
+        // "더 바라는 점"이 일정에 전달되지 않았다(안드로이드 사용성 테스트 2026-11-12, #414).
+        assertThat(PlanRequestParser.preference("2026-11-21 1박 2일 점심은 홍대 맛집으로 바꿔 줘"))
+                .isEqualTo("점심은 홍대 맛집으로 바꿔 줘");
+        assertThat(PlanRequestParser.preference("2026-11-21 1박 2일")).isEmpty();
+        assertThat(PlanRequestParser.preference("이 영상들로 1박 2일 짜 줘")).isEmpty();
+        assertThat(PlanRequestParser.preference(null)).isEmpty();
+    }
+
+    @Test
     void 정해진_표현은_AI_없이_코드로_읽는다() {
         assertThat(parser.parse("이 영상 3개로 부산 1박 2일 짜 줘")).isEqualTo(new PlanRequestParser.PlanRequest(2, null, "CODE"));
         assertThat(parser.parse("제주 2박3일 코스")).isEqualTo(new PlanRequestParser.PlanRequest(3, null, "CODE"));

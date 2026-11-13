@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -174,7 +175,7 @@ public class PlaceReviewService {
             // PlaceTaggingRunner/RecommendationService와 동일하게 요청마다 고유한
             // System.nanoTime()을 쓴다.
             // 저장 전에 정리해 둔다 — 캐시에도 기호 없는 문장이 남는다(#53).
-            summary = reviewSummaryRunner.run(reviewTexts, System.nanoTime()).cleaned();
+            summary = reviewSummaryRunner.run(withPlace(place, ratedReviewTexts(details)), System.nanoTime()).cleaned();
         } catch (Exception e) {
             // Details 호출은 이미 유료로 나갔지만, 여기서 실패하면 아무것도 캐시하지
             // 않아 다음 요청에서 처음부터 다시 시도할 수 있게 한다.
@@ -239,6 +240,35 @@ public class PlaceReviewService {
                 .map(GooglePlacesDetailsResponse.Review::text)
                 .filter(text -> text != null && text.text() != null && !text.text().isBlank())
                 .map(GooglePlacesDetailsResponse.ReviewText::text)
+                .toList();
+    }
+
+    /**
+     * 요약에 넘길 리뷰 — 별점을 앞에 붙인다. 별 1개 리뷰 하나가 "아쉬운 점" 4개 중 2개를 차지했다
+     * (안드로이드 사용성 테스트 2026-11-12, #414). 사용자에게 보이는 원문(snippets)에는 붙이지 않는다.
+     */
+    /**
+     * 요약할 장소 이름을 첫 항목으로 알려 준다(summarize_reviews.py의 "[장소] " 약속). 백화점 리뷰가 안에 있는 식당
+     * 이야기뿐일 때 백화점의 특징처럼 요약됐다 — 어느 장소의 리뷰인지 모델이 몰랐다(수정 확인 QA 2026-11-12, #416).
+     */
+    static List<String> withPlace(Place place, List<String> reviewTexts) {
+        if (place.getName() == null || place.getName().isBlank()) {
+            return reviewTexts;
+        }
+        List<String> withPlace = new ArrayList<>();
+        withPlace.add("[장소] " + place.getName()
+                + (place.getCategory() == null ? "" : " (" + place.getCategory() + ")"));
+        withPlace.addAll(reviewTexts);
+        return withPlace;
+    }
+
+    static List<String> ratedReviewTexts(GooglePlacesDetailsResponse details) {
+        if (details.reviews() == null) {
+            return List.of();
+        }
+        return details.reviews().stream()
+                .filter(r -> r.text() != null && r.text().text() != null && !r.text().text().isBlank())
+                .map(r -> r.rating() == null ? r.text().text() : "[별점 " + r.rating() + "] " + r.text().text())
                 .toList();
     }
 }

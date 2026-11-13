@@ -81,7 +81,7 @@ class PlaceReviewServiceTest {
                 )));
         ReviewSummary generated = new ReviewSummary(
                 "전반적으로 만족도가 높은 곳이에요.", List.of("친절함"), List.of(), null, null, List.of(), List.of());
-        when(reviewSummaryRunner.run(eq(List.of("좋아요", "친절해요")), anyLong())).thenReturn(generated);
+        when(reviewSummaryRunner.run(eq(List.of("[장소] 카페A (cafe)", "좋아요", "친절해요")), anyLong())).thenReturn(generated);
 
         Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
 
@@ -104,7 +104,7 @@ class PlaceReviewServiceTest {
                         new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("리뷰3")),
                         new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("리뷰4"))
                 )));
-        when(reviewSummaryRunner.run(eq(List.of("리뷰1", "리뷰2", "리뷰3", "리뷰4")), anyLong()))
+        when(reviewSummaryRunner.run(eq(List.of("[장소] 카페A (cafe)", "리뷰1", "리뷰2", "리뷰3", "리뷰4")), anyLong()))
                 .thenReturn(new ReviewSummary("요약", List.of(), List.of(), null, null, List.of(), List.of()));
 
         Optional<PlaceReviewInfo> result = placeReviewService.getOrGenerateSummary(1L);
@@ -263,5 +263,16 @@ class PlaceReviewServiceTest {
         assertThat(result.get().summary().highlights()).isEqualTo("요약");
         assertThat(result.get().phone()).isNull();
         assertThat(place.getPhoneCheckedAt()).isNull();
+    }
+
+    @Test
+    void 요약에_넘기는_리뷰에만_별점을_붙이고_빈_리뷰는_뺀다() {
+        GooglePlacesDetailsResponse details = new GooglePlacesDetailsResponse("p", List.of(
+                new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("빙수가 맛있어요"), 5),
+                new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText("줄이 길어요")),
+                new GooglePlacesDetailsResponse.Review(new GooglePlacesDetailsResponse.ReviewText(" "), 1)));
+
+        assertThat(PlaceReviewService.ratedReviewTexts(details)).containsExactly("[별점 5] 빙수가 맛있어요", "줄이 길어요");
+        assertThat(PlaceReviewService.ratedReviewTexts(new GooglePlacesDetailsResponse("p", null))).isEmpty();
     }
 }

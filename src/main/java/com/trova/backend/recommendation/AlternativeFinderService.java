@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -88,6 +89,21 @@ public class AlternativeFinderService {
         this.personalizationService = personalizationService;
     }
 
+    private static final LocalTime MORNING_UNTIL = LocalTime.of(10, 30);
+
+    static boolean isRestaurant(String category) {
+        return category != null && (category.equals("restaurant") || category.endsWith("_restaurant"));
+    }
+
+    static boolean isMorningFriendly(String category) {
+        if (category == null) {
+            return false;
+        }
+        return category.contains("cafe") || category.contains("coffee") || category.contains("bakery")
+                || category.contains("breakfast") || category.contains("brunch") || category.contains("sandwich")
+                || category.contains("dessert") || category.contains("tea_house");
+    }
+
     public Optional<List<AlternativeCandidate>> findAlternatives(User user, Long tripPlaceId, AlternativeFilter filter) {
         Optional<TripPlace> maybeTarget = tripPlaceRepository.findById(tripPlaceId)
                 .filter(p -> isOwner(p, user));
@@ -99,9 +115,11 @@ public class AlternativeFinderService {
             return Optional.of(List.of());
         }
 
+        // 필터를 안 걸었어도 식당 자리의 대안은 식당에서 찾는다 — 10:20 돼지국밥집의 대안이 호텔 6곳·백화점·
+        // 지하철역이었다(수정 확인 QA 2026-11-12, #416).
         String includedType = filter.category() != null
                 ? GoogleTypeMapper.toGoogleType(filter.category()).orElse(null)
-                : null;
+                : (isRestaurant(target.getCategory()) ? "restaurant" : null);
 
         // next는 검색 성공 여부와 무관하게 항상 구해둔다(검색이 실패해도 형제 조회는
         // 이미 끝나 있어야 이후 로직이 next 유무를 일관되게 판단할 수 있다).
@@ -155,6 +173,14 @@ public class AlternativeFinderService {
                 .filter(p -> inTrip.stream().noneMatch(t -> sameNamedNearby(p, t)))
                 .toList();
 
+        // 필터 없이 찾을 때 숙소·역·학교는 대신 갈 곳이 아니라 뺀다(빈 시간 추천과 같은 규칙, #416).
+        // 바꾸려는 곳이 숙소·역이면 같은 종류가 대안이므로 그대로 둔다.
+        if (filter.category() == null && !GapRecommendationService.NOT_A_STOP.contains(target.getCategory())) {
+            candidates = candidates.stream()
+                    .filter(p -> !GapRecommendationService.NOT_A_STOP.contains(p.getCategory()))
+                    .toList();
+        }
+
         long tagStart = System.currentTimeMillis();
         if (Boolean.TRUE.equals(filter.indoorOnly())) {
             candidates = filterIndoor(candidates);
@@ -167,6 +193,16 @@ public class AlternativeFinderService {
             candidates = candidates.stream()
                     .filter(p -> containsIgnoreCase(p.getName(), needle) || containsIgnoreCase(p.getCategory(), needle))
                     .toList();
+        }
+
+        // 아침 자리(10:30 전)를 바꾸면 고깃집이 09:00에 들어갔다(안드로이드 사용성 테스트 2026-11-12, #414) —
+        // 음식점·전체에서 찾을 때 아침이면 카페·빵집·브런치처럼 아침에 갈 만한 곳만 남긴다. 하나도 없으면 그대로 둔다.
+        if (target.getVisitStartTime() != null && target.getVisitStartTime().isBefore(MORNING_UNTIL)
+                && (includedType == null || "restaurant".equals(includedType))) {
+            List<Place> morning = candidates.stream().filter(p -> isMorningFriendly(p.getCategory())).toList();
+            if (!morning.isEmpty()) {
+                candidates = morning;
+            }
         }
 
         long embeddingStart = System.currentTimeMillis();
@@ -199,7 +235,11 @@ public class AlternativeFinderService {
                 }
             }
 
-            if (filter.maxDistanceKm() != null && distanceToNextKm != null && distanceToNextKm > filter.maxDistanceKm()) {
+            // 다음 장소가 없으면(그날 마지막·유일한 장소) 거리 조건이 통째로 무시돼 "1km"를 골라도 2km 결과가 나왔다(#414) —
+            // 그때는 바꿀 장소에서 잰다.
+            double filterKm = distanceToNextKm != null ? distanceToNextKm
+                    : haversineKm(candidate.getLatitude(), candidate.getLongitude(), target.getLatitude(), target.getLongitude());
+            if (filter.maxDistanceKm() != null && filterKm > filter.maxDistanceKm()) {
                 continue;
             }
             if (filter.maxTravelMinutes() != null && estimatedTravelMinutes != null

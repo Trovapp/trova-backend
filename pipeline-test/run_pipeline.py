@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import worker_resources  # 가장 먼저 읽어 작업 시작 시각을 잡는다(#311)
 
+import html
 import json
 import re
 import subprocess
@@ -71,7 +72,46 @@ def youtube_title(url: str) -> str | None:
             return json.loads(response.read()).get("title")
     except Exception as exc:  # 제목은 보여주기용이라 실패해도 분석은 계속한다
         print(f"[pipeline] 제목 조회 실패: {exc}", file=sys.stderr)
+    # oEmbed가 막힌 영상(퍼가기 금지 등)은 공개 페이지의 og:title로 한 번 더 — 키·비용 없음.
+    # 안드로이드 사용성 테스트(2026-11-12)에서 한 쇼츠만 다시 분석해도 계속 "제목 없음"이었다(#414).
+    try:
+        request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept-Language": "ko-KR,ko;q=0.9"})
+        with urllib.request.urlopen(request, timeout=15) as response:
+            return title_from_stream(response)
+    except Exception as exc:
+        print(f"[pipeline] 페이지 제목 조회 실패: {exc}", file=sys.stderr)
         return None
+
+
+PAGE_READ_LIMIT = 3_000_000
+PAGE_CHUNK = 200_000
+
+
+def title_from_stream(response) -> str | None:
+    """페이지를 조금씩 읽다가 og:title이 나오면 멈춘다. 처음엔 앞 600KB만 읽었는데, 운영에서 받은 쇼츠 페이지는
+    2.2MB이고 제목 태그가 786KB 지점에 있어 계속 "제목 없음"이었다(수정 확인 QA 2026-11-12, #416)."""
+    data = b""
+    while len(data) < PAGE_READ_LIMIT:
+        chunk = response.read(PAGE_CHUNK)
+        if not chunk:
+            break
+        data += chunk
+        title = title_from_html(data.decode("utf-8", "replace"))
+        if title:
+            return title
+    return None
+
+
+OG_TITLE = re.compile(r'<meta\s+(?:property|name)="og:title"\s+content="([^"]*)"', re.IGNORECASE)
+
+
+def title_from_html(page: str) -> str | None:
+    """유튜브 페이지 HTML의 og:title. 동의 페이지 등에서 기본 제목("YouTube")만 나오면 없는 것으로 본다."""
+    match = OG_TITLE.search(page)
+    if not match:
+        return None
+    title = html.unescape(match.group(1)).strip()
+    return None if not title or title in ("YouTube", "- YouTube") else title
 
 
 # 인스타그램이 캡션만 있고 제목이 없을 때 붙이는 자동 제목("Video by 계정명") — 사용자에게 의미가 없다.

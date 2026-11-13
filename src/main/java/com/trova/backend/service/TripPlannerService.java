@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,33 @@ public class TripPlannerService {
             }
         }
         return Optional.of(tripDraftRepository.save(new TripDraft(user, distinct, message.trim())));
+    }
+
+    /**
+     * 초안의 영상마다 지금의 대표 분석(장소가 남아 있는 가장 최근 작업) 번호. 같은 영상을 다시 분석하면 새 작업이
+     * 생기는데 초안은 예전 작업을 가리켜, "조건 바꿔 다시 짜기"에서 영상이 0개 선택되고 새로 바로잡은 위치도 초안과
+     * 이어지지 않았다(수정 확인 QA 2026-11-12, #416). 초안 내용은 건드리지 않고 앱이 다시 짤 때 이 번호를 쓴다.
+     * 만드는 중(폴링)이거나 이미 여행이 된 초안은 계산하지 않고 원래 번호를 돌려준다.
+     */
+    @Transactional(readOnly = true)
+    public List<Long> currentJobIds(TripDraft draft) {
+        List<Long> jobIds = draft.getJobIds();
+        if (draft.getTripId() != null
+                || (draft.getStatus() != TripDraftStatus.READY && draft.getStatus() != TripDraftStatus.NEEDS_INPUT)) {
+            return jobIds;
+        }
+        Map<Long, String> videoByJob = new HashMap<>();
+        processingJobRepository.findAllById(jobIds)
+                .forEach(job -> videoByJob.put(job.getId(), VideoKey.of(job.getSourceUrl())));
+        Map<String, Long> latestByVideo = new HashMap<>();
+        for (SavedPlace place : savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(draft.getUser())) {
+            ProcessingJob job = place.getProcessingJob();
+            latestByVideo.merge(VideoKey.of(job.getSourceUrl()), job.getId(), Math::max);
+        }
+        return jobIds.stream()
+                .map(id -> latestByVideo.getOrDefault(videoByJob.get(id), id))
+                .distinct()
+                .toList();
     }
 
     public enum AnswerOutcome { OK, NOT_FOUND, NOT_WAITING, BAD_REQUEST }
@@ -188,7 +216,7 @@ public class TripPlannerService {
             // — 사용자가 '조건 바꿔 다시 짜기'로 만든 초안은 그대로 조회
             int calls = draft.isAutoCreated() ? 0 : openingHoursService.fillMissing(visits);
             TripPlanGraph.Outcome outcome = tripPlanGraph.run(request.days(), request.startDate(), visits,
-                    split ? List.of(SPLIT_NOTE) : List.of());
+                    planNotes(split, draft));
             draft.addGeminiCalls(outcome.geminiCalls());
             if (outcome.draft().isEmpty()) {
                 log.warn("TripDraft {} 초안 생성 실패: {}", draftId, outcome.failure());
@@ -243,6 +271,23 @@ public class TripPlannerService {
                 .map(note -> note.startsWith(DraftGenerator.NO_HOURS_NOTE_PREFIX) ? AUTO_HOURS_NOTE : note)
                 .toList();
         return new DraftGenerator.Draft(plan.days(), plan.excluded(), plan.lodging(), notes);
+    }
+
+    /**
+     * 생성 프롬프트에 붙일 메모. 사용자가 직접 만든 초안이면 날짜·기간을 뗀 "더 바라는 점"을 넣는다(#414) —
+     * 장소는 영상 속 목록에서만 고르므로(목록 밖 장소 금지) 목록 안에서 반영하라고 적는다.
+     */
+    static List<String> planNotes(boolean split, TripDraft draft) {
+        List<String> notes = new ArrayList<>();
+        if (split) {
+            notes.add(SPLIT_NOTE);
+        }
+        String preference = draft.isAutoCreated() ? "" : PlanRequestParser.preference(draft.getMessage());
+        if (!preference.isBlank()) {
+            notes.add("사용자가 바라는 점: \"" + preference + "\" — 아래 장소 목록 안에서 최대한 반영하세요"
+                    + "(예: 식당을 점심·저녁 시간대로 옮기기). 목록에 없는 장소가 필요한 요청이면 그 부분은 무시하세요.");
+        }
+        return notes;
     }
 
     private static boolean isLodging(SavedPlace p) {

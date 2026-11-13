@@ -71,12 +71,18 @@ public class TripDraftController {
     // summaryJson은 서버가 만든 JSON 문자열 그대로 넘긴다(1일차: 모은 장소·영업시간 확인 요약).
     public record DraftResponse(Long id, String status, String message, List<Long> jobIds, Integer days,
                                 String startDate, String requestSource, String question, String summaryJson,
-                                String draftJson, Integer geminiCalls, String errorMessage, String answer, Long tripId) {
-        static DraftResponse from(TripDraft d) {
+                                String draftJson, Integer geminiCalls, String errorMessage, String answer, Long tripId,
+                                // 위치를 바로잡은 장소가 있거나 영상을 다시 분석했으면 true — 앱이 "다시 짜기"를 권한다(#414, #416).
+                                boolean placesChanged,
+                                // 영상마다 지금의 대표 분석 번호. jobIds와 다르면 그 영상을 다시 분석한 것이다 — 앱이 다시 짤 때
+                                // 이 번호를 쓴다(#416).
+                                List<Long> currentJobIds) {
+        static DraftResponse from(TripDraft d, List<Long> currentJobIds) {
+            boolean reanalyzed = d.getTripId() == null && !currentJobIds.equals(d.getJobIds());
             return new DraftResponse(d.getId(), d.getStatus().name(), d.getMessage(), d.getJobIds(), d.getDays(),
                     d.getStartDate() == null ? null : d.getStartDate().toString(), d.getRequestSource(),
                     d.getQuestion(), d.getSummaryJson(), d.getDraftJson(), d.getGeminiCalls(), d.getErrorMessage(),
-                    d.getAnswer(), d.getTripId());
+                    d.getAnswer(), d.getTripId(), d.getPlacesChangedAt() != null || reanalyzed, currentJobIds);
         }
     }
 
@@ -129,7 +135,7 @@ public class TripDraftController {
         User user = currentUserService.resolve(authentication);
         return tripDraftRepository.findById(id)
                 .filter(d -> d.getUser().getId().equals(user.getId()))
-                .map(d -> ResponseEntity.ok(DraftResponse.from(d)))
+                .map(d -> ResponseEntity.ok(DraftResponse.from(d, tripPlannerService.currentJobIds(d))))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 

@@ -35,7 +35,25 @@ class OpeningHoursServiceTest {
 
     private static GooglePlacesHoursResponse.Place gp(String id, double lat, double lng, List<GooglePlacesHoursResponse.Period> periods) {
         return new GooglePlacesHoursResponse.Place(id, new GooglePlacesHoursResponse.Location(lat, lng),
-                periods == null ? null : new GooglePlacesHoursResponse.OpeningHours(periods));
+                periods == null ? null : new GooglePlacesHoursResponse.OpeningHours(periods), null);
+    }
+
+    private static GooglePlacesHoursResponse.Place named(String id, String name, double lat, double lng) {
+        return new GooglePlacesHoursResponse.Place(id, new GooglePlacesHoursResponse.Location(lat, lng),
+                new GooglePlacesHoursResponse.OpeningHours(List.of(openOn(1))), new GooglePlacesHoursResponse.DisplayName(name));
+    }
+
+    @Test
+    void 같은_건물의_다른_가게가_더_가까워도_이름이_맞는_가게를_쓴다() {
+        // 이삭토스트 자리의 설빙이 연결돼 설빙 리뷰가 요약됐다(안드로이드 사용성 테스트 2026-11-12, #414).
+        SavedPlace isaac = place("이삭토스트 서울명동성당점", 37.5630, 126.9860);
+        when(google.searchTextWithHours(anyString(), anyDouble(), anyDouble(), anyDouble())).thenReturn(
+                new GooglePlacesHoursResponse(List.of(named("sulbing", "설빙 명동점", 37.5630, 126.9860),
+                        named("isaac", "이삭토스트 명동성당점", 37.5632, 126.9861))));
+
+        service.fillMissing(List.of(isaac));
+
+        assertThat(isaac.getGooglePlaceId()).isEqualTo("isaac");
     }
 
     private static GooglePlacesHoursResponse.Period openOn(int day) {
@@ -44,7 +62,7 @@ class OpeningHoursServiceTest {
     }
 
     @Test
-    void 좌표_300m_안에서_가장_가까운_결과의_영업시간을_저장한다() {
+    void 좌표_300m_밖의_같은_이름_지점은_쓰지_않는다() {
         SavedPlace udon = place("요미우돈교자", 35.1630, 129.1600);
         // 2km 떨어진 같은 이름 지점과 50m 떨어진 진짜 가게
         when(google.searchTextWithHours(anyString(), anyDouble(), anyDouble(), anyDouble())).thenReturn(

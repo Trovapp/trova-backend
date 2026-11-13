@@ -462,6 +462,25 @@ public class TripController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    public record RestoreDayRequest(List<TripService.ScheduleEntry> places) {
+    }
+
+    // 동선 다듬기 되돌리기(#414). 그날 장소 목록이 달라졌으면 409.
+    @PostMapping("/api/trips/{tripId}/days/{day}/restore")
+    public ResponseEntity<List<TripPlaceResponse>> restoreDay(
+            Authentication authentication, @PathVariable Long tripId, @PathVariable int day,
+            @RequestBody RestoreDayRequest body
+    ) {
+        User user = currentUserService.resolve(authentication);
+        boolean owned = tripRepository.findById(tripId).filter(t -> t.getUser().getId().equals(user.getId())).isPresent();
+        if (!owned) {
+            return ResponseEntity.notFound().build();
+        }
+        return tripService.restoreDay(user, tripId, day, body == null ? null : body.places())
+                .map(places -> ResponseEntity.ok(places.stream().map(TripPlaceResponse::from).toList()))
+                .orElseGet(() -> ResponseEntity.status(409).build());
+    }
+
     @PostMapping("/api/trips/{tripId}/days/{day}/weather-check")
     public ResponseEntity<WeatherCheckResponse> weatherCheck(
             Authentication authentication, @PathVariable Long tripId, @PathVariable int day
