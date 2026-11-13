@@ -212,6 +212,29 @@ class TripPlannerServiceTest {
     }
 
     @Test
+    void 홈에_보이던_내_초안을_다시_짜면_새_초안이_그_자리를_이어받는다() {
+        // 다시 짜기에 성공해도 홈에서 초안이 사라졌다(4차 수정 확인 QA, #424).
+        ProcessingJob done = job(1L);
+        done.markDone();
+        TripDraft mine = TripDraft.auto(user, List.of(1L), "당일치기");
+        org.springframework.test.util.ReflectionTestUtils.setField(mine, "id", 7L);
+        TripDraft manual = new TripDraft(user, List.of(1L), "1박 2일");
+        org.springframework.test.util.ReflectionTestUtils.setField(manual, "id", 8L);
+        TripDraft others = TripDraft.auto(userWithId(2L), List.of(1L), "당일치기");
+        org.springframework.test.util.ReflectionTestUtils.setField(others, "id", 6L);
+        when(drafts.findById(7L)).thenReturn(Optional.of(mine));
+        when(drafts.findById(8L)).thenReturn(Optional.of(manual));
+        when(drafts.findById(6L)).thenReturn(Optional.of(others));
+        when(drafts.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        assertThat(service.create(user, List.of(1L), "당일치기", 7L).orElseThrow().getReplacesDraftId()).isEqualTo(7L);
+        // 직접 만든(홈에 없던) 초안이나 남의 초안을 대신한다고 해도 홈에 올리지 않는다.
+        assertThat(service.create(user, List.of(1L), "당일치기", 8L).orElseThrow().isListed()).isFalse();
+        assertThat(service.create(user, List.of(1L), "당일치기", 6L).orElseThrow().isListed()).isFalse();
+        assertThat(service.create(user, List.of(1L), "당일치기").orElseThrow().isListed()).isFalse();
+    }
+
+    @Test
     void 남의_영상이나_끝나지_않은_분석으로는_만들지_않는다() {
         User other = userWithId(2L);
         ProcessingJob othersJob = new ProcessingJob(other, "https://www.youtube.com/shorts/z", SourcePlatform.YOUTUBE);

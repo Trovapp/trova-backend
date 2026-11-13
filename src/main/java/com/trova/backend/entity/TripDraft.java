@@ -92,6 +92,11 @@ public class TripDraft {
     @Column(name = "dismissed_at")
     private LocalDateTime dismissedAt;
 
+    // "다시 짜기"로 만든 초안이 대신하는 예전 초안. 예전 것이 홈에 보이던 초안일 때만 채운다 — 이 값이 있으면
+    // 직접 만든 초안이어도 홈 "준비된 일정"에 보인다(4차 수정 확인 QA, #424).
+    @Column(name = "replaces_draft_id")
+    private Long replacesDraftId;
+
     // 이 초안에 들어간 영상 장소의 위치를 사용자가 바로잡은 시각(#414). 초안을 자동으로 다시 만들지 않고(ADR 0006 —
     // 바로잡기는 외부 API를 새로 부르지 않는다) 앱이 "위치가 바뀌었어요 · 다시 짜기"를 보여 사용자가 고른다.
     @Column(name = "places_changed_at")
@@ -113,6 +118,15 @@ public class TripDraft {
         TripDraft draft = new TripDraft(user, jobIds, message);
         draft.autoCreated = true;
         return draft;
+    }
+
+    /** 홈 "준비된 일정"에 보이는 초안인지 — 자동 초안이거나, 그런 초안을 다시 짠 것. */
+    public boolean isListed() {
+        return autoCreated || replacesDraftId != null;
+    }
+
+    public void replaces(Long draftId) {
+        this.replacesDraftId = draftId;
     }
 
     public void dismiss() {
@@ -201,5 +215,6 @@ public class TripDraft {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public boolean isAutoCreated() { return autoCreated; }
     public LocalDateTime getDismissedAt() { return dismissedAt; }
+    public Long getReplacesDraftId() { return replacesDraftId; }
     public LocalDateTime getPlacesChangedAt() { return placesChangedAt; }
 }

@@ -36,6 +36,11 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
     List<TripDraft> findByUserAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(
             User user, List<TripDraftStatus> statuses);
 
+    // 홈에 보여줄 초안 — 자동 초안과, 그런 초안을 "다시 짜기"로 대신한 초안(#424). 닫지 않은 것만, 최신순.
+    @Query("select d from TripDraft d where d.user.id = :userId and (d.autoCreated = true or d.replacesDraftId is not null) "
+            + "and d.dismissedAt is null and d.status in :statuses order by d.createdAt desc")
+    List<TripDraft> findListedByUserId(@Param("userId") Long userId, @Param("statuses") List<TripDraftStatus> statuses);
+
     // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
     List<TripDraft> findByUserIdAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(
             Long userId, List<TripDraftStatus> statuses);

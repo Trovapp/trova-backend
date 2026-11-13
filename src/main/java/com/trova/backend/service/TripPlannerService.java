@@ -72,6 +72,14 @@ public class TripPlannerService {
 
     /** 고른 영상이 모두 이 사용자의 완료된 분석이어야 만든다. 아니면 빈 값(컨트롤러가 400). */
     public Optional<TripDraft> create(User user, List<Long> jobIds, String message) {
+        return create(user, jobIds, message, null);
+    }
+
+    /**
+     * replacesDraftId: "다시 짜기"로 대신할 예전 초안. 그 초안이 이 사용자의 것이고 홈에 보이던 초안이면 새 초안도 홈에
+     * 보이게 한다 — 다시 짜기에 성공해도 홈·내 여행에서 초안이 사라졌다(4차 수정 확인 QA, #424). 아니면 무시한다.
+     */
+    public Optional<TripDraft> create(User user, List<Long> jobIds, String message, Long replacesDraftId) {
         if (jobIds == null || jobIds.isEmpty() || jobIds.size() > MAX_VIDEOS || message == null || message.isBlank()) {
             return Optional.empty();
         }
@@ -85,7 +93,14 @@ public class TripPlannerService {
                 return Optional.empty();
             }
         }
-        return Optional.of(tripDraftRepository.save(new TripDraft(user, distinct, message.trim())));
+        TripDraft draft = new TripDraft(user, distinct, message.trim());
+        if (replacesDraftId != null) {
+            tripDraftRepository.findById(replacesDraftId)
+                    .filter(old -> old.getUser().getId().equals(user.getId()))
+                    .filter(old -> old.isListed() && old.getTripId() == null)
+                    .ifPresent(old -> draft.replaces(old.getId()));
+        }
+        return Optional.of(tripDraftRepository.save(draft));
     }
 
     /**
@@ -113,6 +128,44 @@ public class TripPlannerService {
                 .map(id -> latestByVideo.getOrDefault(videoByJob.get(id), id))
                 .distinct()
                 .toList();
+    }
+
+    /** 다시 짠 초안이 준비되면 예전 초안을 홈에서 내린다 — 실패했을 때는 예전 초안이 그대로 남는다(#424). */
+    private void dismissReplaced(TripDraft draft) {
+        if (draft.getReplacesDraftId() == null) {
+            return;
+        }
+        tripDraftRepository.findById(draft.getReplacesDraftId())
+                .filter(old -> old.getDismissedAt() == null && old.getStatus() != TripDraftStatus.APPROVED)
+                .ifPresent(old -> {
+                    old.dismiss();
+                    tripDraftRepository.save(old);
+                });
+    }
+
+    /** 사용자의 분석 작업 전체와, 영상마다 가장 최근에 완료된 분석. */
+    public record Analyses(Map<Long, ProcessingJob> byId, Map<String, ProcessingJob> latestByVideo) {
+        /** 같은 영상의 가장 최근 완료된 분석. 없으면 그 작업 그대로. */
+        public ProcessingJob latest(ProcessingJob job) {
+            return latestByVideo.getOrDefault(VideoKey.of(job.getSourceUrl()), job);
+        }
+    }
+
+    /**
+     * 홈 카드가 예전 분석 번호를 가리키면 앱이 영상을 못 찾아 장소 수와 썸네일이 빠졌다(#424). 사용자의 작업 목록을
+     * 한 번만 읽어 초안의 영상과 최신 분석을 같이 찾는다(쿼리 수를 늘리지 않는다).
+     */
+    @Transactional(readOnly = true)
+    public Analyses analysesOf(Long userId) {
+        Map<Long, ProcessingJob> byId = new HashMap<>();
+        Map<String, ProcessingJob> latestByVideo = new HashMap<>();
+        for (ProcessingJob job : processingJobRepository.findByUserIdOrderByCreatedAtDescIdDesc(userId)) {
+            byId.put(job.getId(), job);
+            if (job.getStatus() == JobStatus.DONE) {
+                latestByVideo.merge(VideoKey.of(job.getSourceUrl()), job, (a, b) -> a.getId() > b.getId() ? a : b);
+            }
+        }
+        return new Analyses(byId, latestByVideo);
     }
 
     public enum AnswerOutcome { OK, NOT_FOUND, NOT_WAITING, BAD_REQUEST }
@@ -231,6 +284,7 @@ public class TripPlannerService {
             draft.markReady(summaryJson(gathered, calls),
                     DraftGenerator.toJson(plan, outcome.fixes(), outcome.problems()));
             tripDraftRepository.save(draft);
+            dismissReplaced(draft);
             if (draft.isAutoCreated()) {
                 // 공유만 하고 앱을 닫은 사람에게 준비됐다고 알린다(#185, ADR 0016). 직접 만든 초안은 화면에서 기다리고 있다.
                 int placeCount = plan.days().stream().mapToInt(d -> d.items().size()).sum();

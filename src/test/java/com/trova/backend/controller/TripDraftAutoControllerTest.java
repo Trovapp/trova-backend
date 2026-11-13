@@ -203,6 +203,42 @@ class TripDraftAutoControllerTest {
     }
 
     @Test
+    void 다시_분석한_영상의_초안_카드는_최신_분석_번호를_가리키고_다시_짠_초안이_자리를_이어받는다() throws Exception {
+        // 다시 짜기에 성공해도 홈에서 초안이 사라졌고, 다시 분석 뒤 카드에서 장소 수·썸네일이 빠졌다(4차 수정 확인 QA, #424).
+        User me = userRepository.save(new User("google", "auto7", "자동유저7", null));
+        ProcessingJob first = videoJob(me, "https://www.youtube.com/shorts/Auto040", "여수 여행 영상");
+        TripDraft auto = TripDraft.auto(me, List.of(first.getId()), "당일치기");
+        auto.markReady("{}", "{}");
+        auto = tripDraftRepository.save(auto);
+        ProcessingJob again = videoJob(me, "https://youtu.be/Auto040?si=x", "여수 여행 영상");
+        again.markDone();
+        again = processingJobRepository.save(again);
+
+        mockMvc.perform(get("/api/trip-drafts/auto").with(loginAs("auto7", "자동유저7")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].draftId").value(auto.getId()))
+                .andExpect(jsonPath("$[0].jobId").value(again.getId()));
+
+        TripDraft redo = new TripDraft(me, List.of(again.getId()), "당일치기");
+        redo.replaces(auto.getId());
+        redo.markReady("{}", "{}");
+        redo = tripDraftRepository.save(redo);
+        auto.dismiss();
+        tripDraftRepository.save(auto);
+        // 대신하는 초안이 없는 직접 만든 초안은 예전처럼 목록에 없다.
+        TripDraft manual = new TripDraft(me, List.of(again.getId()), "1박 2일");
+        manual.markReady("{}", "{}");
+        tripDraftRepository.save(manual);
+
+        mockMvc.perform(get("/api/trip-drafts/auto").with(loginAs("auto7", "자동유저7")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].draftId").value(redo.getId()))
+                .andExpect(jsonPath("$[0].jobId").value(again.getId()));
+    }
+
+    @Test
     void 자동초안_닫기에_성공하면_204이고_목록에서_빠진다() throws Exception {
         User me = userRepository.save(new User("google", "auto2", "자동유저2", null));
         ProcessingJob job = videoJob(me, "https://youtu.be/Auto010", "영상");
