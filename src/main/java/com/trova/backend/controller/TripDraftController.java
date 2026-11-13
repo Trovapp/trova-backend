@@ -62,7 +62,7 @@ public class TripDraftController {
     public record ApproveResponse(Long tripId) {
     }
 
-    public record CreateDraftRequest(List<Long> jobIds, String message) {
+    public record CreateDraftRequest(List<Long> jobIds, String message, Long replacesDraftId) {
     }
 
     public record CreateDraftResponse(Long draftId, String status) {
@@ -90,7 +90,8 @@ public class TripDraftController {
     public ResponseEntity<?> create(Authentication authentication, @RequestBody CreateDraftRequest request) {
         User user = currentUserService.resolve(authentication);
         return tripPlannerService.create(user, request == null ? null : request.jobIds(),
-                        request == null ? null : request.message())
+                        request == null ? null : request.message(),
+                        request == null ? null : request.replacesDraftId())
                 .<ResponseEntity<?>>map(draft -> {
                     draftJobQueue.enqueue(draft.getId());
                     return ResponseEntity.status(HttpStatus.ACCEPTED)
@@ -152,20 +153,28 @@ public class TripDraftController {
     @GetMapping("/api/trip-drafts/auto")
     public List<AutoDraftResponse> autoDrafts(Authentication authentication) {
         Long userId = currentUserService.resolveUserId(authentication);
-        List<TripDraft> drafts = tripDraftRepository
-                .findByUserIdAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(userId, AUTO_VISIBLE);
+        List<TripDraft> drafts = tripDraftRepository.findListedByUserId(userId, AUTO_VISIBLE);
+        if (drafts.isEmpty()) {
+            return List.of();
+        }
         // 영상과 "이미 여행이 된 영상"을 한 번에 읽는다 — 초안마다 조회하면 홈을 열 때마다 초안 수만큼 영상 전체를 다시 읽었다(#139).
-        java.util.Map<Long, ProcessingJob> jobs = processingJobRepository
-                .findAllById(drafts.stream().map(d -> d.getJobIds().get(0)).distinct().toList()).stream()
-                .collect(java.util.stream.Collectors.toMap(ProcessingJob::getId, j -> j));
-        java.util.Set<Long> tripped = tripService.jobIdsWithExistingTrip(userId, jobs.values());
+        // 같은 영상을 다시 분석했으면 카드는 최신 분석 번호를 가리킨다 — 예전 번호로는 앱이 영상을 못 찾아 장소 수와
+        // 썸네일이 빠졌다(4차 수정 확인 QA, #424).
+        TripPlannerService.Analyses analyses = tripPlannerService.analysesOf(userId);
+        java.util.Map<Long, ProcessingJob> jobs = analyses.byId();
+        java.util.Set<Long> tripped = tripService.jobIdsWithExistingTrip(userId,
+                drafts.stream().map(d -> jobs.get(d.getJobIds().get(0))).filter(java.util.Objects::nonNull).distinct().toList());
         return drafts.stream()
                 .map(d -> new DraftWithJob(d, jobs.get(d.getJobIds().get(0))))
                 // 같은 영상으로 이미 여행이 만들어졌으면(다른 초안을 승인하는 등) 카드가 중복으로 남는다 — 빼고 보여준다.
                 .filter(dj -> dj.job() == null || !tripped.contains(dj.job().getId()))
                 .limit(10)
-                .map(dj -> new AutoDraftResponse(dj.draft().getId(), dj.draft().getStatus().name(), dj.draft().getJobIds().get(0),
-                        dj.job() == null ? null : dj.job().getTitle(), dj.draft().getDays(), dj.draft().getCreatedAt().toString()))
+                .map(dj -> {
+                    ProcessingJob shown = dj.job() == null ? null : analyses.latest(dj.job());
+                    return new AutoDraftResponse(dj.draft().getId(), dj.draft().getStatus().name(),
+                            shown == null ? dj.draft().getJobIds().get(0) : shown.getId(),
+                            shown == null ? null : shown.getTitle(), dj.draft().getDays(), dj.draft().getCreatedAt().toString());
+                })
                 .toList();
     }
 
