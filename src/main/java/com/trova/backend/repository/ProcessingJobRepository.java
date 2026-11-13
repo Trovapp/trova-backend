@@ -33,5 +33,7 @@ public interface ProcessingJobRepository extends JpaRepository<ProcessingJob, Lo
     @Query("select j.id from ProcessingJob j where j.status = :status and j.updatedAt > :from and j.updatedAt < :to")
     List<Long> findIdsByStatusAndUpdatedAtBetween(
             @Param("status") JobStatus status, @Param("from") java.time.LocalDateTime from, @Param("to") java.time.LocalDateTime to);
-    long countByUserAndCreatedAtGreaterThanEqual(User user, java.time.LocalDateTime from);
+    // 링크 공유 한도용(#431) — 최근 7일 창 안에서 실패하지 않은 작업을 오래된 순으로(가장 오래된 것이 풀리는 날 계산).
+    List<ProcessingJob> findByUserAndCreatedAtGreaterThanEqualAndStatusNotOrderByCreatedAtAsc(
+            User user, java.time.LocalDateTime from, JobStatus status);
 }

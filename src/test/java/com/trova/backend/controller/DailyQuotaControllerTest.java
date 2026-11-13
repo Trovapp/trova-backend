@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@TestPropertySource(properties = {"app.quota.shares-per-day=2", "app.quota.place-calls-per-day=2"})
+@TestPropertySource(properties = {"app.quota.shares-per-week=2", "app.quota.place-calls-per-day=2"})
 class DailyQuotaControllerTest {
 
     @Autowired
@@ -71,7 +71,7 @@ class DailyQuotaControllerTest {
     }
 
     @Test
-    void 링크는_하루_한도까지만_제출할_수_있다() throws Exception {
+    void 링크는_최근_7일_한도까지만_제출할_수_있다() throws Exception {
         userRepository.save(new User("google", "quota-share", "한도유저", null));
         for (int i = 0; i < 2; i++) {
             mockMvc.perform(post("/api/shares").with(loginAs("quota-share"))
@@ -84,7 +84,7 @@ class DailyQuotaControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"url\":\"https://youtu.be/quota-over\"}"))
                 .andExpect(status().isTooManyRequests())
-                .andExpect(jsonPath("$.message").value("오늘은 링크를 2개까지 추가할 수 있어요. 내일 다시 시도해주세요."));
+                .andExpect(jsonPath("$.message").value("최근 7일 동안 링크를 2개까지 추가할 수 있어요. 7일 뒤 다시 시도해주세요."));
     }
 
     @Test
