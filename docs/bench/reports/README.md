@@ -37,3 +37,8 @@ python3 -m venv /tmp/trova-report-venv
 C="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 "$C" --headless=new --no-pdf-header-footer --user-data-dir=/tmp/trova-pdf --print-to-pdf=out.pdf "file://$PWD/docs/bench/reports/src/kafka.html"
 ```
+
+## Spring AI 2 재측정 PDF (2026-11-13, #422)
+
+`trova-springai-rebench-20261113.pdf`는 REST·Spring AI 2를 같은 조건으로 각 30회(짧은·긴 프롬프트) 번갈아 잰 결과와 운영 재시도 기록·Grafana 캡처 8장을 7쪽으로 정리한다. 같은 내보내기 venv에 `pillow`를 더해 `python docs/bench/scripts/build_springai_rebench_pdf.py`로 만든다. 저장된 JSON과 PNG만 읽는다. 요약은 `../springai-rebench-20261113.md`.
+
