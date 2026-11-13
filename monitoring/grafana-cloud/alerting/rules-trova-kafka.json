@@ -79,7 +79,7 @@
           "annotations": {
             "current_value": "{{ with $values.A }}{{ printf \"%.0f\" .Value }}개{{ end }}",
             "dashboard_url": "https://indigostork3365.grafana.net/d/trova-essentials",
-            "description": "영상 분석·일정 초안이 들어오는 속도를 처리가 못 따라가거나, 리스너가 한 작업에 멈춰 있다는 신호입니다. 공유 한도(사용자당 하루 20건)와 동시 처리(분석 2·초안 1)로는 평소 몇 분 안에 0으로 돌아옵니다. 서버가 아예 죽은 경우는 헬스 체크 경보가 맡습니다(그때는 이 지표가 나오지 않음).",
+            "description": "영상 분석·일정 초안이 들어오는 속도를 처리가 못 따라가거나, 리스너가 한 작업에 멈춰 있다는 신호입니다. 공유 한도(사용자당 최근 7일 10건)와 동시 처리(분석 2·초안 1)로는 평소 몇 분 안에 0으로 돌아옵니다. 서버가 아예 죽은 경우는 헬스 체크 경보가 맡습니다(그때는 이 지표가 나오지 않음).",
             "pending": "15분",
             "runbook_url": "https://github.com/Trovapp/trova-backend/blob/main/docs/runbooks/kafka-queue.md",
             "summary": "{{ $labels.topic }} 토픽에서 아직 처리하지 못한 메시지가 3개를 넘었고, 그 상태가 15분 이어졌습니다.",
