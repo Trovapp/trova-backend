@@ -1,0 +1,12 @@
+base cpus=2 started=4.419s up=5.4s rss=470MiB
+cds cpus=2 started=2.419s up=3.0s rss=457MiB
+aot cpus=2 started=3.547s up=4.4s rss=447MiB
+aotcds cpus=2 started=1.678s up=2.5s rss=422MiB
+base cpus=2 started=4.373s up=4.9s rss=474MiB
+cds cpus=2 started=2.732s up=3.3s rss=462MiB
+aot cpus=2 started=3.446s up=4.1s rss=456MiB
+aotcds cpus=2 started=2.169s up=3.0s rss=425MiB
+base cpus=2 started=4.099s up=5.0s rss=471MiB
+cds cpus=2 started=2.564s up=3.3s rss=460MiB
+aot cpus=2 started=3.482s up=4.3s rss=442MiB
+aotcds cpus=2 started=1.787s up=2.4s rss=425MiB

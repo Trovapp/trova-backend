@@ -1,0 +1,12 @@
+base cpus=0.25 started=124.7s up=140.8s rss=472MiB
+cds cpus=0.25 started=72.289s up=79.3s rss=461MiB
+aot cpus=0.25 started=93.797s up=108.1s rss=441MiB
+aotcds cpus=0.25 started=52.683s up=61.3s rss=421MiB
+base cpus=0.25 started=120.893s up=137.6s rss=466MiB
+cds cpus=0.25 started=76.291s up=84.3s rss=460MiB
+aot cpus=0.25 started=101.598s up=116.8s rss=441MiB
+aotcds cpus=0.25 started=55.488s up=62.5s rss=424MiB
+base cpus=0.25 started=119.196s up=134.0s rss=466MiB
+cds cpus=0.25 started=70.984s up=79.0s rss=452MiB
+aot cpus=0.25 started=93.993s up=109.7s rss=444MiB
+aotcds cpus=0.25 started=55.298s up=63.0s rss=425MiB
