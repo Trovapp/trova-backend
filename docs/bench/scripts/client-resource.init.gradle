@@ -1,0 +1,25 @@
+// REST·Spring AI 2 클라이언트 응답 시간·자원 비교(#422). 실행:
+//   TROVA_BENCH_KEY=<Gemini 키> ./gradlew -I docs/bench/scripts/client-resource.init.gradle clientResourceBench \
+//     -PbenchOutput=docs/bench/results/client-resource-short-<날짜>.json -PbenchSamples=25 -PbenchPauseMillis=6000 -PbenchPrompt=short
+allprojects {
+    afterEvaluate {
+        tasks.register('compileClientResourceBench', JavaCompile) {
+            source = fileTree('docs/bench/scripts') { include 'ClientResourceBench.java' }
+            classpath = sourceSets.main.runtimeClasspath
+            destinationDirectory = layout.buildDirectory.dir('clientResourceBench')
+            options.encoding = 'UTF-8'
+            options.release = 21
+            dependsOn tasks.named('classes')
+        }
+        tasks.register('clientResourceBench', JavaExec) {
+            dependsOn tasks.named('compileClientResourceBench')
+            classpath = files(layout.buildDirectory.dir('clientResourceBench')) + sourceSets.main.runtimeClasspath
+            mainClass = 'com.trova.backend.bench.ClientResourceBench'
+            jvmArgs('-Xmx144m', '-Xss256k', '-XX:+UseG1GC')
+            args(project.findProperty('benchOutput') ?: 'docs/bench/results/client-resource.json',
+                    project.findProperty('benchSamples') ?: '4',
+                    project.findProperty('benchPauseMillis') ?: '6000',
+                    project.findProperty('benchPrompt') ?: 'short')
+        }
+    }
+}
