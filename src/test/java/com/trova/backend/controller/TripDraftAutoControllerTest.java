@@ -222,7 +222,10 @@ class TripDraftAutoControllerTest {
 
         TripDraft redo = new TripDraft(me, List.of(again.getId()), "당일치기");
         redo.replaces(auto.getId());
-        redo.markReady("{}", "{}");
+        // 카드의 장소 수는 영상이 아니라 초안에 들어간 장소 수다 — 뺀 곳은 세지 않는다(5차 수정 확인 QA, #426).
+        redo.markReady("{}", """
+                {"days":[{"day":1,"items":[{"placeId":1,"name":"가"},{"placeId":2,"name":"나"}]}],
+                 "excluded":[{"placeId":3,"name":"다","reason":"좌표가 없어 이번 일정에서 뺐어요."}]}""");
         redo = tripDraftRepository.save(redo);
         auto.dismiss();
         tripDraftRepository.save(auto);
@@ -235,7 +238,8 @@ class TripDraftAutoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].draftId").value(redo.getId()))
-                .andExpect(jsonPath("$[0].jobId").value(again.getId()));
+                .andExpect(jsonPath("$[0].jobId").value(again.getId()))
+                .andExpect(jsonPath("$[0].placeCount").value(2));
     }
 
     @Test

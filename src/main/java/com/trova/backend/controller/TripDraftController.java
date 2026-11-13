@@ -4,6 +4,7 @@ import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.TripDraft;
 import com.trova.backend.entity.TripDraftStatus;
 import com.trova.backend.entity.User;
+import com.trova.backend.planner.DraftGenerator;
 import com.trova.backend.queue.DraftJobQueue;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.TripDraftRepository;
@@ -141,7 +142,21 @@ public class TripDraftController {
     }
 
     // 홈 화면 카드용 자동 생성 초안 목록(#136).
-    public record AutoDraftResponse(Long draftId, String status, Long jobId, String videoTitle, Integer days, String createdAt) {
+    // placeCount: 초안에 실제로 들어간 장소 수(아직 짜는 중이면 null) — 카드가 영상의 장소 수를 보여 줘서
+    // 7곳 중 1곳을 뺀 초안인데 "장소 7곳"으로 보였다(5차 수정 확인 QA, #426).
+    public record AutoDraftResponse(Long draftId, String status, Long jobId, String videoTitle, Integer days,
+                                    String createdAt, Integer placeCount) {
+    }
+
+    private static Integer placeCount(TripDraft draft) {
+        if (draft.getStatus() != TripDraftStatus.READY || draft.getDraftJson() == null) {
+            return null;
+        }
+        try {
+            return DraftGenerator.fromJson(draft.getDraftJson()).days().stream().mapToInt(d -> d.items().size()).sum();
+        } catch (RuntimeException e) {
+            return null;
+        }
     }
 
     private static final List<TripDraftStatus> AUTO_VISIBLE =
@@ -173,7 +188,8 @@ public class TripDraftController {
                     ProcessingJob shown = dj.job() == null ? null : analyses.latest(dj.job());
                     return new AutoDraftResponse(dj.draft().getId(), dj.draft().getStatus().name(),
                             shown == null ? dj.draft().getJobIds().get(0) : shown.getId(),
-                            shown == null ? null : shown.getTitle(), dj.draft().getDays(), dj.draft().getCreatedAt().toString());
+                            shown == null ? null : shown.getTitle(), dj.draft().getDays(), dj.draft().getCreatedAt().toString(),
+                            placeCount(dj.draft()));
                 })
                 .toList();
     }
