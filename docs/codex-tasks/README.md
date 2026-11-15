@@ -34,6 +34,8 @@
 ## 실행 절차 (작업 하나 = 이슈 하나 = 워크트리 하나)
 
 1. 대장이 이슈를 만들고 워크트리·브랜치(`타입/#이슈번호-내용`)를 준비한다. 기준은 최신 `origin/main`.
+   - 새 워크트리에는 `.worktreeinclude`에 따라 `pipeline-test/.env`(API 키)와 `.claude/settings.local.json`이 복사된다. Codex 샌드박스가 읽기를 막아 준다고 믿지 않는다. **Codex를 돌리기 전에 `pipeline-test/.env`를 워크트리 밖으로 옮기고**(`ls -a pipeline-test | grep '^\.env$'`가 비어야 한다), 작업이 끝난 뒤에도 되돌려 놓지 않는다(이 목록의 작업은 키가 필요 없다).
+   - `git status --ignored --porcelain`으로 무시 파일 목록을, `shasum .claude/settings.local.json`으로 해시를 적어 둔다(4단계에서 비교).
 2. 지시문에 적힌 근거 줄이 지금 코드와 맞는지 대장이 먼저 확인한다(목록을 만든 뒤 코드가 바뀌었을 수 있다). 다르면 지시문을 고친 뒤 실행한다.
 3. Codex 실행. 이 맥에는 `timeout`·`gtimeout`이 없어서 감시 프로세스로 20분 제한을 건다. 표준 입력을 닫지 않으면 Codex가 입력을 기다리며 멈춘다.
 
@@ -43,17 +45,21 @@
    codex exec -C "$W" -s workspace-write -o "$OUT" \
      "$(cat docs/codex-tasks/03-trip-day-places-single-query.md)" < /dev/null > "$OUT.log" 2>&1 &
    P=$!
-   ( sleep 1200; pkill -f "$OUT"; kill $P 2>/dev/null ) &
+   ( sleep 1200 & S=$!; trap 'kill $S 2>/dev/null' TERM; wait $S && kill $P 2>/dev/null ) &
    WD=$!
    wait $P; kill $WD 2>/dev/null
    ```
+
+   - 감시 프로세스는 Codex의 프로세스 번호(`$P`)만 종료한다. 이름으로 찾아 죽이지 않는다(로그를 보던 `tail`이나 실행 셸이 같이 죽을 수 있다). 같은 형태를 `sleep`으로 바꿔 로컬 맥에서 시험했다: 일찍 끝나면 남는 `sleep`이 없고, 제한을 넘기면 대상이 종료된다(종료 코드 143).
 
    - 읽기 전용 작업(01·02)은 `-s read-only`로 실행한다.
    - `--dangerously-bypass-*` 옵션은 쓰지 않는다.
    - 20분 안에 끝나지 않으면 종료하고, 지시문을 더 작게 나눠 다시 맡기거나 대장이 직접 한다.
 4. 대장 검증(Codex 결과는 그대로 믿지 않는다).
-   - `git status`·`git diff --stat`로 지시문의 "건드릴 파일" 밖 변경이 없는지 본다. 있으면 되돌리고 이유를 기록한다.
+   - `git status`·`git diff --stat`로 지시문의 "건드릴 파일" 밖 변경이 없는지 본다. 있으면 되돌리고 이유를 기록한다. `git status --ignored --porcelain`과 `.claude/settings.local.json` 해시가 1단계와 같은지도 본다(무시 파일은 `git status`에 나오지 않는다).
+   - **빌드 전에 `git diff`를 끝까지 읽는다.** 대장의 빌드는 샌드박스 밖에서 돌아 네트워크와 홈 폴더에 닿는다. `build.gradle` 변경, 실제 외부 주소를 부르는 테스트, 프로세스를 띄우는 코드가 있으면 빌드하지 않고 되돌린다.
    - `./gradlew build`를 대장이 직접 돌린다. Codex 샌드박스에서는 네트워크와 워크트리 밖 쓰기가 막혀 빌드가 안 될 수 있다(이 목록을 만들 때는 확인하지 않았다).
+   - 조회 수를 줄이는 작업(03·06)은 새 조회 수 테스트가 바꾸기 전 코드에서 실패하는지 대장이 직접 확인한다(`git stash` 대신 main 쪽 변경만 임시로 되돌려 테스트 하나를 돌린다).
    - `/reviewflow:review`로 정확성·테스트·보안·규칙(ADR·CLAUDE.md) 네 관점 리뷰를 돌리고, 확인된 지적은 Codex에 다시 맡기거나 대장이 고친 뒤 빌드를 다시 돌린다.
    - 읽기 전용 보고서는 지적마다 원문 줄을 열어 확인하고, 확인된 것만 `docs/reviews/`에 남긴다.
 5. `docs/experience-notes.md`에 한 것·확인한 것(로컬/운영 구분)을 적고, 커밋(`타입: 내용`) → PR(`Closes #이슈번호`) → `gh pr merge --squash`.
@@ -62,4 +68,8 @@
 ## 쓰지 않는 자원
 
 Codex 작업은 Gemini 하루 한도, 로컬 서버(8080), QA 시뮬레이터, 개발 DB 테스트 계정, 운영 서버를 쓰지 않는다. 필요한 작업이 생기면 목록에 넣지 않고 사용자에게 먼저 묻는다.
-Codex에 넘기는 입력에는 `.env`, 운영 로그, 사용자 데이터, 시크릿을 넣지 않는다. 공통 규칙은 [00-common-rules.md](00-common-rules.md).
+Codex에 넘기는 입력에는 `.env`, 운영 로그, 사용자 데이터, 시크릿을 넣지 않는다. 워크트리 안에 놓인 키 파일도 입력으로 본다(실행 절차 1단계). 공통 규칙은 [00-common-rules.md](00-common-rules.md).
+
+## 비용
+
+Codex는 사용자가 이미 쓰고 있는 구독 범위 안에서 개발 도구로만 쓴다. API 과금 호출을 쓰지 않고, 운영 코드에는 넣지 않는다(비용 0원 원칙, ADR 0002). 이 방식을 결정 기록(ADR)으로 남길지는 사용자가 정한다 — 지금은 ADR이 없다.

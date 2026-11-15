@@ -10,23 +10,25 @@
 
 | 클래스 | 볼 곳 |
 |---|---|
-| `src/main/java/com/trova/backend/geocoding/KakaoLocalApiClientImpl.java` | 생성자 `:28-38`(RestClient를 안에서 만듦), 재시도 `:72` 부근, 대기 `:105-107`, 근접 검색 `:58` |
-| `src/main/java/com/trova/backend/weather/OpenWeatherApiClientImpl.java` | 생성자 `:28-34`, 재시도 `:44` 부근, 요청 `:64`, 대기 `:77-79` |
-| `src/main/java/com/trova/backend/congestion/SeoulCongestionApiClientImpl.java` | 생성자 `:31-40`, 키 없음 처리 `:48`, 호출 `:53`, 예외 처리 `:61` |
-| `src/main/java/com/trova/backend/recommendation/GooglePlacesApiClientImpl.java` | 생성자 `:44-49`, 재시도 `:105` 부근, 요청 필드 `:142`, 대기 `:178-180` |
+| `src/main/java/com/trova/backend/geocoding/KakaoLocalApiClientImpl.java` | 생성자 `:29-39`(RestClient를 안에서 만듦), 재시도 `:72-90` 부근(잡는 예외 `:78-80`), 대기 `:105-112`, 근접 검색 `:58` |
+| `src/main/java/com/trova/backend/weather/OpenWeatherApiClientImpl.java` | 생성자 `:28-38`, 재시도 `:44` 부근(잡는 예외 `:47-49`), 요청 `:64-70`(`appid` `:70`), 대기 `:77-84` |
+| `src/main/java/com/trova/backend/congestion/SeoulCongestionApiClientImpl.java` | 생성자 `:31-44`, 키 없음 처리 `:48`, 호출 `:53-56`(경로 `:54`), 예외 처리 `:61`. **재시도와 대기가 없다** |
+| `src/main/java/com/trova/backend/recommendation/GooglePlacesApiClientImpl.java` | 생성자 `:44-54`(`X-Goog-Api-Key` `:51`), 필드 마스크 상수 `:30-34`, 영업시간 검색 `:86-103`, 재시도 `:105` 부근(잡는 예외 `:111-113`), 요청 필드 `:142`, 대기 `:178-185` |
 
 - 기존 테스트 방식(따라 쓸 것): `src/test/java/com/trova/backend/conversation/GeminiChatClientImplTest.java`(`MockRestServiceServer.bindTo(RestClient.Builder)`), `src/test/java/com/trova/backend/planner/GeminiJsonClientImplTest.java`(대기 함수를 주입해 실제로 기다리지 않고 요청한 시간만 확인).
 
 ## 할 일
 
-1. 네 클래스는 생성자 안에서 `RestClient`를 만들고 `Thread.sleep`을 직접 부른다. 테스트가 가짜 서버와 가짜 대기 함수를 넣을 수 있도록 **패키지 범위 생성자 하나**를 더한다(`RestClient.Builder`와 대기 함수를 받는 식 — 형태는 `GeminiJsonClientImpl` 등 기존 클래스가 쓰는 방식을 먼저 보고 맞춘다). 기존 public 생성자는 그 생성자를 부르도록만 바꾸고, 주소·헤더·시간 제한·재시도 횟수·대기 시간 값은 그대로 둔다.
+1. 네 클래스는 생성자 안에서 `RestClient`를 만든다. 카카오·OpenWeather·Google은 `Thread.sleep`도 직접 부른다. 테스트가 가짜 서버(와 가짜 대기 함수)를 넣을 수 있도록 **패키지 범위 생성자 하나**를 더한다. 기존 public 생성자는 그 생성자를 부르도록만 바꾸고, 주소·헤더·시간 제한·재시도 횟수·대기 시간 값은 그대로 둔다.
+   - 카카오·OpenWeather·Google: `RestClient.Builder`와 대기 함수를 받는다. 대기 함수는 `src/main/java/com/trova/backend/planner/GeminiJsonClientImpl.java:45-47`의 `Sleeper`처럼 `throws InterruptedException` 형태로 하고, `InterruptedException`을 잡아 인터럽트 상태를 되살리는 코드는 **클래스에 그대로 둔다**(대기 함수 안으로 옮기면 테스트가 그 코드를 타지 못한다).
+   - 서울 혼잡도: 대기 함수 인자는 넣지 않는다(`RestClient.Builder`만).
 2. 클래스마다 테스트 파일 하나(`src/test/java/com/trova/backend/<같은 패키지>/<클래스이름>Test.java`). Spring 컨텍스트를 띄우지 않는 단위 테스트로 쓴다.
 3. 확인할 것:
-   - 카카오·OpenWeather·Google: 429 → 다시 시도 → 성공, 5xx → 다시 시도, 정해진 횟수(코드의 상수)를 다 쓰면 마지막 예외를 그대로 던짐, 재시도 대상이 아닌 4xx는 한 번만 부르고 바로 던짐, 대기 시간이 코드에 적힌 값대로 요청됨, 대기 중 인터럽트면 인터럽트 상태를 되살리고 예외.
+   - 카카오·OpenWeather·Google: 429 → 다시 시도 → 성공, 5xx → 다시 시도, 연결 실패·시간 초과(`ResourceAccessException` — `MockRestServiceServer`의 `withException(new IOException(...))`) → 다시 시도 → 성공, 정해진 횟수(코드의 상수)를 다 쓰면 마지막 예외를 그대로 던짐, 재시도 대상이 아닌 4xx는 한 번만 부르고 바로 던짐, 대기 시간이 코드에 적힌 값대로 요청됨, 대기 중 인터럽트면 인터럽트 상태를 되살리고 예외(이 테스트는 `finally { Thread.interrupted(); }`로 상태를 지운다 — `src/test/java/com/trova/backend/planner/GeminiJsonClientImplTest.java:162`).
    - 카카오: 키워드·주소·근접 검색의 경로와 쿼리(근접 검색의 x·y·반경·정렬), `Authorization: KakaoAK ...` 헤더, 한글 검색어.
-   - OpenWeather: `lat`·`lon`·`units=metric` 쿼리.
-   - Google: `includedType`이 null일 때와 값이 있을 때 요청 본문 차이, 상세 조회와 전화번호 조회의 필드 마스크 차이.
-   - 서울 혼잡도: 키가 null·공백이면 호출 없이 빈 결과, 정상 응답, 본문이 비었을 때, HTTP·역직렬화 예외면 빈 결과. 성공·실패 때 `ApiCallLogService.record`가 불리는지(이 의존 객체는 Mockito로 대신한다).
+   - OpenWeather: `lat`·`lon`·`units=metric`·`appid` 쿼리.
+   - Google: `X-Goog-Api-Key` 헤더, `includedType`이 null일 때와 값이 있을 때 요청 본문 차이, 근처 검색·텍스트 검색·영업시간 검색·상세·전화번호 조회 **각각의 `X-Goog-FieldMask` 값이 코드의 상수와 정확히 같은지**(필드가 늘면 요금 등급이 올라간다 — `:30-31` 주석), 텍스트 검색과 영업시간 검색의 본문(`locationBias` 포함).
+   - 서울 혼잡도: 요청 경로(키와 한글 지역 이름), 키가 null·공백이면 호출 없이 빈 결과, 정상 응답, 본문이 비었을 때, HTTP·역직렬화 예외면 빈 결과. 성공·실패 때 `ApiCallLogService.record`가 불리는지(이 의존 객체는 Mockito로 대신한다).
 4. 테스트의 API 키는 `"test-key"` 같은 가짜 문자열만 쓴다.
 
 ## 건드릴 파일

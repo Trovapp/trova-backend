@@ -4,7 +4,7 @@
 
 ## 시작 조건 (대장이 확인, 하나라도 아니면 실행하지 않는다)
 
-1. 열린 브랜치·PR이 모두 머지되었거나 닫혔다(`gh pr list --state open`이 dependabot 외 0건). 근거: CLAUDE.md 코드 스타일, `docs/adr/0009-code-style-as-is.md`.
+1. 열린 브랜치가 모두 머지되었거나 닫혔다. 근거: CLAUDE.md 코드 스타일, `docs/adr/0009-code-style-as-is.md`. 확인은 세 가지 모두: `gh pr list --state open`이 0건(dependabot PR도 `build.gradle`을 고치므로 포함), `git worktree list`에 이 작업 말고 진행 중인 워크트리가 없음, `git branch -r --no-merged origin/main`에 남은 작업 브랜치가 없음(남아 있으면 버릴 브랜치인지 사용자에게 확인).
 2. 01~06이 모두 머지되었다.
 3. ADR 0009는 "포맷 전환 보류"이고 "별도 PR 하나로 **검토**"라고만 정했다. 전환 자체는 기존 결정을 바꾸는 일이므로 **사용자가 전환을 승인하고 새 ADR(0009를 대체)이 먼저 머지되어 있어야 한다.** 들여쓰기(지금 4칸, Google Style은 2칸)를 어떻게 할지도 그 ADR에서 정한다.
 
