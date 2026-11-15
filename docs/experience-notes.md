@@ -2832,3 +2832,11 @@
 - 확인: 파일마다 grep으로 수익 모델·숫자(MB/ms/원/명)·운영 주소·키 이름 0건, brief 전문과 글감 샘플 직접 읽음. 레포가 public이라 숫자·여행 패스 금지는 지시문에 넣어 Codex가 지키게 함(스스로 저작권 주의도 추가).
 - 같은 날 같이 한 것: Windows 노트북 Orca를 맥 Orca 원격 서버로 페어링(Tailscale, 승인·지시 가능). 온보딩 사이트가 아직 `app.trovapp.workers.dev`를 가리킴 → brief 점검 목록 1번.
 - 남은 것: 릴스 녹화는 사용자(홍보용 테스트 계정), 온보딩 사이트 주소 교체, #437은 Windows 실행 호스트(B) 등록 뒤, #438 결과 PR.
+
+## 2026-11-16 정답 세트 교차 판정 1차 — Windows WSL에서 샘플 200개·GPT 판정자 점검, Gemini는 키 거부로 못 돌림 (#437)
+- 범위: 사용자가 자는 동안 Windows 노트북에서 맡김(Claude 대장 + Codex 실행, Gemini 오늘 밤 최대 30개). 산출: 새 샘플 170개 이상, 교차 판정 스크립트, 30개 Gemini·GPT 비교, 중간 기록, draft PR #442.
+- 한 것: yt-dlp 검색 1,608건 → 중복·기존 영상 제외 694개 → Codex가 제목으로 200개 선택(`eval/extraction/cross/candidates.csv`, `pipeline-test/samples_437.txt`). `eval/extraction/cross_check.py`(prepare/gemini/gpt-prompt/compare/score-human)와 `cross_gpt.ps1`(Codex read-only에 프레임 8장 첨부). 입력 준비 196/200(볼 수 없는 영상 3, 프레임 실패 1), GPT 추출 196/196(c001~c030 장소 77개, c031~c200 장소 572개).
+- 실측: GPT를 사람 정답(answers.csv 122개)과 비교 → 재현율 57.4%, 정밀도 78.7%. 놓친 것은 대부분 자막 없는 영상(오디오를 GPT에 못 넘김)과 표기 차이(김녕/김영). → "둘 다 낸 것 = 정답 후보"는 쓸 만하고, gemini_only가 많이 나올 것.
+- 막힌 것: WSL 로그인 셸 `GEMINI_API_KEY`가 401 `ACCESS_TOKEN_TYPE_UNSUPPORTED`(AI Studio 키 형식 아님) → Gemini 결과 0개, 일치율 없음. 생성 요청은 처리되지 않음. 해결안은 docs/eval/cross-check-20261116.md 2절.
+- 겪은 문제: ① Codex `workspace-write`는 Windows에서 명령 실행이 정책으로 막힘 → 검색은 Claude가 WSL에서, Codex는 답만 하는 판단(제목 선택·장소 추출)에 씀. ② 파이프라인 `download.download`의 영어 자동 번역 자막 요청이 유튜브 429로 영상까지 실패(5개 중 4개, 재시도로 10분) → 평가 입력은 한국어 자막만 + `--ignore-errors`. ③ Git Bash→`wsl` 호출은 `MSYS_NO_PATHCONV=1`과 스크립트 파일로, 키가 필요하면 `bash -l`. ④ 이 PC엔 git 작성자 설정이 없어 레포 기록의 사용자 이름으로 커밋에만 지정.
+- 남은 것(승인 대기): 키 해결 → Gemini c001~c030 → compare → 불일치 사람 확인 → 나머지 Gemini → answers.csv 300건 → evalflow 기록. GPT에도 말소리를 줄지(로컬 Whisper로 평가용 자막) 결정.
