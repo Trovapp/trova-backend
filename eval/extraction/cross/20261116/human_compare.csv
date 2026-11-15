@@ -1,0 +1,142 @@
+sample_id,status,answer_name,gpt_name
+v001,both,가야랜드,가야랜드
+v001,both,밀양돼지국밥,밀양돼지국밥
+v001,both,수로왕릉,수로왕릉
+v001,both,명월카페,명월카페
+v001,both,만리향,만리향
+v001,both,연지공원,연지공원
+v001,gpt_only,,다문화거리
+v002,both,하평해변,하평해변
+v002,answer_only,파닭김밥,
+v002,both,어달삼거리,어달삼거리
+v002,both,어달항,어달항
+v002,both,카페어달,카페어달
+v002,both,논골담길,논골담길
+v002,both,등대쉼터,등대쉼터
+v002,both,등대그집,등대그집
+v002,both,비비소,비비소
+v002,both,해랑전망대,도째비골해랑전망대
+v002,gpt_only,,동쪽바다중앙시장
+v002,gpt_only,,바람의언덕 전망대
+v002,gpt_only,,별빛마을전망대
+v003,both,트로페오비토리아,트로페오비토리아
+v003,answer_only,작은피자집,
+v003,answer_only,서울시립남서울미술관,
+v003,answer_only,꿈꾸는크루아상,
+v003,answer_only,도쿄빙수,
+v003,answer_only,아트나인&잇나인,
+v003,gpt_only,,ARTNINE
+v004,answer_only,임페리아,
+v004,both,후르셰다사마르칸트,후르셰다사마르칸트
+v004,both,안산다문화음식거리,안산다문화거리
+v004,answer_only,미쉐,
+v004,both,마리나베이커리,마리나베이커리
+v006,both,카츠키친 전포점,카츠키친 전포점
+v006,answer_only,이바바커피,
+v006,both,해운대역,개미집 해운대역점
+v006,both,광안리,광안리 어방 축제
+v006,answer_only,해변포차,
+v006,answer_only,광안리 썰스데이파티,
+v006,answer_only,타이카텐푸라&마츠도 해리단길점,
+v006,both,코오리마찌 해리단길점,코오리마찌 해리단길점
+v006,answer_only,해운대 메인거리 & 시장,
+v006,answer_only,개미집 해운대역점,
+v006,answer_only,해운대 T1 베이스캠프,
+v006,gpt_only,,해운대모래축제
+v007,both,삼양해수욕장,삼양해수욕장
+v007,both,함덕해수욕장,함덕해수욕장
+v007,answer_only,김녕해수욕장,
+v007,answer_only,세화해수욕장,
+v007,both,표선해수욕장,표선 해수욕장
+v007,answer_only,색달해수욕장,
+v007,answer_only,화순금모래해수욕장,
+v007,answer_only,판포포구,
+v007,both,협재해수욕장,협재 해수욕장
+v007,answer_only,이호테우해수욕장,
+v007,gpt_only,,김영 해수욕장
+v007,gpt_only,,새화 해수욕장
+v007,gpt_only,,중문해수욕장
+v007,gpt_only,,화순 근모래 해변
+v007,gpt_only,,한포구
+v007,gpt_only,,이호테우해변
+v008,both,우진해장국,우진해장국
+v008,answer_only,삼무국수,
+v008,answer_only,제주당,
+v008,answer_only,금오름,
+v008,both,성이시돌목장,성이시돌목장
+v008,answer_only,봄빛코티지,
+v008,answer_only,신창풍차해안,
+v008,both,돈어길,돈어길
+v008,answer_only,오설록,
+v008,both,곶자왈도립공원,곶자왈도립공원
+v008,answer_only,한라산아래첫마을,
+v008,answer_only,중문고등어쌈밥,
+v008,both,화순한가네식당,화순한가네식당
+v008,answer_only,용머리해안,
+v008,answer_only,송악산,
+v008,answer_only,미영이네,
+v008,both,순천미향,순천미향
+v008,answer_only,뚱보아저씨,
+v008,answer_only,협재해수욕장,
+v008,both,호텔샌드,카페 호텔샌드
+v008,answer_only,한림칼국수,
+v008,answer_only,동문시장,
+v008,both,빽다방 제주사수점,빽다방 제주사수점
+v008,answer_only,제주공항,
+v009,both,대포해안주상절리대,대포해안주상절리대
+v009,both,정방폭포,정방폭포
+v009,both,천지연폭포,천지연폭포
+v009,both,엉또폭포,엉또폭포
+v009,both,쇠소깍,쇠소깍
+v009,both,황우지해안,황우지해안
+v009,both,소천지,소천지
+v009,both,서귀포치유의숲,서귀포 치유의 숲
+v009,both,약천사,약천사
+v009,both,중문색달해수욕장,중문색달해수욕장
+v010,both,테라로사커피공장 강릉점,테라로사커피공장 강릉 본점
+v011,answer_only,순두부젤라또 2호점,
+v011,both,안목해변,안목 해변
+v011,both,강릉중앙시장,강릉 중앙 시장
+v011,answer_only,여름의 집,
+v011,answer_only,초당모꼬지,
+v011,answer_only,소돌해변,
+v011,answer_only,소돌항,
+v011,answer_only,소돌공원,
+v011,both,레드망치,레드망치
+v011,answer_only,교동장칼국수,
+v011,answer_only,오브더모먼트,
+v012,answer_only,초당명가짬뽕순두부,
+v012,answer_only,카페밀,
+v012,answer_only,강릉조개빵,
+v012,answer_only,강릉감자닭강정,
+v012,both,사근진해변,사근진해변
+v012,both,백야커피,백야커피
+v012,both,강바다식당,강바다식당
+v012,both,중앙시장,중앙시장
+v012,answer_only,명성오징어순대,
+v012,answer_only,강릉사임당오징어순대,
+v012,answer_only,박종주반죽소,
+v012,gpt_only,,강릉닭강정
+v013,both,전주난장,전주난장
+v013,both,경기전,경기전
+v013,both,청연루,청연루
+v013,both,연화정도서관,연화정도서관
+v013,both,언론중재위원회,언론중재위원회 전북중재부
+v014,gpt_only,,전주 한옥마을
+v016,gpt_only,,Waveon Coffee
+v019,both,요미우돈교자,요미우돈교자
+v020,both,오륙도해맞이공원,오륙도해맞이공원
+v020,gpt_only,,오륙도 스카이워크
+v021,both,솔내음한정식,솔내음한정식 해운대점
+v022,both,키에키 로스팅 룸,키에키 로스팅 룸
+v022,both,푸아루,푸아루
+v022,both,소설과농담,소설과농담
+v022,both,시소 카이막 동문시장점,시소 카이막 동문시장점
+v023,both,홍시궁,홍시궁
+v023,both,오원집,오원집
+v023,both,우미네등갈비찜,우미네등갈비찜
+v024,both,해연가,해연가
+v024,gpt_only,,경포대
+v024,gpt_only,,GYEONGPO BEACH
+v025,gpt_only,,해운대 바다김밥
+v026,both,쇠마실,쇠마실

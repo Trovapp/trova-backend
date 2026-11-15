@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["is_place_content", "places"],
+  "properties": {
+    "is_place_content": {"type": "boolean"},
+    "places": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "region", "category", "evidence"],
+        "properties": {
+          "name": {"type": "string"},
+          "region": {"type": "string"},
+          "category": {"type": "string", "enum": ["restaurant", "cafe", "attraction", "lodging", "shopping", "other"]},
+          "evidence": {"type": "string", "enum": ["frame", "transcript", "title", "description"]}
+        }
+      }
+    }
+  }
+}
