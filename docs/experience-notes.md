@@ -2823,3 +2823,12 @@
 - 한 것(운영): `/srv/trova-app` 생성, Caddyfile에 정적 사이트 블록 추가(백업 `Caddyfile.bak-20261115-pwa`), 인증서 자동 발급, 앱 레포 `scripts/deploy-web-oracle.sh`로 배포. 확인: TTFB 47ms, load 0.97초, 번들 0.23초.
 - 남은 것(사용자): 운영 `.env` `APP_WEB_APP_URL` 새 주소 + 재시작, 카카오 JS SDK 도메인 등록, 홈 화면 앱 다시 추가. 그 뒤 옛 주소 redirect 배포.
 - 같은 날: 사용자 요청으로 GitHub 레포 public 전환(784커밋 시크릿 패턴 스캔 0건).
+
+## 2026-11-15 GPT Pro 구독 토큰으로 스레드·인스타 홍보 시작 패키지 — Claude 대장 + Codex 실행 구조 첫 적용 (#436)
+- 범위: 사용자 "지피티 프로 토큰이 너무 많이 남아서 트루바에서 쓸 수 있는 게 뭐가 있을까, 홍보도 생각해줘, 스레드랑 인스타에 홍보해야겠어" → 쓸 곳 정리 보고 → "대장 에이전트 3개 세션 + 하위 Codex" 구조 선택 → 이슈 #436(홍보)·#437(정답 세트, Windows 실행 호스트 뒤)·#438(Codex 작업 목록) 생성, 1·3번 맥에서 시작.
+- 방법 비교: 운영 코드에 GPT 넣기(구독은 API 크레딧이 아니고 비용 0원 원칙과 충돌) ✗ / 사람이 쓰는 쪽(Codex CLI·Deep Research)에서 토큰 쓰기 ○. Claude가 지시문·검증·커밋, Codex(`codex exec -s workspace-write`, gpt-6.1-sol)가 글쓰기 실행.
+- 한 것(맥, 워크트리 `홍보-패키지`): Codex 호출 3번(brief+릴스 시나리오 → 스레드 글감 / 캘린더 동시) → brief.md(107줄)·reels-scenarios.md(82줄)·threads-topics.md(312줄, 글감 30개·묶음 7개)·calendar-30d.md(246줄, 30일 편성·훅 100개·댓글 템플릿 10개·해시태그 3세트).
+- 둔 곳: 처음엔 이 레포 `docs/marketing/`(PR #439)에 넣었다가 사용자 결정으로 **비공개 레포 `Trovapp/trova-marketing`**(docs/·prompts/·log/)로 옮기고 #439는 닫음 — 공개 레포라 반응 숫자·릴스 자산을 둘 수 없어서. 여기엔 이 기록만.
+- 확인: 파일마다 grep으로 수익 모델·숫자(MB/ms/원/명)·운영 주소·키 이름 0건, brief 전문과 글감 샘플 직접 읽음. 레포가 public이라 숫자·여행 패스 금지는 지시문에 넣어 Codex가 지키게 함(스스로 저작권 주의도 추가).
+- 같은 날 같이 한 것: Windows 노트북 Orca를 맥 Orca 원격 서버로 페어링(Tailscale, 승인·지시 가능). 온보딩 사이트가 아직 `app.trovapp.workers.dev`를 가리킴 → brief 점검 목록 1번.
+- 남은 것: 릴스 녹화는 사용자(홍보용 테스트 계정), 온보딩 사이트 주소 교체, #437은 Windows 실행 호스트(B) 등록 뒤, #438 결과 PR.
