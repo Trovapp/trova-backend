@@ -15,6 +15,7 @@ Gemini는 오디오도 받지만, GPT(Codex)에는 오디오를 넘길 수 없�
 | `<날짜>/gemini/*.json`, `<날짜>/gpt/*.json` | 샘플별 추출 결과(장소 이름만, 영상·자막은 커밋하지 않음) |
 | `<날짜>/compare.csv`·`mismatches.csv`·`agreed.csv`·`summary.json` | `compare` 결과 |
 | `<날짜>/mismatches_draft.csv` | 불일치 행 판정 초안(Y/N/?, `verdict_reason`). `mismatches.csv`는 덮어쓰지 않는다 |
+| `<날짜>/review_list.md` | 초안에서 남은 "?" 행을 샘플별로 묶은 사람 확인 목록(링크·근거 입력·프레임 번호·양쪽 표기) |
 | `<날짜>/human_compare.csv`·`human_summary.json` | GPT와 사람 정답 비교(`score-human`) |
 
 영상·프레임·자막·오디오는 `pipeline-test/work/cross/<샘플>/`(gitignore)에만 둔다.
