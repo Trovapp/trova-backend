@@ -1,0 +1,42 @@
+{
+  "sample_id": "c158",
+  "url": "https://www.youtube.com/shorts/0F_NZFZf4Rg",
+  "seconds": 7.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3831,
+      "totalTokens": 12169
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3854,
+      "totalTokens": 13195
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "목포 해상케이블카",
+      "nameCandidates": [
+        "목포 해상케이블카"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "비가 많이 와서 아쉬웠지만 좋은 공중산책",
+        "한국관광 100선"
+      ]
+    }
+  ]
+}

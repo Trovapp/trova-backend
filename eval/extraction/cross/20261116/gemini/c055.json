@@ -1,0 +1,25 @@
+{
+  "sample_id": "c055",
+  "url": "https://www.youtube.com/shorts/oVLtFgqZ8Tc",
+  "seconds": 7.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4032,
+      "totalTokens": 10757
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2754,
+      "totalTokens": 11654
+    }
+  ],
+  "status": "ok",
+  "places": []
+}

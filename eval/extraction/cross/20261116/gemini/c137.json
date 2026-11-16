@@ -1,0 +1,77 @@
+{
+  "sample_id": "c137",
+  "url": "https://www.youtube.com/shorts/ePuyndT45JM",
+  "seconds": 8.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3432,
+      "totalTokens": 12297
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4993,
+      "totalTokens": 13657
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "Comme à Lisbonne",
+      "nameCandidates": [
+        "Comme à Lisbonne",
+        "고무알 리스본"
+      ],
+      "region": "파리",
+      "address": "20 Rue de Mogador, 75009 Paris",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "구글 평점 4.6점, 10년째 사랑받는 디저트 맛집",
+        "한 박스에 12개까지 들어가며 6개씩 두 층으로 나눔",
+        "살짝 물릴 때는 시나몬을 뿌려 커피와 함께 즐기면 좋음"
+      ]
+    },
+    {
+      "name": "파리 시청",
+      "nameCandidates": [
+        "파리 시청"
+      ],
+      "region": "파리",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "역사적인 건물일 뿐만 아니라 건축물 자체로도 아름다움",
+        "관광 명소로 굉장히 유명함"
+      ]
+    },
+    {
+      "name": "수켓은 정원",
+      "nameCandidates": [
+        "수켓은 정원",
+        "정원동"
+      ],
+      "region": "파리",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.85,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시청을 끼고 살짝 오른쪽으로 가면 주말에만 열림",
+        "많이 알려져 있지 않아 인적이 드물지만 잘 꾸며져 있음"
+      ]
+    }
+  ]
+}

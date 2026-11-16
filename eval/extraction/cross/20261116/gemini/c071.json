@@ -1,0 +1,130 @@
+{
+  "sample_id": "c071",
+  "url": "https://www.youtube.com/shorts/BExGdPBBHbw",
+  "seconds": 15.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 2,
+      "success": true,
+      "latencyMs": 11363,
+      "totalTokens": 12698
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3729,
+      "totalTokens": 14331
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "고하도",
+      "nameCandidates": [
+        "고하도"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "목포 해상케이블카 고하도 승강장 및 주변 관광지"
+      ]
+    },
+    {
+      "name": "커피파나쉐",
+      "nameCandidates": [
+        "커피파나쉐"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "고하도 전망대",
+      "nameCandidates": [
+        "고하도 전망대"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "독특한 형태의 목포 고하도 전망대 건물"
+      ]
+    },
+    {
+      "name": "해안데크",
+      "nameCandidates": [
+        "해안데크"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "바다를 따라 걸을 수 있는 고하도 해안데크 산책로"
+      ]
+    },
+    {
+      "name": "목포해상케이블카",
+      "nameCandidates": [
+        "해상케이블카",
+        "목포해상케이블카"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "바다 위를 가로지르는 목포 해상케이블카"
+      ]
+    },
+    {
+      "name": "유달산 스테이션",
+      "nameCandidates": [
+        "유달산 스테이션"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해상케이블카 유달산 스테이션"
+      ]
+    },
+    {
+      "name": "북항스테이션",
+      "nameCandidates": [
+        "북항스테이션"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해상케이블카 북항스테이션"
+      ]
+    }
+  ]
+}

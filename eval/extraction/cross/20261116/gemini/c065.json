@@ -1,0 +1,44 @@
+{
+  "sample_id": "c065",
+  "url": "https://www.youtube.com/shorts/0VeAg_c1XPg",
+  "seconds": 7.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3149,
+      "totalTokens": 9653
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3675,
+      "totalTokens": 10719
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "미켈란젤로 뮤지엄",
+      "nameCandidates": [
+        "미켈란젤로 뮤지엄",
+        "미켈란젤로뮤지엄"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "이탈리아 거장 레오나르도 다빈치와 미켈란젤로 작품 전시",
+        "100% 이탈리아 장인이 만든 실물 크기 작품 전시",
+        "직접 보고 체험할 수 있는 공간"
+      ]
+    }
+  ]
+}

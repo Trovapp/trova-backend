@@ -1,0 +1,42 @@
+{
+  "sample_id": "c078",
+  "url": "https://www.youtube.com/shorts/TY0MGR8BvOo",
+  "seconds": 6.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3201,
+      "totalTokens": 10834
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3097,
+      "totalTokens": 11844
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "신도 수변공원",
+      "nameCandidates": [
+        "신도 수변공원"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "바다를 보면서 걸을 수 있는 수변공원",
+        "신도 나가기 전에 보고 가는 걸 추천"
+      ]
+    }
+  ]
+}

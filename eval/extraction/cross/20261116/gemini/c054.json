@@ -1,0 +1,61 @@
+{
+  "sample_id": "c054",
+  "url": "https://www.youtube.com/shorts/TQG4Ilh3WbE",
+  "seconds": 10.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 6223,
+      "totalTokens": 11085
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3624,
+      "totalTokens": 12270
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "소울로스터리",
+      "nameCandidates": [
+        "소울로스터리",
+        "소울 로스터리"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "자연 속 넓은 정원과 8천 평 소나무숲이 있는 카페",
+        "5번 건물에서 시그니처 옥수수 커피와 화덕 포카치아 판매",
+        "넓은 주차 공간 완비"
+      ]
+    },
+    {
+      "name": "소양강댐",
+      "nameCandidates": [
+        "소양강댐",
+        "소양댐"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "카페에서 가까운 거리에 위치",
+        "닭갈비나 막국수 식사 후 방문하기 좋은 위치"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "sample_id": "c134",
+  "url": "https://www.youtube.com/shorts/KpsnFHzFKNw",
+  "seconds": 6.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2999,
+      "totalTokens": 11286
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2896,
+      "totalTokens": 12340
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "아라폭포",
+      "nameCandidates": [
+        "아라폭포",
+        "아라뱃길 인공폭포"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "인천 아라뱃길 협곡에 위치한 국내 최대 인공폭포",
+        "상단 40m 수직낙하, 중단 물줄기, 하단 150m 커튼폭포로 구성"
+      ]
+    }
+  ]
+}

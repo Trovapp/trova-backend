@@ -1,0 +1,93 @@
+{
+  "sample_id": "c160",
+  "url": "https://www.youtube.com/shorts/hpiOFDmDEl4",
+  "seconds": 9.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3400,
+      "totalTokens": 13085
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 6116,
+      "totalTokens": 14500
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "오송제",
+      "nameCandidates": [
+        "오송제"
+      ],
+      "region": "전주시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "전주시 송천동에 위치함",
+        "남녀노소 누구나 좋아하는 곳"
+      ]
+    },
+    {
+      "name": "세병호",
+      "nameCandidates": [
+        "세병호",
+        "세병공원"
+      ],
+      "region": "전주시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아파트들 사이 도심 속 숨겨진 자연 공간",
+        "피크닉을 즐기기 좋은 장소"
+      ]
+    },
+    {
+      "name": "아중호수",
+      "nameCandidates": [
+        "아중호수",
+        "아정호수"
+      ],
+      "region": "전주시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "전주시 우아동에 위치함",
+        "가족, 친구, 연인과 나들이하기 좋은 곳"
+      ]
+    },
+    {
+      "name": "쌍샘광장",
+      "nameCandidates": [
+        "쌍샘광장",
+        "쌍쌍광장"
+      ],
+      "region": "전주시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "전주 한옥마을과 자만벽화마을 사이에 위치함",
+        "좋은 물을 자랑하던 곳으로 태조 이성계와 관련된 이야기 전해짐"
+      ]
+    }
+  ]
+}

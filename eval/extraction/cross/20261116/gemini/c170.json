@@ -1,0 +1,43 @@
+{
+  "sample_id": "c170",
+  "url": "https://www.youtube.com/shorts/FtswBTumMUw",
+  "seconds": 6.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3450,
+      "totalTokens": 9646
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2301,
+      "totalTokens": 10657
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "한입",
+      "nameCandidates": [
+        "한입",
+        "한입 안암"
+      ],
+      "region": "서울",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "고대 안암 맛집",
+        "커리 및 인도 요리 전문점"
+      ]
+    }
+  ]
+}

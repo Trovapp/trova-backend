@@ -1,0 +1,44 @@
+{
+  "sample_id": "c138",
+  "url": "https://www.youtube.com/shorts/VKnUBTrpECI",
+  "seconds": 6.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3024,
+      "totalTokens": 11029
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3538,
+      "totalTokens": 12094
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "죽도 상화원",
+      "nameCandidates": [
+        "죽도 상화원",
+        "상화원",
+        "죽도_상화원"
+      ],
+      "region": "보령",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "4월~월, 오전 10시부터 오후 5시까지 개방",
+        "관람 가능일: 금·토·일요일 및 법정공휴일"
+      ]
+    }
+  ]
+}

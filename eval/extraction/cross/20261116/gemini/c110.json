@@ -1,0 +1,110 @@
+{
+  "sample_id": "c110",
+  "url": "https://www.youtube.com/shorts/8a44XAab6Lw",
+  "seconds": 8.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4296,
+      "totalTokens": 15068
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4004,
+      "totalTokens": 16670
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "담양국수거리",
+      "nameCandidates": [
+        "담양국수거리",
+        "국수거리"
+      ],
+      "region": "전라남도 담양",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 1,
+      "videoNotes": [
+        "특방을 따라 여러 국수가게들이 늘어서 있음",
+        "국수 가격이 4~5000원으로 저렴함",
+        "관방천이 내려다보이는 야외 자리에서 식사 가능"
+      ]
+    },
+    {
+      "name": "죽녹원",
+      "nameCandidates": [
+        "죽녹원"
+      ],
+      "region": "전라남도 담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 2,
+      "videoNotes": [
+        "2.4km의 산책 코스가 있음",
+        "댓잎 소프트콘을 먹을 수 있음"
+      ]
+    },
+    {
+      "name": "명가은",
+      "nameCandidates": [
+        "명가은"
+      ],
+      "region": "전라남도 담양",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 3,
+      "videoNotes": [
+        "산아래 조용히 자리 잡은 한옥 찻집",
+        "자리마다 포트가 있어 직접 차를 우려 마실 수 있음"
+      ]
+    },
+    {
+      "name": "소세원",
+      "nameCandidates": [
+        "소세원",
+        "소쇄원"
+      ],
+      "region": "전라남도 담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 4,
+      "videoNotes": [
+        "조선 전기를 대표하는 민간 정원",
+        "광풍각, 제월당, 대봉대 등이 남아 있음"
+      ]
+    },
+    {
+      "name": "남도예담",
+      "nameCandidates": [
+        "남도예담"
+      ],
+      "region": "전라남도 담양",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 5,
+      "videoNotes": [
+        "고급스러운 남도식 떡갈비 한상 제공",
+        "한우 떡갈비와 한돈 떡갈비가 함께 나오는 반반 메뉴 추천",
+        "대통밥을 먹고 나면 빈 대나무통을 가져갈 수 있음"
+      ]
+    }
+  ]
+}

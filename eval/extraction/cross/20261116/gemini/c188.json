@@ -1,0 +1,44 @@
+{
+  "sample_id": "c188",
+  "url": "https://www.youtube.com/shorts/UGOAcLuNr_w",
+  "seconds": 7.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3613,
+      "totalTokens": 14897
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3381,
+      "totalTokens": 15954
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "트윈스테이블",
+      "nameCandidates": [
+        "트윈스테이블",
+        "트윈스 테이블"
+      ],
+      "region": "김제시",
+      "address": "전북 김제시 죽산면 죽산로145",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "쌍둥이 자매가 함께 운영하는 아기자기한 카페",
+        "김제 쌀을 활용한 쌀빵과 다양한 베이커리 판매",
+        "월화 휴무, 영업시간 10AM~9PM"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "sample_id": "c051",
+  "url": "https://www.youtube.com/watch?v=way6vJ9jMEs",
+  "seconds": 11.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5908,
+      "totalTokens": 27558
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5406,
+      "totalTokens": 28880
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "프랑스 과자 16구",
+      "nameCandidates": [
+        "프랑스 과자 16구",
+        "프랑스 16구"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "다쿠아즈가 유명한 디저트 가게",
+        "샌디언 다쿠아즈의 탄생지"
+      ]
+    },
+    {
+      "name": "자크 오호리점",
+      "nameCandidates": [
+        "자크 오호리점",
+        "자크"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "최강록 셰프가 애용하는 디저트 가게",
+        "세계 디저트 50선에 들어간 곳",
+        "푸딩과 피스타치오 케이크가 유명함"
+      ]
+    },
+    {
+      "name": "프린스 오브 더 프루트",
+      "nameCandidates": [
+        "프린스 오브 더 프루트"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "과일 파르페를 판매하는 곳",
+        "가격대가 높은 편임"
+      ]
+    }
+  ]
+}

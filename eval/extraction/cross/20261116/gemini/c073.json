@@ -1,0 +1,43 @@
+{
+  "sample_id": "c073",
+  "url": "https://www.youtube.com/shorts/VS7_5IPEo64",
+  "seconds": 6.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3364,
+      "totalTokens": 11513
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2901,
+      "totalTokens": 12544
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "풀문",
+      "nameCandidates": [
+        "풀문"
+      ],
+      "region": "춘천시",
+      "address": "춘천시 송암동 641",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대표님이 직접 만든 카누를 탈 수 있음",
+        "카누 체험 시 전문 강사 동행",
+        "카페 2층 화가들을 위한 전시관 운영"
+      ]
+    }
+  ]
+}

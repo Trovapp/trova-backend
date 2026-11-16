@@ -1,0 +1,257 @@
+{
+  "sample_id": "c092",
+  "url": "https://www.youtube.com/watch?v=8DfKaU21IYU",
+  "seconds": 11.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4373,
+      "totalTokens": 17022
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 7092,
+      "totalTokens": 19708
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "킨류 라멘",
+      "nameCandidates": [
+        "킨류 라멘",
+        "금류 라멘"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": 1,
+      "orderInDay": 1,
+      "videoNotes": [
+        "김치가 반찬으로 나옴"
+      ]
+    },
+    {
+      "name": "도톤보리",
+      "nameCandidates": [
+        "도톤보리"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": 1,
+      "orderInDay": 2,
+      "videoNotes": [
+        "글리코 간판이 있음",
+        "다리 아래에 다코야끼 맛집이 있음"
+      ]
+    },
+    {
+      "name": "신사이바시",
+      "nameCandidates": [
+        "신사이바시"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.99,
+      "dayNumber": 1,
+      "orderInDay": 3,
+      "videoNotes": [
+        "상점가가 늘어서 있어 쇼핑하기 좋음"
+      ]
+    },
+    {
+      "name": "구로몬 시장",
+      "nameCandidates": [
+        "구로몬 시장"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.99,
+      "dayNumber": 1,
+      "orderInDay": 4,
+      "videoNotes": []
+    },
+    {
+      "name": "우메다 스카이빌딩",
+      "nameCandidates": [
+        "우메다 스카이빌딩",
+        "우메다 스카이빌딩 전망대"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": 1,
+      "orderInDay": 5,
+      "videoNotes": [
+        "오사카 시내 야경을 볼 수 있는 전망대"
+      ]
+    },
+    {
+      "name": "유니버셜 스튜디오 재팬",
+      "nameCandidates": [
+        "유니버셜 스튜디오 재팬",
+        "USJ"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": 2,
+      "orderInDay": 1,
+      "videoNotes": [
+        "주말이나 사람 많은 날은 에리어 입장 정리권 필요",
+        "오픈하자마자 앱이나 발권소로 달려가는 것이 팁"
+      ]
+    },
+    {
+      "name": "소라니와 온천",
+      "nameCandidates": [
+        "소라니와 온천",
+        "소라언니와 온천"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": 2,
+      "orderInDay": 2,
+      "videoNotes": [
+        "유카타를 입고 정원 산책 및 족욕 가능"
+      ]
+    },
+    {
+      "name": "청수사",
+      "nameCandidates": [
+        "청수사",
+        "기요미즈데라"
+      ],
+      "region": "교토",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": 3,
+      "orderInDay": 1,
+      "videoNotes": [
+        "이넨자카와 산넨자카를 오르면 나옴",
+        "구경할 게 많아 여유로운 시간 잡기 추천"
+      ]
+    },
+    {
+      "name": "은각사",
+      "nameCandidates": [
+        "은각사"
+      ],
+      "region": "교토",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": 3,
+      "orderInDay": 2,
+      "videoNotes": [
+        "철학의 길 산책 코스와 연계 가능"
+      ]
+    },
+    {
+      "name": "오사카성",
+      "nameCandidates": [
+        "오사카성"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": 4,
+      "orderInDay": 1,
+      "videoNotes": [
+        "길이 흙바닥이고 계단이 많아 캐리어 이동이 불편함"
+      ]
+    },
+    {
+      "name": "한큐 3번가",
+      "nameCandidates": [
+        "한큐 3번가",
+        "한큐 삼번가"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.99,
+      "dayNumber": 4,
+      "orderInDay": 2,
+      "videoNotes": [
+        "캐릭터 샵이 많음"
+      ]
+    },
+    {
+      "name": "돈키호테",
+      "nameCandidates": [
+        "돈키호테"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.99,
+      "dayNumber": 4,
+      "orderInDay": 3,
+      "videoNotes": []
+    },
+    {
+      "name": "덴덴타운",
+      "nameCandidates": [
+        "덴덴타운"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "오타쿠 거리"
+      ]
+    },
+    {
+      "name": "헵파이브",
+      "nameCandidates": [
+        "헵파이브"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "유명한 대관람차가 있음"
+      ]
+    },
+    {
+      "name": "아베노 하루카스 300 전망대",
+      "nameCandidates": [
+        "아베노 하루카스 300 전망대",
+        "아베노우 하루카스"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "우메다 스카이빌딩보다 더 높음"
+      ]
+    }
+  ]
+}

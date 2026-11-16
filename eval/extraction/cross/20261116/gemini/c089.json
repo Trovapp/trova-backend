@@ -1,0 +1,44 @@
+{
+  "sample_id": "c089",
+  "url": "https://www.youtube.com/shorts/N-WOSHUStpQ",
+  "seconds": 7.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5143,
+      "totalTokens": 10481
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2488,
+      "totalTokens": 11519
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "그린보드",
+      "nameCandidates": [
+        "그린보드",
+        "그림보드"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "초록이 가득한 작은 식물원 느낌의 카페",
+        "물 흐르는 연못이 있음",
+        "잔디 정원과 산책길이 이어짐"
+      ]
+    }
+  ]
+}

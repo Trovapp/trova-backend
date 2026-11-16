@@ -1,0 +1,178 @@
+{
+  "sample_id": "c035",
+  "url": "https://www.youtube.com/watch?v=LTlh3PA7y10",
+  "seconds": 11.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4404,
+      "totalTokens": 21399
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 6921,
+      "totalTokens": 23357
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "하나쿠지라",
+      "nameCandidates": [
+        "하나쿠지라"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "오뎅 맛집",
+        "무는 꼭 먹어야 함",
+        "네기부쿠로 추천"
+      ]
+    },
+    {
+      "name": "산쿠",
+      "nameCandidates": [
+        "산쿠"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "츠케멘 맛집",
+        "면의 쫄깃함이 돋보임"
+      ]
+    },
+    {
+      "name": "상등카레 본점",
+      "nameCandidates": [
+        "상등카레",
+        "상등 카레 본점"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "돈카츠카레가 대표 메뉴",
+        "사이드로 양배추 피클과 계란 제공"
+      ]
+    },
+    {
+      "name": "모에요 멘스케",
+      "nameCandidates": [
+        "모에요 멘스케",
+        "모에어 민스케"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "오리소바와 조개소바 판매",
+        "특제 금색 조개소바 추천"
+      ]
+    },
+    {
+      "name": "타이요우켄",
+      "nameCandidates": [
+        "타이요우켄",
+        "타이요켄"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "가라아게 맛집",
+        "런치 가격 690엔"
+      ]
+    },
+    {
+      "name": "라멘 진세이 제트",
+      "nameCandidates": [
+        "JET",
+        "라멘 진세의 제트",
+        "라멘 진세 제트"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "토리파이탄 라멘 맛집",
+        "대표 메뉴는 토리니코미 소바"
+      ]
+    },
+    {
+      "name": "파네포르치니",
+      "nameCandidates": [
+        "파네포르치니"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "소금빵 맛집",
+        "소금 포카차와 모찌빵 추천"
+      ]
+    },
+    {
+      "name": "코조우+",
+      "nameCandidates": [
+        "코조우+",
+        "맛을 소마 바치 코조",
+        "코조우"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "마제소바 맛집",
+        "대표 메뉴는 킹 포크 마제소바"
+      ]
+    },
+    {
+      "name": "타마이찌",
+      "nameCandidates": [
+        "타마이찌"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "고즈넉한 킷사텐",
+        "믹스샌드위치와 드립커피 판매"
+      ]
+    }
+  ]
+}

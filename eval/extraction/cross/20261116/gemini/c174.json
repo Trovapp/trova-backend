@@ -1,0 +1,41 @@
+{
+  "sample_id": "c174",
+  "url": "https://www.youtube.com/shorts/uRk4y5_Fy9I",
+  "seconds": 6.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3726,
+      "totalTokens": 13285
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2880,
+      "totalTokens": 14285
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "포항야시장",
+      "nameCandidates": [
+        "포항야시장"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "다채로운 행사가 진행됨"
+      ]
+    }
+  ]
+}

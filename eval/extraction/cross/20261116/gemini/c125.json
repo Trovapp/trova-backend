@@ -1,0 +1,44 @@
+{
+  "sample_id": "c125",
+  "url": "https://www.youtube.com/shorts/IesNLBZyxw4",
+  "seconds": 9.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 6545,
+      "totalTokens": 11118
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2899,
+      "totalTokens": 12156
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "크래프터",
+      "nameCandidates": [
+        "크래프터",
+        "대구 앞산 카페 크래프터"
+      ],
+      "region": "대구",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "바닐라슈페너 6.0",
+        "초코 딸기 바나나 6.5",
+        "얼그레이 유자 케이크"
+      ]
+    }
+  ]
+}

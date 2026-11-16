@@ -1,0 +1,43 @@
+{
+  "sample_id": "c178",
+  "url": "https://www.youtube.com/shorts/RCLTTe5rvaU",
+  "seconds": 7.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3986,
+      "totalTokens": 10899
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3353,
+      "totalTokens": 11920
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "Quán Dung",
+      "nameCandidates": [
+        "Quán Dung"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "가격이 저렴함",
+        "쌀국수와 살짝 다르게 생긴 색다른 메뉴가 있음",
+        "국물이 깊고 진하며 기름짐"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "sample_id": "c130",
+  "url": "https://www.youtube.com/shorts/IC2YWfsKK0A",
+  "seconds": 12.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 7965,
+      "totalTokens": 9432
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3904,
+      "totalTokens": 10433
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "영일대",
+      "nameCandidates": [
+        "영일대"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "영일대 조개구이 맛집"
+      ]
+    }
+  ]
+}

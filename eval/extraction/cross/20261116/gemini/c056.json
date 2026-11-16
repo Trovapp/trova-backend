@@ -1,0 +1,91 @@
+{
+  "sample_id": "c056",
+  "url": "https://www.youtube.com/shorts/d-pQxWMxBE4",
+  "seconds": 8.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4093,
+      "totalTokens": 13713
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4278,
+      "totalTokens": 15041
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "송상현광장",
+      "nameCandidates": [
+        "송상현광장"
+      ],
+      "region": "부산",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "전포카페거리",
+      "nameCandidates": [
+        "전포카페거리"
+      ],
+      "region": "부산",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "KT&G 상상마당 부산",
+      "nameCandidates": [
+        "KT&G 상상마당 부산"
+      ],
+      "region": "부산",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "삼광사",
+      "nameCandidates": [
+        "삼광사"
+      ],
+      "region": "부산",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "황령산 봉수대",
+      "nameCandidates": [
+        "황령산 봉수대"
+      ],
+      "region": "부산",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "sample_id": "c097",
+  "url": "https://www.youtube.com/watch?v=e6TQz-YsfX8",
+  "seconds": 17.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5128,
+      "totalTokens": 20703
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 2,
+      "success": true,
+      "latencyMs": 12305,
+      "totalTokens": 22536
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "우메다 숙소",
+      "nameCandidates": [
+        "우메다 숙소"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "lodging",
+      "confidence": 0.9,
+      "dayNumber": 1,
+      "orderInDay": 1,
+      "videoNotes": [
+        "블로그 찐 후기 및 최저가 예약링크 제공"
+      ]
+    },
+    {
+      "name": "우메키타 공원",
+      "nameCandidates": [
+        "우메키타 공원",
+        "오메에 생긴 신상 공원"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": 2,
+      "orderInDay": 1,
+      "videoNotes": [
+        "우메다에 새로 생긴 신상 공원"
+      ]
+    },
+    {
+      "name": "KITH OSAKA",
+      "nameCandidates": [
+        "KITH OSAKA"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.95,
+      "dayNumber": 2,
+      "orderInDay": 2,
+      "videoNotes": [
+        "쇼핑하기 좋은 매장"
+      ]
+    },
+    {
+      "name": "루쿠아",
+      "nameCandidates": [
+        "루쿠아",
+        "LUCUA"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.95,
+      "dayNumber": 2,
+      "orderInDay": 3,
+      "videoNotes": [
+        "다양한 브랜드 쇼핑 가능"
+      ]
+    },
+    {
+      "name": "알펜",
+      "nameCandidates": [
+        "알펜",
+        "Alpen"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": 2,
+      "orderInDay": 4,
+      "videoNotes": [
+        "쇼핑 코스로 방문"
+      ]
+    },
+    {
+      "name": "헵파이브",
+      "nameCandidates": [
+        "헵파이브",
+        "HEP FIVE"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.95,
+      "dayNumber": 2,
+      "orderInDay": 5,
+      "videoNotes": [
+        "스투시, 양말 등 쇼핑"
+      ]
+    },
+    {
+      "name": "PLAZA Lucua Osaka Store",
+      "nameCandidates": [
+        "PLAZA Lucua Osaka Store"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.98,
+      "dayNumber": 2,
+      "orderInDay": 6,
+      "videoNotes": [
+        "금목서 티치 등 다양한 아이템 판매"
+      ]
+    },
+    {
+      "name": "Stüssy Umeda Chapter",
+      "nameCandidates": [
+        "Stüssy Umeda Chapter",
+        "스투시 우메다"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.98,
+      "dayNumber": 2,
+      "orderInDay": 7,
+      "videoNotes": [
+        "의류 및 패션 소품 쇼핑"
+      ]
+    }
+  ]
+}

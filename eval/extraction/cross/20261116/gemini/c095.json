@@ -1,0 +1,74 @@
+{
+  "sample_id": "c095",
+  "url": "https://www.youtube.com/shorts/UlU5lU9IVcs",
+  "seconds": 6.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3046,
+      "totalTokens": 13364
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3126,
+      "totalTokens": 14583
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "선재도",
+      "nameCandidates": [
+        "선재도"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "CNN이 선정한 가장 아름다운 섬",
+        "인천 가볼만한 곳, 당일치기 여행 추천"
+      ]
+    },
+    {
+      "name": "목섬",
+      "nameCandidates": [
+        "목섬"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "선재도의 아름다운 섬"
+      ]
+    },
+    {
+      "name": "측도",
+      "nameCandidates": [
+        "측도",
+        "측도 바닷길"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "측도 바닷길",
+        "목섬과 다르게 차량 이용이 가능함"
+      ]
+    }
+  ]
+}

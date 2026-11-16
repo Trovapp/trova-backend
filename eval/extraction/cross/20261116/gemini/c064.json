@@ -1,0 +1,58 @@
+{
+  "sample_id": "c064",
+  "url": "https://www.youtube.com/shorts/U4IDQa8le1s",
+  "seconds": 7.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3109,
+      "totalTokens": 10790
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3862,
+      "totalTokens": 11922
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "코야코 떡볶이",
+      "nameCandidates": [
+        "코야코 떡볶이"
+      ],
+      "region": "서울",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "혜화 대학로 맛집 추천",
+        "즉석떡볶이 메뉴 제공"
+      ]
+    },
+    {
+      "name": "카페 릴리마들렌",
+      "nameCandidates": [
+        "카페 릴리마들렌",
+        "릴리 마들렌"
+      ],
+      "region": "서울",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "Since 1995"
+      ]
+    }
+  ]
+}

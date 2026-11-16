@@ -1,0 +1,221 @@
+{
+  "sample_id": "c037",
+  "url": "https://www.youtube.com/shorts/TqYmea2iTLg",
+  "seconds": 22.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4212,
+      "totalTokens": 14662
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 2,
+      "success": true,
+      "latencyMs": 17897,
+      "totalTokens": 17216
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "상주은모래비치",
+      "nameCandidates": [
+        "상주은모래비치"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "은은하게 반짝이는 고운 모래가 매력인 곳입니다.",
+        "맨발로 닿는 모래의 감촉이 좋습니다."
+      ]
+    },
+    {
+      "name": "보리암",
+      "nameCandidates": [
+        "보리암"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "금산 남쪽 봉우리 681m에 위치한 절입니다.",
+        "우리나라 전국 3대 기도처로 알려져 있습니다."
+      ]
+    },
+    {
+      "name": "다랭이마을",
+      "nameCandidates": [
+        "다랭이마을",
+        "다행이 마을"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "45도 경사 비탈에 10개 층층 계단 680여 개의 논이 있습니다.",
+        "계단식논 옆에 에메랄드빛의 남해바다가 함께 있습니다."
+      ]
+    },
+    {
+      "name": "독일마을",
+      "nameCandidates": [
+        "독일마을"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "파독 광부와 간호사들의 정착을 위해 조성한 곳입니다.",
+        "유럽풍의 건물들이 있어서 외국에 온 듯한 느낌이 듭니다."
+      ]
+    },
+    {
+      "name": "설리스카이워크",
+      "nameCandidates": [
+        "설리스카이워크"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아름다운 해안 경관과 금산까지 함께 감상할 수 있습니다.",
+        "스카이워크 끝쪽에 그네가 있습니다."
+      ]
+    },
+    {
+      "name": "두모마을",
+      "nameCandidates": [
+        "두모마을",
+        "부모 마을"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "다랑이 논 2만 평에 유채와 메밀꽃을 재배합니다.",
+        "봄과 가을에 꽃으로 가득 채워집니다."
+      ]
+    },
+    {
+      "name": "상상양떼목장편백숲",
+      "nameCandidates": [
+        "상상양떼목장편백숲",
+        "상상 양대 목장"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "남해군의 유명한 양대 목장 세 곳 중 가장 추천하는 곳입니다.",
+        "여러 동물들과 편백숲이 있습니다."
+      ]
+    },
+    {
+      "name": "토피아랜드",
+      "nameCandidates": [
+        "토피아랜드"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "관리하시는 분이 직접 만든 작품들이 있습니다.",
+        "7백여 그루의 토피어리가 있습니다."
+      ]
+    },
+    {
+      "name": "보물섬전망대",
+      "nameCandidates": [
+        "보물섬전망대"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "몸을 묶고 걸어가면서 바다를 볼 수 있는 전망대입니다.",
+        "카페에서 차를 마실 수 있습니다."
+      ]
+    },
+    {
+      "name": "남해대교",
+      "nameCandidates": [
+        "남해대교"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "길이 660m, 높이 80m의 다리입니다.",
+        "가장 잘 볼 수 있는 곳으로 남해각과 충렬사가 있습니다."
+      ]
+    },
+    {
+      "name": "남해각",
+      "nameCandidates": [
+        "남해각"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "남해대교를 가장 잘 볼 수 있는 곳입니다.",
+        "현재 재생 사업을 통해 기억의 예술관으로 운영되고 있습니다."
+      ]
+    },
+    {
+      "name": "충렬사",
+      "nameCandidates": [
+        "충렬사"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "남해대교를 가장 잘 볼 수 있는 곳입니다.",
+        "충무공 이순신을 기리기 위한 사당입니다."
+      ]
+    }
+  ]
+}

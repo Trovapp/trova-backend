@@ -1,0 +1,44 @@
+{
+  "sample_id": "c049",
+  "url": "https://www.youtube.com/shorts/dBg316s59FI",
+  "seconds": 6.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3186,
+      "totalTokens": 11698
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2697,
+      "totalTokens": 12747
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "근대역사관",
+      "nameCandidates": [
+        "근대역사관",
+        "대구근대역사관"
+      ],
+      "region": "대구",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대구시 유형문화재 제49호로 지정된 건물",
+        "조선식산은행 대구지점으로 건립되었던 근대문화유산",
+        "상시 기획전시와 교육 프로그램 운영"
+      ]
+    }
+  ]
+}

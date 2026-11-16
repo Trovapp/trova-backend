@@ -1,0 +1,42 @@
+{
+  "sample_id": "c091",
+  "url": "https://www.youtube.com/shorts/cYy5N0o4z5Q",
+  "seconds": 6.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3393,
+      "totalTokens": 10593
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2472,
+      "totalTokens": 11622
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "대천해수욕장",
+      "nameCandidates": [
+        "대천해수욕장"
+      ],
+      "region": "보령",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "익스트림 스카이바이크 체험 가능",
+        "광활한 바다 풍경을 보며 즐기는 스카이바이크"
+      ]
+    }
+  ]
+}

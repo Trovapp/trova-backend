@@ -1,0 +1,75 @@
+{
+  "sample_id": "c085",
+  "url": "https://www.youtube.com/shorts/Kg9OKC93dfs",
+  "seconds": 16.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3963,
+      "totalTokens": 13233
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 2,
+      "success": true,
+      "latencyMs": 12474,
+      "totalTokens": 14566
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "해맞이공원",
+      "nameCandidates": [
+        "해맞이공원",
+        "해마지 공원"
+      ],
+      "region": "대구 동구",
+      "address": "대구 동구 효목동 212-2",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "일출 및 해돋이 명소로 금호강과 대구 시가지 조망이 훌륭함",
+        "밤에는 불빛이 수면에 반짝이는 황홀한 야경을 선사함",
+        "망우공원 산책로를 따라 올라가야 하며 가벼운 산책과 등산 코스로 좋음"
+      ]
+    },
+    {
+      "name": "망우공원",
+      "nameCandidates": [
+        "망우공원",
+        "왕우공원"
+      ],
+      "region": "대구 동구",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해맞이공원으로 올라가는 산책로가 연결되어 있음"
+      ]
+    },
+    {
+      "name": "동촌유원지",
+      "nameCandidates": [
+        "동촌유원지"
+      ],
+      "region": "대구 동구",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해맞이공원 전망대에서 금호강과 함께 한눈에 조망됨"
+      ]
+    }
+  ]
+}

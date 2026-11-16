@@ -73,6 +73,17 @@ class CompareTest(unittest.TestCase):
         self.assertEqual(summary["place_agreement"], round(1 / 3, 3))
 
 
+class ApiCallsTest(unittest.TestCase):
+    def test_API_로그_줄만_호출로_센다(self):
+        stderr = ("[pipeline] 무관한 줄\n"
+                  'TROVA_API_LOG:{"operation": "extract_places.collect", "attempts": 1, "success": true, "totalTokens": 10}\n'
+                  "TROVA_API_LOG:깨진 줄\n"
+                  'TROVA_API_LOG:{"operation": "extract_places.filter", "attempts": 2, "success": true}\n')
+        calls = cross_check.api_calls(stderr)
+        self.assertEqual([c["operation"] for c in calls], ["extract_places.collect", "extract_places.filter"])
+        self.assertEqual(calls[1]["attempts"], 2)
+
+
 class StopSignalTest(unittest.TestCase):
     def test_429_재시도_로그나_하루_한도가_보이면_멈춘다(self):
         self.assertTrue(cross_check.should_stop("[extract_places] Gemini 429 — 5초 대기 후 재시도 (2/4)"))

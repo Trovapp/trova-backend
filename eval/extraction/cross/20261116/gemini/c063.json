@@ -1,0 +1,87 @@
+{
+  "sample_id": "c063",
+  "url": "https://www.youtube.com/shorts/9qlg5OlMWkw",
+  "seconds": 11.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 8028,
+      "totalTokens": 9734
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2945,
+      "totalTokens": 11052
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "장승포항",
+      "nameCandidates": [
+        "장승포항",
+        "거제장승포항"
+      ],
+      "region": "거제",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "외도, 홍도, 해금강으로 가는 유람선 터미널이 있음"
+      ]
+    },
+    {
+      "name": "외도",
+      "nameCandidates": [
+        "외도"
+      ],
+      "region": "거제",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "장승포항에서 유람선을 타고 갈 수 있음"
+      ]
+    },
+    {
+      "name": "홍도",
+      "nameCandidates": [
+        "홍도"
+      ],
+      "region": "거제",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "장승포항에서 유람선을 타고 갈 수 있음"
+      ]
+    },
+    {
+      "name": "해금강",
+      "nameCandidates": [
+        "해금강"
+      ],
+      "region": "거제",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "장승포항에서 유람선을 타고 갈 수 있음"
+      ]
+    }
+  ]
+}

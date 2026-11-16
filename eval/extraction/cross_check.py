@@ -153,6 +153,22 @@ def gemini_one(sample_id: str) -> None:
     print(json.dumps(places, ensure_ascii=False))
 
 
+API_LOG_MARKER = "TROVA_API_LOG:"  # extract_places._log_api_call이 호출 1건마다 stderr에 남기는 줄
+
+
+def api_calls(stderr: str) -> list[dict]:
+    """호출 1건씩(작업 이름·시도 횟수·성공·토큰) — 호출 수와 재시도를 결과 파일에서 셀 수 있게."""
+    calls = []
+    for line in stderr.splitlines():
+        if line.startswith(API_LOG_MARKER):
+            try:
+                entry = json.loads(line[len(API_LOG_MARKER):])
+            except json.JSONDecodeError:
+                continue
+            calls.append({k: entry.get(k) for k in ("operation", "attempts", "success", "latencyMs", "totalTokens")})
+    return calls
+
+
 def should_stop(stderr: str) -> bool:
     return any(p in stderr for p in STOP_PATTERNS)
 
@@ -171,7 +187,7 @@ def cmd_gemini(args) -> None:
         seconds = round(time.monotonic() - started, 1)
         stderr = proc.stderr
         result = {"sample_id": sid, "url": row["url"], "seconds": seconds, "exit": proc.returncode,
-                  "gemini429": "Gemini 429" in stderr}
+                  "gemini429": "Gemini 429" in stderr, "api_calls": api_calls(stderr)}
         if proc.returncode == 0:
             result["status"] = "ok"
             result["places"] = json.loads(proc.stdout.strip().splitlines()[-1])

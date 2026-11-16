@@ -1,0 +1,44 @@
+{
+  "sample_id": "c088",
+  "url": "https://www.youtube.com/shorts/SlFNUO_u87Q",
+  "seconds": 7.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3127,
+      "totalTokens": 11796
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3914,
+      "totalTokens": 12862
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "플로팅 플로우",
+      "nameCandidates": [
+        "플로팅 플로우",
+        "FLOATING FLOW"
+      ],
+      "region": "춘천시",
+      "address": "춘천시 남면 충효로 1219-110",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "영업시간은 오전 11시부터 오후 7시까지 입니다.",
+        "선착장(빠지)에서 티타임 가능하며 모터보트와 제트스키 이용 가능",
+        "400여 미터의 산책로와 루프탑 보유"
+      ]
+    }
+  ]
+}

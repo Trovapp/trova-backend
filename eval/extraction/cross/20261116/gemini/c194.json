@@ -1,0 +1,88 @@
+{
+  "sample_id": "c194",
+  "url": "https://www.youtube.com/shorts/n61dwbQt778",
+  "seconds": 6.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3208,
+      "totalTokens": 13587
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3181,
+      "totalTokens": 15002
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "위서퍼스테이블",
+      "nameCandidates": [
+        "위서퍼스테이블"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "커피, 수제 에이드, 컬러 스무디 인기",
+        "퀘사디아, 샌드위치, 수제 리코타 치즈 샐러드 판매",
+        "생맥주 및 수제맥주(속초 몽트비어, 파도맥주) 판매"
+      ]
+    },
+    {
+      "name": "양양서핑학교",
+      "nameCandidates": [
+        "양양서핑학교"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시크릿양양 패밀리텔 로비에 위치"
+      ]
+    },
+    {
+      "name": "시크릿양양 패밀리텔",
+      "nameCandidates": [
+        "시크릿양양 패밀리텔"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "lodging",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "로비에 위서퍼스테이블과 양양서핑학교가 위치"
+      ]
+    },
+    {
+      "name": "디그니티 호텔",
+      "nameCandidates": [
+        "디그니티 호텔"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "lodging",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "주변 숙소로 체크인/체크아웃 시간 고려하여 이용 편리"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "sample_id": "c106",
+  "url": "https://www.youtube.com/shorts/JUv_tpTPKvo",
+  "seconds": 7.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3063,
+      "totalTokens": 14770
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4368,
+      "totalTokens": 16546
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "경포해변",
+      "nameCandidates": [
+        "경포해변",
+        "경포 해변"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "넓고 깨끗한 백사장에서 해수욕 가능",
+        "다양한 편의 시설을 편리하게 이용 가능"
+      ]
+    },
+    {
+      "name": "오죽헌",
+      "nameCandidates": [
+        "오죽헌",
+        "오주컨"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "신사임당과 율곡 이이가 살았던 고택",
+        "검은 대나무가 자라는 정원이 있음"
+      ]
+    },
+    {
+      "name": "사근진해변",
+      "nameCandidates": [
+        "사근진해변",
+        "사근진 해변"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "형색의 방파제가 있는 SNS 핫플레이스",
+        "조용하고 한적한 분위기"
+      ]
+    },
+    {
+      "name": "안목해변 커피거리",
+      "nameCandidates": [
+        "안목해변 커피거리",
+        "안목 해변 커피 거리"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "카페에 앉아 동해 바다를 볼 수 있음",
+        "해변을 따라 산책하기 좋음"
+      ]
+    },
+    {
+      "name": "주문진",
+      "nameCandidates": [
+        "주문진"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "신선한 해산물을 맛볼 수 있는 미식 여행지",
+        "드라마 도깨비 촬영지 스팟이 있음"
+      ]
+    },
+    {
+      "name": "허균·허난설헌기념공원",
+      "nameCandidates": [
+        "허균·허난설헌기념공원",
+        "허균 허난설헌 기념 공원"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "문학 남매의 생가와 기념관이 있음",
+        "아름다운 소나무 숲과 연못이 있음"
+      ]
+    },
+    {
+      "name": "정동진",
+      "nameCandidates": [
+        "정동진"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "바다와 가장 가까운 기차역",
+        "유명한 일출 명소"
+      ]
+    }
+  ]
+}

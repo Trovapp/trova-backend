@@ -1,0 +1,54 @@
+{
+  "sample_id": "c115",
+  "url": "https://www.youtube.com/shorts/IqiEKE76CQI",
+  "seconds": 6.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3461,
+      "totalTokens": 11196
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3169,
+      "totalTokens": 12300
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "대천해수욕장",
+      "nameCandidates": [
+        "대천해수욕장"
+      ],
+      "region": "보령시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "튜브를 타고 파도를 즐기는 물놀이 장소"
+      ]
+    },
+    {
+      "name": "보령바다",
+      "nameCandidates": [
+        "보령바다"
+      ],
+      "region": "보령시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

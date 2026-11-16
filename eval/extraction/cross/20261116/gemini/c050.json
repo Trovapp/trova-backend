@@ -1,0 +1,41 @@
+{
+  "sample_id": "c050",
+  "url": "https://www.youtube.com/shorts/2dhYQDedjSs",
+  "seconds": 8.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3096,
+      "totalTokens": 12913
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4670,
+      "totalTokens": 13910
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "너울집",
+      "nameCandidates": [
+        "너울집"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "속초에 위치한 한옥 카페"
+      ]
+    }
+  ]
+}

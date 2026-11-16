@@ -1,0 +1,42 @@
+{
+  "sample_id": "c169",
+  "url": "https://www.youtube.com/shorts/6E5BdwKTZSs",
+  "seconds": 7.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3713,
+      "totalTokens": 9796
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3784,
+      "totalTokens": 10828
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "우메야끼 이자카야",
+      "nameCandidates": [
+        "우메야끼 이자카야"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "다낭 일식과 한식을 동시에 즐길 수 있는 이자카야",
+        "고기 및 꼬치 구이 콤보 메뉴 제공"
+      ]
+    }
+  ]
+}

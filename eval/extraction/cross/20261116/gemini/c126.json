@@ -1,0 +1,42 @@
+{
+  "sample_id": "c126",
+  "url": "https://www.youtube.com/shorts/UH_z59k6i_o",
+  "seconds": 7.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5168,
+      "totalTokens": 10304
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2216,
+      "totalTokens": 11341
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "목포 평화광장",
+      "nameCandidates": [
+        "목포 평화광장"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "낭만이 흐르는 목포 밤바다에서 펼쳐지는 해상 멀티미디어 불꽃쇼",
+        "목포 해상W쇼의 환상적인 하이라이트 영상"
+      ]
+    }
+  ]
+}

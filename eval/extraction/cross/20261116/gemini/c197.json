@@ -1,0 +1,43 @@
+{
+  "sample_id": "c197",
+  "url": "https://www.youtube.com/shorts/i4NCDsdmC7s",
+  "seconds": 6.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2898,
+      "totalTokens": 11691
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2829,
+      "totalTokens": 12752
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "갈치의 정석",
+      "nameCandidates": [
+        "갈치의 정석"
+      ],
+      "region": "제주",
+      "address": "제주특별자치도 제주시 서해안로 272, 2층",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "직접 잡은 대형 은갈치 요리 전문점",
+        "갈치 솥밥, 통갈치 구이, 철판 갈치 조림 판매",
+        "이번 방문 결제금액은 60,000원"
+      ]
+    }
+  ]
+}

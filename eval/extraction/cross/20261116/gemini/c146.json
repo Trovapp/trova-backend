@@ -1,0 +1,58 @@
+{
+  "sample_id": "c146",
+  "url": "https://www.youtube.com/shorts/l8w-zvMgSH8",
+  "seconds": 6.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3258,
+      "totalTokens": 11082
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3193,
+      "totalTokens": 12220
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "동리단길카페거리",
+      "nameCandidates": [
+        "동리단길카페거리",
+        "동명동"
+      ],
+      "region": "광주",
+      "address": "광주 동구 동명동 292",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "같이 밥 먹고 커피 마시기 좋은 힙플레이스",
+        "광주 동구 동명동 위치"
+      ]
+    },
+    {
+      "name": "풍암호수공원",
+      "nameCandidates": [
+        "풍암호수공원"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.8,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "게시물 해시태그에 언급됨"
+      ]
+    }
+  ]
+}

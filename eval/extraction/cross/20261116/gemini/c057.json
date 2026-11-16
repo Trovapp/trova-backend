@@ -1,0 +1,75 @@
+{
+  "sample_id": "c057",
+  "url": "https://www.youtube.com/shorts/gTCHgLU3BbU",
+  "seconds": 7.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3771,
+      "totalTokens": 12331
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3021,
+      "totalTokens": 13584
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "동호면옥",
+      "nameCandidates": [
+        "동호면옥",
+        "동호면혹",
+        "동호연옥"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "메밀째복장칼국수가 대표 메뉴",
+        "리뷰 작성 시 촌두부 반 모 제공"
+      ]
+    },
+    {
+      "name": "동호해변",
+      "nameCandidates": [
+        "동호해변"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "동호면옥과 가까운 위치"
+      ]
+    },
+    {
+      "name": "파스쿠치 양양클리프비치",
+      "nameCandidates": [
+        "파스쿠치 양양클리프비치",
+        "파스쿠치 양양 클리프비치"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "동호면옥에서 차로 금방 갈 수 있는 위치"
+      ]
+    }
+  ]
+}

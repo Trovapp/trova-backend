@@ -1,0 +1,89 @@
+{
+  "sample_id": "c172",
+  "url": "https://www.youtube.com/shorts/SFVDAXyJ5kY",
+  "seconds": 11.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 6403,
+      "totalTokens": 13401
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4345,
+      "totalTokens": 14823
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "자만벽화마을",
+      "nameCandidates": [
+        "자만벽화마을"
+      ],
+      "region": "전주",
+      "address": "전북 전주시 완산구 교동 50-158",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "모든 거리가 포토스팟이 되는 화려한 벽화 마을",
+        "2012년 녹색둘레길 사업으로 벽화를 그리기 시작",
+        "한옥마을 둘레길 첫 번째 지점으로 추천"
+      ]
+    },
+    {
+      "name": "서학동 예술마을",
+      "nameCandidates": [
+        "서학동 예술마을",
+        "서악동 예술 마을"
+      ],
+      "region": "전주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "소박하고 잔잔한 매력이 있는 전주의 숨은 명소"
+      ]
+    },
+    {
+      "name": "전주향교",
+      "nameCandidates": [
+        "전주향교"
+      ],
+      "region": "전주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "자만벽화마을에서부터 이동하기 좋은 장소"
+      ]
+    },
+    {
+      "name": "오목대",
+      "nameCandidates": [
+        "오목대"
+      ],
+      "region": "전주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "자만벽화마을에서 원하시는 장소 어디든지 갈 수 있는 코스"
+      ]
+    }
+  ]
+}

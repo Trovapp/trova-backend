@@ -1,0 +1,58 @@
+{
+  "sample_id": "c163",
+  "url": "https://www.youtube.com/shorts/nD6knQvPE1M",
+  "seconds": 7.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3422,
+      "totalTokens": 13494
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4207,
+      "totalTokens": 14638
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "할로브리즈",
+      "nameCandidates": [
+        "할로브리즈"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "남해 독일마을 근처에 위치한 카페",
+        "커피 맛이 고소하고 약간의 산미가 있음",
+        "등대와 독일마을이 보이는 루프탑 경치"
+      ]
+    },
+    {
+      "name": "독일마을",
+      "nameCandidates": [
+        "독일마을"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "남해에 위치한 관광지 및 마을"
+      ]
+    }
+  ]
+}

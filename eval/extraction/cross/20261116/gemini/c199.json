@@ -1,0 +1,59 @@
+{
+  "sample_id": "c199",
+  "url": "https://www.youtube.com/shorts/rQZUqZTcaw4",
+  "seconds": 7.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3648,
+      "totalTokens": 13267
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3171,
+      "totalTokens": 14425
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "아라마루 전망대",
+      "nameCandidates": [
+        "아라마루 전망대",
+        "아라마루원형전망대"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "오전 9시부터 오후 8시까지 이용 가능",
+        "날씨에 따라 이용 제한이 있을 수 있음",
+        "동그란 원형 모양이며 중간에 유리 바닥이 있음"
+      ]
+    },
+    {
+      "name": "아라뱃길",
+      "nameCandidates": [
+        "아라뱃길"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아라마루 전망대가 위치한 곳"
+      ]
+    }
+  ]
+}

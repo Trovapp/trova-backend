@@ -1,0 +1,119 @@
+{
+  "sample_id": "c117",
+  "url": "https://www.youtube.com/watch?v=ILdpWjF4N-Q",
+  "seconds": 9.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5557,
+      "totalTokens": 15160
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3717,
+      "totalTokens": 16720
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "시티 카페",
+      "nameCandidates": [
+        "시티 카페",
+        "CITY CAFE"
+      ],
+      "region": "대만",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "커피가 맛있다고 언급됨"
+      ]
+    },
+    {
+      "name": "용산사",
+      "nameCandidates": [
+        "용산사"
+      ],
+      "region": "대만",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "비가 오는 징조는 매사에 구원이 있다는 의미로 언급됨"
+      ]
+    },
+    {
+      "name": "까르푸",
+      "nameCandidates": [
+        "까르푸",
+        "Carrefour"
+      ],
+      "region": "대만",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "구할 것 챙기기 위해 방문"
+      ]
+    },
+    {
+      "name": "시먼",
+      "nameCandidates": [
+        "시먼",
+        "Ximending"
+      ],
+      "region": "대만",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시먼 야시장 방문 전 거쳐감"
+      ]
+    },
+    {
+      "name": "시먼야시장",
+      "nameCandidates": [
+        "시먼야시장"
+      ],
+      "region": "대만",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시먼 야시장 먼저 들렀다가 닝샤 야시장으로 이동"
+      ]
+    },
+    {
+      "name": "닝샤야시장",
+      "nameCandidates": [
+        "닝샤야시장"
+      ],
+      "region": "대만",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시먼 야시장 다음으로 방문"
+      ]
+    }
+  ]
+}

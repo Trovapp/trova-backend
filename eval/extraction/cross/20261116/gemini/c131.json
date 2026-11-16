@@ -1,0 +1,41 @@
+{
+  "sample_id": "c131",
+  "url": "https://www.youtube.com/shorts/L-sPWRfX2qI",
+  "seconds": 7.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4610,
+      "totalTokens": 12512
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2730,
+      "totalTokens": 13515
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "낙산사",
+      "nameCandidates": [
+        "낙산사"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "근처에 위치한 카페에서 바다를 볼 수 있음"
+      ]
+    }
+  ]
+}

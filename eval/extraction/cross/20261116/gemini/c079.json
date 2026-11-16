@@ -1,0 +1,76 @@
+{
+  "sample_id": "c079",
+  "url": "https://www.youtube.com/shorts/13jO2PnWIuQ",
+  "seconds": 8.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4866,
+      "totalTokens": 14086
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3394,
+      "totalTokens": 15371
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "속초 훼미리민박",
+      "nameCandidates": [
+        "속초 훼미리민박",
+        "훼미리민박"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "lodging",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "돌담한옥마을에 위치한 전통 한옥 숙소",
+        "소청실, 중청실, 대청실, 달마실 객실 구성",
+        "가족, 연인, 친구와 함께 묵기 좋은 숙소"
+      ]
+    },
+    {
+      "name": "돌담카페",
+      "nameCandidates": [
+        "돌담카페",
+        "돌담 카페"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "민박 제휴 카페",
+        "돌담한옥마을에 위치"
+      ]
+    },
+    {
+      "name": "설악산",
+      "nameCandidates": [
+        "설악산"
+      ],
+      "region": "강원도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "숙소 주변 가볼 만한 관광지"
+      ]
+    }
+  ]
+}

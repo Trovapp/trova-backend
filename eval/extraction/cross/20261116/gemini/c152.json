@@ -1,0 +1,91 @@
+{
+  "sample_id": "c152",
+  "url": "https://www.youtube.com/shorts/Xo8_CP0BYFs",
+  "seconds": 8.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3451,
+      "totalTokens": 13848
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4871,
+      "totalTokens": 15294
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "박원숙의 커피앤스토리",
+      "nameCandidates": [
+        "박원숙의 커피앤스토리",
+        "박원숙 카페"
+      ],
+      "region": "경상남도 남해군",
+      "address": "삼동면 예술길 62",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "독일마을 입구 및 광장에서 도보로 약 10분 소요",
+        "몸이 불편하신 분은 주차장까지 차로 이동 가능",
+        "주차장을 지나 계속 직진하면 아래쪽에 위치"
+      ]
+    },
+    {
+      "name": "독일마을",
+      "nameCandidates": [
+        "독일마을"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "카페까지 도보 길안내의 출발 지점"
+      ]
+    },
+    {
+      "name": "독일마을 광장",
+      "nameCandidates": [
+        "독일광장",
+        "독일마을 광장"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "광장(주차장)에서 카페까지 도보 길안내 제공",
+        "독일 광장 사거리에서 우회전하여 직진"
+      ]
+    },
+    {
+      "name": "원예예술촌",
+      "nameCandidates": [
+        "원예예술촌"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "주차장에서 걸어가는 길은 다음 영상에서 안내"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "sample_id": "c171",
+  "url": "https://www.youtube.com/watch?v=iwi-okHnEnw",
+  "seconds": 8.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4770,
+      "totalTokens": 17962
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3261,
+      "totalTokens": 19049
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "유산동 우육면",
+      "nameCandidates": [
+        "유산동 우육면",
+        "Liu Shandong Beef Noodles",
+        "劉山東小吃店"
+      ],
+      "region": "타이베이",
+      "address": "No. 2, Lane 14, Section 1, Kaifeng St, Zhongzheng District, Taipei City, Taiwan 100",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "오리지널 우육면 가격은 NT 160",
+        "웨이팅이 있을 수 있음",
+        "두반장, 후추, 식초를 섞어 먹을 수 있음"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "sample_id": "c103",
+  "url": "https://www.youtube.com/shorts/wy29qQnmtoY",
+  "seconds": 8.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3240,
+      "totalTokens": 11021
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4622,
+      "totalTokens": 12067
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "상주은모래비치",
+      "nameCandidates": [
+        "상주은모래비치"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "은빛 모래가 반짝이는 아름다운 해변",
+        "울창한 소나무 숲이 있음",
+        "맨발로 걸으며 부드러운 모래와 시원한 바람을 느낄 수 있음"
+      ]
+    }
+  ]
+}

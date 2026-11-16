@@ -1,0 +1,39 @@
+{
+  "sample_id": "c159",
+  "url": "https://www.youtube.com/shorts/NvtD7cN-m5o",
+  "seconds": 7.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3230,
+      "totalTokens": 11623
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3484,
+      "totalTokens": 12605
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "좋은날",
+      "nameCandidates": [
+        "좋은날"
+      ],
+      "region": null,
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

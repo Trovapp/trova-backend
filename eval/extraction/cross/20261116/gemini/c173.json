@@ -1,0 +1,205 @@
+{
+  "sample_id": "c173",
+  "url": "https://www.youtube.com/watch?v=M_6a03NqKCo",
+  "seconds": 14.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 8274,
+      "totalTokens": 26222
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5717,
+      "totalTokens": 28589
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "도쿄역",
+      "nameCandidates": [
+        "도쿄역"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 1,
+      "videoNotes": [
+        "1914년에 문을 연 사적인 유럽풍 건축물",
+        "내부에는 맛집, 카페, 기념품 매장 가득",
+        "밤에는 조명이 켜진 붉은 벽돌 역사"
+      ]
+    },
+    {
+      "name": "긴자",
+      "nameCandidates": [
+        "긴자",
+        "김자"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 2,
+      "videoNotes": [
+        "일본 최대 규모의 명품 거리",
+        "주말에는 일부 도로가 보행자 전용 거리로 변경",
+        "과거와 현재가 공존하는 상점과 매장 공존"
+      ]
+    },
+    {
+      "name": "도쿄타워",
+      "nameCandidates": [
+        "도쿄타워",
+        "도크타워"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 3,
+      "videoNotes": [
+        "높이 333m를 자랑하는 전망 타워",
+        "360도 도쿄 시내 감상 가능",
+        "주변에 공원, 카페, 포토스팟 위치"
+      ]
+    },
+    {
+      "name": "센소지",
+      "nameCandidates": [
+        "센소지"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 1,
+      "videoNotes": [
+        "도쿄에서 가장 오래된 불교 사원",
+        "본당에서 향을 피우고 소원 빌기 가능",
+        "해지고 조명이 켜지면 고즈넉한 분위기"
+      ]
+    },
+    {
+      "name": "스카이트리",
+      "nameCandidates": [
+        "스카이트리",
+        "도쿄 스카이트리"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 2,
+      "videoNotes": [
+        "높이 634m의 일본 최고 건축물",
+        "날씨가 좋은 날에는 멀리 후지산까지 감상 가능",
+        "아래에 대형 쇼핑몰 도쿄 소라마치 위치"
+      ]
+    },
+    {
+      "name": "아키하바라",
+      "nameCandidates": [
+        "아키하바라",
+        "아키아바라"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 3,
+      "videoNotes": [
+        "일본 최대 규모의 전자상가 거리",
+        "애니메이션, 게임, 피규어, 만화문화 중심지",
+        "최신 전자 기기부터 한정판 피규어 등 판매"
+      ]
+    },
+    {
+      "name": "디즈니리조트",
+      "nameCandidates": [
+        "디즈니리조트",
+        "디즈니랜드",
+        "디즈니 씨"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 3,
+      "orderInDay": 1,
+      "videoNotes": [
+        "도쿄 디즈니랜드와 디즈니 씨 두 가지 선택지",
+        "아이와 함께라면 클래식한 디즈니랜드 추천",
+        "스릴 있는 어트랙션은 디즈니 씨 추천"
+      ]
+    },
+    {
+      "name": "팀랩플래닛",
+      "nameCandidates": [
+        "팀랩플래닛",
+        "팀 플레닛"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 3,
+      "orderInDay": 2,
+      "videoNotes": [
+        "직접 작품 속으로 들어가 체험하는 몰입형 전시관",
+        "입장과 동시에 신발을 벗고 맨발로 이동",
+        "사전 예약을 하고 방문하는 것을 추천"
+      ]
+    },
+    {
+      "name": "스크램블 교차로",
+      "nameCandidates": [
+        "스크램블 교차로",
+        "시부야 스크램블 교차로"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 4,
+      "orderInDay": 1,
+      "videoNotes": [
+        "도쿄의 활기찬 에너지를 느낄 수 있는 곳",
+        "신호등이 바뀌면 사방에서 수많은 사람들이 이동",
+        "주변 전망대나 카페에서 내려다보는 풍경 추천"
+      ]
+    },
+    {
+      "name": "가부키초",
+      "nameCandidates": [
+        "가부키초",
+        "바보키초"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 4,
+      "orderInDay": 2,
+      "videoNotes": [
+        "신주쿠에 위치한 일본 최대 규모의 번화가",
+        "음식점, 이자카야, 게임센터, 쇼핑 공간 밀집",
+        "랜드마크 고질라 헤드가 인기 포토스팟"
+      ]
+    }
+  ]
+}

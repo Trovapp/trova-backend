@@ -1,0 +1,44 @@
+{
+  "sample_id": "c075",
+  "url": "https://www.youtube.com/shorts/Ez35uKndG_I",
+  "seconds": 8.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5915,
+      "totalTokens": 13706
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2728,
+      "totalTokens": 14721
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페나달",
+      "nameCandidates": [
+        "카페나달",
+        "나달",
+        "나달커피"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "담양 가사문학면 대형 카페",
+        "광주 근교 드라이브 코스로 추천"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "sample_id": "c084",
+  "url": "https://www.youtube.com/shorts/qnE0xNkAWrA",
+  "seconds": 6.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3638,
+      "totalTokens": 14112
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2994,
+      "totalTokens": 15276
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "애니메이션박물관",
+      "nameCandidates": [
+        "애니메이션박물관"
+      ],
+      "region": "강원 춘천시",
+      "address": "강원 춘천시 서면 박사로 854 (현암리 367-3)",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "화 ~ 일 10:00 ~ 18:00 (매주 월요일 정기 휴무)",
+        "단독 주차 100대 이상 가능"
+      ]
+    },
+    {
+      "name": "토이로봇관",
+      "nameCandidates": [
+        "토이로봇관"
+      ],
+      "region": "강원 춘천시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

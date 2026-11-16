@@ -1,0 +1,43 @@
+{
+  "sample_id": "c069",
+  "url": "https://www.youtube.com/shorts/WCg106bDblk",
+  "seconds": 6.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3496,
+      "totalTokens": 10608
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2453,
+      "totalTokens": 11666
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "웨이메이커 호성점",
+      "nameCandidates": [
+        "웨이메이커 호성점"
+      ],
+      "region": "전주",
+      "address": "전북 전주시 덕진구 고당1길 21-9",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대형 크리스마스 트리와 야외 포토존 운영",
+        "공간 전체가 연말 무드로 꾸며진 대형 카페",
+        "낮보다 밤 야경이 더 예쁜 카페"
+      ]
+    }
+  ]
+}

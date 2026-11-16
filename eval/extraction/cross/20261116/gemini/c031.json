@@ -1,0 +1,105 @@
+{
+  "sample_id": "c031",
+  "url": "https://www.youtube.com/shorts/OnolTnSSzMQ",
+  "seconds": 7.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3317,
+      "totalTokens": 10759
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3895,
+      "totalTokens": 12234
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "마니정",
+      "nameCandidates": [
+        "마니정"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "미스터션샤인 촬영지로 유명한 곳"
+      ]
+    },
+    {
+      "name": "안동댐",
+      "nameCandidates": [
+        "안동댐"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "낙동강 종주 자전거길 기점을 거쳐 갈 수 있음",
+        "따뜻한 커피 한잔과 함께 유람선을 탈 수 있음"
+      ]
+    },
+    {
+      "name": "안동찜닭 골목",
+      "nameCandidates": [
+        "안동찜닭 골목"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "오래전부터 시장에 자리잡은 안동찜닭 골목",
+        "수많은 안동찜닭 매장이 모여 있는 곳"
+      ]
+    },
+    {
+      "name": "하회마을",
+      "nameCandidates": [
+        "하회마을"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1999년 영국 엘리자베스 여왕이 방문한 곳"
+      ]
+    },
+    {
+      "name": "월영교",
+      "nameCandidates": [
+        "월영교",
+        "원령도"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2003년에 개통된 국내에서 가장 긴 목책 인도교",
+        "다리 한가운데에 월영정이 있음"
+      ]
+    }
+  ]
+}

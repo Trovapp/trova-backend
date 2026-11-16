@@ -1,0 +1,127 @@
+{
+  "sample_id": "c186",
+  "url": "https://www.youtube.com/shorts/XV5-7000hs4",
+  "seconds": 7.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3478,
+      "totalTokens": 11723
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4029,
+      "totalTokens": 13404
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "나우스",
+      "nameCandidates": [
+        "나우스",
+        "나우스 미케비치"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "미케비치에서 가까움",
+        "반세오, 해산물 요리 추천"
+      ]
+    },
+    {
+      "name": "퍼박하이",
+      "nameCandidates": [
+        "퍼박하이"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "베트남 쌀국수 맛집",
+        "한시장 쇼핑 후 소고기 쌀국수 추천",
+        "저렴한 가격과 맛"
+      ]
+    },
+    {
+      "name": "벱헨",
+      "nameCandidates": [
+        "벱헨",
+        "Bep Hen"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "현지 가정식 맛집",
+        "갈릭 새우와 가지 요리 추천"
+      ]
+    },
+    {
+      "name": "반미 해피브레드",
+      "nameCandidates": [
+        "반미 해피브레드",
+        "Banmi Happy Bread"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "베트남식 샌드위치 맛집",
+        "바게트 빵 안에 새우, 햄, 고기 등 취향대로 재료를 넣음"
+      ]
+    },
+    {
+      "name": "브릴리언트 씨푸드",
+      "nameCandidates": [
+        "브릴리언트 씨푸드",
+        "Brilliant Seafood"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "신선한 해산물과 바베큐 메뉴 유명",
+        "각종 해산물 요리, 사시미 등 판매"
+      ]
+    },
+    {
+      "name": "콩카페",
+      "nameCandidates": [
+        "콩카페"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "현지 커피, 주스, 디저트 즐길 수 있음",
+        "코코넛 스무디 커피 추천"
+      ]
+    }
+  ]
+}

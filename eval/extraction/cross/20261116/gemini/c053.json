@@ -1,0 +1,44 @@
+{
+  "sample_id": "c053",
+  "url": "https://www.youtube.com/shorts/Tl1NuDXSpoc",
+  "seconds": 9.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 6377,
+      "totalTokens": 11452
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2387,
+      "totalTokens": 12498
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "스페이스워크",
+      "nameCandidates": [
+        "스페이스워크",
+        "스페이스크"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "무료로 즐길 수 있는 이색 전망 명소입니다.",
+        "낮에도 멋지고 밤에는 야경까지 예쁜 곳입니다.",
+        "스릴 넘치는 체험과 탁 트인 전망을 즐길 수 있습니다."
+      ]
+    }
+  ]
+}

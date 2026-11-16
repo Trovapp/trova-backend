@@ -1,0 +1,90 @@
+{
+  "sample_id": "c036",
+  "url": "https://www.youtube.com/shorts/ZtNubS3vQz0",
+  "seconds": 7.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3531,
+      "totalTokens": 10701
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3141,
+      "totalTokens": 12035
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "황리단길",
+      "nameCandidates": [
+        "황리단길",
+        "황리당길"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "골목골목 한옥 감성이 좋은 곳"
+      ]
+    },
+    {
+      "name": "경주 십원빵",
+      "nameCandidates": [
+        "경주 십원빵",
+        "시범"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "치즈가 늘어나는 원조 길거리 먹방"
+      ]
+    },
+    {
+      "name": "대릉원",
+      "nameCandidates": [
+        "대릉원",
+        "대원"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "거대한 고분들 사이 산책 가능"
+      ]
+    },
+    {
+      "name": "동궁과 월지",
+      "nameCandidates": [
+        "동궁과 월지",
+        "동군과 월지"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "역대급 노을 야경을 볼 수 있는 곳"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,280 @@
+{
+  "sample_id": "c190",
+  "url": "https://www.youtube.com/watch?v=WtISOFLYL70",
+  "seconds": 12.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4137,
+      "totalTokens": 24531
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 7491,
+      "totalTokens": 27432
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "캐널시티",
+      "nameCandidates": [
+        "캐널시티"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 1,
+      "videoNotes": [
+        "분수쇼는 오전 10시부터 밤 10시까지",
+        "매시 정각 음악 있음, 30분에는 음악 없음"
+      ]
+    },
+    {
+      "name": "나카스강",
+      "nameCandidates": [
+        "나카스강"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 2,
+      "videoNotes": [
+        "캐널시티에서 가까운 야경 명소"
+      ]
+    },
+    {
+      "name": "이치란 라멘 본점",
+      "nameCandidates": [
+        "이치란라멘",
+        "이치란 라멘 본점"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 3,
+      "videoNotes": [
+        "24시간 영업",
+        "맵기 단계 선택 가능",
+        "차슈, 계란 추가 추천"
+      ]
+    },
+    {
+      "name": "스미요시 신사",
+      "nameCandidates": [
+        "스미요시신사",
+        "스미요시 신사"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 1,
+      "videoNotes": [
+        "입장료 무료",
+        "운영시간 09:00~17:00",
+        "항해 수호신을 모시는 신사"
+      ]
+    },
+    {
+      "name": "라쿠스이엔",
+      "nameCandidates": [
+        "라쿠스이엔"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 2,
+      "videoNotes": [
+        "어른 100엔, 어린이 50엔",
+        "말차 세트 500엔(현금 결제만)",
+        "매주 화요일 휴무"
+      ]
+    },
+    {
+      "name": "돈카츠 와카바",
+      "nameCandidates": [
+        "돈카츠와카바",
+        "돈카츠 와카바"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 3,
+      "videoNotes": [
+        "저온 튀김 돈가스 맛집",
+        "조리 시간이 꽤 김"
+      ]
+    },
+    {
+      "name": "토피파크",
+      "nameCandidates": [
+        "TOFFEE PARK",
+        "토피파크"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 4,
+      "videoNotes": [
+        "두유 베이스 커피 판매",
+        "야외 테라스 있음",
+        "운영시간 10:00~22:00 (월요일 휴무)"
+      ]
+    },
+    {
+      "name": "오호리공원",
+      "nameCandidates": [
+        "오호리공원"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 5,
+      "videoNotes": [
+        "오리배 30분 1,200엔",
+        "일본정원 입장료 개인 250엔"
+      ]
+    },
+    {
+      "name": "후쿠오카 성터",
+      "nameCandidates": [
+        "후쿠오카성터",
+        "후쿠오카 성터"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 6,
+      "videoNotes": [
+        "무료 입장",
+        "전망대에서 시내 조망 가능"
+      ]
+    },
+    {
+      "name": "후쿠오카 타워",
+      "nameCandidates": [
+        "후쿠오카타워",
+        "후쿠오카 타워"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 7,
+      "videoNotes": [
+        "높이 234m",
+        "입장료 800엔",
+        "운영시간 09:30~22:00"
+      ]
+    },
+    {
+      "name": "모모치해변",
+      "nameCandidates": [
+        "모모치해변",
+        "모모치 해변"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 8,
+      "videoNotes": [
+        "노을 맛집으로 유명한 인공 해변",
+        "예식장 건물이 포토존"
+      ]
+    },
+    {
+      "name": "쿠라스시",
+      "nameCandidates": [
+        "쿠라스시"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 9,
+      "videoNotes": [
+        "가성비 좋은 회전초밥집"
+      ]
+    },
+    {
+      "name": "풀풀하카타",
+      "nameCandidates": [
+        "풀풀하카타",
+        "풀풀 하카타"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": 3,
+      "orderInDay": 1,
+      "videoNotes": [
+        "명란 바게트(멘타이바게트) 맛집",
+        "매장 이용 시 추가 요금 있음"
+      ]
+    },
+    {
+      "name": "하카타 포트 타워",
+      "nameCandidates": [
+        "하카타항",
+        "하카타포트타워",
+        "하카타 포트 타워"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 3,
+      "orderInDay": 2,
+      "videoNotes": [
+        "입장료 무료",
+        "높이 100m 전망대",
+        "운영시간 10:00~20:00 (수요일 휴무)"
+      ]
+    },
+    {
+      "name": "하카타 잇푸도",
+      "nameCandidates": [
+        "하카타잇푸도",
+        "하카타 잇푸도"
+      ],
+      "region": "후쿠오카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": 3,
+      "orderInDay": 3,
+      "videoNotes": [
+        "매운 라멘 메뉴 추천"
+      ]
+    }
+  ]
+}

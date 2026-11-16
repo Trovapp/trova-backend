@@ -1,0 +1,154 @@
+{
+  "sample_id": "c195",
+  "url": "https://www.youtube.com/shorts/i1PhPL7MPDk",
+  "seconds": 8.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3585,
+      "totalTokens": 11514
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4647,
+      "totalTokens": 13426
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "원조호수삼계탕",
+      "nameCandidates": [
+        "원조호수삼계탕"
+      ],
+      "region": "서울",
+      "address": "서울 영등포구 도림로 276 원조호수삼계탕",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "진한 들깨 육수",
+        "가격 18000원"
+      ]
+    },
+    {
+      "name": "토속촌",
+      "nameCandidates": [
+        "토속촌"
+      ],
+      "region": "서울",
+      "address": "서울 종로구 자하문로5길 5 토속촌",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "진한 견과류 육수",
+        "가격 20000원"
+      ]
+    },
+    {
+      "name": "고려삼계탕",
+      "nameCandidates": [
+        "고려삼계탕"
+      ],
+      "region": "서울",
+      "address": "서울 중구 서소문로11길 1",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "맑고 진한 육수",
+        "가격 20000원"
+      ]
+    },
+    {
+      "name": "서울삼계탕",
+      "nameCandidates": [
+        "서울삼계탕"
+      ],
+      "region": "서울",
+      "address": "서울 중구 남대문로1길 57다시1",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "찹쌀과 인삼을 갈아만든 육수",
+        "가격 19000원"
+      ]
+    },
+    {
+      "name": "고봉삼계탕",
+      "nameCandidates": [
+        "고봉삼계탕"
+      ],
+      "region": "서울",
+      "address": "서울 중구 명동7길 21",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "약수물와 상황버섯 진한 육수",
+        "가격 20000원"
+      ]
+    },
+    {
+      "name": "장안삼계탕",
+      "nameCandidates": [
+        "장안삼계탕"
+      ],
+      "region": "서울",
+      "address": "서울 중구 세종대로18길 8 장안삼계탕",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "부드럽고 맑은 육수",
+        "가격 19000원"
+      ]
+    },
+    {
+      "name": "강원정",
+      "nameCandidates": [
+        "강원정"
+      ],
+      "region": "서울",
+      "address": "서울 용산구 원효로89길 13다시10",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해바라기씨 고명 맑은 한약 육수",
+        "가격 17000원"
+      ]
+    },
+    {
+      "name": "논현삼계탕",
+      "nameCandidates": [
+        "논현삼계탕"
+      ],
+      "region": "서울",
+      "address": "서울 강남구 논현로 648",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "찹쌀밥과 맑은 육수",
+        "가격 17000원"
+      ]
+    }
+  ]
+}

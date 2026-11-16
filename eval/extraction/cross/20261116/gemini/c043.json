@@ -1,0 +1,43 @@
+{
+  "sample_id": "c043",
+  "url": "https://www.youtube.com/shorts/pobzdXwSAwU",
+  "seconds": 6.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3013,
+      "totalTokens": 11000
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2634,
+      "totalTokens": 12041
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페 담다",
+      "nameCandidates": [
+        "카페 담다",
+        "담다"
+      ],
+      "region": "전남 담양군",
+      "address": "전남 당양군 당양읍 월광로 41 가동",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "담양에 위치한 대형 베이커리 카페",
+        "매일 오전 11시부터 저녁 8시까지 영업"
+      ]
+    }
+  ]
+}

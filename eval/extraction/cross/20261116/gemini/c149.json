@@ -1,0 +1,56 @@
+{
+  "sample_id": "c149",
+  "url": "https://www.youtube.com/shorts/w83r3r1bIxQ",
+  "seconds": 6.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3042,
+      "totalTokens": 11037
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2752,
+      "totalTokens": 12154
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "여수엑스포",
+      "nameCandidates": [
+        "여수엑스포"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.8,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해시태그로 언급된 여수 관광지"
+      ]
+    },
+    {
+      "name": "이순신광장",
+      "nameCandidates": [
+        "이순신광장"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.8,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해시태그로 언급된 여수 장소"
+      ]
+    }
+  ]
+}

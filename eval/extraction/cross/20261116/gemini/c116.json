@@ -1,0 +1,57 @@
+{
+  "sample_id": "c116",
+  "url": "https://www.youtube.com/shorts/evNW6Ib4Eik",
+  "seconds": 6.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3566,
+      "totalTokens": 10647
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3093,
+      "totalTokens": 11801
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "그루브인",
+      "nameCandidates": [
+        "그루브인"
+      ],
+      "region": "거제",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "그루브인 브런치, 가스파초, 통베이컨 쉬림프 샐러드, 프렌치토스트 등 판매",
+        "뷰가 좋은 거제 오션뷰 신상 카페"
+      ]
+    },
+    {
+      "name": "흥남해수욕장",
+      "nameCandidates": [
+        "흥남해수욕장"
+      ],
+      "region": "거제",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "흥남해수욕장 근처에 위치한 카페"
+      ]
+    }
+  ]
+}

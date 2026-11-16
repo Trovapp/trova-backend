@@ -1,0 +1,43 @@
+{
+  "sample_id": "c189",
+  "url": "https://www.youtube.com/shorts/wt92_0QSh58",
+  "seconds": 11.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 6305,
+      "totalTokens": 11422
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4521,
+      "totalTokens": 12454
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "욕지도",
+      "nameCandidates": [
+        "욕지도"
+      ],
+      "region": "통영시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "욕지도 한 바퀴를 돌며 즐기는 해물짬뽕 맛집",
+        "해산물을 아낌없이 넣은 해물짬뽕",
+        "해안 일주 버스를 타고 섬을 즐길 수 있음"
+      ]
+    }
+  ]
+}

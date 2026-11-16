@@ -1,0 +1,58 @@
+{
+  "sample_id": "c040",
+  "url": "https://www.youtube.com/shorts/cQ9NFWyX6BI",
+  "seconds": 7.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3709,
+      "totalTokens": 13543
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3540,
+      "totalTokens": 14692
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "향기가득한민박",
+      "nameCandidates": [
+        "향기가득한민박"
+      ],
+      "region": "강원도 속초",
+      "address": null,
+      "category": "lodging",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "설악산 국립공원 길목에 위치함",
+        "편안한 객실과 넓은 주차장 구비"
+      ]
+    },
+    {
+      "name": "설악산국립공원",
+      "nameCandidates": [
+        "설악산국립공원",
+        "설악산"
+      ],
+      "region": "강원도 속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "길목에 향기가득한민박이 위치함"
+      ]
+    }
+  ]
+}

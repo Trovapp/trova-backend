@@ -1,0 +1,310 @@
+{
+  "sample_id": "c093",
+  "url": "https://www.youtube.com/shorts/CX8meTvFUt8",
+  "seconds": 10.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3605,
+      "totalTokens": 11443
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 6368,
+      "totalTokens": 14514
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "여수 미남크루즈",
+      "nameCandidates": [
+        "여수 미남크루즈",
+        "미남크루즈"
+      ],
+      "region": "여수시",
+      "address": "전남 여수시 돌산읍 돌산로 3617-22 미남크루즈 선착장",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "환상적인 야경을 감상할 수 있는 크루즈 투어",
+        "라이브 공연과 음료 제공",
+        "선착장 바로 앞 500대 무료 주차 가능"
+      ]
+    },
+    {
+      "name": "엑스포 해물삼합",
+      "nameCandidates": [
+        "엑스포 해물삼합"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "미남크루즈/요트 고객 제휴 5% 할인"
+      ]
+    },
+    {
+      "name": "수정사우나",
+      "nameCandidates": [
+        "수정사우나"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "other",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1,000원 할인 혜택 제공"
+      ]
+    },
+    {
+      "name": "수산물 특화시장",
+      "nameCandidates": [
+        "수산물 특화시장"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "낭만포차 야시장 10% 할인"
+      ]
+    },
+    {
+      "name": "김경오 패티쓰리",
+      "nameCandidates": [
+        "김경오 패티쓰리"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "20% 할인 혜택 제공"
+      ]
+    },
+    {
+      "name": "낭만포차거리",
+      "nameCandidates": [
+        "낭만포차거리"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "크루즈 고객 전용 할인 및 서비스 제공"
+      ]
+    },
+    {
+      "name": "이순신광장",
+      "nameCandidates": [
+        "이순신광장"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "여수케이블카",
+      "nameCandidates": [
+        "여수케이블카"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "봉산동 게장골목",
+      "nameCandidates": [
+        "봉산동 게장골목"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "게장 및 갈치요리 전문 골목"
+      ]
+    },
+    {
+      "name": "남진이네 게장 갈치명가",
+      "nameCandidates": [
+        "남진이네 게장 갈치명가"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "5% 할인 혜택 제공"
+      ]
+    },
+    {
+      "name": "청정게장촌",
+      "nameCandidates": [
+        "청정게장촌"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1인당 2,000원 할인"
+      ]
+    },
+    {
+      "name": "카페 STAY",
+      "nameCandidates": [
+        "카페 STAY"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "20% 할인 혜택 제공"
+      ]
+    },
+    {
+      "name": "카페 프롬나드",
+      "nameCandidates": [
+        "카페 프롬나드"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "10% 할인 혜택 제공"
+      ]
+    },
+    {
+      "name": "청가네 갓.갈치조림.게장",
+      "nameCandidates": [
+        "청가네 갓.갈치조림.게장"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "5% 할인 혜택 제공"
+      ]
+    },
+    {
+      "name": "황금게장",
+      "nameCandidates": [
+        "황금게장"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "5% 할인 혜택 제공"
+      ]
+    },
+    {
+      "name": "라마다 해상 짚트랙",
+      "nameCandidates": [
+        "라마다 해상 짚트랙"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "30% 할인 혜택 제공"
+      ]
+    },
+    {
+      "name": "용천 선상 어시장",
+      "nameCandidates": [
+        "용천 선상 어시장"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2,000원 할인 혜택 제공"
+      ]
+    },
+    {
+      "name": "유월드 루지 테마파크",
+      "nameCandidates": [
+        "유월드 루지 테마파크"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "20% 할인 혜택 제공"
+      ]
+    },
+    {
+      "name": "낭만여수사진관",
+      "nameCandidates": [
+        "낭만여수사진관"
+      ],
+      "region": "여수시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "10% 할인 혜택 제공"
+      ]
+    }
+  ]
+}

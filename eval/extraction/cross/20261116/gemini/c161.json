@@ -1,0 +1,110 @@
+{
+  "sample_id": "c161",
+  "url": "https://www.youtube.com/shorts/Y5lys4bT22A",
+  "seconds": 9.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5173,
+      "totalTokens": 14339
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4431,
+      "totalTokens": 16077
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "초원음식점",
+      "nameCandidates": [
+        "초원음식점"
+      ],
+      "region": "목포",
+      "address": "전남 광주 목포시 영산로 42",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "꽃게비빔밥 1인분 15,000원",
+        "9가지 밑반찬과 새우장, 갈치조림 제공",
+        "영업시간 오전9시30분~저녁7시30분 (브레이크타임 3시~5시, 둘째/넷째 화요일 휴무)"
+      ]
+    },
+    {
+      "name": "하당먹거리",
+      "nameCandidates": [
+        "하당먹거리"
+      ],
+      "region": "목포",
+      "address": "전남 광주 목포시 신흥로 98",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "낙지 탕탕이 2인 59,000원",
+        "낙지, 생고기, 전복회 구성",
+        "영업시간 오전11시30분~밤10시 (화요일 휴무)"
+      ]
+    },
+    {
+      "name": "삼학만두",
+      "nameCandidates": [
+        "삼학만두"
+      ],
+      "region": "목포",
+      "address": "전남 광주 목포시 삼학로 113번길 14",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "만두 10개 3,000원",
+        "보통 1시쯤 마감되므로 예약 필수 및 전화 후 방문 권장"
+      ]
+    },
+    {
+      "name": "커피창고로",
+      "nameCandidates": [
+        "커피창고로"
+      ],
+      "region": "목포",
+      "address": "전남 광주 목포시 평화로 51",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "에그타르트로 유명한 곳",
+        "바삭한 크리스피함과 녹진한 커스터드 맛",
+        "영업시간 오전10시~밤10시30분"
+      ]
+    },
+    {
+      "name": "성식당",
+      "nameCandidates": [
+        "성식당"
+      ],
+      "region": "목포",
+      "address": "전남 광주 목포시 옥암로 46번길 9",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "떡갈비탕 판매",
+        "수제 떡갈비는 숯불향과 육즙이 특징",
+        "영업시간 오전11시30분~저녁9시 (브레이크타임 3시~5시, 수요일 휴무)"
+      ]
+    }
+  ]
+}

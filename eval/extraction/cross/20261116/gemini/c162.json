@@ -1,0 +1,44 @@
+{
+  "sample_id": "c162",
+  "url": "https://www.youtube.com/shorts/cY4Ab9BIshQ",
+  "seconds": 7.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4289,
+      "totalTokens": 14037
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2888,
+      "totalTokens": 15097
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "아르세",
+      "nameCandidates": [
+        "아르세",
+        "Ares"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 광도면 창포길 6-16",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "영업시간 10:00 - 21:00",
+        "아메리카노 5,500원",
+        "1층 케어키즈존, 2층 노키즈존"
+      ]
+    }
+  ]
+}

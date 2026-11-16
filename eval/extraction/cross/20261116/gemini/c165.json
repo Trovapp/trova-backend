@@ -1,0 +1,44 @@
+{
+  "sample_id": "c165",
+  "url": "https://www.youtube.com/shorts/LnTotFtk3pk",
+  "seconds": 6.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3685,
+      "totalTokens": 13438
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2753,
+      "totalTokens": 14477
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "용두암",
+      "nameCandidates": [
+        "용두암",
+        "제주용두암",
+        "용두암바위"
+      ],
+      "region": "제주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "푸른 제주 바다와 검은 현무암이 어우러진 풍경",
+        "용의 머리를 닮은 바위로 유명한 명소"
+      ]
+    }
+  ]
+}

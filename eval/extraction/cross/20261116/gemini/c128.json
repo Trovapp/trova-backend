@@ -1,0 +1,43 @@
+{
+  "sample_id": "c128",
+  "url": "https://www.youtube.com/shorts/5FLyfPEPwiM",
+  "seconds": 6.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3743,
+      "totalTokens": 12566
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2884,
+      "totalTokens": 13602
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "Farm11",
+      "nameCandidates": [
+        "Farm11",
+        "팜11"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "금토일 딱 6시간만 오픈하는 야외정원 카페",
+        "Stay는 연중무휴 운영 (네이버 예약 17~32만원대)"
+      ]
+    }
+  ]
+}

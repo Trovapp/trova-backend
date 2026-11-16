@@ -1,0 +1,44 @@
+{
+  "sample_id": "c099",
+  "url": "https://www.youtube.com/shorts/tnIRh3EfV_8",
+  "seconds": 6.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3530,
+      "totalTokens": 14411
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3065,
+      "totalTokens": 15480
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페 밀",
+      "nameCandidates": [
+        "카페 밀",
+        "카페미"
+      ],
+      "region": "전라남도 담양군",
+      "address": "전라남도 담양군 수북면 한수동로 578",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "영업시간: 오전 10시부터 오후 9시까지 (연중무휴)",
+        "카페 앞 약 10대 정도 주차 공간과 근처 공영주차장 이용 가능",
+        "아기의자 준비되어 있음"
+      ]
+    }
+  ]
+}

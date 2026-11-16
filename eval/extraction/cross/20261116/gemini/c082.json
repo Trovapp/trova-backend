@@ -1,0 +1,44 @@
+{
+  "sample_id": "c082",
+  "url": "https://www.youtube.com/shorts/20AwTjzbFU8",
+  "seconds": 6.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3526,
+      "totalTokens": 13078
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3118,
+      "totalTokens": 14154
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "동국사",
+      "nameCandidates": [
+        "동국사",
+        "등극세"
+      ],
+      "region": "군산",
+      "address": "전북 군산시 동국사길 16 동국사",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1913년 일본인 승려 우치다가 창건한 일본식 사찰",
+        "전국에서 유일하게 남아있는 일제강점기 일본식 사찰",
+        "좁은 주택가 골목에 위치해 초보 운전자는 차를 가져오지 않는 것이 좋음"
+      ]
+    }
+  ]
+}

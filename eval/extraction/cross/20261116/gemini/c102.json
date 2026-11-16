@@ -1,0 +1,42 @@
+{
+  "sample_id": "c102",
+  "url": "https://www.youtube.com/shorts/tnq2AzLWVVA",
+  "seconds": 6.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3709,
+      "totalTokens": 12090
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2925,
+      "totalTokens": 13120
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "Carboni's",
+      "nameCandidates": [
+        "Carboni's",
+        "Carbonis"
+      ],
+      "region": "파리",
+      "address": "45 Rue de Poitou, 75003 Paris",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "3구 마레지구에 위치한 이탈리안 레스토랑"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "sample_id": "c083",
+  "url": "https://www.youtube.com/shorts/6uSX1loByS8",
+  "seconds": 6.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2939,
+      "totalTokens": 9532
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3088,
+      "totalTokens": 10538
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "남해",
+      "nameCandidates": [
+        "남해"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "무더운 여름 시원한 바다가 한눈에 들어오는 바다"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "sample_id": "c061",
+  "url": "https://www.youtube.com/shorts/2CreM32M_24",
+  "seconds": 6.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3855,
+      "totalTokens": 10538
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2772,
+      "totalTokens": 11565
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "옛골75",
+      "nameCandidates": [
+        "옛골75"
+      ],
+      "region": "가평군",
+      "address": "경기 가평군 상면 수목원로 60",
+      "category": "restaurant",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "구수한 청국장과 고소한 곤드레밥",
+        "정성으로 직접 담근 반찬"
+      ]
+    }
+  ]
+}

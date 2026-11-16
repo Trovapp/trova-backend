@@ -1,0 +1,44 @@
+{
+  "sample_id": "c045",
+  "url": "https://www.youtube.com/shorts/Pt1_HKCdaCY",
+  "seconds": 5.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3096,
+      "totalTokens": 9896
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2281,
+      "totalTokens": 10960
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "쉐라톤 호텔 스카이라운지",
+      "nameCandidates": [
+        "쉐라톤 호텔 스카이라운지",
+        "쉐라톤 에프터눈티"
+      ],
+      "region": "홍콩",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "에프터눈티 티켓을 보여주고 안내받음",
+        "다양한 디저트와 마시고 싶은 차 선택 가능",
+        "홍콩 전경을 내려다보며 애프터눈티를 즐길 수 있음"
+      ]
+    }
+  ]
+}

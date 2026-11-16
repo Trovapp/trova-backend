@@ -1,0 +1,133 @@
+{
+  "sample_id": "c109",
+  "url": "https://www.youtube.com/shorts/YBn1QnF7tqE",
+  "seconds": 9.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4705,
+      "totalTokens": 13575
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4333,
+      "totalTokens": 15326
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "강릉 경포해변",
+      "nameCandidates": [
+        "강릉 경포해변",
+        "경포해변"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대한민국 사람들이 가장 가고 싶어하는 바다 중 하나이다."
+      ]
+    },
+    {
+      "name": "안목바다",
+      "nameCandidates": [
+        "안목바다",
+        "안목해변"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "울릉도를 가는 여객선이 있는 강릉항으로 최근에는 커피거리로 유명하다."
+      ]
+    },
+    {
+      "name": "경포대",
+      "nameCandidates": [
+        "경포대"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "가장 유명한 관동팔경 중에 하나로 강릉의 랜드마크이다."
+      ]
+    },
+    {
+      "name": "하슬라아트월드",
+      "nameCandidates": [
+        "하슬라아트월드"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "호텔, 조각공원, 카페, 미술관, 웨딩홀 등 강릉의 복합문화예술공간이다."
+      ]
+    },
+    {
+      "name": "명주군왕릉",
+      "nameCandidates": [
+        "명주군왕릉"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "신라시대 강릉김씨의 시조 김주원의 능이다."
+      ]
+    },
+    {
+      "name": "경포 생태저류지",
+      "nameCandidates": [
+        "경포 생태저류지"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "경포천의 범람에 대비하여 만들어진 곳이다."
+      ]
+    },
+    {
+      "name": "환희 컵박물관",
+      "nameCandidates": [
+        "환희 컵박물관"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "나라별, 연대별, 재료별, 목적별의 컵을 볼 수 있는 곳이다."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "sample_id": "c094",
+  "url": "https://www.youtube.com/shorts/fjwjjyrhK3I",
+  "seconds": 9.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4983,
+      "totalTokens": 11204
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4630,
+      "totalTokens": 13293
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "전일빌딩",
+      "nameCandidates": [
+        "전일빌딩"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "12위 관광지",
+        "약 18만 명이 다녀감"
+      ]
+    },
+    {
+      "name": "우치동물원",
+      "nameCandidates": [
+        "우치동물원"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "9위 관광지"
+      ]
+    },
+    {
+      "name": "광주호 호수생태원",
+      "nameCandidates": [
+        "광주호 호수생태원",
+        "광주호호수생태원"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "8위 관광지"
+      ]
+    },
+    {
+      "name": "무등산국립공원",
+      "nameCandidates": [
+        "무등산국립공원"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "7위 관광지",
+        "약 27만 명이 다녀감"
+      ]
+    },
+    {
+      "name": "우치공원",
+      "nameCandidates": [
+        "우치공원"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "6위 관광지",
+        "약 38만 명이 다녀감"
+      ]
+    },
+    {
+      "name": "국립광주박물관",
+      "nameCandidates": [
+        "국립광주박물관"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "5위 관광지"
+      ]
+    },
+    {
+      "name": "국립광주과학관",
+      "nameCandidates": [
+        "국립광주과학관"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "4위 관광지"
+      ]
+    },
+    {
+      "name": "무등산국립공원 원효지구",
+      "nameCandidates": [
+        "무등산국립공원 원효지구",
+        "무등산국립공원원효지구"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "3위 관광지",
+        "약 64만 명이 다녀감"
+      ]
+    },
+    {
+      "name": "증심사",
+      "nameCandidates": [
+        "증심사"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2위 관광지",
+        "약 74만 명이 다녀감"
+      ]
+    },
+    {
+      "name": "김대중 컨벤션 센터",
+      "nameCandidates": [
+        "김대중 컨벤션 센터",
+        "김대중컨벤션센터"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "광주광역시 관광지 1위",
+        "약 89만 명이 다녀감"
+      ]
+    }
+  ]
+}

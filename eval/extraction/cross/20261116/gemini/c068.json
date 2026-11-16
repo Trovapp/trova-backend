@@ -1,0 +1,74 @@
+{
+  "sample_id": "c068",
+  "url": "https://www.youtube.com/shorts/9FPR_HKfDmg",
+  "seconds": 8.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3135,
+      "totalTokens": 11406
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4887,
+      "totalTokens": 12709
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "남이섬",
+      "nameCandidates": [
+        "남이섬"
+      ],
+      "region": "가평",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "남이섬 갔다가 점심 먹기 딱 좋아요"
+      ]
+    },
+    {
+      "name": "크래머리",
+      "nameCandidates": [
+        "크래머리"
+      ],
+      "region": "가평",
+      "address": "경기 가평군 상면 청군로 429",
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "영업시간 11:00 - 22:00"
+      ]
+    },
+    {
+      "name": "온정리 닭갈비 금강막국수",
+      "nameCandidates": [
+        "온정리 닭갈비 금강막국수",
+        "금강막국수"
+      ],
+      "region": "가평",
+      "address": "경기 가평군 상면 수목원로 16",
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "영업시간 10:30 - 21:00",
+        "들기름막국수 12,000원",
+        "수제 양념구이 닭갈비 16,000원"
+      ]
+    }
+  ]
+}

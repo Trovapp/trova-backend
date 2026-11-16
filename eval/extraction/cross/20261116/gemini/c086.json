@@ -1,0 +1,56 @@
+{
+  "sample_id": "c086",
+  "url": "https://www.youtube.com/shorts/pf9lWUyoTeA",
+  "seconds": 6.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3788,
+      "totalTokens": 10928
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2667,
+      "totalTokens": 12045
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "은행나무마을",
+      "nameCandidates": [
+        "은행나무마을"
+      ],
+      "region": "보령",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "노랗게 물든 은행나무와 특별한 은행빵을 만날 수 있는 곳"
+      ]
+    },
+    {
+      "name": "오서산",
+      "nameCandidates": [
+        "오서산"
+      ],
+      "region": "보령",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "붉은 단풍과 졸졸 흐르는 계곡물 소리를 함께 느낄 수 있는 곳"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "sample_id": "c143",
+  "url": "https://www.youtube.com/watch?v=SXk8HWM53zI",
+  "seconds": 9.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4092,
+      "totalTokens": 25192
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5100,
+      "totalTokens": 26940
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "수끼띠너이",
+      "nameCandidates": [
+        "수끼띠너이",
+        "수끼티너이",
+        "수끼어"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "태국식 샤브샤브 무한리필, 이용 시간 2시간",
+        "가격 인당 276바트(부가세 7% 포함)",
+        "시암 MBK 등 인구 밀집 지역은 1~2시간 웨이팅 있음"
+      ]
+    },
+    {
+      "name": "모모파라다이스",
+      "nameCandidates": [
+        "모모파라다이스"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "일본식 샤브샤브 무한리필, 이용 시간 1시간 30분",
+        "가격 1인 기준 659바트(서비스 차지, 부가세 포함)",
+        "엠쿼티어점은 골드 프리미엄 코스로 가격이 조금 더 높음"
+      ]
+    },
+    {
+      "name": "스시로",
+      "nameCandidates": [
+        "스시로"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "일본 최대 회전초밥 브랜드, 방콕 내 23개 지점 운영",
+        "접시 색깔에 따라 30바트~120바트 가격대",
+        "기본 메뉴 130여 가지 제공"
+      ]
+    },
+    {
+      "name": "시암 MBK",
+      "nameCandidates": [
+        "시암 MBK"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "인구 밀집 지역으로 식사 시 1~2시간 웨이팅 발생"
+      ]
+    },
+    {
+      "name": "아이콘시암",
+      "nameCandidates": [
+        "아이콘시암",
+        "아이콘 시험점"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "방문 후 약 15분 웨이트 후 입장 가능했음"
+      ]
+    },
+    {
+      "name": "엠쿼티어",
+      "nameCandidates": [
+        "엠쿼티어",
+        "엠컬티엄점"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "다른 지점과 달리 골드 프리미엄 코스 중심 운영"
+      ]
+    }
+  ]
+}

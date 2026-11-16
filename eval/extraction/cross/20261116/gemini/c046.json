@@ -1,0 +1,53 @@
+{
+  "sample_id": "c046",
+  "url": "https://www.youtube.com/shorts/IR2w6znExpE",
+  "seconds": 7.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3688,
+      "totalTokens": 11908
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3007,
+      "totalTokens": 13005
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "관방제림",
+      "nameCandidates": [
+        "관방제림"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "메타세쿼이아랜드",
+      "nameCandidates": [
+        "메타세쿼이아랜드",
+        "담양 메타세쿼이아 랜드"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

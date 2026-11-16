@@ -1,0 +1,91 @@
+{
+  "sample_id": "c151",
+  "url": "https://www.youtube.com/shorts/hWQwQC3fZlY",
+  "seconds": 18.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3603,
+      "totalTokens": 10784
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 2,
+      "success": true,
+      "latencyMs": 14295,
+      "totalTokens": 12107
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "황리단길",
+      "nameCandidates": [
+        "황리단길"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "첨성대",
+      "nameCandidates": [
+        "첨성대"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "월정교",
+      "nameCandidates": [
+        "월정교"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "석굴암",
+      "nameCandidates": [
+        "석굴암"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "추억의 달동네",
+      "nameCandidates": [
+        "추억의 달동네"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

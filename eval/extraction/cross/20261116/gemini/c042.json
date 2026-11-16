@@ -1,0 +1,44 @@
+{
+  "sample_id": "c042",
+  "url": "https://www.youtube.com/shorts/p9YPL0741Aw",
+  "seconds": 7.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3331,
+      "totalTokens": 14360
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3368,
+      "totalTokens": 15436
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "우유창고",
+      "nameCandidates": [
+        "우유창고",
+        "우유창골"
+      ],
+      "region": "충남 보령시",
+      "address": "충남 보령시 천북면 홍보로 573",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "매일 11:00~19:00 (베이커리 화·수 휴무)",
+        "유기농 우유를 재료로 하는 카페 및 체험장",
+        "목장크림라떼 7.5, 우유아이스크림 4.3"
+      ]
+    }
+  ]
+}

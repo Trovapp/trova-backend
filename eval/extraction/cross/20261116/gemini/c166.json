@@ -1,0 +1,61 @@
+{
+  "sample_id": "c166",
+  "url": "https://www.youtube.com/shorts/R1JdewJIOs0",
+  "seconds": 8.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5068,
+      "totalTokens": 13890
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3334,
+      "totalTokens": 15061
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "거목정",
+      "nameCandidates": [
+        "거목정",
+        "고목정"
+      ],
+      "region": "전남 담양",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "민물 생선 요리와 촌닭요리 판매",
+        "촌닭요리 주문 시 자리세 없음",
+        "식당과 연결된 자연 풀장 이용 가능"
+      ]
+    },
+    {
+      "name": "용면 가마골",
+      "nameCandidates": [
+        "용면 가마골",
+        "가마골"
+      ],
+      "region": "전남 담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "인적이 드문 비밀 장소 같은 계곡",
+        "가마골 계곡과 출렁다리 등 위치"
+      ]
+    }
+  ]
+}
