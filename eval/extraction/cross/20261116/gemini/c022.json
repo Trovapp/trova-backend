@@ -1,0 +1,29 @@
+{
+  "sample_id": "c022",
+  "url": "https://www.youtube.com/shorts/8Ct9RA4GXEo",
+  "seconds": 7.3,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "다낭 0도씨",
+      "nameCandidates": [
+        "다낭 0도씨",
+        "영도씨",
+        "0도씨"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "두툼하고 신선한 고기와 풍부한 반찬 제공",
+        "떡볶이, 조개탕, 육회 등이 서비스로 나옴",
+        "식사 후 아이스크림, 붕어빵, 슬러시 무료 제공"
+      ]
+    }
+  ]
+}

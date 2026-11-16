@@ -1,0 +1,90 @@
+{
+  "sample_id": "c006",
+  "url": "https://www.youtube.com/shorts/hb0ecdEUHjQ",
+  "seconds": 7.8,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "A La Carte Da Nang Hotel",
+      "nameCandidates": [
+        "A La Carte Da Nang Hotel"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "lodging",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해변도 가까워서 해수욕 하기에도 좋았다",
+        "뷰맛집 호텔"
+      ]
+    },
+    {
+      "name": "Bánh Xèo Lipton",
+      "nameCandidates": [
+        "Bánh Xèo Lipton",
+        "반쎄오"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "현지인으로 가득 찼던 반쎄오 식당",
+        "푸짐하고 다양한 야채"
+      ]
+    },
+    {
+      "name": "BBQ Un In",
+      "nameCandidates": [
+        "BBQ Un In"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "푸짐한 바베큐 세트를 저렴하게 맛볼 수 있는 곳",
+        "2인이면 3번 세트 추천"
+      ]
+    },
+    {
+      "name": "Rosie's Cafe",
+      "nameCandidates": [
+        "Rosie's Cafe"
+      ],
+      "region": "호이안",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "망고 스무디 볼이 더 맛있었다"
+      ]
+    },
+    {
+      "name": "Phi Bánh Mì",
+      "nameCandidates": [
+        "Phi Bánh Mì",
+        "피반미"
+      ],
+      "region": "호이안",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "3대 반미집중에 최고"
+      ]
+    }
+  ]
+}

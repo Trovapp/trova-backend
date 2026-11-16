@@ -1,0 +1,9 @@
+{
+  "samples": 30,
+  "places_both": 64,
+  "places_union": 86,
+  "place_agreement": 0.744,
+  "samples_fully_agreed": 17,
+  "gemini_only": 9,
+  "gpt_only": 13
+}

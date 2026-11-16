@@ -1,0 +1,41 @@
+{
+  "sample_id": "c024",
+  "url": "https://www.youtube.com/shorts/jo6CXuS_UwA",
+  "seconds": 6.7,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "초원사진관",
+      "nameCandidates": [
+        "초원사진관"
+      ],
+      "region": "군산",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "군산과자조합에서 걸어서 1~2분 거리"
+      ]
+    },
+    {
+      "name": "군산과자조합",
+      "nameCandidates": [
+        "군산과자조합"
+      ],
+      "region": "군산",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1939년 군산과자공업조합 공간 모티브",
+        "대표 메뉴 계란찜과자, 사과파이, 와인 블렌딩 커피"
+      ]
+    }
+  ]
+}

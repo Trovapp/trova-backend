@@ -1,0 +1,28 @@
+{
+  "sample_id": "c028",
+  "url": "https://www.youtube.com/watch?v=NaJBYfRmEJQ",
+  "seconds": 7.8,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "킷사 한게츠",
+      "nameCandidates": [
+        "킷사 한게츠",
+        "킷사한게츠"
+      ],
+      "region": "도쿄",
+      "address": "東京都台東区蔵前４丁目14-11 ウグイスビル103",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 1,
+      "videoNotes": [
+        "영업시간 9:00~18:30",
+        "레몬 타르트 판매",
+        "카드 결제 가능"
+      ]
+    }
+  ]
+}

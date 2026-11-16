@@ -1,0 +1,26 @@
+{
+  "sample_id": "c004",
+  "url": "https://www.youtube.com/shorts/3JB_c_59Sew",
+  "seconds": 7.9,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "들풀",
+      "nameCandidates": [
+        "들풀"
+      ],
+      "region": "가평",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "민들레 정식 1인 18,000원",
+        "청국장과 손두부가 나옴"
+      ]
+    }
+  ]
+}

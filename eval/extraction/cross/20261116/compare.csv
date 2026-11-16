@@ -1,0 +1,87 @@
+sample_id,url,title,status,gemini_name,gpt_name,region,category
+c001,https://www.youtube.com/shorts/bUe3uzBHTJQ,"목포 죽교동 추억 여행, 레트로 감성 카페 #목포카페 #목포가볼만한곳 #뷰맛집",both,유달유업,유달유업,전라남도 목포시,cafe
+c002,https://www.youtube.com/shorts/-nIQvt-4XJI,여수 가볼만한 곳 | 필수 코스 | 여수해상케이블카🚠,both,여수해상케이블카,여수해상케이블카,여수,attraction
+c003,https://www.youtube.com/shorts/EI9-cE5TBzQ,대구 여행 필수 코스! 대구 근대문화골목 투어✈,both,청라언덕,청라언덕,대구광역시,attraction
+c003,https://www.youtube.com/shorts/EI9-cE5TBzQ,대구 여행 필수 코스! 대구 근대문화골목 투어✈,both,서상돈 고택,서상돈 고택,대구광역시,attraction
+c003,https://www.youtube.com/shorts/EI9-cE5TBzQ,대구 여행 필수 코스! 대구 근대문화골목 투어✈,gpt_only,,근대문화골목,대구광역시 중구,attraction
+c003,https://www.youtube.com/shorts/EI9-cE5TBzQ,대구 여행 필수 코스! 대구 근대문화골목 투어✈,gpt_only,,이상화 고택,대구광역시 중구,attraction
+c004,https://www.youtube.com/shorts/3JB_c_59Sew,가평군 설악면 #들풀  #청국장 #가평맛집 #가평설악면맛집 #가평점심식사 #가평식당,both,들풀,들풀,가평,restaurant
+c005,https://www.youtube.com/shorts/Ro0XhtR9u6Y,"[생방송 오늘 아침] 산책하기 좋은 보문관광단지 내의 수변공원!, MBC 251029 방송",both,경주 보문 호수,보문호,경주,attraction
+c005,https://www.youtube.com/shorts/Ro0XhtR9u6Y,"[생방송 오늘 아침] 산책하기 좋은 보문관광단지 내의 수변공원!, MBC 251029 방송",both,호반광장,호반광장,경주,attraction
+c005,https://www.youtube.com/shorts/Ro0XhtR9u6Y,"[생방송 오늘 아침] 산책하기 좋은 보문관광단지 내의 수변공원!, MBC 251029 방송",both,보문 수상공연장,수상공연장,경주,attraction
+c005,https://www.youtube.com/shorts/Ro0XhtR9u6Y,"[생방송 오늘 아침] 산책하기 좋은 보문관광단지 내의 수변공원!, MBC 251029 방송",gpt_only,,보문관광단지,경주,attraction
+c005,https://www.youtube.com/shorts/Ro0XhtR9u6Y,"[생방송 오늘 아침] 산책하기 좋은 보문관광단지 내의 수변공원!, MBC 251029 방송",gpt_only,,수변공원,경주,attraction
+c006,https://www.youtube.com/shorts/hb0ecdEUHjQ,다낭과 호이안 맛집 5곳  | 사실 하나는 뷰맛집  | 다낭 자유여행 브이로그,both,A La Carte Da Nang Hotel,A La Carte Da Nang Hotel,다낭,lodging
+c006,https://www.youtube.com/shorts/hb0ecdEUHjQ,다낭과 호이안 맛집 5곳  | 사실 하나는 뷰맛집  | 다낭 자유여행 브이로그,both,Bánh Xèo Lipton,Bánh Xèo Lipton,다낭,restaurant
+c006,https://www.youtube.com/shorts/hb0ecdEUHjQ,다낭과 호이안 맛집 5곳  | 사실 하나는 뷰맛집  | 다낭 자유여행 브이로그,both,BBQ Un In,BBQ Un In,다낭,restaurant
+c006,https://www.youtube.com/shorts/hb0ecdEUHjQ,다낭과 호이안 맛집 5곳  | 사실 하나는 뷰맛집  | 다낭 자유여행 브이로그,both,Rosie's Cafe,Rosie's Cafe,호이안,cafe
+c006,https://www.youtube.com/shorts/hb0ecdEUHjQ,다낭과 호이안 맛집 5곳  | 사실 하나는 뷰맛집  | 다낭 자유여행 브이로그,both,Phi Bánh Mì,Phi Bánh Mì,호이안,restaurant
+c007,https://www.youtube.com/shorts/wbyerePvE4A,[관광지 소개] 연인과 함께 가볼 만한 인천서구 관광지,gemini_only,서구근린공원,,인천 서구,attraction
+c007,https://www.youtube.com/shorts/wbyerePvE4A,[관광지 소개] 연인과 함께 가볼 만한 인천서구 관광지,both,청라호수공원,청라호수공원,인천 서구,attraction
+c007,https://www.youtube.com/shorts/wbyerePvE4A,[관광지 소개] 연인과 함께 가볼 만한 인천서구 관광지,both,경인 아라뱃길,경인아라뱃길,인천 서구,attraction
+c007,https://www.youtube.com/shorts/wbyerePvE4A,[관광지 소개] 연인과 함께 가볼 만한 인천서구 관광지,gemini_only,새어도,,인천 서구,attraction
+c007,https://www.youtube.com/shorts/wbyerePvE4A,[관광지 소개] 연인과 함께 가볼 만한 인천서구 관광지,gpt_only,,서곶근린공원,인천광역시 서구,attraction
+c007,https://www.youtube.com/shorts/wbyerePvE4A,[관광지 소개] 연인과 함께 가볼 만한 인천서구 관광지,gpt_only,,정서진,인천광역시 서구,attraction
+c007,https://www.youtube.com/shorts/wbyerePvE4A,[관광지 소개] 연인과 함께 가볼 만한 인천서구 관광지,gpt_only,,세어도,인천광역시 서구,attraction
+c008,https://www.youtube.com/shorts/YXYNTqGy6TM,목포 뷰맛집 카페 #카페델마르 에서 목포대교 바라보며 힐링타임 ♡,both,카페델마르,카페델마르,전남 목포시,cafe
+c008,https://www.youtube.com/shorts/YXYNTqGy6TM,목포 뷰맛집 카페 #카페델마르 에서 목포대교 바라보며 힐링타임 ♡,gemini_only,목포대교,,전남 목포시,attraction
+c009,https://www.youtube.com/shorts/0VuqQvNFNFs,"[VKTalk] Maruten Sushi & Soba  - 맛있는 스시, 프라이빗 공가까자! 다낭에 여행하시면 꼭",both,마루텐 스시,마루텐 스시 소바,다낭,restaurant
+c010,https://www.youtube.com/shorts/C3oxLmyMY8Y,힐링 여행의 끝판왕! 양양 가볼만한 곳 모음.ZIP👏,both,스케쥴 양양,스케쥴 양양,양양,restaurant
+c010,https://www.youtube.com/shorts/C3oxLmyMY8Y,힐링 여행의 끝판왕! 양양 가볼만한 곳 모음.ZIP👏,both,남대천생태관찰로,남대천생태관찰로,양양,attraction
+c010,https://www.youtube.com/shorts/C3oxLmyMY8Y,힐링 여행의 끝판왕! 양양 가볼만한 곳 모음.ZIP👏,both,브리드호텔 양양,브리드호텔 양양,양양,lodging
+c010,https://www.youtube.com/shorts/C3oxLmyMY8Y,힐링 여행의 끝판왕! 양양 가볼만한 곳 모음.ZIP👏,gpt_only,,브리드호텔 양양 - 포이푸,양양,restaurant
+c011,https://www.youtube.com/shorts/bisuWyw2NA4,인스파이어 리조트 오로라쇼 🐋✨,both,인스파이어 오로라,인스파이어 리조트 오로라,인천,attraction
+c012,https://www.youtube.com/shorts/PDH8LHm2n74,[#shorts] 광주광역시에서 평양냉면이 엄청 떴다고...?,gemini_only,평양,,광주광역시,other
+c013,https://www.youtube.com/shorts/xGDdNAUqOn4,[대구 vlog] 동성로 맛집 탐방 & 신상 카페 링컵 투어 | 대구 토박이 맛집 브이로그,both,이타국시 반월당점,이타국시 반월당점,대구,restaurant
+c013,https://www.youtube.com/shorts/xGDdNAUqOn4,[대구 vlog] 동성로 맛집 탐방 & 신상 카페 링컵 투어 | 대구 토박이 맛집 브이로그,both,링컵 커피,링컵 커피,대구,cafe
+c014,https://www.youtube.com/shorts/5KXRmsNezrM,포항 가볼만한곳 추천 📍 호미곶 해맞이광장 1분 힐링 스케치,both,포항 호미곶 해맞이광장,호미곶 해맞이광장,포항,attraction
+c014,https://www.youtube.com/shorts/5KXRmsNezrM,포항 가볼만한곳 추천 📍 호미곶 해맞이광장 1분 힐링 스케치,gpt_only,,상생의 손,포항,attraction
+c015,https://www.youtube.com/shorts/ADWLpKS6k9E,"커피가 맛있는곳, 속초 한옥 카페 도문",both,한옥 카페 도문,한옥 카페 도문,속초,cafe
+c016,https://www.youtube.com/shorts/zkQH0xX-vcg,[쇼츠] 근대건축전시관으로 알아보는 인천의 역사,both,근대건축전시관,인천개항장 근대건축전시관,인천,attraction
+c016,https://www.youtube.com/shorts/zkQH0xX-vcg,[쇼츠] 근대건축전시관으로 알아보는 인천의 역사,both,구)인천부청사,구)인천부청사,인천,attraction
+c016,https://www.youtube.com/shorts/zkQH0xX-vcg,[쇼츠] 근대건축전시관으로 알아보는 인천의 역사,both,구)제물포구락부,구)제물포구락부,인천,attraction
+c016,https://www.youtube.com/shorts/zkQH0xX-vcg,[쇼츠] 근대건축전시관으로 알아보는 인천의 역사,both,일본 제1은행 인천지점,일본 제1은행 인천지점,인천,attraction
+c017,https://www.youtube.com/shorts/JW-Me37Bn4g,🥘포항 식당추천 Best7✨포항 맛집여행✔️죽도시장 맛집 | 포항여행,both,마라도회식당,마라도회식당,포항시,restaurant
+c017,https://www.youtube.com/shorts/JW-Me37Bn4g,🥘포항 식당추천 Best7✨포항 맛집여행✔️죽도시장 맛집 | 포항여행,both,장기식당,장기식당,포항시,restaurant
+c017,https://www.youtube.com/shorts/JW-Me37Bn4g,🥘포항 식당추천 Best7✨포항 맛집여행✔️죽도시장 맛집 | 포항여행,both,환여횟집 본점,환여횟집 본점,포항시,restaurant
+c017,https://www.youtube.com/shorts/JW-Me37Bn4g,🥘포항 식당추천 Best7✨포항 맛집여행✔️죽도시장 맛집 | 포항여행,both,옛날한계령조개구이,옛날한계령조개구이,포항시,restaurant
+c017,https://www.youtube.com/shorts/JW-Me37Bn4g,🥘포항 식당추천 Best7✨포항 맛집여행✔️죽도시장 맛집 | 포항여행,both,대화식당,대화식당,포항시,restaurant
+c017,https://www.youtube.com/shorts/JW-Me37Bn4g,🥘포항 식당추천 Best7✨포항 맛집여행✔️죽도시장 맛집 | 포항여행,both,평남식당,평남식당,포항시,restaurant
+c017,https://www.youtube.com/shorts/JW-Me37Bn4g,🥘포항 식당추천 Best7✨포항 맛집여행✔️죽도시장 맛집 | 포항여행,both,수제비골목,수제비골목,포항시,restaurant
+c018,https://www.youtube.com/shorts/5b6vNN2EYxo,거제도 여행 코스 오션뷰 카트체험장_거제도 가볼만한 곳,gemini_only,거제도 카트체험장,,거제도,attraction
+c019,https://www.youtube.com/shorts/mL2oFRk_EX8,동대구시장 순대#쇼츠 #soondae #shorts #순대,gpt_only,,동대구시장,대구,shopping
+c020,https://www.youtube.com/watch?v=44eJ8mTRBn8,홍콩의 야경을 더 낭만적으로 즐기는 법! 아쿠아루나,gemini_only,침사추이,,홍콩,attraction
+c020,https://www.youtube.com/watch?v=44eJ8mTRBn8,홍콩의 야경을 더 낭만적으로 즐기는 법! 아쿠아루나,both,아쿠아루나 이브닝 크루즈,아쿠아루나,홍콩,attraction
+c021,https://www.youtube.com/shorts/neI64VYXvps,"강릉 여행 가볼만한 곳(런닝맨, 그대나의뮤즈전시, 아르띠뮤지엄)",both,강릉 런닝맨,강릉 런닝맨,강릉,attraction
+c021,https://www.youtube.com/shorts/neI64VYXvps,"강릉 여행 가볼만한 곳(런닝맨, 그대나의뮤즈전시, 아르띠뮤지엄)",both,그대 나의 뮤즈 전시,그대 나의 뮤즈 전시,강릉,attraction
+c021,https://www.youtube.com/shorts/neI64VYXvps,"강릉 여행 가볼만한 곳(런닝맨, 그대나의뮤즈전시, 아르띠뮤지엄)",both,강릉 아르떼뮤지엄,강릉 아르떼뮤지엄,강릉,attraction
+c021,https://www.youtube.com/shorts/neI64VYXvps,"강릉 여행 가볼만한 곳(런닝맨, 그대나의뮤즈전시, 아르띠뮤지엄)",gpt_only,,아르떼 카페,강릉,cafe
+c022,https://www.youtube.com/shorts/8Ct9RA4GXEo,🥩 **다낭에서 고기 제대로 먹고 싶다면? 0도씨🔥**,both,다낭 0도씨,0도씨,다낭,restaurant
+c023,https://www.youtube.com/shorts/5L9R8-AKz-U,빵 말고 너도 궁금해졌어💘│대전관광홍보영상 EP.02,both,성심당,성심당,대전,shopping
+c023,https://www.youtube.com/shorts/5L9R8-AKz-U,빵 말고 너도 궁금해졌어💘│대전관광홍보영상 EP.02,both,꿈돌이네 굿즈가게,꿈돌이네굿즈가게,대전,shopping
+c023,https://www.youtube.com/shorts/5L9R8-AKz-U,빵 말고 너도 궁금해졌어💘│대전관광홍보영상 EP.02,both,꿈돌이네 라면가게,꿈돌이네라면가게,대전,restaurant
+c024,https://www.youtube.com/shorts/jo6CXuS_UwA,군산과자조합 계란찜과자와 사과파이 레트로 감성 카페 다녀왔습니다,gemini_only,초원사진관,,군산,attraction
+c024,https://www.youtube.com/shorts/jo6CXuS_UwA,군산과자조합 계란찜과자와 사과파이 레트로 감성 카페 다녀왔습니다,both,군산과자조합,군산과자조합,군산,cafe
+c025,https://www.youtube.com/shorts/aUY1riUowe0,[담양맛집] 갈비덮밥 치즈돈까스 맛집 오마이밥,both,오마이밥,오마이밥,담양,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",gemini_only,강릉 다강정,,강릉,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",both,감자적1번지,감자적1번지,강릉,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",both,대동면옥 강릉본점,대동 연휴 강릉 본점,강릉,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",both,서울양계,서울양계,강릉,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",both,고씨네동해막국수,고씨네동해막국수,강릉,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",both,차현희순두부청국장 본점,차현희순두부청국장 본점,강릉,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",both,엄지네포장마차 본점,엄진의 포장 맞차 본점,강릉,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",gemini_only,장안회집,,강릉,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",both,최일순짬뽕순두부,최일순짬뽕순두부,강릉,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",both,동화가든 본점,동화가든 본점,강릉,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",gpt_only,,강릉닭강정,강릉시,restaurant
+c026,https://www.youtube.com/shorts/icIgo6t-6Yg,"강원도 강릉맛집 최고맛집 1위~10위, 강릉맛집 베스트10 #강릉맛집 #강릉여행 #강릉",gpt_only,,장안횟집,강릉시,restaurant
+c027,https://www.youtube.com/shorts/-cZsWvpG4-s,강원도 속초 갈만한곳 관광지 속초 아바이마을 갯배 볼거리,both,아바이마을,아바이마을,강원도 속초,attraction
+c027,https://www.youtube.com/shorts/-cZsWvpG4-s,강원도 속초 갈만한곳 관광지 속초 아바이마을 갯배 볼거리,both,갯배,아바이마을갯배,강원도 속초,attraction
+c028,https://www.youtube.com/watch?v=NaJBYfRmEJQ,Tokyo Cafe Recommendations: Only the Cutest Spots 1,both,킷사 한게츠,킷사 한게츠,도쿄,cafe
+c029,https://www.youtube.com/shorts/AQI1VgZi3gI,"6 Best Gapyeong Travel Destinations for Summer | Domestic Travel Recommendations, Places t",both,용추계곡,용추계곡,가평,attraction
+c029,https://www.youtube.com/shorts/AQI1VgZi3gI,"6 Best Gapyeong Travel Destinations for Summer | Domestic Travel Recommendations, Places t",both,청평호반,청평호반,가평,attraction
+c029,https://www.youtube.com/shorts/AQI1VgZi3gI,"6 Best Gapyeong Travel Destinations for Summer | Domestic Travel Recommendations, Places t",both,아침고요수목원,아침고요수목원,가평,attraction
+c029,https://www.youtube.com/shorts/AQI1VgZi3gI,"6 Best Gapyeong Travel Destinations for Summer | Domestic Travel Recommendations, Places t",both,제이드가든수목원,제이드가든 수목원,가평,attraction
+c029,https://www.youtube.com/shorts/AQI1VgZi3gI,"6 Best Gapyeong Travel Destinations for Summer | Domestic Travel Recommendations, Places t",both,호명호수공원,호명호수공원,가평,attraction
+c029,https://www.youtube.com/shorts/AQI1VgZi3gI,"6 Best Gapyeong Travel Destinations for Summer | Domestic Travel Recommendations, Places t",both,가평잣향기푸른숲,잣향기푸른숲,가평,attraction
+c030,https://www.youtube.com/shorts/1nU4UXbIDaU,오픈런해도 웨이팅😳 오사카 데카산 초대형 계란샌드🥚 #shorts,both,데카산,데카산,오사카,restaurant

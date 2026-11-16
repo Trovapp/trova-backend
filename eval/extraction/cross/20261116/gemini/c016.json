@@ -1,0 +1,74 @@
+{
+  "sample_id": "c016",
+  "url": "https://www.youtube.com/shorts/zkQH0xX-vcg",
+  "seconds": 8.4,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "근대건축전시관",
+      "nameCandidates": [
+        "근대건축전시관",
+        "인천개항장 근대건축전시관"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "인천 개항장 근대건축물을 전시하는 공간"
+      ]
+    },
+    {
+      "name": "구)인천부청사",
+      "nameCandidates": [
+        "구)인천부청사",
+        "인천부청사"
+      ],
+      "region": "인천",
+      "address": "인천시 중구 관동 1가",
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1930년대 당시 최신 건물이었음"
+      ]
+    },
+    {
+      "name": "구)제물포구락부",
+      "nameCandidates": [
+        "구)제물포구락부",
+        "제물포구락부"
+      ],
+      "region": "인천",
+      "address": "인천시 중구 송학동 1가",
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "인천 거주 외국인들이 친목을 다지던 사교장"
+      ]
+    },
+    {
+      "name": "일본 제1은행 인천지점",
+      "nameCandidates": [
+        "일본 제1은행 인천지점",
+        "구)일본 제1은행 仁川支店"
+      ],
+      "region": "인천",
+      "address": "인천시 중구 중앙동 1가",
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "르네상스식 건축물"
+      ]
+    }
+  ]
+}

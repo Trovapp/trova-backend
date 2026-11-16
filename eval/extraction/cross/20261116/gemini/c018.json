@@ -1,0 +1,26 @@
+{
+  "sample_id": "c018",
+  "url": "https://www.youtube.com/shorts/5b6vNN2EYxo",
+  "seconds": 5.8,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "거제도 카트체험장",
+      "nameCandidates": [
+        "거제도 카트체험장",
+        "카트체험장"
+      ],
+      "region": "거제도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "카트체험장"
+      ]
+    }
+  ]
+}

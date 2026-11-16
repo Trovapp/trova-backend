@@ -1,0 +1,61 @@
+{
+  "sample_id": "c005",
+  "url": "https://www.youtube.com/shorts/Ro0XhtR9u6Y",
+  "seconds": 8.3,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "경주 보문 호수",
+      "nameCandidates": [
+        "경주 보문 호수",
+        "보문 호수",
+        "보문호"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "APEC 행사로 멋진 조형물들이 많이 세워짐",
+        "도시 위에 띄워진 대형 연꽃 조형물과 LED 문화유산 조형물 설치"
+      ]
+    },
+    {
+      "name": "호반광장",
+      "nameCandidates": [
+        "호반광장",
+        "고반 광장"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "21개국의 언어를 담은 LED 전광판 설치",
+        "AI 합성 기술을 이용한 가상 신라 의복 체험 가능"
+      ]
+    },
+    {
+      "name": "보문 수상공연장",
+      "nameCandidates": [
+        "보문 수상공연장",
+        "수상공연장"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "APEC 정상회의 성공 개최 기원 멀티미디어 쇼 개최"
+      ]
+    }
+  ]
+}

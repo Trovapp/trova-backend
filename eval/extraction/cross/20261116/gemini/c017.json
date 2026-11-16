@@ -1,0 +1,115 @@
+{
+  "sample_id": "c017",
+  "url": "https://www.youtube.com/shorts/JW-Me37Bn4g",
+  "seconds": 8.0,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "마라도회식당",
+      "nameCandidates": [
+        "마라도회식당"
+      ],
+      "region": "포항시",
+      "address": "포항시 북구 해안로 217-1",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "포항 3대물회로 불릴 정도로 유명한 물회 맛집"
+      ]
+    },
+    {
+      "name": "장기식당",
+      "nameCandidates": [
+        "장기식당"
+      ],
+      "region": "포항시",
+      "address": "포항시 북구 죽도시장3길 9-10",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "한우 소머리로 만든 곰탕과 수육 제공"
+      ]
+    },
+    {
+      "name": "환여횟집 본점",
+      "nameCandidates": [
+        "환여횟집 본점"
+      ],
+      "region": "포항시",
+      "address": "포항시 북구 해안로 189-1",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "물회를 주문하면 함께 나오는 매운탕 제공"
+      ]
+    },
+    {
+      "name": "옛날한계령조개구이",
+      "nameCandidates": [
+        "옛날한계령조개구이"
+      ],
+      "region": "포항시",
+      "address": "포항시 북구 해안로 123",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "키조개구이, 가리비구이, 새우구이가 포함된 조개구이모둠 인기"
+      ]
+    },
+    {
+      "name": "대화식당",
+      "nameCandidates": [
+        "대화식당"
+      ],
+      "region": "포항시",
+      "address": "포항시 북구 해안로 217-1",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "죽도시장 안에 자리한 보리밥 백반집"
+      ]
+    },
+    {
+      "name": "평남식당",
+      "nameCandidates": [
+        "평남식당"
+      ],
+      "region": "포항시",
+      "address": "포항시 북구 죽도시장3길 9-16",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "포항 죽도시장에서 60년째 운영 중인 맛집"
+      ]
+    },
+    {
+      "name": "수제비골목",
+      "nameCandidates": [
+        "수제비골목"
+      ],
+      "region": "포항시",
+      "address": "포항시 북구 죽도동 2-587",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "수제비, 칼국수, 칼제비를 판매"
+      ]
+    }
+  ]
+}

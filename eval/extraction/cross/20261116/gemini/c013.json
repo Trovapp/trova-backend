@@ -1,0 +1,42 @@
+{
+  "sample_id": "c013",
+  "url": "https://www.youtube.com/shorts/xGDdNAUqOn4",
+  "seconds": 33.4,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "이타국시 반월당점",
+      "nameCandidates": [
+        "이타국시 반월당점",
+        "이타국시"
+      ],
+      "region": "대구",
+      "address": "대구 중구 남성로 50",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대구 중구 남성로 50에 위치"
+      ]
+    },
+    {
+      "name": "링컵 커피",
+      "nameCandidates": [
+        "링컵 커피",
+        "링컵"
+      ],
+      "region": "대구",
+      "address": "대구 중구 남성로 26-1 1층",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대구 중구 남성로 26-1 1층에 위치"
+      ]
+    }
+  ]
+}

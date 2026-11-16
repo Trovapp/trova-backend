@@ -1,0 +1,55 @@
+{
+  "sample_id": "c010",
+  "url": "https://www.youtube.com/shorts/C3oxLmyMY8Y",
+  "seconds": 8.9,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "스케쥴 양양",
+      "nameCandidates": [
+        "스케쥴 양양"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "현재 운영되고 있지 않으며 여름 시즌에만 운영됩니다"
+      ]
+    },
+    {
+      "name": "남대천생태관찰로",
+      "nameCandidates": [
+        "남대천생태관찰로"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "브리드호텔 양양",
+      "nameCandidates": [
+        "브리드호텔 양양",
+        "브리드호텔",
+        "양양브리드호텔"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "lodging",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "포이푸, 펜트하우스 행텐, 라이즈업 객실 등의 부대시설 및 객실이 있습니다"
+      ]
+    }
+  ]
+}

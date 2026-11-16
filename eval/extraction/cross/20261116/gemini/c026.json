@@ -1,0 +1,167 @@
+{
+  "sample_id": "c026",
+  "url": "https://www.youtube.com/shorts/icIgo6t-6Yg",
+  "seconds": 10.6,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "강릉 다강정",
+      "nameCandidates": [
+        "강릉 다강정"
+      ],
+      "region": "강릉",
+      "address": "강원 강릉시 초당동 259-3",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "옥수수 닭강정과 옥수수 와르르르르가 주메뉴입니다."
+      ]
+    },
+    {
+      "name": "감자적1번지",
+      "nameCandidates": [
+        "감자적1번지"
+      ],
+      "region": "강릉",
+      "address": "강원 강릉시 병산동 337-8",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "감자옹심이와 감자적이 주메뉴입니다."
+      ]
+    },
+    {
+      "name": "대동면옥 강릉본점",
+      "nameCandidates": [
+        "대동면옥 강릉본점",
+        "대동 연휴 강릉 본점"
+      ],
+      "region": "강릉",
+      "address": "강원 강릉시 교동 627-5",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "한돈 수육 큰접시와 회비빔 막국수가 주메뉴입니다."
+      ]
+    },
+    {
+      "name": "서울양계",
+      "nameCandidates": [
+        "서울양계",
+        "서울 한계"
+      ],
+      "region": "강릉",
+      "address": "강원 강릉시 강문동 191",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "닭강정 후라이드와 닭강정 달콤이 주메뉴입니다."
+      ]
+    },
+    {
+      "name": "고씨네동해막국수",
+      "nameCandidates": [
+        "고씨네동해막국수",
+        "고신의 막국수"
+      ],
+      "region": "강릉",
+      "address": "강원 강릉시 강문동 212",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "들기름 막국수와 얼큰 순두부 칼국수가 주메뉴입니다."
+      ]
+    },
+    {
+      "name": "차현희순두부청국장 본점",
+      "nameCandidates": [
+        "차현희순두부청국장 본점",
+        "차연이 순두부 천국장 본점"
+      ],
+      "region": "강릉",
+      "address": "강원 강릉시 초당동 12-3",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "청국장과 두부전골이 주메뉴입니다."
+      ]
+    },
+    {
+      "name": "엄지네포장마차 본점",
+      "nameCandidates": [
+        "엄지네포장마차 본점",
+        "엄진의 포장마차 본점"
+      ],
+      "region": "강릉",
+      "address": "강원 강릉시 포남동 1155",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "꼬막무침 비빔밥과 육사시미가 주메뉴입니다."
+      ]
+    },
+    {
+      "name": "장안회집",
+      "nameCandidates": [
+        "장안회집",
+        "장안의 집"
+      ],
+      "region": "강릉",
+      "address": "강원 강릉시 사천면 사천진리 86-64",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "광어 물회와 물가자미 물회가 주메뉴입니다."
+      ]
+    },
+    {
+      "name": "최일순짬뽕순두부",
+      "nameCandidates": [
+        "최일순짬뽕순두부",
+        "최이지 짬뽕 순두부"
+      ],
+      "region": "강릉",
+      "address": "강원 강릉시 안현동 862",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "치즈 얼큰 순두부와 짬뽕 순두부가 주메뉴입니다."
+      ]
+    },
+    {
+      "name": "동화가든 본점",
+      "nameCandidates": [
+        "동화가든 본점"
+      ],
+      "region": "강릉",
+      "address": "강원 강릉시 초당동 309-1",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "원조짬순과 초두부 백반이 주메뉴입니다."
+      ]
+    }
+  ]
+}

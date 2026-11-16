@@ -1,0 +1,27 @@
+{
+  "sample_id": "c001",
+  "url": "https://www.youtube.com/shorts/bUe3uzBHTJQ",
+  "seconds": 9.5,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "유달유업",
+      "nameCandidates": [
+        "유달유업"
+      ],
+      "region": "전라남도 목포시",
+      "address": "전남 목포시 북항로 119",
+      "category": "cafe",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "운영시간 12:00 - 22:00",
+        "매주 월요일 정기 휴무",
+        "레트로 감성의 목포 카페"
+      ]
+    }
+  ]
+}

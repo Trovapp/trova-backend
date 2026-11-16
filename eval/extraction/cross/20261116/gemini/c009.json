@@ -1,0 +1,28 @@
+{
+  "sample_id": "c009",
+  "url": "https://www.youtube.com/shorts/0VuqQvNFNFs",
+  "seconds": 8.7,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "마루텐 스시",
+      "nameCandidates": [
+        "마루텐 스시",
+        "마루텐스시"
+      ],
+      "region": "다낭",
+      "address": "127 Le Quang Dao",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "신선한 재료와 큰 사시미, 두꺼운 연어 조각",
+        "우동은 조금 짠 편",
+        "반찬 하나를 서비스로 제공"
+      ]
+    }
+  ]
+}
