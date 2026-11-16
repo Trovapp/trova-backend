@@ -81,11 +81,9 @@ public class TripShareLinkController {
     public ResponseEntity<ShareLinkResponse> createShareLink(Authentication authentication, @PathVariable Long id) {
         return ownedTrip(authentication, id)
                 .map(trip -> {
-                    Optional<TripShareLink> active = shareLinkService.getActive(trip);
-                    if (active.isPresent()) {
-                        return ResponseEntity.ok(toResponse(active.get()));
-                    }
-                    return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(shareLinkService.createOrGet(trip)));
+                    TripShareLinkService.CreateResult result = shareLinkService.createOrGet(trip);
+                    return ResponseEntity.status(result.created() ? HttpStatus.CREATED : HttpStatus.OK)
+                            .body(toResponse(result.link()));
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

@@ -1,9 +1,43 @@
 package com.trova.backend.service;
 
-import com.trova.backend.entity.*;
+import com.trova.backend.entity.Bookmark;
+import com.trova.backend.entity.BookmarkFolder;
+import com.trova.backend.entity.ExpoPushToken;
+import com.trova.backend.entity.Itinerary;
+import com.trova.backend.entity.Notification;
+import com.trova.backend.entity.Place;
+import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.PushSubscription;
+import com.trova.backend.entity.SavedPlace;
+import com.trova.backend.entity.SignalType;
+import com.trova.backend.entity.SourcePlatform;
+import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.TripDraft;
+import com.trova.backend.entity.TripPlace;
+import com.trova.backend.entity.TripReplanJob;
+import com.trova.backend.entity.User;
+import com.trova.backend.entity.UserPreference;
+import com.trova.backend.entity.UserPreferenceSignal;
 import com.trova.backend.recommendation.GooglePlacesApiClient;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
-import com.trova.backend.repository.*;
+import com.trova.backend.repository.BookmarkFolderRepository;
+import com.trova.backend.repository.BookmarkRepository;
+import com.trova.backend.repository.ExpoPushTokenRepository;
+import com.trova.backend.repository.ItineraryRepository;
+import com.trova.backend.repository.NotificationRepository;
+import com.trova.backend.repository.PlaceRepository;
+import com.trova.backend.repository.ProcessingJobRepository;
+import com.trova.backend.repository.PushSubscriptionRepository;
+import com.trova.backend.repository.SavedPlaceRepository;
+import com.trova.backend.repository.ShareKeyRepository;
+import com.trova.backend.repository.TripDraftRepository;
+import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.repository.TripReplanJobRepository;
+import com.trova.backend.repository.TripRepository;
+import com.trova.backend.repository.TripShareLinkRepository;
+import com.trova.backend.repository.UserPreferenceRepository;
+import com.trova.backend.repository.UserPreferenceSignalRepository;
+import com.trova.backend.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +67,12 @@ class UserAccountServiceTest {
 
     @Autowired
     private TripService tripService;
+
+    @Autowired
+    private TripShareLinkService tripShareLinkService;
+
+    @Autowired
+    private TripShareLinkRepository tripShareLinkRepository;
 
     @Autowired
     private PlaceRepository placeRepository;
@@ -129,6 +169,10 @@ class UserAccountServiceTest {
         bookmark = bookmarkRepository.save(bookmark);
 
         Trip trip = tripService.createTrip(me, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
+        tripShareLinkService.createOrGet(trip);
+        tripShareLinkService.revoke(trip);
+        tripShareLinkService.createOrGet(trip);
+        assertThat(tripShareLinkRepository.count()).isEqualTo(2);
         TripPlace tripPlace = tripService.addPlaceToDay(me, trip.getId(), 1, "withdraw-place-1").orElseThrow();
         Itinerary itinerary = itineraryRepository.findByTripOrderByDay(trip).get(0);
         Notification notification = notificationRepository.save(
@@ -151,6 +195,7 @@ class UserAccountServiceTest {
         assertThat(bookmarkRepository.findById(bookmark.getId())).isEmpty();
         assertThat(bookmarkFolderRepository.findById(folder.getId())).isEmpty();
         assertThat(tripRepository.findById(trip.getId())).isEmpty();
+        assertThat(tripShareLinkRepository.count()).isZero();
         assertThat(itineraryRepository.findById(itinerary.getId())).isEmpty();
         assertThat(tripPlaceRepository.findById(tripPlace.getId())).isEmpty();
         assertThat(notificationRepository.findById(notification.getId())).isEmpty();

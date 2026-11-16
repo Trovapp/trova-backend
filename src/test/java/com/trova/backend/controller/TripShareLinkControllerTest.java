@@ -2,7 +2,9 @@ package com.trova.backend.controller;
 
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.PlaceSource;
+import com.trova.backend.entity.TransportMode;
 import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.TripShareLink;
 import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.ItineraryRepository;
@@ -10,7 +12,9 @@ import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.TripShareLinkRepository;
 import com.trova.backend.repository.UserRepository;
+import com.trova.backend.security.SuspendedUsers;
 import com.trova.backend.service.TripService;
+import com.trova.backend.service.TripShareLinkService;
 import com.trova.backend.support.RateLimitWindow;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +27,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
@@ -66,6 +74,15 @@ class TripShareLinkControllerTest {
 
     @Autowired
     private TripService tripService;
+
+    @Autowired
+    private TripShareLinkService tripShareLinkService;
+
+    @Autowired
+    private SuspendedUsers suspendedUsers;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     private ClientRegistration googleRegistration() {
         return ClientRegistration.withRegistrationId("google")
@@ -143,7 +160,7 @@ class TripShareLinkControllerTest {
                 .andExpect(jsonPath("$.token").value(token))
                 .andExpect(jsonPath("$.url").value("https://app.example.test/t/" + token))
                 .andExpect(jsonPath("$.createdAt").isNotEmpty());
-        assertThat(tripShareLinkRepository.findByTripAndRevokedAtIsNull(trip).orElseThrow().getToken())
+        assertThat(tripShareLinkRepository.findFirstByTripAndRevokedAtIsNullOrderByCreatedAtAsc(trip).orElseThrow().getToken())
                 .isEqualTo(token);
     }
 
@@ -174,7 +191,7 @@ class TripShareLinkControllerTest {
         mockMvc.perform(delete("/api/trips/{id}/share-link", trip.getId())
                         .with(loginAs("trip-share-other", "다른 사용자")))
                 .andExpect(status().isNotFound());
-        assertThat(tripShareLinkRepository.findByTripAndRevokedAtIsNull(trip)).isPresent();
+        assertThat(tripShareLinkRepository.findByTripAndRevokedAtIsNull(trip)).isNotEmpty();
     }
 
     @Test
@@ -214,10 +231,10 @@ class TripShareLinkControllerTest {
 
         String body = mockMvc.perform(get("/api/public/trips/{token}", token).with(fromIp("192.0.2.2")))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.days[0].places[0].placeName").value("공유 장소"))
                 .andReturn().getResponse().getContentAsString();
 
         assertThat(body).doesNotContain("memo", "\"id\"", "source", "googlePlaceId", "user");
-        assertThat(place.getMemo()).isEqualTo("공개하면 안 되는 메모");
     }
 
     @Test
@@ -296,5 +313,102 @@ class TripShareLinkControllerTest {
                 .andExpect(header().string(HttpHeaders.RETRY_AFTER, "60"));
         mockMvc.perform(get("/api/public/trips/{token}", token).with(fromIp("192.0.2.7")))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void 켜진_링크가_둘이어도_조회와_끄기가_동작한다() throws Exception {
+        Trip trip = trip(owner(), 1);
+        tripShareLinkRepository.save(new TripShareLink(trip, "duplicate-first"));
+        tripShareLinkRepository.save(new TripShareLink(trip, "duplicate-second"));
+
+        mockMvc.perform(get("/api/trips/{id}/share-link", trip.getId())
+                        .with(loginAs("trip-share-owner", "소유자")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value("duplicate-first"));
+        mockMvc.perform(delete("/api/trips/{id}/share-link", trip.getId())
+                        .with(loginAs("trip-share-owner", "소유자")))
+                .andExpect(status().isNoContent());
+        for (String token : new String[] {"duplicate-first", "duplicate-second"}) {
+            mockMvc.perform(get("/api/public/trips/{token}", token).with(fromIp("192.0.2.8")))
+                    .andExpect(status().isNotFound());
+        }
+    }
+
+    @Test
+    void 정지된_계정의_링크는_공개_조회가_404() throws Exception {
+        User user = owner();
+        String token = createLink(trip(user, 1));
+        suspendedUsers.add(user.getId());
+        try {
+            mockMvc.perform(get("/api/public/trips/{token}", token).with(fromIp("192.0.2.9")))
+                    .andExpect(status().isNotFound());
+        } finally {
+            suspendedUsers.remove(user.getId());
+        }
+    }
+
+    private record PublicTripFixture(Long userId, Long tripId, String token) {
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void 공개_조회는_트랜잭션_밖에서도_여행_제목을_읽는다() throws Exception {
+        PublicTripFixture fixture = new TransactionTemplate(transactionManager).execute(status -> {
+            User user = owner();
+            Trip trip = trip(user, 1);
+            place(trip);
+            String token = tripShareLinkService.createOrGet(trip).link().getToken();
+            return new PublicTripFixture(user.getId(), trip.getId(), token);
+        });
+        assertThat(fixture).isNotNull();
+        try {
+            mockMvc.perform(get("/api/public/trips/{token}", fixture.token()).with(fromIp("192.0.2.10")))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.title").value("테스트 여행"))
+                    .andExpect(jsonPath("$.days[0].places[0].placeName").value("공유 장소"));
+        } finally {
+            new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
+                User user = userRepository.findById(fixture.userId()).orElseThrow();
+                tripService.deleteTrip(user, fixture.tripId());
+                userRepository.delete(user);
+            });
+        }
+    }
+
+    @Test
+    void 공개_응답은_장소_필드_전체를_담는다() throws Exception {
+        Trip trip = trip(owner(), 1);
+        TripPlace place = place(trip);
+        place.applyDetails(LocalTime.of(10, 0), LocalTime.of(11, 0), TransportMode.WALK, null);
+        String token = createLink(trip);
+
+        mockMvc.perform(get("/api/public/trips/{token}", token).with(fromIp("192.0.2.11")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.days[0].places[0].placeName").value("공유 장소"))
+                .andExpect(jsonPath("$.days[0].places[0].region").value("부산"))
+                .andExpect(jsonPath("$.days[0].places[0].category").value("cafe"))
+                .andExpect(jsonPath("$.days[0].places[0].latitude").value(35.1))
+                .andExpect(jsonPath("$.days[0].places[0].longitude").value(129.0))
+                .andExpect(jsonPath("$.days[0].places[0].address").value("부산 주소"))
+                .andExpect(jsonPath("$.days[0].places[0].phone").value("051-123-4567"))
+                .andExpect(jsonPath("$.days[0].places[0].visitOrder").value(1))
+                .andExpect(jsonPath("$.days[0].places[0].visitStartTime").value("10:00:00"))
+                .andExpect(jsonPath("$.days[0].places[0].visitEndTime").value("11:00:00"))
+                .andExpect(jsonPath("$.days[0].places[0].arrivalTransportMode").value("WALK"));
+    }
+
+    @Test
+    void 모르는_토큰_반복_조회도_분당_제한에_센다() throws Exception {
+        RateLimitWindow.awaitFreshMinute();
+        Trip trip = trip(owner(), 1);
+        String token = createLink(trip);
+
+        for (int i = 1; i <= 3; i++) {
+            mockMvc.perform(get("/api/public/trips/{token}", "unknown-" + i).with(fromIp("192.0.2.12")))
+                    .andExpect(status().isNotFound());
+        }
+        mockMvc.perform(get("/api/public/trips/{token}", token).with(fromIp("192.0.2.12")))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string(HttpHeaders.RETRY_AFTER, "60"));
     }
 }
