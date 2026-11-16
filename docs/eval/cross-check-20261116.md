@@ -26,6 +26,14 @@ Gemini 결과가 없어서 **Gemini·GPT 일치율은 아직 없다.** `compare`
 - 이 워크트리에는 `pipeline-test/.env`가 없다(`.worktreeinclude` 복사 안 됨). `load_api_key`는 환경 변수를 먼저 보므로 `.env`를 만들어도 로그인 셸의 잘못된 변수가 우선한다.
 - 해결안(사용자 확인 필요): ① WSL 로그인 프로필의 `GEMINI_API_KEY`를 운영과 같은 AI Studio 키로 바꾼다, 또는 ② 이 워크트리 `pipeline-test/.env`에 키를 넣고 `env -u GEMINI_API_KEY python3 ...`로 돌린다.
 
+### 2-1. 새 평가 전용 키(프로젝트 trova-eval)도 막힘 — 2026-11-16 아침
+
+- 사용자가 운영과 한도를 나누려고 새 AI Studio 프로젝트(trova-eval) 키로 바꿨다. `bash -l`에서 모델 목록 조회는 200이었다.
+- [실측] c001 한 개로 `extract_places` 호출 → **402 `RESOURCE_EXHAUSTED`: "Your prepayment credits are depleted"**. `cross_check.py gemini`가 `RESOURCE_EXHAUSTED`를 보고 c001에서 바로 멈췄다(호출 1번, 생성 처리 안 됨, 결과 0개).
+- 해석: 모델 목록 조회는 과금 대상이 아니라 통과했고, 생성 요청에서 프로젝트가 **무료 티어가 아니라 선불(prepay) 결제 티어**로 잡혀 크레딧 0으로 거절됐다. 키 자체는 유효하다.
+- 그래서 **Gemini 결과 0개 → `compare` 미실행, 일치율·불일치 건수 없음.**
+- 해결안(사용자 결정): ① AI Studio에서 trova-eval 프로젝트의 결제를 해제해 무료 티어로 되돌린다(비용 0원 원칙에 맞음, 무료 티어 한도는 운영과 분리 유지), ② 결제가 없는 다른 Google Cloud 프로젝트로 새 키를 만든다, ③ 크레딧을 충전한다(유료라 권장하지 않음).
+
 ## 3. GPT 판정자 점검 — 사람 정답과 비교 [실측]
 
 `score-human`: `answers.csv`(is_destination=Y)와 GPT 결과를 교차 판정과 같은 이름 맞추기로 비교. 영상 24개 중 행이 생긴 22개.
