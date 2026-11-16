@@ -258,10 +258,40 @@ def same_place(a: str, b: str) -> bool:
         return False
     if na == nb:
         return True
+    if re.findall(r"\d+", na) != re.findall(r"\d+", nb):  # 1호점/2호점, 1점/12점은 다른 지점
+        return False
     shorter, longer = sorted((na, nb), key=len)
     if len(shorter) >= 3 and shorter in longer:
         return True
-    return SequenceMatcher(None, na, nb).ratio() >= 0.85
+    if SequenceMatcher(None, na, nb).ratio() >= 0.85:
+        return True
+    return one_char_typo(na, nb)
+
+
+def one_char_typo(na: str, nb: str) -> bool:
+    """음성 인식 오타(세어도/새어도, 장안회집/장안횟집)처럼 한 글자만 다른 같은 장소.
+
+    잘못 합치지 않도록 보수적으로 본다: 정규화한 두 이름이 모두 4글자 이상, 마지막 글자가 같아야 하고
+    (서귀포항/서귀포시처럼 끝 글자가 종류를 바꾸는 경우 제외), 더해지거나 빠진 글자가 숫자면 안 된다(1점/12점).
+    바뀐 글자는 둘 다 한글이고 초성이 같아야 한다(세/새, 회/횟은 같고 동문시장/서문시장, 1호점/2호점은 다름).
+    """
+    if min(len(na), len(nb)) < 4 or abs(len(na) - len(nb)) > 1 or na[-1] != nb[-1]:
+        return False
+    if len(na) == len(nb):
+        diffs = [(x, y) for x, y in zip(na, nb) if x != y]
+        return len(diffs) == 1 and _same_initial(*diffs[0])
+    shorter, longer = sorted((na, nb), key=len)
+    for i, ch in enumerate(longer):
+        if longer[:i] + longer[i + 1:] == shorter:
+            return not ch.isdigit()
+    return False
+
+
+def _same_initial(x: str, y: str) -> bool:
+    """두 글자가 모두 한글 음절이고 초성이 같은가."""
+    if not all("가" <= ch <= "힣" for ch in (x, y)):
+        return False
+    return (ord(x) - 0xAC00) // 588 == (ord(y) - 0xAC00) // 588
 
 
 def names_of(place: dict) -> list[str]:

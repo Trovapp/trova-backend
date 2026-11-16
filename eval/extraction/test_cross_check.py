@@ -24,6 +24,33 @@ class SamePlaceTest(unittest.TestCase):
         self.assertFalse(cross_check.same_place("", "이재모피자"))
 
 
+class OneCharTypoTest(unittest.TestCase):
+    def test_네_글자_이상에서_한_글자만_다르면_같은_장소다(self):
+        self.assertTrue(cross_check.same_place("장안회집", "장안횟집"))
+        self.assertTrue(cross_check.same_place("강릉 다강정", "강릉닭강정"))
+        self.assertTrue(cross_check.same_place("서구근린공원", "서곶근린공원"))
+
+    def test_세_글자_이하는_한_글자만_달라도_합치지_않는다(self):
+        self.assertFalse(cross_check.same_place("새어도", "세어도"))
+        self.assertFalse(cross_check.same_place("카페녘", "카페역"))
+
+    def test_마지막_글자가_다르면_다른_장소다(self):
+        self.assertFalse(cross_check.same_place("서귀포항", "서귀포시"))
+        self.assertFalse(cross_check.same_place("해운대역", "해운대점"))
+
+    def test_숫자가_다르면_다른_지점이다(self):
+        self.assertFalse(cross_check.same_place("제주1호점", "제주2호점"))
+        self.assertFalse(cross_check.same_place("스타벅스1점", "스타벅스12점"))
+
+    def test_바뀐_글자의_초성이_다르면_다른_장소다(self):
+        self.assertFalse(cross_check.same_place("동문시장", "서문시장"))
+        self.assertFalse(cross_check.same_place("쌍교숯불갈비", "쌍도숯불갈비"))
+
+    def test_두_글자_이상_다르면_다른_장소다(self):
+        self.assertFalse(cross_check.same_place("해동용궁사", "해동용주암"))
+        self.assertFalse(cross_check.same_place("광안리해변", "광안대교변"))
+
+
 class MatchPlacesTest(unittest.TestCase):
     def test_대안_철자로도_짝을_짓고_남는_쪽은_한쪽만으로_둔다(self):
         gemini = [{"name": "이재모 피자", "nameCandidates": ["이재모피자"]}, {"name": "흰여울문화마을"}]
