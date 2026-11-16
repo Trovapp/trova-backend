@@ -3,7 +3,18 @@ package com.trova.backend.service;
 import com.trova.backend.replan.GeoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.trova.backend.entity.*;
+import com.trova.backend.entity.Itinerary;
+import com.trova.backend.entity.Notification;
+import com.trova.backend.entity.Place;
+import com.trova.backend.entity.PlaceSource;
+import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.SavedPlace;
+import com.trova.backend.entity.SignalType;
+import com.trova.backend.entity.TransportMode;
+import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.TripPlace;
+import com.trova.backend.entity.User;
+import com.trova.backend.entity.UserPreferenceSignal;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.recommendation.PlaceNameMatch;
 import com.trova.backend.recommendation.PlaceSearchService;
@@ -17,6 +28,7 @@ import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRegion;
 import com.trova.backend.repository.TripReplanJobRepository;
 import com.trova.backend.repository.TripRepository;
+import com.trova.backend.repository.TripShareLinkRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +66,7 @@ public class TripService {
     private static final int MIN_SUFFIX_NAME_LENGTH = 3; // "카페"처럼 짧은 이름은 끝맺음으로 비교하지 않는다(어느 "○○카페"와도 맞아 버린다)
 
     private final TripRepository tripRepository;
+    private final TripShareLinkRepository tripShareLinkRepository;
     private final ItineraryRepository itineraryRepository;
     private final TripPlaceRepository tripPlaceRepository;
     private final PlaceRepository placeRepository;
@@ -76,9 +89,11 @@ public class TripService {
             PlaceEmbeddingService placeEmbeddingService,
             TripReplanJobRepository tripReplanJobRepository,
             ProcessingJobRepository processingJobRepository,
-            SavedPlaceRepository savedPlaceRepository
+            SavedPlaceRepository savedPlaceRepository,
+            TripShareLinkRepository tripShareLinkRepository
     ) {
         this.tripRepository = tripRepository;
+        this.tripShareLinkRepository = tripShareLinkRepository;
         this.itineraryRepository = itineraryRepository;
         this.tripPlaceRepository = tripPlaceRepository;
         this.placeRepository = placeRepository;
@@ -92,7 +107,7 @@ public class TripService {
     }
 
     /**
-     * Trip과 그에 딸린 Itinerary/TripPlace/Notification을 전부 지운다(소유자 확인 후).
+     * Trip과 그에 딸린 Itinerary/TripPlace/Notification/TripShareLink를 전부 지운다(소유자 확인 후).
      * 여러 테이블을 순서대로 지우므로 중간에 실패하면 전부 되돌린다(#41).
      */
     @Transactional
@@ -109,6 +124,7 @@ public class TripService {
                     // 일정 재구성 작업 기록은 trip_id를 NOT NULL FK로 참조하므로 여행보다 먼저 지워야 한다
                     // (안 지우면 재구성을 한 번이라도 돌린 여행은 삭제가 FK 제약 위반으로 실패함).
                     tripReplanJobRepository.deleteAll(tripReplanJobRepository.findByTrip(trip));
+                    tripShareLinkRepository.deleteByTrip(trip);
                     tripRepository.delete(trip);
                     return true;
                 })

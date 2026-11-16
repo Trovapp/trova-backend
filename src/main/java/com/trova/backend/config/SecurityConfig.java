@@ -97,6 +97,7 @@ public class SecurityConfig {
                             // 관리자 웹 1회용 코드 교환 — 코드 자체가 인증이다(AdminWebLoginService, #163).
                             .requestMatchers(HttpMethod.POST, "/api/auth/exchange").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/auth/web-exchange").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/public/trips/*").permitAll()
                             // 인증 없이 열어두되, 실제로 노출되는 엔드포인트는 application.yml의
                             // management.endpoints.web.exposure.include가 정한다 — 기본은 health만이고
                             // prometheus는 로컬에서 ACTUATOR_EXPOSE로 켤 때만 노출된다(#27).
