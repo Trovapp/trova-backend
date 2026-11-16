@@ -303,12 +303,16 @@ def names_of(place: dict) -> list[str]:
 def match_places(gemini: list[dict], gpt: list[dict]) -> list[tuple[dict | None, dict | None]]:
     """이름(대안 철자 포함)으로 1:1 짝을 짓는다. 짝이 없는 쪽은 None.
 
-    대표 이름끼리 같은 짝을 먼저 잡고, 남은 것만 대안 철자로 맞춘다. 대안 철자 짝을 먼저 잡으면
-    Gemini '하카타 포트 타워'(대안 '하카타항')가 GPT '하카타항'에 먼저 붙어 GPT '하카타 포트 타워'가 남았다(c190).
+    단계: (1) 정규화한 대표 이름이 정확히 같은 짝 (2) 대표 이름이 same_place(포함·한 글자·유사도)로 같은 짝
+    (3) 대안 철자까지 넣어 same_place로 같은 짝. 앞 단계에서 짝이 된 장소는 뒤 단계에 다시 쓰지 않는다.
+    (1)이 없으면 Gemini '하조대'가 포함 규칙으로 GPT '하조대 등대'에 먼저 붙어, Gemini '하조대 등대'가
+    GPT '하조대'와 엇갈려 짝이 됐다(c072). (2)·(3) 순서가 없으면 대안 '하카타항'이 GPT '하카타항'에 먼저 붙었다(c190).
     """
     match: dict[int, int] = {}
     used: set[int] = set()
-    passes = (lambda g, o: same_place(g.get("name") or "", o.get("name") or ""),
+    passes = (lambda g, o: bool(normalize(g.get("name") or "")) and
+              normalize(g.get("name") or "") == normalize(o.get("name") or ""),
+              lambda g, o: same_place(g.get("name") or "", o.get("name") or ""),
               lambda g, o: any(same_place(a, b) for a in names_of(g) for b in names_of(o)))
     for same in passes:
         for gi, g in enumerate(gemini):
@@ -363,7 +367,8 @@ def cmd_compare(args) -> None:
         union = len(pairs)
         summary.append({"sample_id": sid, "gemini": len(gem.get("places") or []), "gpt": len(gpt.get("places") or []),
                         "both": both, "union": union,
-                        "agreement": round(both / union, 3) if union else 1.0,
+                        # 둘 다 장소를 안 냈으면(union=0) 일치율을 셀 수 없다 — 완전 일치 샘플에 넣지 않는다
+                        "agreement": round(both / union, 3) if union else None,
                         "gemini_status": gem.get("status", ""),
                         "gpt_is_place_content": gpt.get("is_place_content", "")})
     write_csv(run / "compare.csv", compare_rows)
@@ -375,6 +380,7 @@ def cmd_compare(args) -> None:
     report = {"samples": len(summary), "places_both": total_both, "places_union": total_union,
               "place_agreement": round(total_both / total_union, 3) if total_union else None,
               "samples_fully_agreed": sum(1 for s in summary if s["agreement"] == 1.0),
+              "samples_no_places": sum(1 for s in summary if s["agreement"] is None),
               "gemini_only": sum(1 for r in compare_rows if r["status"] == "gemini_only"),
               "gpt_only": sum(1 for r in compare_rows if r["status"] == "gpt_only")}
     (run / "summary.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")

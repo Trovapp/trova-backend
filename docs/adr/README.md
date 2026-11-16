@@ -55,7 +55,7 @@
 | [0019](0019-admin-web-no-cloudflare-access.md) | 관리자 웹 앞의 Cloudflare Access는 붙이지 않는다, 대신 관리자 카카오 계정 2단계 인증 (0012 일부 변경) | 확정 | 2026-10-20 |
 | [0020](0020-spring-ai-for-gemini-calls.md) | Gemini 호출은 Spring AI 2(google-genai)로, 재시도는 우리 코드 한 곳에서만 | 확정 | 2026-10-30 |
 | [0021](0021-share-job-queue-kafka-optional.md) | 영상 분석 시작은 교체 가능한 대기열로 — 운영은 Aiven 무료 Kafka, 브로커가 안 되면 서버 안 대기열로 | 확정 | 2026-10-30 |
-| [0022](0022-pipeline-regression-eval-evalflow.md) | 장소 추출 회귀 측정은 evalflow 세트로, 정답은 eval/extraction/answers.csv 한 곳에서 생성 | 확정 | 2026-10-31 |
+| [0022](0022-pipeline-regression-eval-evalflow.md) | 장소 추출 회귀 측정은 evalflow 세트로, 정답은 eval/extraction/answers.csv 한 곳에서 생성 | 일부 대체됨 → 0045 | 2026-10-31 |
 
 | [0023](0023-worktree-explicit-db-env.md) | 워크트리 루트 DB 환경은 자동 복사하지 않고 명시적으로 준비한다 | 확정 | 2026-10-31 |
 | [0024](0024-single-jvm-analysis-exclusion.md) | 단일 JVM의 중복 분석은 선행 완료를 기다린 뒤 DB 상태를 재확인 | 확정 | 2026-10-31 |
@@ -84,4 +84,4 @@
 | [0042](0042-host-metrics-from-proc-in-app.md) | 서버 메모리·스왑·PSI·CPU steal은 앱이 /proc에서 읽어 지표 전송에 싣는다 | 확정 | 2026-11-11 |
 | [0043](0043-job-handoff-outbox-or-sweeper.md) | 작업 저장과 Kafka 전달 사이 유실 막기 — 아웃박스 대신 멈춘 작업 다시 보내기(`StuckJobRequeueService`) | 확정 | 2026-11-12 |
 | [0044](0044-pwa-static-on-oracle-caddy.md) | PWA 정적 파일은 Cloudflare 대신 운영 서버 Caddy에서 내보낸다 (0013의 호스팅 부분을 바꿈 — workers.dev가 한국에서 시애틀 경로) | 확정 | 2026-11-15 |
-| [0045](0045-answers-from-cross-check.md) | 장소 추출 정답에 Gemini·GPT 교차 일치분과 사람 확인분을 넣는다 (0022의 "AI 출력을 정답으로 넣지 않는다"를 바꿈) | 확정 | 2026-11-16 |
+| [0045](0045-answers-from-cross-check.md) | 장소 추출 정답에 Gemini·GPT 교차 일치분과 판정분을 넣는다 (0022의 "AI 출력을 정답으로 넣지 않는다"를 바꿈) | 확정 | 2026-11-16 |

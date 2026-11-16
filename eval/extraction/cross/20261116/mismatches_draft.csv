@@ -51,11 +51,11 @@ c066,https://www.youtube.com/watch?v=SWx8B6BbaPU,"🇫🇷 2박3일 짧은 파�
 c066,https://www.youtube.com/watch?v=SWx8B6BbaPU,"🇫🇷 2박3일 짧은 파리 여행 ! | 루브르박물관, ☕️르카페마를리, 파리맛집, 🛍️셀린느, 에펠탑✨, 오랑주리미술관",gpt_only,,오랑주리미술관,파리,attraction,Y,오랑주리미술관,제목·설명
 c068,https://www.youtube.com/shorts/9FPR_HKfDmg,가평 맛집 TOP 7,gemini_only,남이섬,,가평,attraction,N,남이섬,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 '남이섬 갔다가 점심' — 주변·근처로만 언급(영상이 소개하는 곳 아님)
 c070,https://www.youtube.com/shorts/nJyj_fp4QHo,서울의 밤을 즐기는 특별한 데이트 장소,gpt_only,,달빛무지개분수,서울,attraction,Y,달빛무지개분수,프레임 '달빛무지개분수쇼'
-c071,https://www.youtube.com/shorts/BExGdPBBHbw,목포에 가면 고하도 전망대를 들러보세요~,gemini_only,고하도 전망대,,목포,attraction,Y,고하도 전망대,사용자 판정(2026-11-16): Y(기준 나 검토 — Y 유지) — 제목·프레임
+c071,https://www.youtube.com/shorts/BExGdPBBHbw,목포에 가면 고하도 전망대를 들러보세요~,gemini_only,고하도,,목포,attraction,N,고하도,"PR #442 리뷰(사용자, 2026-11-16): N — GPT는 '고하도'를 낸 적 없음. 정확 일치 단계 추가로 '고하도 전망대'끼리 짝이 되며 한쪽만 남음. 소개 대상은 고하도 전망대(Y 유지)"
 c071,https://www.youtube.com/shorts/BExGdPBBHbw,목포에 가면 고하도 전망대를 들러보세요~,gemini_only,해안데크,,목포,attraction,N,고하도 해안데크,사용자 판정(2026-11-16): N(기준 나(상위 장소만 정답) 검토 — N) — 프레임 '해안데크'
 c071,https://www.youtube.com/shorts/BExGdPBBHbw,목포에 가면 고하도 전망대를 들러보세요~,gemini_only,유달산 스테이션,,목포,attraction,N,유달산 스테이션,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 프레임 — 해상케이블카 정류장, 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
 c071,https://www.youtube.com/shorts/BExGdPBBHbw,목포에 가면 고하도 전망대를 들러보세요~,gemini_only,북항스테이션,,목포,attraction,N,북항스테이션,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 프레임 — 해상케이블카 정류장, 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
-c072,https://www.youtube.com/shorts/lX0Zq2NRw48,A Trail Over Dazzling Waters: Must-Visit Spots in Yangyang,gpt_only,,하조대 등대,강원도 양양군,attraction,N,하조대 등대,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 자막 — 둘레길 방향으로 언급, 하조대 안 시설"
+c072,https://www.youtube.com/shorts/lX0Zq2NRw48,A Trail Over Dazzling Waters: Must-Visit Spots in Yangyang,gpt_only,,하조대,강원도 양양군,attraction,N,하조대,"기준 가(주변 언급만 → N) — 설명·자막: 소개 대상은 하조대 전망대, '하조대'는 명승지 설명으로만 나옴. 정확 일치 단계 추가로 새로 생긴 행, Claude 판정"
 c073,https://www.youtube.com/shorts/VS7_5IPEo64,[춘천] 아메리카누🛶~ 카누 탈 수 있는 카페 #풀문 #춘천풀문,gpt_only,,의암호물레길,춘천시,attraction,N,의암호물레길,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 카페의 카누 체험과 같은 곳인지 확인
 c074,https://www.youtube.com/shorts/vBbXNrIlDzk,"남해맛집추천, 사장님이 직접 잡은 돌게로 만든 간장게장",gemini_only,복이네,,남해,lodging,N,복이네,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 '남해펜션 복이네' — 소개한 게장집과 같은 곳(펜션 겸 식당)인지 확인
 c079,https://www.youtube.com/shorts/13jO2PnWIuQ,속초에 이런 숙소가 있었네? 😍 가족여행 숙소 ‘훼미리민박’ #속초여행 #속초숙소,gemini_only,설악산,,강원도,attraction,N,설악산,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명·자막 — 숙소 주변 관광지로 주변·근처로만 언급(영상이 소개하는 곳 아님)

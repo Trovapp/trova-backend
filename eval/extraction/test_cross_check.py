@@ -74,6 +74,24 @@ class MatchPlacesTest(unittest.TestCase):
         self.assertEqual(sorted((g["name"], o["name"]) for g, o in pairs if g and o),
                          [("선재도", "선재도"), ("측도", "축도 바닷길")])
 
+    def test_이름이_정확히_같은_짝을_포함_규칙보다_먼저_잡는다_c072(self):
+        gemini = [{"name": "하조대 전망대"}, {"name": "하조대 등대"}, {"name": "하조대 해수욕장"}]
+        gpt = [{"name": "하조대 전망대"}, {"name": "하조대 해수욕장"}, {"name": "하조대"}, {"name": "하조대 등대"}]
+        pairs = cross_check.match_places(gemini, gpt)
+        self.assertEqual(sorted((g["name"], o["name"]) for g, o in pairs if g and o),
+                         [("하조대 등대", "하조대 등대"), ("하조대 전망대", "하조대 전망대"),
+                          ("하조대 해수욕장", "하조대 해수욕장")])
+        self.assertEqual([o["name"] for g, o in pairs if not g], ["하조대"])
+
+    def test_상위_장소는_하위_장소와_짝이_되지_않고_한쪽만으로_남는다_c071(self):
+        gemini = [{"name": "고하도", "nameCandidates": ["고하도"]}, {"name": "커피파나쉐"},
+                  {"name": "고하도 전망대", "nameCandidates": ["고하도 전망대"]}]
+        gpt = [{"name": "고하도 전망대"}, {"name": "커피파나쉐"}]
+        pairs = cross_check.match_places(gemini, gpt)
+        self.assertEqual(sorted((g["name"], o["name"]) for g, o in pairs if g and o),
+                         [("고하도 전망대", "고하도 전망대"), ("커피파나쉐", "커피파나쉐")])
+        self.assertEqual([g["name"] for g, o in pairs if not o], ["고하도"])
+
     def test_한_장소는_한_번만_짝이_된다(self):
         gemini = [{"name": "명동교자"}, {"name": "명동교자 본점"}]
         gpt = [{"name": "명동교자"}]
@@ -115,6 +133,106 @@ class CompareTest(unittest.TestCase):
         self.assertEqual(summary["place_agreement"], round(1 / 3, 3))
 
 
+    def test_둘_다_장소가_없는_샘플은_완전_일치로_세지_않는다(self):
+        import json
+        import tempfile
+        from pathlib import Path
+        from types import SimpleNamespace
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "gemini").mkdir()
+            (root / "gpt").mkdir()
+            cands = root / "candidates.csv"
+            cands.write_text("sample_id,platform,country,region,url,title,duration_sec\n"
+                             "c001,youtube_shorts,domestic,부산,https://example.com/a,부산,30\n"
+                             "c002,youtube_shorts,domestic,부산,https://example.com/b,부산,30\n", encoding="utf-8")
+            (root / "gemini" / "c001.json").write_text(json.dumps({"status": "ok", "places": []}), encoding="utf-8")
+            (root / "gpt" / "c001.json").write_text(json.dumps({"is_place_content": False, "places": []}),
+                                                    encoding="utf-8")
+            (root / "gemini" / "c002.json").write_text(json.dumps({"status": "ok", "places": [{"name": "이재모피자"}]}),
+                                                       encoding="utf-8")
+            (root / "gpt" / "c002.json").write_text(json.dumps({"places": [{"name": "이재모피자"}]}), encoding="utf-8")
+            old = cross_check.CANDIDATES_PATH[0]
+            cross_check.CANDIDATES_PATH[0] = cands
+            try:
+                cross_check.cmd_compare(SimpleNamespace(run=str(root)))
+            finally:
+                cross_check.CANDIDATES_PATH[0] = old
+            summary = json.loads((root / "summary.json").read_text(encoding="utf-8"))
+        self.assertEqual(summary["samples_fully_agreed"], 1)
+        self.assertEqual(summary["samples_no_places"], 1)
+
+
+class CmdGeminiTest(unittest.TestCase):
+    """subprocess.run을 가짜 결과로 바꿔 Gemini를 부르지 않고 결과 저장·멈춤을 본다."""
+
+    def run_gemini(self, outcomes: dict):
+        import json
+        import subprocess
+        import tempfile
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest import mock
+
+        calls = []
+
+        def fake_run(cmd, **kwargs):
+            sid = cmd[-1]
+            calls.append(sid)
+            code, stdout, stderr = outcomes[sid]
+            return subprocess.CompletedProcess(cmd, code, stdout, stderr)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cands = root / "candidates.csv"
+            cands.write_text("sample_id,platform,country,region,url,title,duration_sec\n" + "".join(
+                f"{sid},youtube_shorts,domestic,부산,https://example.com/{sid},t,30\n" for sid in outcomes),
+                encoding="utf-8")
+            for sid in outcomes:
+                (root / "work" / sid).mkdir(parents=True)
+                (root / "work" / sid / "input.json").write_text("{}", encoding="utf-8")
+            run = root / "run"
+            old = cross_check.CANDIDATES_PATH[0]
+            cross_check.CANDIDATES_PATH[0] = cands
+            try:
+                with mock.patch.object(cross_check, "WORK", root / "work"), \
+                        mock.patch.object(cross_check.subprocess, "run", fake_run), \
+                        mock.patch.object(cross_check.time, "sleep"):
+                    cross_check.cmd_gemini(SimpleNamespace(run=str(run), ids=None, pause=0))
+            finally:
+                cross_check.CANDIDATES_PATH[0] = old
+            saved = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in (run / "gemini").glob("c*.json")}
+            stopped = (run / "gemini" / "STOPPED.txt").exists()
+        return calls, saved, stopped
+
+    def test_성공하면_장소를_저장한다(self):
+        calls, saved, stopped = self.run_gemini({"c001": (0, '[{"name": "이재모피자"}]\n', "")})
+        self.assertEqual(saved["c001"]["status"], "ok")
+        self.assertEqual(saved["c001"]["places"], [{"name": "이재모피자"}])
+        self.assertFalse(stopped)
+
+    def test_장소_영상이_아니면_빈_목록으로_저장한다(self):
+        calls, saved, stopped = self.run_gemini({"c001": (1, "", "NOT_PLACE_CONTENT 장소 영상 아님\n")})
+        self.assertEqual(saved["c001"]["status"], "not_place_content")
+        self.assertEqual(saved["c001"]["places"], [])
+
+    def test_오류면_파일을_쓰지_않아_다시_돌릴_수_있다(self):
+        calls, saved, stopped = self.run_gemini({"c001": (1, "", "Traceback\nValueError: 깨진 응답\n")})
+        self.assertEqual(saved, {})
+        self.assertFalse(stopped)
+
+    def test_429나_RESOURCE_EXHAUSTED가_보이면_멈추고_다음_샘플을_돌리지_않는다(self):
+        for stderr in ("[extract_places] Gemini 429 — 5초 대기 후 재시도 (2/4)\n",
+                       "google.genai.errors.ClientError: RESOURCE_EXHAUSTED\n"):
+            with self.subTest(stderr=stderr):
+                calls, saved, stopped = self.run_gemini({"c001": (1, "", stderr),
+                                                         "c002": (0, "[]\n", "")})
+                self.assertEqual(calls, ["c001"])
+                self.assertTrue(stopped)
+                self.assertNotIn("c002", saved)
+
+
 class ApiCallsTest(unittest.TestCase):
     def test_API_로그_줄만_호출로_센다(self):
         stderr = ("[pipeline] 무관한 줄\n"
@@ -131,6 +249,12 @@ class StopSignalTest(unittest.TestCase):
         self.assertTrue(cross_check.should_stop("[extract_places] Gemini 429 — 5초 대기 후 재시도 (2/4)"))
         self.assertTrue(cross_check.should_stop("DAILY_QUOTA_EXHAUSTED Gemini 하루 한도 소진"))
         self.assertFalse(cross_check.should_stop("[extract_places] Gemini 503 — 5초 대기 후 재시도"))
+
+    def test_멈춤_신호_네_가지를_각각_알아본다(self):
+        for line in ("Gemini 429 재시도", "DAILY_QUOTA_EXHAUSTED", "Gemini 하루 한도 소진", "status: RESOURCE_EXHAUSTED"):
+            with self.subTest(line=line):
+                self.assertTrue(cross_check.should_stop(f"[extract_places] {line}\n"))
+        self.assertEqual(len(cross_check.STOP_PATTERNS), 4)
 
 
 if __name__ == "__main__":
