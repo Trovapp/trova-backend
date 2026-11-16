@@ -84,3 +84,4 @@
 | [0042](0042-host-metrics-from-proc-in-app.md) | 서버 메모리·스왑·PSI·CPU steal은 앱이 /proc에서 읽어 지표 전송에 싣는다 | 확정 | 2026-11-11 |
 | [0043](0043-job-handoff-outbox-or-sweeper.md) | 작업 저장과 Kafka 전달 사이 유실 막기 — 아웃박스 대신 멈춘 작업 다시 보내기(`StuckJobRequeueService`) | 확정 | 2026-11-12 |
 | [0044](0044-pwa-static-on-oracle-caddy.md) | PWA 정적 파일은 Cloudflare 대신 운영 서버 Caddy에서 내보낸다 (0013의 호스팅 부분을 바꿈 — workers.dev가 한국에서 시애틀 경로) | 확정 | 2026-11-15 |
+| [0045](0045-answers-from-cross-check.md) | 장소 추출 정답에 Gemini·GPT 교차 일치분과 사람 확인분을 넣는다 (0022의 "AI 출력을 정답으로 넣지 않는다"를 바꿈) | 확정 | 2026-11-16 |

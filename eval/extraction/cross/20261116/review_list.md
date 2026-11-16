@@ -1,5 +1,7 @@
 # 교차 판정 남은 "?" 확인 목록 (#437)
 
+> 2026-11-16 사용자 판정 완료 — 결과는 `mismatches_draft.csv`와 docs/eval/cross-check-20261116.md 8-2절. 이 목록은 판정 당시 근거 기록으로 둔다.
+
 `mismatches_draft.csv`에서 기준 가·나·다·c093을 적용한 뒤 남은 **21행**(16개 샘플). 영상이 소개한 장소면 Y, 아니면 N으로 `mismatches_draft.csv`의 `human_verdict`를 고치고, 바른 이름은 `human_name`에 적는다.
 
 - 근거 입력: 제목·설명·자막에서 이름을 찾은 부분(자막은 유튜브 한국어 자동 자막), 프레임은 `pipeline-test/work/cross/<샘플>/frames/frame_00N.jpg`(로컬에만 있음).
