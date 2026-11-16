@@ -59,6 +59,21 @@ class MatchPlacesTest(unittest.TestCase):
         statuses = sorted("both" if g and o else "gemini_only" if g else "gpt_only" for g, o in pairs)
         self.assertEqual(statuses, ["both", "gemini_only", "gpt_only"])
 
+    def test_대표_이름이_같은_짝을_대안_철자_짝보다_먼저_잡는다(self):
+        gemini = [{"name": "하카타 포트 타워", "nameCandidates": ["하카타항", "하카타포트타워"]}]
+        gpt = [{"name": "하카타항"}, {"name": "하카타 포트 타워"}]
+        pairs = cross_check.match_places(gemini, gpt)
+        both = [(g["name"], o["name"]) for g, o in pairs if g and o]
+        self.assertEqual(both, [("하카타 포트 타워", "하카타 포트 타워")])
+        self.assertEqual([o["name"] for g, o in pairs if not g], ["하카타항"])
+
+    def test_대표_이름_짝이_없으면_대안_철자로_짝짓는다(self):
+        gemini = [{"name": "측도", "nameCandidates": ["측도 바닷길"]}, {"name": "선재도"}]
+        gpt = [{"name": "선재도"}, {"name": "축도 바닷길"}]
+        pairs = cross_check.match_places(gemini, gpt)
+        self.assertEqual(sorted((g["name"], o["name"]) for g, o in pairs if g and o),
+                         [("선재도", "선재도"), ("측도", "축도 바닷길")])
+
     def test_한_장소는_한_번만_짝이_된다(self):
         gemini = [{"name": "명동교자"}, {"name": "명동교자 본점"}]
         gpt = [{"name": "명동교자"}]

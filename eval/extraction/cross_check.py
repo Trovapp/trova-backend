@@ -301,22 +301,26 @@ def names_of(place: dict) -> list[str]:
 
 
 def match_places(gemini: list[dict], gpt: list[dict]) -> list[tuple[dict | None, dict | None]]:
-    """이름(대안 철자 포함)으로 1:1 짝을 짓는다. 짝이 없는 쪽은 None."""
-    pairs: list[tuple[dict | None, dict | None]] = []
+    """이름(대안 철자 포함)으로 1:1 짝을 짓는다. 짝이 없는 쪽은 None.
+
+    대표 이름끼리 같은 짝을 먼저 잡고, 남은 것만 대안 철자로 맞춘다. 대안 철자 짝을 먼저 잡으면
+    Gemini '하카타 포트 타워'(대안 '하카타항')가 GPT '하카타항'에 먼저 붙어 GPT '하카타 포트 타워'가 남았다(c190).
+    """
+    match: dict[int, int] = {}
     used: set[int] = set()
-    for g in gemini:
-        hit = None
-        for i, o in enumerate(gpt):
-            if i in used:
+    passes = (lambda g, o: same_place(g.get("name") or "", o.get("name") or ""),
+              lambda g, o: any(same_place(a, b) for a in names_of(g) for b in names_of(o)))
+    for same in passes:
+        for gi, g in enumerate(gemini):
+            if gi in match:
                 continue
-            if any(same_place(a, b) for a in names_of(g) for b in names_of(o)):
-                hit = i
-                break
-        if hit is None:
-            pairs.append((g, None))
-        else:
-            used.add(hit)
-            pairs.append((g, gpt[hit]))
+            for oi, o in enumerate(gpt):
+                if oi not in used and same(g, o):
+                    match[gi] = oi
+                    used.add(oi)
+                    break
+    pairs: list[tuple[dict | None, dict | None]] = [(g, gpt[match[gi]] if gi in match else None)
+                                                    for gi, g in enumerate(gemini)]
     pairs += [(None, o) for i, o in enumerate(gpt) if i not in used]
     return pairs
 
