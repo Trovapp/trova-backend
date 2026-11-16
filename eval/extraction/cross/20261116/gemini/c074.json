@@ -1,0 +1,58 @@
+{
+  "sample_id": "c074",
+  "url": "https://www.youtube.com/shorts/vBbXNrIlDzk",
+  "seconds": 7.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4273,
+      "totalTokens": 13638
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3173,
+      "totalTokens": 14772
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "만영",
+      "nameCandidates": [
+        "만영"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "사장님이 직접 잡은 참게로 영업하는 집",
+        "간장게장이 야들야들 맛있는 맛집"
+      ]
+    },
+    {
+      "name": "복이네",
+      "nameCandidates": [
+        "복이네",
+        "남해펜션 복이네"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "lodging",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "개인 해변 전체를 포함한 남해펜션"
+      ]
+    }
+  ]
+}

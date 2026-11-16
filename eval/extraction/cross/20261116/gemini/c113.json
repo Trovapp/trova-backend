@@ -1,0 +1,44 @@
+{
+  "sample_id": "c113",
+  "url": "https://www.youtube.com/shorts/fEJ5wY9dVFo",
+  "seconds": 6.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3042,
+      "totalTokens": 11161
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2690,
+      "totalTokens": 12211
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페 오월학교",
+      "nameCandidates": [
+        "카페 오월학교",
+        "오월학교"
+      ],
+      "region": "춘천",
+      "address": "강원 춘천시 서면 납실길 160",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "폐교된 분교를 리모델링한 카페입니다.",
+        "조용한 분위기와 감성적인 공간이 인상적입니다.",
+        "카페 내 레스토랑이 있습니다."
+      ]
+    }
+  ]
+}

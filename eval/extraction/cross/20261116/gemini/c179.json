@@ -1,0 +1,41 @@
+{
+  "sample_id": "c179",
+  "url": "https://www.youtube.com/shorts/Sod4lBYkdD8",
+  "seconds": 5.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2711,
+      "totalTokens": 9718
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2244,
+      "totalTokens": 10727
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "양양 휴휴암",
+      "nameCandidates": [
+        "양양 휴휴암"
+      ],
+      "region": "양양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "파도 소리는 좋은데 눈에 보이는건 잔잔함"
+      ]
+    }
+  ]
+}

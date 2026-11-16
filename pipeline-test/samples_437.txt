@@ -1,0 +1,266 @@
+# 정답 세트 확장(#437)용 새 샘플 200개 — yt-dlp 검색(지역×검색어) 결과에서 Codex(GPT)가 제목으로 장소 소개 영상을 고름
+# 기존 samples.txt·samples_retry.txt·eval/extraction/videos.csv와 겹치는 영상 ID는 뺌. 번호·메타데이터는 eval/extraction/cross/candidates.csv
+
+# 가평
+https://www.youtube.com/shorts/3JB_c_59Sew
+https://www.youtube.com/shorts/AQI1VgZi3gI
+https://www.youtube.com/shorts/2CreM32M_24
+https://www.youtube.com/shorts/585W6V9vSqg
+https://www.youtube.com/shorts/Kg1bCW8NRKY
+https://www.youtube.com/shorts/9FPR_HKfDmg
+https://www.youtube.com/shorts/dKr7-jg8h5A
+
+# 강릉
+https://www.youtube.com/shorts/neI64VYXvps
+https://www.youtube.com/shorts/icIgo6t-6Yg
+https://www.youtube.com/shorts/JUv_tpTPKvo
+https://www.youtube.com/shorts/YBn1QnF7tqE
+https://www.youtube.com/shorts/9yK4tY7zYJE
+
+# 거제
+https://www.youtube.com/shorts/5b6vNN2EYxo
+https://www.youtube.com/shorts/9qlg5OlMWkw
+https://www.youtube.com/shorts/qRxJcjpgpJM
+https://www.youtube.com/shorts/evNW6Ib4Eik
+https://www.youtube.com/shorts/9_uRC9PWfNw
+
+# 경주
+https://www.youtube.com/shorts/Ro0XhtR9u6Y
+https://www.youtube.com/shorts/13nArX8GgTE
+https://www.youtube.com/shorts/ZtNubS3vQz0
+https://www.youtube.com/shorts/oVLtFgqZ8Tc
+https://www.youtube.com/shorts/HPkni9cxrO4
+https://www.youtube.com/shorts/dTNOKX2qp5Y
+https://www.youtube.com/shorts/hWQwQC3fZlY
+https://www.youtube.com/shorts/vW4K3AgI_6M
+
+# 광주
+https://www.youtube.com/shorts/PDH8LHm2n74
+https://www.youtube.com/shorts/HpGwGggV4fM
+https://www.youtube.com/shorts/fjwjjyrhK3I
+https://www.youtube.com/shorts/aYppl_PRY84
+https://www.youtube.com/shorts/l8w-zvMgSH8
+https://www.youtube.com/shorts/qV8dmbaCy90
+https://www.youtube.com/shorts/y6Hjfye1Uyg
+https://www.youtube.com/shorts/u61ZgIncQ-o
+https://www.youtube.com/shorts/5DcxuXFo778
+
+# 군산
+https://www.youtube.com/shorts/jo6CXuS_UwA
+https://www.youtube.com/shorts/20AwTjzbFU8
+https://www.youtube.com/shorts/UGOAcLuNr_w
+
+# 남해
+https://www.youtube.com/shorts/TqYmea2iTLg
+https://www.youtube.com/shorts/vBbXNrIlDzk
+https://www.youtube.com/shorts/6uSX1loByS8
+https://www.youtube.com/shorts/wy29qQnmtoY
+https://www.youtube.com/shorts/yjic23CbFgg
+https://www.youtube.com/shorts/CVAFrdaNKAs
+https://www.youtube.com/shorts/Xo8_CP0BYFs
+https://www.youtube.com/shorts/nD6knQvPE1M
+https://www.youtube.com/shorts/wt92_0QSh58
+
+# 담양
+https://www.youtube.com/shorts/aUY1riUowe0
+https://www.youtube.com/shorts/70BzCdBCiyw
+https://www.youtube.com/shorts/pobzdXwSAwU
+https://www.youtube.com/shorts/IR2w6znExpE
+https://www.youtube.com/shorts/Ez35uKndG_I
+https://www.youtube.com/shorts/sIWI1kKPZew
+https://www.youtube.com/shorts/2bvobs42mFM
+https://www.youtube.com/shorts/tnIRh3EfV_8
+https://www.youtube.com/shorts/8a44XAab6Lw
+https://www.youtube.com/shorts/NvtD7cN-m5o
+https://www.youtube.com/shorts/R1JdewJIOs0
+https://www.youtube.com/shorts/OdjxS19NGYY
+
+# 대구
+https://www.youtube.com/shorts/EI9-cE5TBzQ
+https://www.youtube.com/shorts/xGDdNAUqOn4
+https://www.youtube.com/shorts/mL2oFRk_EX8
+https://www.youtube.com/shorts/dBg316s59FI
+https://www.youtube.com/shorts/Kg9OKC93dfs
+https://www.youtube.com/shorts/2Qj0Mt1gHXo
+https://www.youtube.com/shorts/IesNLBZyxw4
+https://www.youtube.com/shorts/SWhFBQMG0I0
+https://www.youtube.com/shorts/Gutzs2bqgus
+https://www.youtube.com/shorts/5_EtaQGvx-k
+
+# 대전
+https://www.youtube.com/shorts/5L9R8-AKz-U
+https://www.youtube.com/shorts/eZ5m4PXc9VY
+
+# 목포
+https://www.youtube.com/shorts/bUe3uzBHTJQ
+https://www.youtube.com/shorts/YXYNTqGy6TM
+https://www.youtube.com/shorts/BExGdPBBHbw
+https://www.youtube.com/shorts/7s4_GFaN0-U
+https://www.youtube.com/shorts/UH_z59k6i_o
+https://www.youtube.com/shorts/RrGNuxHoa5s
+https://www.youtube.com/shorts/0F_NZFZf4Rg
+https://www.youtube.com/shorts/Y5lys4bT22A
+https://www.youtube.com/shorts/VQrKCbGsCi0
+
+# 보령
+https://www.youtube.com/shorts/WX6J6q1-qys
+https://www.youtube.com/shorts/p9YPL0741Aw
+https://www.youtube.com/shorts/pf9lWUyoTeA
+https://www.youtube.com/shorts/cYy5N0o4z5Q
+https://www.youtube.com/shorts/uuwXy6Jb_qc
+https://www.youtube.com/shorts/IqiEKE76CQI
+https://www.youtube.com/shorts/gQ4-p5nYSMI
+https://www.youtube.com/shorts/VKnUBTrpECI
+https://www.youtube.com/shorts/j2vJ4293eZ0
+https://www.youtube.com/shorts/8rhUpob06cc
+https://www.youtube.com/shorts/mHItY8M-Ges
+
+# 부산
+https://www.youtube.com/shorts/d-pQxWMxBE4
+https://www.youtube.com/shorts/3HMzCL9YiYw
+
+# 서울
+https://www.youtube.com/shorts/U4IDQa8le1s
+https://www.youtube.com/shorts/nJyj_fp4QHo
+https://www.youtube.com/shorts/JCuONwuHY_0
+https://www.youtube.com/shorts/FtswBTumMUw
+https://www.youtube.com/shorts/i1PhPL7MPDk
+
+# 속초
+https://www.youtube.com/shorts/ADWLpKS6k9E
+https://www.youtube.com/shorts/-cZsWvpG4-s
+https://www.youtube.com/shorts/cQ9NFWyX6BI
+https://www.youtube.com/shorts/2dhYQDedjSs
+https://www.youtube.com/shorts/0VeAg_c1XPg
+https://www.youtube.com/shorts/13jO2PnWIuQ
+https://www.youtube.com/shorts/Q9ULCypS_Us
+https://www.youtube.com/shorts/4t1Gqo7Ssq0
+https://www.youtube.com/shorts/bEmqhGR1tdo
+https://www.youtube.com/shorts/wuwx9iiY-3k
+
+# 안동
+https://www.youtube.com/shorts/OnolTnSSzMQ
+https://www.youtube.com/shorts/bLHemueX3pQ
+
+# 양양
+https://www.youtube.com/shorts/C3oxLmyMY8Y
+https://www.youtube.com/shorts/gTCHgLU3BbU
+https://www.youtube.com/shorts/lX0Zq2NRw48
+https://www.youtube.com/shorts/oF2iHoVn6oY
+https://www.youtube.com/shorts/5FLyfPEPwiM
+https://www.youtube.com/shorts/L-sPWRfX2qI
+https://www.youtube.com/shorts/Sod4lBYkdD8
+https://www.youtube.com/shorts/n61dwbQt778
+
+# 여수
+https://www.youtube.com/shorts/-nIQvt-4XJI
+https://www.youtube.com/shorts/fIJYZR2965U
+https://www.youtube.com/shorts/CX8meTvFUt8
+https://www.youtube.com/shorts/shvCm1aukxM
+https://www.youtube.com/shorts/w83r3r1bIxQ
+
+# 인천
+https://www.youtube.com/shorts/wbyerePvE4A
+https://www.youtube.com/shorts/bisuWyw2NA4
+https://www.youtube.com/shorts/zkQH0xX-vcg
+https://www.youtube.com/shorts/TY0MGR8BvOo
+https://www.youtube.com/shorts/UlU5lU9IVcs
+https://www.youtube.com/shorts/ZYFOnMRNAPQ
+https://www.youtube.com/shorts/KpsnFHzFKNw
+https://www.youtube.com/shorts/bvRaTRtom38
+https://www.youtube.com/shorts/9HqrKU6hkk4
+https://www.youtube.com/shorts/rQZUqZTcaw4
+
+# 전주
+https://www.youtube.com/shorts/WCg106bDblk
+https://www.youtube.com/shorts/z7OWzckgo7g
+https://www.youtube.com/shorts/p8bXsQ9TARc
+https://www.youtube.com/shorts/hpiOFDmDEl4
+https://www.youtube.com/shorts/SFVDAXyJ5kY
+
+# 제주
+https://www.youtube.com/shorts/VHSK7MTsj3Q
+https://www.youtube.com/shorts/2V4rZnpBUTA
+https://www.youtube.com/shorts/93Wj8GaFbKw
+https://www.youtube.com/shorts/KLGhW3Y82D0
+https://www.youtube.com/shorts/VRzZJlOCgRk
+https://www.youtube.com/shorts/kSIfHNyD7iI
+https://www.youtube.com/shorts/K0S42HJWRts
+https://www.youtube.com/shorts/LnTotFtk3pk
+https://www.youtube.com/shorts/OTgpXe0NwH8
+https://www.youtube.com/shorts/i4NCDsdmC7s
+
+# 춘천
+https://www.youtube.com/shorts/TQG4Ilh3WbE
+https://www.youtube.com/shorts/VS7_5IPEo64
+https://www.youtube.com/shorts/QEhHIwRgMe8
+https://www.youtube.com/shorts/qnE0xNkAWrA
+https://www.youtube.com/shorts/aXzxeih1zLA
+https://www.youtube.com/shorts/SlFNUO_u87Q
+https://www.youtube.com/shorts/N-WOSHUStpQ
+https://www.youtube.com/shorts/fEJ5wY9dVFo
+https://www.youtube.com/shorts/U0FJCJ0WXGA
+https://www.youtube.com/shorts/qENQULkRhqA
+
+# 통영
+https://www.youtube.com/shorts/hNSio32Z_L0
+https://www.youtube.com/shorts/GvTPJUApkPs
+https://www.youtube.com/shorts/cY4Ab9BIshQ
+
+# 포항
+https://www.youtube.com/shorts/5KXRmsNezrM
+https://www.youtube.com/shorts/JW-Me37Bn4g
+https://www.youtube.com/shorts/LQkEUNCm43U
+https://www.youtube.com/shorts/Tl1NuDXSpoc
+https://www.youtube.com/shorts/UvFEU4dwz1w
+https://www.youtube.com/shorts/UP_kzT-pPYc
+https://www.youtube.com/shorts/IC2YWfsKK0A
+https://www.youtube.com/shorts/uRk4y5_Fy9I
+
+# 다낭 (해외)
+https://www.youtube.com/shorts/hb0ecdEUHjQ
+https://www.youtube.com/shorts/0VuqQvNFNFs
+https://www.youtube.com/shorts/8Ct9RA4GXEo
+https://www.youtube.com/shorts/myH1-YK1QQ0
+https://www.youtube.com/shorts/6E5BdwKTZSs
+https://www.youtube.com/shorts/RCLTTe5rvaU
+https://www.youtube.com/shorts/XV5-7000hs4
+
+# 도쿄 (해외)
+https://www.youtube.com/watch?v=NaJBYfRmEJQ
+https://www.youtube.com/watch?v=kpTbpf1FG4c
+https://www.youtube.com/watch?v=M_6a03NqKCo
+
+# 방콕 (해외)
+https://www.youtube.com/watch?v=LIquTSJZ4BE
+https://www.youtube.com/watch?v=bdq2lWUTiWk
+https://www.youtube.com/watch?v=SXk8HWM53zI
+https://www.youtube.com/watch?v=nNvwbfWokKo
+
+# 오사카 (해외)
+https://www.youtube.com/shorts/1nU4UXbIDaU
+https://www.youtube.com/watch?v=LTlh3PA7y10
+https://www.youtube.com/watch?v=qjBhNfqkN0Y
+https://www.youtube.com/watch?v=8DfKaU21IYU
+https://www.youtube.com/watch?v=e6TQz-YsfX8
+https://www.youtube.com/watch?v=y9tNbUrdyeE
+https://www.youtube.com/watch?v=oeBZ7qG76G0
+
+# 타이베이 (해외)
+https://www.youtube.com/watch?v=U31CIfA1R5E
+https://www.youtube.com/watch?v=ILdpWjF4N-Q
+https://www.youtube.com/watch?v=iwi-okHnEnw
+
+# 파리 (해외)
+https://www.youtube.com/watch?v=SWx8B6BbaPU
+https://www.youtube.com/shorts/tnq2AzLWVVA
+https://www.youtube.com/shorts/ePuyndT45JM
+
+# 홍콩 (해외)
+https://www.youtube.com/watch?v=44eJ8mTRBn8
+https://www.youtube.com/shorts/Pt1_HKCdaCY
+
+# 후쿠오카 (해외)
+https://www.youtube.com/watch?v=way6vJ9jMEs
+https://www.youtube.com/shorts/DCtkfNReU_4
+https://www.youtube.com/watch?v=WtISOFLYL70

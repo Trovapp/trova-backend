@@ -1,0 +1,41 @@
+{
+  "sample_id": "c008",
+  "url": "https://www.youtube.com/shorts/YXYNTqGy6TM",
+  "seconds": 9.2,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페델마르",
+      "nameCandidates": [
+        "카페델마르"
+      ],
+      "region": "전남 목포시",
+      "address": "전남 목포시 해양대학로 77 3층",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "루프트탑이 있는 카페",
+        "목포대교가 보이는 경치 좋은 곳"
+      ]
+    },
+    {
+      "name": "목포대교",
+      "nameCandidates": [
+        "목포대교"
+      ],
+      "region": "전남 목포시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "카페 루프트탑에서 바라보이는 대교 경치"
+      ]
+    }
+  ]
+}

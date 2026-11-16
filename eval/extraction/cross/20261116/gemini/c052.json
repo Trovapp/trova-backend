@@ -1,0 +1,43 @@
+{
+  "sample_id": "c052",
+  "url": "https://www.youtube.com/shorts/VHSK7MTsj3Q",
+  "seconds": 6.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2981,
+      "totalTokens": 10471
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3154,
+      "totalTokens": 11553
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "제주민속촌",
+      "nameCandidates": [
+        "제주민속촌"
+      ],
+      "region": "제주",
+      "address": "서귀포시 표선면 민속해안로 631-34",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "캐릭터와의 포토타임 운영시간: 10:40, 13:00",
+        "운영시간: 8:30~19:00(18:00 매표마감)",
+        "애견동반 가능(7kg미만 소형견 리드줄 착용 또는 이동장)"
+      ]
+    }
+  ]
+}

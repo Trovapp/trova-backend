@@ -1,0 +1,44 @@
+{
+  "sample_id": "c112",
+  "url": "https://www.youtube.com/shorts/DCtkfNReU_4",
+  "seconds": 8.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4783,
+      "totalTokens": 10403
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3369,
+      "totalTokens": 11501
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "멘야 잇시",
+      "nameCandidates": [
+        "멘야 잇시",
+        "멘야이씨"
+      ],
+      "region": "후쿠오카",
+      "address": "일본 〒810-0801 Fukuoka, Hakata Ward, Nakasu, 2 Chome-6-12 中州セントラル第 5ラインビル1F",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "차슈면 2개, 볶음밥 주문, 가격은 총 2050엔",
+        "불맛이 엄청나고 맛있는 볶음밥",
+        "마늘의 향이 풍부하고 중독성 있는 돈코츠 육수"
+      ]
+    }
+  ]
+}

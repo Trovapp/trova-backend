@@ -1,0 +1,44 @@
+{
+  "sample_id": "c192",
+  "url": "https://www.youtube.com/shorts/VQrKCbGsCi0",
+  "seconds": 7.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4673,
+      "totalTokens": 12411
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2803,
+      "totalTokens": 13409
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페 석산",
+      "nameCandidates": [
+        "카페 석산",
+        "석산",
+        "카페석산"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "목포 북항에 위치한 항구 뷰가 보이는 카페",
+        "다양한 베이커리 수상 경력이 있는 베이커리 카페"
+      ]
+    }
+  ]
+}

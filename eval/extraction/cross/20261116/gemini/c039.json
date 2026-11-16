@@ -1,0 +1,186 @@
+{
+  "sample_id": "c039",
+  "url": "https://www.youtube.com/shorts/70BzCdBCiyw",
+  "seconds": 8.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3562,
+      "totalTokens": 13393
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4756,
+      "totalTokens": 15491
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "죽화경",
+      "nameCandidates": [
+        "죽화경"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아름다운 꽃과 나무가 조화를 이루는 정원",
+        "고요한 분위기 속에서 힐링 가능"
+      ]
+    },
+    {
+      "name": "메타프로방스",
+      "nameCandidates": [
+        "메타프로방스"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "유럽의 감성을 느낄 수 있는 곳",
+        "다양한 카페와 상점이 있음"
+      ]
+    },
+    {
+      "name": "담양 국수 거리",
+      "nameCandidates": [
+        "담양 국수 거리"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "담양의 특색 있는 국수를 맛볼 수 있는 거리",
+        "다양한 국수 맛집이 모여 있음"
+      ]
+    },
+    {
+      "name": "담양 오랑주마을",
+      "nameCandidates": [
+        "담양 오랑주마을"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "다양한 먹거리와 프로그램이 있어 가족 방문객에게 좋음"
+      ]
+    },
+    {
+      "name": "소세원",
+      "nameCandidates": [
+        "소세원"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "전통 한옥과 아름다운 정원이 조화를 이룸",
+        "한국 전통의 아름다움을 느끼며 사진 찍기 좋음"
+      ]
+    },
+    {
+      "name": "중록원",
+      "nameCandidates": [
+        "중록원",
+        "죽녹원"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대나무 숲길이 아름다워 산책하기 좋은 곳"
+      ]
+    },
+    {
+      "name": "메타세쿼이아가로수길",
+      "nameCandidates": [
+        "메타세쿼이아가로수길",
+        "메타세커이야가로수길"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "길 양옆으로 나무가 늘어서 있음",
+        "드라이브와 산책을 즐기기 좋음"
+      ]
+    },
+    {
+      "name": "간방재림",
+      "nameCandidates": [
+        "간방재림",
+        "관방제림"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시원한 그늘과 깨끗한 공기를 느낄 수 있는 울창한 숲"
+      ]
+    },
+    {
+      "name": "용흥사 계곡",
+      "nameCandidates": [
+        "용흥사 계곡"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "맑은 물과 아름다운 자연이 어우러진 계곡"
+      ]
+    },
+    {
+      "name": "두륜산 대응사",
+      "nameCandidates": [
+        "두륜산 대응사",
+        "두륜산 대흥사"
+      ],
+      "region": "해남",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "고즈넉하고 조용한 사찰에서 산책 가능",
+        "주변 등산로를 따라 하이킹을 즐길 수 있음"
+      ]
+    }
+  ]
+}

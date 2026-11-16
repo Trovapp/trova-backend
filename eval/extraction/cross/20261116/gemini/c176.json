@@ -1,0 +1,43 @@
+{
+  "sample_id": "c176",
+  "url": "https://www.youtube.com/shorts/9_uRC9PWfNw",
+  "seconds": 8.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4112,
+      "totalTokens": 12251
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3753,
+      "totalTokens": 13306
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "파스쿠찌 부산가덕도점",
+      "nameCandidates": [
+        "파스쿠찌 부산가덕도점",
+        "부산가덕도점"
+      ],
+      "region": "부산",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "바다가 보이는 루프탑 야외 테라스가 있음",
+        "바다를 보며 커피를 마실 수 있는 오션뷰 카페"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "sample_id": "c003",
+  "url": "https://www.youtube.com/shorts/EI9-cE5TBzQ",
+  "seconds": 9.4,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "청라언덕",
+      "nameCandidates": [
+        "청라언덕"
+      ],
+      "region": "대구광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대구 근대 골목투어 제2코스의 시작점"
+      ]
+    },
+    {
+      "name": "서상돈 고택",
+      "nameCandidates": [
+        "서상돈 고택"
+      ],
+      "region": "대구광역시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대구 근대 골목투어 제2코스의 코스 중 하나"
+      ]
+    }
+  ]
+}

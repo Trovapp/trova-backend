@@ -1,0 +1,43 @@
+{
+  "sample_id": "c119",
+  "url": "https://www.youtube.com/shorts/U0FJCJ0WXGA",
+  "seconds": 6.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3297,
+      "totalTokens": 11772
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2648,
+      "totalTokens": 12828
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "소양강 스카이워크",
+      "nameCandidates": [
+        "소양강 스카이워크"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "전체 길이 174m, 투명 유리 구간 156m",
+        "특수 강화유리 3장을 겹쳐 안전함",
+        "입장료 2,000원은 춘천사랑상품권으로 환급"
+      ]
+    }
+  ]
+}

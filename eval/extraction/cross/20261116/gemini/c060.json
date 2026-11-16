@@ -1,0 +1,290 @@
+{
+  "sample_id": "c060",
+  "url": "https://www.youtube.com/watch?v=U31CIfA1R5E",
+  "seconds": 24.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5233,
+      "totalTokens": 24533
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 2,
+      "success": true,
+      "latencyMs": 18634,
+      "totalTokens": 27770
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "아종면선",
+      "nameCandidates": [
+        "아종면선"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1975년부터 영업한 시먼딩 곱창국수 전문점",
+        "대표 메뉴는 곱창국수",
+        "음식 가격은 하나로 대략 3,000원 정도"
+      ]
+    },
+    {
+      "name": "치아더 펑리수",
+      "nameCandidates": [
+        "치아더 펑리수",
+        "치아더폭리수"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1975년에 문을 연 펑리수 전문점",
+        "오리지널 펑리수 가격은 대략 1,500원",
+        "12개입 세트는 대략 2만 원 정도"
+      ]
+    },
+    {
+      "name": "삼미식당",
+      "nameCandidates": [
+        "삼미식당"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "연어 초밥과 해산물 요리를 판매하는 음식점",
+        "연어 초밥 6피스에 대략 19,000원",
+        "오징어 초밥 대략 18,000원"
+      ]
+    },
+    {
+      "name": "딘타이펑",
+      "nameCandidates": [
+        "딘타이펑"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대만을 대표하는 딤섬 전문점",
+        "타이베이 101 지하 1층에 위치",
+        "샤오롱바오 5개에 하나 대략 6,000원"
+      ]
+    },
+    {
+      "name": "임동방우육면",
+      "nameCandidates": [
+        "임동방우육면"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1976년부터 운영된 우육면 전문점",
+        "대표 메뉴는 고기와 힘줄이 반씩 들어간 반근반육면",
+        "가격은 하나로 대략 1만 원에서 15,000원 사이"
+      ]
+    },
+    {
+      "name": "시먼마라훠궈",
+      "nameCandidates": [
+        "시먼마라훠궈",
+        "시먼 마라 버거"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시먼딩 지역에 위치한 훠궈 무한리필 전문점",
+        "런치 기준으로 대략 3만에서 4만 원",
+        "디너 기준 35,000원부터 45,000원 사이"
+      ]
+    },
+    {
+      "name": "왕스브로스",
+      "nameCandidates": [
+        "왕스브로스"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "화시지예 야시장에 위치한 동파육 덮밥 전문점",
+        "2020년부터 2023년까지 미쉐린 가이드 연속 선정",
+        "음식 가격은 대략 5,000원 정도"
+      ]
+    },
+    {
+      "name": "G화궈",
+      "nameCandidates": [
+        "G화궈",
+        "G 화고"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "곰돌이 모양의 얼린 육수로 유명한 훠궈 전문점",
+        "가격은 1인당 대략 3만에서 4만 원 정도",
+        "육수는 종류에 따라 대략 3,000원 추가 비용 발생"
+      ]
+    },
+    {
+      "name": "라오허제야시장",
+      "nameCandidates": [
+        "라오허제야시장",
+        "라오허제 야시장"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "타이베이에서 유명한 야시장 중 하나",
+        "대표 메뉴로는 후추빵, 닭고기 소시지 등",
+        "후추빵은 미슐랭 가이드에 선정된 적 있음"
+      ]
+    },
+    {
+      "name": "화시지예야시장",
+      "nameCandidates": [
+        "화시지예야시장",
+        "화시지예 야시장"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "MRT 용산사역 1번 출구에서 도보 약 2분 거리",
+        "다양한 현지 음식을 맛볼 수 있는 야시장",
+        "음식 가격은 대체로 2,000원에서 5,000원 정도"
+      ]
+    },
+    {
+      "name": "팀호완 중샤오서점",
+      "nameCandidates": [
+        "팀호완 중샤오서점",
+        "팀호완 중샤오 서점"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "홍콩에서 시작된 미슐랭 원스타 딤섬 전문점",
+        "대표 메뉴는 BBQ 포크번, 하가우, 시우마이 등",
+        "음식 가격은 대략 5,000원에서 7,000원 사이"
+      ]
+    },
+    {
+      "name": "일갑자소음",
+      "nameCandidates": [
+        "일갑자소음"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시먼딩 지역에 위치한 동파육 전문점",
+        "2020년부터 2023년까지 미쉐린 가이드 선정",
+        "동파육 덮밥 대략 5,000원, 버거 대략 2,500원"
+      ]
+    },
+    {
+      "name": "삼형매빙수",
+      "nameCandidates": [
+        "삼형매빙수",
+        "형매 빙수"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시먼딩에 위치한 유명한 빙수 전문점",
+        "대표 메뉴는 생망고와 망고 아이스크림이 들어간 망고 눈꽃빙수",
+        "빙수 가격은 대략 만 원 정도"
+      ]
+    },
+    {
+      "name": "우라오하팟",
+      "nameCandidates": [
+        "우라오하팟",
+        "우라오 하 팟"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "고급스러운 분위기와 진한 국물 맛의 훠궈 전문점",
+        "중산역 3번 출구에서 도보 4분 거리",
+        "음식 가격은 1인당 대략 3만 원 내외"
+      ]
+    },
+    {
+      "name": "쿠바훠궈",
+      "nameCandidates": [
+        "쿠바훠궈",
+        "구바 호거"
+      ],
+      "region": "타이베이",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시먼딩 지역의 가성비 좋은 훠궈 전문점",
+        "2시간 동안 무제한으로 제공되는 뷔페식",
+        "점심 대략 3만 원, 주말 및 디너 약 35,000원"
+      ]
+    }
+  ]
+}

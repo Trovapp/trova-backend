@@ -1,0 +1,163 @@
+{
+  "sample_id": "c185",
+  "url": "https://www.youtube.com/watch?v=oeBZ7qG76G0",
+  "seconds": 12.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 6604,
+      "totalTokens": 17827
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5251,
+      "totalTokens": 19828
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "아지노야",
+      "nameCandidates": [
+        "아지노야"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "난바역 14번 출구 도보 1분",
+        "50년간 장사해온 오코노미야끼 맛집",
+        "1인 1메뉴 필수, 평균 1시간 웨이팅"
+      ]
+    },
+    {
+      "name": "무뎃포라멘",
+      "nameCandidates": [
+        "무뎃포라멘",
+        "무대포라멘"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "국물 농도 선택시 가장 연하게 추천",
+        "라멘 먹은 뒤 밥을 추가해 말아 먹으면 별미"
+      ]
+    },
+    {
+      "name": "하쿠긴테이",
+      "nameCandidates": [
+        "하쿠긴테이"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "혼마치역이 현지인들에게 더 인기",
+        "돈카츠카레와 가지카레가 인기 메뉴",
+        "기본적으로 매콤한 맛이 나는 카레"
+      ]
+    },
+    {
+      "name": "무겐마라",
+      "nameCandidates": [
+        "무겐마라",
+        "무겐마라탕"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "난바파크스 도보 2분 거리",
+        "맵기는 0~5단계, 3단계 추천",
+        "다진 마늘과 흑식초가 세팅되어 있음"
+      ]
+    },
+    {
+      "name": "스시히데조우",
+      "nameCandidates": [
+        "스시히데조우"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "당일 손질한 식재료만 사용",
+        "저녁 시간 전화 예약 필수",
+        "맥주와 하이볼 곁들여 5만 원 중후반대 가성비"
+      ]
+    },
+    {
+      "name": "자메시야",
+      "nameCandidates": [
+        "자메시야"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "일본식 백반집, 가격은 900~1300엔",
+        "오전 8시부터 영업 시작"
+      ]
+    },
+    {
+      "name": "토미타규카츠",
+      "nameCandidates": [
+        "토미타규카츠"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "센니치마에 상점가 거리에서 도보 2분",
+        "평일 오후 3시쯤 방문하면 오래 기다리지 않음",
+        "고기가 버터 같다는 평의 겉바속촉 규카츠"
+      ]
+    },
+    {
+      "name": "돈소쿠노카도야",
+      "nameCandidates": [
+        "돈소쿠노카도야",
+        "돈속코노카도야"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "난바역 31번 출구 도보 30초, 흡연 가능",
+        "닭꼬치 1인분 600엔(한 접시 3개)",
+        "대표 메뉴로 족발 백숙도 인기"
+      ]
+    }
+  ]
+}

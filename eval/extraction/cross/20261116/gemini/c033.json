@@ -1,0 +1,259 @@
+{
+  "sample_id": "c033",
+  "url": "https://www.youtube.com/shorts/hNSio32Z_L0",
+  "seconds": 10.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4053,
+      "totalTokens": 14145
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 6113,
+      "totalTokens": 17060
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "도남식당",
+      "nameCandidates": [
+        "도남식당"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 미수동 8-2",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "연평도 꽃게장 정식과 해물장 정식이 주 메뉴"
+      ]
+    },
+    {
+      "name": "민수사회집",
+      "nameCandidates": [
+        "민수사회집",
+        "민수사횟집"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 미수동 8-2",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "모듬회와 민수사 스페셜이 주 메뉴"
+      ]
+    },
+    {
+      "name": "한일 김밥 본점",
+      "nameCandidates": [
+        "한일 김밥 본점",
+        "한일김밥 본점"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 항남동 79-15",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "충무김밥이 주 메뉴"
+      ]
+    },
+    {
+      "name": "해원회집",
+      "nameCandidates": [
+        "해원회집",
+        "해원횟집"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 미수동 8-2",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "점심 특선해 정식과 해원 통영닷지상이 주 메뉴"
+      ]
+    },
+    {
+      "name": "어담마로 본점",
+      "nameCandidates": [
+        "어담마로 본점",
+        "어담화로 본점"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 용남면 삼화리 297-3",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "어담마로 점심한상과 어담마로 구이가 주 메뉴"
+      ]
+    },
+    {
+      "name": "청단가",
+      "nameCandidates": [
+        "청단가"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 용남면 장평리 126-1",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "간장 오리 불고기와 고추장 오리 불고기가 주 메뉴"
+      ]
+    },
+    {
+      "name": "한산 30식당",
+      "nameCandidates": [
+        "한산 30식당",
+        "한산섬식당"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 정량동 1374-10",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "쑤기미 매운탕과 생선회가 주 메뉴"
+      ]
+    },
+    {
+      "name": "풍화김밥",
+      "nameCandidates": [
+        "풍화김밥"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 서호동 177-39",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "충무김밥이 주 메뉴"
+      ]
+    },
+    {
+      "name": "해운정",
+      "nameCandidates": [
+        "해운정"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 항남동 150-56",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해운정 정식과 갈치 조림 정식이 주 메뉴"
+      ]
+    },
+    {
+      "name": "또박이 반다지",
+      "nameCandidates": [
+        "또박이 반다지"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 광도면 중립리 1580-14",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "또박이 2인 한상과 또박이 백반 정식이 주 메뉴"
+      ]
+    },
+    {
+      "name": "오미사 꿀빵",
+      "nameCandidates": [
+        "오미사 꿀빵"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 봉평동 124-7",
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "오미사 꿀빵 모둠이 주 메뉴"
+      ]
+    },
+    {
+      "name": "대풍관",
+      "nameCandidates": [
+        "대풍관"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 동호동 175",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대풍관 A세트요리와 대풍관 B세트요리가 주 메뉴"
+      ]
+    },
+    {
+      "name": "신간의 해물짬뽕",
+      "nameCandidates": [
+        "신간의 해물짬뽕",
+        "심가네해물짬뽕"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 서호동 163-35",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "신가네 해물 특짬뽕과 하얀짬뽕이 주 메뉴"
+      ]
+    },
+    {
+      "name": "뚱부할매김밥집",
+      "nameCandidates": [
+        "뚱부할매김밥집",
+        "뚱보할매김밥집"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 중앙동 129-3",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "충무김밥이 주 메뉴"
+      ]
+    },
+    {
+      "name": "동양 전복마을",
+      "nameCandidates": [
+        "동양 전복마을",
+        "동피랑전복마을"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 동호동 175",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "전복돌솥밥 세트와 멍게 비빔밥 세트가 주 메뉴"
+      ]
+    }
+  ]
+}

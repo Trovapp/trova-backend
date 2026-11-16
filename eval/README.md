@@ -14,7 +14,7 @@
 
 ## Part A — 장소 추출
 1. `extraction/videos.csv`에서 쓸 영상의 `selected`에 `Y`.
-2. `extraction/answers.csv`에 정답을 적는다(영상을 보고 직접, AI 결과를 보지 않고).
+2. `extraction/answers.csv`에 정답을 적는다(영상을 보고 직접, AI 결과를 보지 않고). 예외: #437 교차 판정 행(영상 1000번대, `note`에 출처)은 docs/adr/0045.
 3. `python eval/extraction/run.py --repeat 2` → `extraction/results/<날짜>_<커밋>/`
 4. `python eval/extraction/score.py <결과 폴더> [--usd-krw <환율> --usd-krw-source "<출처, 날짜>"]`
 5. `review_needed.csv`의 "확인 필요"를 보고 `manual_matches.csv`에 판정(match / false_positive / skip)을 적은 뒤 다시 채점한다.

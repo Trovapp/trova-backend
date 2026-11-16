@@ -1,0 +1,43 @@
+{
+  "sample_id": "c153",
+  "url": "https://www.youtube.com/watch?v=kpTbpf1FG4c",
+  "seconds": 8.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4964,
+      "totalTokens": 27305
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3348,
+      "totalTokens": 28331
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "맨야 사쿠라이",
+      "nameCandidates": [
+        "맨야 사쿠라이",
+        "맨 사쿠라이"
+      ],
+      "region": "도쿄",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "지하철역에서 15분 걸려 접근성이 조금 아쉽다",
+        "최근 먹은 쇼유 라멘 중에서 제일 맛있음"
+      ]
+    }
+  ]
+}

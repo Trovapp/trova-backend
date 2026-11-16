@@ -1,0 +1,43 @@
+{
+  "sample_id": "c191",
+  "url": "https://www.youtube.com/shorts/mHItY8M-Ges",
+  "seconds": 6.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3312,
+      "totalTokens": 10706
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2611,
+      "totalTokens": 11731
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "보령 청보리밥 카페",
+      "nameCandidates": [
+        "보령 청보리밥 카페",
+        "청보리밥 카페"
+      ],
+      "region": "보령",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "하늘이 아름다운 배경의 카페",
+        "완성된 카페 주변 풍경"
+      ]
+    }
+  ]
+}

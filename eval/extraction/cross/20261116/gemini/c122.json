@@ -1,0 +1,94 @@
+{
+  "sample_id": "c122",
+  "url": "https://www.youtube.com/shorts/aYppl_PRY84",
+  "seconds": 10.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5182,
+      "totalTokens": 11320
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4756,
+      "totalTokens": 12784
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "역전대패삼겹살",
+      "nameCandidates": [
+        "역전대패삼겹살",
+        "역전 대패 삼겹살"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "삼겹살이 들어가지만 애호박찌개를 먹을 수 있는 곳",
+        "매일 바뀌는 푸짐한 반찬이 특징"
+      ]
+    },
+    {
+      "name": "송정볼떡갈비",
+      "nameCandidates": [
+        "송정볼떡갈비",
+        "송정 볼 떡갈비"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "떡갈비, 꼬막무침, 보리굴비, 간장게장, 남도음식 모음",
+        "보성 녹차물에 밥을 말아 보리굴비 한 점과 함께 먹는 곳"
+      ]
+    },
+    {
+      "name": "서울곱창",
+      "nameCandidates": [
+        "서울곱창",
+        "서울 곱창"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "백종원도 인정한 맛집",
+        "특제소스에 버무린 곱창과 쑥갓, 땡초를 곁들여 먹는 곳"
+      ]
+    },
+    {
+      "name": "쌍교숯불갈비",
+      "nameCandidates": [
+        "쌍교숯불갈비",
+        "쌍교 숯불 갈비"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "담양에서 시작해 전국 곳곳에 체인점이 있는 곳",
+        "숯불에 구워져 나온 돼지갈비를 잘라 먹기만 하면 되는 간편함"
+      ]
+    }
+  ]
+}

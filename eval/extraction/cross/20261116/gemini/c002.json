@@ -1,0 +1,26 @@
+{
+  "sample_id": "c002",
+  "url": "https://www.youtube.com/shorts/-nIQvt-4XJI",
+  "seconds": 7.8,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "여수해상케이블카",
+      "nameCandidates": [
+        "여수해상케이블카"
+      ],
+      "region": "여수",
+      "address": "전남 여수시 돌산읍 돌산로 3600-1",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "일반케빈(8인승) 왕복 대인 18,000원 소인 12,000원",
+        "주차 무료"
+      ]
+    }
+  ]
+}

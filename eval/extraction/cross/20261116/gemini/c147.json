@@ -1,0 +1,67 @@
+{
+  "sample_id": "c147",
+  "url": "https://www.youtube.com/shorts/5_EtaQGvx-k",
+  "seconds": 7.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3781,
+      "totalTokens": 13848
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2957,
+      "totalTokens": 15085
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "신기루잡화점 소품샵",
+      "nameCandidates": [
+        "신기루잡화점 소품샵"
+      ],
+      "region": "대구",
+      "address": "대구 중구 서성로14길 92",
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "태트 카페",
+      "nameCandidates": [
+        "태트 카페"
+      ],
+      "region": "대구",
+      "address": "대구 중구 북성로 98-1",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아이스 바닐라라떼와 시나몬 번"
+      ]
+    },
+    {
+      "name": "후쿠오카호르몬 동성로점",
+      "nameCandidates": [
+        "후쿠오카호르몬 동성로점"
+      ],
+      "region": "대구",
+      "address": "대구 중구 동성로1길 47 1층",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

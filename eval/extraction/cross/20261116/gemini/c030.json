@@ -1,0 +1,26 @@
+{
+  "sample_id": "c030",
+  "url": "https://www.youtube.com/shorts/1nU4UXbIDaU",
+  "seconds": 7.3,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "데카산",
+      "nameCandidates": [
+        "데카산"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "오픈런을 해도 기다리는 사람이 있을 정도로 인기 있음",
+        "두툼하게 쌓인 계란이 들어간 계란샌드와 수프 판매"
+      ]
+    }
+  ]
+}

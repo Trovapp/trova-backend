@@ -1,0 +1,256 @@
+{
+  "sample_id": "c044",
+  "url": "https://www.youtube.com/shorts/GvTPJUApkPs",
+  "seconds": 9.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3456,
+      "totalTokens": 13989
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5771,
+      "totalTokens": 16791
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "랭스카페",
+      "nameCandidates": [
+        "랭스카페"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 무전동 852-20",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "카페라떼와 응답하라 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "미스티크",
+      "nameCandidates": [
+        "미스티크"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 산양읍 연화리 194",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "카페라떼와 흑임자 크림 카페라떼 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "베로나835",
+      "nameCandidates": [
+        "베로나835"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 무전동 835-2",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "베로나 브런치 플레이트와 샌드 베이글 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "라이트하우스",
+      "nameCandidates": [
+        "라이트하우스"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 미수동 360",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아메리카노와 카페라떼 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "부엔",
+      "nameCandidates": [
+        "부엔"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 봉평동 298-9",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "네모네모 에그타르트와 티그레 4종 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "브라운핸즈",
+      "nameCandidates": [
+        "브라운핸즈",
+        "브라운 엔즈"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 도남동 1",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "스텔라마리스와 기버터 스테이크 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "저장고더에스프레소",
+      "nameCandidates": [
+        "저장고더에스프레소",
+        "저장고 더 에스프레소"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 도남동 140-1",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "카페 만다리노와 롱블랙 트라몬투 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "카페녘",
+      "nameCandidates": [
+        "카페녘"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 용남면 장평리 74",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "타워 슈페너와 녘 슈페너 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "네르하21카페",
+      "nameCandidates": [
+        "네르하21카페",
+        "네르하 21카페"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 도산면 수월리 1338-7",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "몽블랑과 아메리카노 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "나나이주전자",
+      "nameCandidates": [
+        "나나이주전자"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 용남면 장평리 955",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "옛날 맛생과일 파르페와 바람결 유자 스무디 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "클라우드힐",
+      "nameCandidates": [
+        "클라우드힐",
+        "클라우드"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 산양읍 영운리 65",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "클라우드 슈페너와 카페라떼 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "카페배양장",
+      "nameCandidates": [
+        "카페배양장"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 산양읍 풍화리 1431-1",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "꾸덕한 크림 치즈 당근 케이크와 딸기라떼 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "잭잭커피 통영점",
+      "nameCandidates": [
+        "잭잭커피 통영점",
+        "잭잭 커피 통영점"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 문화동 68",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "빌리 에스프레소와 잭아인슈페너 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "바다담",
+      "nameCandidates": [
+        "바다담"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 용남면 장문리 96-48",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "솔티브라운과 아메리카노 시그니처 메뉴"
+      ]
+    },
+    {
+      "name": "아르세",
+      "nameCandidates": [
+        "아르세"
+      ],
+      "region": "통영시",
+      "address": "경남 통영시 광도면 덕포리 739-1",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "망고망고와 쌍콤하이 시그니처 메뉴"
+      ]
+    }
+  ]
+}

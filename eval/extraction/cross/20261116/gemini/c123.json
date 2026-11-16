@@ -1,0 +1,123 @@
+{
+  "sample_id": "c123",
+  "url": "https://www.youtube.com/shorts/yjic23CbFgg",
+  "seconds": 8.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3941,
+      "totalTokens": 14094
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4516,
+      "totalTokens": 15757
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "남해",
+      "nameCandidates": [
+        "남해"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "남해의 숨은 보석 바다가 보이는 카페 추천 지역"
+      ]
+    },
+    {
+      "name": "바다 이야기 카페",
+      "nameCandidates": [
+        "바다 이야기 카페"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "창문 밖으로 넓게 펼쳐진 바다 감상 가능",
+        "일출 시간이 매우 멋짐",
+        "아메리카노와 함께 하루 시작"
+      ]
+    },
+    {
+      "name": "바람의 언덕 카페",
+      "nameCandidates": [
+        "바람의 언덕 카페"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "SNS 핫플레이스",
+        "바람 부는 언덕에서 바다를 바라보는 여유",
+        "대낮 햇살과 밤하늘 별빛을 동시에 즐김"
+      ]
+    },
+    {
+      "name": "고래의 꿈 카페",
+      "nameCandidates": [
+        "고래의 꿈 카페"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "감성적인 분위기와 아기자기한 인테리어",
+        "감성 넘치는 사진 찍기 좋은 곳"
+      ]
+    },
+    {
+      "name": "선마을 카페",
+      "nameCandidates": [
+        "선마을 카페"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "정겨운 선마을 분위기",
+        "직접 만든 수제 디저트가 일품"
+      ]
+    },
+    {
+      "name": "파도소리 카페",
+      "nameCandidates": [
+        "파도소리 카페"
+      ],
+      "region": "남해",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "카페 앞에 파도가 바로 밀려오는 곳",
+        "파도 소리를 들으며 차 한잔의 여유 만끽"
+      ]
+    }
+  ]
+}

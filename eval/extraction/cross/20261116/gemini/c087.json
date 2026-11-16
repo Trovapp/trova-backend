@@ -1,0 +1,44 @@
+{
+  "sample_id": "c087",
+  "url": "https://www.youtube.com/shorts/aXzxeih1zLA",
+  "seconds": 9.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5329,
+      "totalTokens": 12515
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3597,
+      "totalTokens": 13584
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "올데이스테이",
+      "nameCandidates": [
+        "올데이스테이",
+        "춘천올데이스테이"
+      ],
+      "region": "춘천시",
+      "address": "춘천시 동면 만천로 28-84",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "매일 아침 직접 반죽하고 숙성한 빵을 판매함",
+        "인기 메뉴로 명란 바게트와 소금빵이 있음",
+        "돈가스와 키즈 메뉴 등 식사 메뉴도 마련되어 있음"
+      ]
+    }
+  ]
+}

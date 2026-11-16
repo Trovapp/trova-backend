@@ -1,0 +1,145 @@
+{
+  "sample_id": "c200",
+  "url": "https://www.youtube.com/shorts/OdjxS19NGYY",
+  "seconds": 8.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3755,
+      "totalTokens": 12513
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4159,
+      "totalTokens": 14356
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "담양 죽녹원",
+      "nameCandidates": [
+        "담양 죽녹원",
+        "죽녹원"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 1,
+      "videoNotes": [
+        "푸른 대나무 숲에서 사진을 찍으며 걷기 좋음",
+        "사계절 내내 아름다운 풍경을 자랑함",
+        "자연 속에서 조용히 여유로운 시간을 보낼 수 있음"
+      ]
+    },
+    {
+      "name": "보성 녹차밭",
+      "nameCandidates": [
+        "보성 녹차밭",
+        "녹차밭"
+      ],
+      "region": "보성",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 2,
+      "videoNotes": []
+    },
+    {
+      "name": "메타세콰이어길",
+      "nameCandidates": [
+        "메타세콰이어길"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 3,
+      "videoNotes": []
+    },
+    {
+      "name": "강골마을",
+      "nameCandidates": [
+        "강골마을"
+      ],
+      "region": "보성",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 1,
+      "orderInDay": 4,
+      "videoNotes": []
+    },
+    {
+      "name": "메타프로방스",
+      "nameCandidates": [
+        "메타프로방스",
+        "담양 메타프로방스"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 1,
+      "videoNotes": [
+        "이국적인 분위기의 건물 사이를 지나다니며 사진 촬영 가능",
+        "나무 그늘 아래에서 편안하게 산책할 수 있음"
+      ]
+    },
+    {
+      "name": "담양 관방제림",
+      "nameCandidates": [
+        "담양 관방제림",
+        "관방제림"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 2,
+      "videoNotes": []
+    },
+    {
+      "name": "별빛달빛길",
+      "nameCandidates": [
+        "별빛달빛길"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 3,
+      "videoNotes": [
+        "밤에는 화려한 조명이 켜져 아름다운 풍경을 감상할 수 있음"
+      ]
+    },
+    {
+      "name": "죽녹원 식당",
+      "nameCandidates": [
+        "죽녹원 식당"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대나무 죽통밥과 떡갈비 등 다채로운 지역 음식 맛볼 수 있음"
+      ]
+    }
+  ]
+}

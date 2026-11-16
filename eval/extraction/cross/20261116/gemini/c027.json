@@ -1,0 +1,43 @@
+{
+  "sample_id": "c027",
+  "url": "https://www.youtube.com/shorts/-cZsWvpG4-s",
+  "seconds": 9.0,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "아바이마을",
+      "nameCandidates": [
+        "아바이마을",
+        "속초 아바이마을"
+      ],
+      "region": "강원도 속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "강원도 속초 갈만한 곳이자 관광지로 소개됨",
+        "갯배 볼거리 체험 가능"
+      ]
+    },
+    {
+      "name": "갯배",
+      "nameCandidates": [
+        "갯배",
+        "아바이마을 갯배"
+      ],
+      "region": "강원도 속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "속초 아바이마을의 대표 볼거리 및 체험 시설"
+      ]
+    }
+  ]
+}

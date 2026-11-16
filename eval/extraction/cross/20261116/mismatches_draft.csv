@@ -1,0 +1,200 @@
+sample_id,url,title,status,gemini_name,gpt_name,region,category,human_verdict,human_name,verdict_reason
+c003,https://www.youtube.com/shorts/EI9-cE5TBzQ,대구 여행 필수 코스! 대구 근대문화골목 투어✈,gpt_only,,근대문화골목,대구광역시 중구,attraction,Y,근대문화골목,제목·설명
+c003,https://www.youtube.com/shorts/EI9-cE5TBzQ,대구 여행 필수 코스! 대구 근대문화골목 투어✈,gpt_only,,이상화 고택,대구광역시 중구,attraction,Y,이상화·서상돈 고택,"프레임 자막 '이상화, 서상돈 고택'"
+c005,https://www.youtube.com/shorts/Ro0XhtR9u6Y,"[생방송 오늘 아침] 산책하기 좋은 보문관광단지 내의 수변공원!, MBC 251029 방송",gpt_only,,보문관광단지,경주,attraction,N,보문관광단지,"기준 다(번화가·상권·체인 지점 불명 → N) — 제목 — 관광단지(넓은 지역), 실제 소개는 그 안의 수변공원"
+c005,https://www.youtube.com/shorts/Ro0XhtR9u6Y,"[생방송 오늘 아침] 산책하기 좋은 보문관광단지 내의 수변공원!, MBC 251029 방송",gpt_only,,수변공원,경주,attraction,N,,"사용자 판정(2026-11-16): N — 제목·자막 — 단독으로는 일반명사, 정확한 이름 확인 필요"
+c007,https://www.youtube.com/shorts/wbyerePvE4A,[관광지 소개] 연인과 함께 가볼 만한 인천서구 관광지,gemini_only,새어도,,인천 서구,attraction,Y,세어도,자막·Gemini 표기 — GPT '세어도'와 같은 곳(인천 서구 섬)
+c007,https://www.youtube.com/shorts/wbyerePvE4A,[관광지 소개] 연인과 함께 가볼 만한 인천서구 관광지,gpt_only,,정서진,인천광역시 서구,attraction,Y,정서진,자막
+c007,https://www.youtube.com/shorts/wbyerePvE4A,[관광지 소개] 연인과 함께 가볼 만한 인천서구 관광지,gpt_only,,세어도,인천광역시 서구,attraction,Y,세어도,자막·프레임 — Gemini '새어도'와 같은 곳
+c008,https://www.youtube.com/shorts/YXYNTqGy6TM,목포 뷰맛집 카페 #카페델마르 에서 목포대교 바라보며 힐링타임 ♡,gemini_only,목포대교,,전남 목포시,attraction,N,목포대교,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 제목 — 카페에서 바라보는 풍경으로 언급
+c010,https://www.youtube.com/shorts/C3oxLmyMY8Y,힐링 여행의 끝판왕! 양양 가볼만한 곳 모음.ZIP👏,gpt_only,,브리드호텔 양양 - 포이푸,양양,restaurant,N,브리드호텔 양양 - 포이푸,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 프레임 '브리드호텔 양양 - 포이푸' — 호텔 안 식당, 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
+c012,https://www.youtube.com/shorts/PDH8LHm2n74,[#shorts] 광주광역시에서 평양냉면이 엄청 떴다고...?,gemini_only,평양,,광주광역시,other,N,평양,제목 — 평양냉면의 일부(지명)
+c014,https://www.youtube.com/shorts/5KXRmsNezrM,포항 가볼만한곳 추천 📍 호미곶 해맞이광장 1분 힐링 스케치,gpt_only,,상생의 손,포항,attraction,N,상생의 손,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 설명 — 호미곶 해맞이광장 안 조형물, 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
+c018,https://www.youtube.com/shorts/5b6vNN2EYxo,거제도 여행 코스 오션뷰 카트체험장_거제도 가볼만한 곳,gemini_only,거제도 카트체험장,,거제도,attraction,Y,,사용자 판정(2026-11-16): Y(이름 미정) — 제목·설명 — 가게 이름 없이 '카트체험장'만 나옴
+c019,https://www.youtube.com/shorts/mL2oFRk_EX8,동대구시장 순대#쇼츠 #soondae #shorts #순대,gpt_only,,동대구시장,대구,shopping,Y,동대구시장,제목
+c020,https://www.youtube.com/watch?v=44eJ8mTRBn8,홍콩의 야경을 더 낭만적으로 즐기는 법! 아쿠아루나,gemini_only,침사추이,,홍콩,attraction,N,침사추이,설명 — 지역(구역) 이름
+c021,https://www.youtube.com/shorts/neI64VYXvps,"강릉 여행 가볼만한 곳(런닝맨, 그대나의뮤즈전시, 아르띠뮤지엄)",gpt_only,,아르떼 카페,강릉,cafe,N,아르떼 카페,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 프레임 자막 '아르떼 카페와 연결' — 아르떼뮤지엄 안 카페, 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
+c024,https://www.youtube.com/shorts/jo6CXuS_UwA,군산과자조합 계란찜과자와 사과파이 레트로 감성 카페 다녀왔습니다,gemini_only,초원사진관,,군산,attraction,N,초원사진관,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 프레임 자막 '초원사진관에서 걸어서 1~2분' — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c031,https://www.youtube.com/shorts/OnolTnSSzMQ,5월 4일~ 6일까지 휴방 공지 및 안동사람이 알려주는 경북 안동시 가볼만한 곳 TOP 5 소개,gpt_only,,안동 구시장,안동시,shopping,Y,안동 구시장,프레임 간판 '안동 구시장'
+c031,https://www.youtube.com/shorts/OnolTnSSzMQ,5월 4일~ 6일까지 휴방 공지 및 안동사람이 알려주는 경북 안동시 가볼만한 곳 TOP 5 소개,gpt_only,,원령정,안동시,attraction,N,월영정,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 자막 'Wolyeongjeong' — 월영교 가운데 정자, 표기 오류이고 월영교와 따로 셀지 확인"
+c032,https://www.youtube.com/shorts/13nArX8GgTE,경주 가볼만한곳 보문관광단지 보문정,gpt_only,,보문관광단지,경주,attraction,N,보문관광단지,기준 다(번화가·상권·체인 지점 불명 → N) — 제목 — 관광단지(넓은 지역)
+c032,https://www.youtube.com/shorts/13nArX8GgTE,경주 가볼만한곳 보문관광단지 보문정,gpt_only,,보문정,경주,attraction,Y,보문정,제목
+c033,https://www.youtube.com/shorts/hNSio32Z_L0,"통영맛집 1위~15위, 통영맛집 베스트 15, 통영여행, 통영 꼭 가봐야할 곳",gemini_only,해운정,,통영시,restaurant,Y,,"사용자 판정(2026-11-16): Y(희운정과 같은 가게, 표기 미정) — 자막 '해운정' — GPT '희운정'과 같은 가게, 표기 확인 필요(프레임 글자 흐림)"
+c033,https://www.youtube.com/shorts/hNSio32Z_L0,"통영맛집 1위~15위, 통영맛집 베스트 15, 통영여행, 통영 꼭 가봐야할 곳",gpt_only,,희운정,통영시,restaurant,Y,,"사용자 판정(2026-11-16): Y(해운정과 같은 가게, 표기 미정) — 프레임 — Gemini '해운정'과 같은 가게, 표기 확인 필요"
+c034,https://www.youtube.com/watch?v=LIquTSJZ4BE,🇹🇭MK Suki Thailand: How to Eat Like a Local and Get the Most Out of It,gemini_only,MK수끼,,태국,restaurant,N,MK수끼,"기준 다(번화가·상권·체인 지점 불명 → N) — 제목·설명·자막 — 체인 이름만, 지점 불명"
+c036,https://www.youtube.com/shorts/ZtNubS3vQz0,경주 황리단길 가면 무조건 기절하고 오는 코스 정리 #경주여행 #황리단길 #대릉원 #동궁과월지 #국내여행 #경주핫플,gemini_only,경주 십원빵,,경주,restaurant,N,,"사용자 판정(2026-11-16): N — 설명·자막 — 음식명일 수 있음, 가게 이름 확인 필요"
+c040,https://www.youtube.com/shorts/cQ9NFWyX6BI,속초 향기가득한민박으로 여러분을 초대합니다.,gemini_only,설악산국립공원,,강원도 속초,attraction,N,설악산국립공원,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명·자막 — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c041,https://www.youtube.com/shorts/eZ5m4PXc9VY,[Gongju Travel] Gongsanseong Fortress Gongsanjeong Pavilion 360° Drone Footage 🚁#GongjuTra,gemini_only,금강,,공주,attraction,N,금강,설명 — 강 이름(자연 지명)
+c044,https://www.youtube.com/shorts/GvTPJUApkPs,"통영카페 1위~15위를 소개합니다, 통영핫플, 통영맛집, 통영여행",gemini_only,저장고더에스프레소,,통영시,cafe,Y,저장고 THE ESPRESSO,프레임 '9위 저장고 THE ESPRESSO' — GPT 행과 같은 곳
+c044,https://www.youtube.com/shorts/GvTPJUApkPs,"통영카페 1위~15위를 소개합니다, 통영핫플, 통영맛집, 통영여행",gemini_only,카페녘,,통영시,cafe,Y,,"사용자 판정(2026-11-16): Y(카페역과 같은 가게, 표기 미정) — Gemini 표기 — GPT '카페역'과 같은 가게로 보이나 표기 확인 필요"
+c044,https://www.youtube.com/shorts/GvTPJUApkPs,"통영카페 1위~15위를 소개합니다, 통영핫플, 통영맛집, 통영여행",gemini_only,잭잭커피 통영점,,통영시,cafe,Y,짹짹커피 통영점,프레임 '3위 짹짹커피 통영점' — GPT 행과 같은 곳
+c044,https://www.youtube.com/shorts/GvTPJUApkPs,"통영카페 1위~15위를 소개합니다, 통영핫플, 통영맛집, 통영여행",gpt_only,,저장고 THE ESPRESSO,통영시,cafe,Y,저장고 THE ESPRESSO,프레임 '9위 저장고 THE ESPRESSO'
+c044,https://www.youtube.com/shorts/GvTPJUApkPs,"통영카페 1위~15위를 소개합니다, 통영핫플, 통영맛집, 통영여행",gpt_only,,카페역,통영시,cafe,Y,,"사용자 판정(2026-11-16): Y(카페녘과 같은 가게, 표기 미정) — 자막 '카페역' — Gemini '카페녘'과 같은 가게로 보이나 표기 확인 필요"
+c044,https://www.youtube.com/shorts/GvTPJUApkPs,"통영카페 1위~15위를 소개합니다, 통영핫플, 통영맛집, 통영여행",gpt_only,,짹짹커피 통영점,통영시,cafe,Y,짹짹커피 통영점,프레임 '3위 짹짹커피 통영점'
+c046,https://www.youtube.com/shorts/IR2w6znExpE,담양 여행코스 베스트8#담양가볼만한곳#담양여행#담양여행코스#담양여행베스트8,gpt_only,,Meta Provence,담양군,attraction,Y,메타프로방스,사용자 판정(2026-11-16): Y — GPT는 프레임이라 했으나 프레임 8장에 이름 없음(유럽풍 마을 사진만)
+c048,https://www.youtube.com/shorts/LQkEUNCm43U,"🇰🇷포항여행 BEST10‼️포항 가볼만한 곳👉호미곶,스페이스워크,구룡포 일본인가옥거리,영일대 전망대,곤륜산,죽도시장,송도솔밭도시숲,포항송도해수욕장, 청하공진시장,",gpt_only,,상생의 손,포항,attraction,N,상생의 손,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 프레임 '호미곶 상생의 손' — 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
+c051,https://www.youtube.com/watch?v=way6vJ9jMEs,이 곳은 선택이 아닌 필수입니다… 후쿠오카 레전드 디저트 맛집;;,gpt_only,,나우토,후쿠오카,restaurant,Y,나우토,자막 '나우토 두 번째로 왔고'
+c054,https://www.youtube.com/shorts/TQG4Ilh3WbE,춘천 소울로스터리 소나무 숲 옥수수커피 대형카페 후기,gemini_only,소양강댐,,춘천,attraction,N,소양강댐,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c057,https://www.youtube.com/shorts/gTCHgLU3BbU,양양 살아도 일주일에 두 번 간 맛집｜아직도 막국수 먹어? #양양맛집 #동호면옥 #메밀째복장칼국수 #째복 #양양여행 #동호해변 #양양현지인맛집,gemini_only,동호해변,,양양,attraction,N,동호해변,"기준 가(주변·해시태그·대안 목록에 언급만 → N) — 제목·자막 — 동호면옥 위치 설명, 주변·근처로만 언급(영상이 소개하는 곳 아님)"
+c057,https://www.youtube.com/shorts/gTCHgLU3BbU,양양 살아도 일주일에 두 번 간 맛집｜아직도 막국수 먹어? #양양맛집 #동호면옥 #메밀째복장칼국수 #째복 #양양여행 #동호해변 #양양현지인맛집,gemini_only,파스쿠치 양양클리프비치,,양양,cafe,N,파스쿠치 양양클리프비치,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 '파스쿠치…에서도 차로 금방' — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c058,https://www.youtube.com/watch?v=qjBhNfqkN0Y,100년된 일본 카츠동 야르~~! #일본여행 #오사카여행 #도톤보리 #맛집투어 #오사카맛집 #일본맛집 #로컷맛집 #미도리 #카츠동 #가츠동,gpt_only,,카미제 시장,오사카,shopping,N,,사용자 판정(2026-11-16): N — 자막에만 나온 이름 — 실제 시장 이름 확인 필요
+c063,https://www.youtube.com/shorts/9qlg5OlMWkw,거제 장승포 항 풍경.,gemini_only,외도,,거제,attraction,N,외도,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 유람선 행선지로만 언급
+c063,https://www.youtube.com/shorts/9qlg5OlMWkw,거제 장승포 항 풍경.,gemini_only,홍도,,거제,attraction,N,홍도,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 유람선 행선지로만 언급
+c063,https://www.youtube.com/shorts/9qlg5OlMWkw,거제 장승포 항 풍경.,gemini_only,해금강,,거제,attraction,N,해금강,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 유람선 행선지로만 언급
+c064,https://www.youtube.com/shorts/U4IDQa8le1s,#쇼츠 #shorts 쇼츠 혜화역 대학로 혜화 가성비 맛집 추천!,gemini_only,카페 릴리마들렌,,서울,cafe,Y,릴리마를렌,프레임 간판 '릴리 마를렌 LILY MARLENE' — GPT 행과 같은 곳
+c064,https://www.youtube.com/shorts/U4IDQa8le1s,#쇼츠 #shorts 쇼츠 혜화역 대학로 혜화 가성비 맛집 추천!,gpt_only,,릴리마를렌,혜화 대학로,cafe,Y,릴리마를렌,프레임 간판 '릴리 마를렌'
+c065,https://www.youtube.com/shorts/0VeAg_c1XPg,속초미술관 피노디아 뮤지엄 '미켈란젤로의 영혼에 심취하다' #속초피노디아 #속초실내여행지 #강원도미술관 #미켈란젤로뮤지엄,gemini_only,미켈란젤로 뮤지엄,,속초,attraction,Y,피노디아 뮤지엄,"사용자 판정(2026-11-16): Y(GPT 피노디아 뮤지엄과 같은 곳(하나만)) — 제목 — 전시 제목일 수 있음, 피노디아 뮤지엄과 같은 곳인지 확인"
+c065,https://www.youtube.com/shorts/0VeAg_c1XPg,속초미술관 피노디아 뮤지엄 '미켈란젤로의 영혼에 심취하다' #속초피노디아 #속초실내여행지 #강원도미술관 #미켈란젤로뮤지엄,gpt_only,,피노디아 뮤지엄,속초,attraction,Y,피노디아 뮤지엄,제목
+c066,https://www.youtube.com/watch?v=SWx8B6BbaPU,"🇫🇷 2박3일 짧은 파리 여행 ! | 루브르박물관, ☕️르카페마를리, 파리맛집, 🛍️셀린느, 에펠탑✨, 오랑주리미술관",gemini_only,튈르리 정원,,파리,attraction,N,,사용자 판정(2026-11-16): N — 제목·설명·프레임 근거 없음(Gemini 오디오로 추정)
+c066,https://www.youtube.com/watch?v=SWx8B6BbaPU,"🇫🇷 2박3일 짧은 파리 여행 ! | 루브르박물관, ☕️르카페마를리, 파리맛집, 🛍️셀린느, 에펠탑✨, 오랑주리미술관",gpt_only,,space lunch,파리,restaurant,Y,space lunch,프레임 'space lunch'(식사한 곳)
+c066,https://www.youtube.com/watch?v=SWx8B6BbaPU,"🇫🇷 2박3일 짧은 파리 여행 ! | 루브르박물관, ☕️르카페마를리, 파리맛집, 🛍️셀린느, 에펠탑✨, 오랑주리미술관",gpt_only,,에펠탑,파리,attraction,Y,에펠탑,제목·설명
+c066,https://www.youtube.com/watch?v=SWx8B6BbaPU,"🇫🇷 2박3일 짧은 파리 여행 ! | 루브르박물관, ☕️르카페마를리, 파리맛집, 🛍️셀린느, 에펠탑✨, 오랑주리미술관",gpt_only,,오랑주리미술관,파리,attraction,Y,오랑주리미술관,제목·설명
+c068,https://www.youtube.com/shorts/9FPR_HKfDmg,가평 맛집 TOP 7,gemini_only,남이섬,,가평,attraction,N,남이섬,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 '남이섬 갔다가 점심' — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c070,https://www.youtube.com/shorts/nJyj_fp4QHo,서울의 밤을 즐기는 특별한 데이트 장소,gpt_only,,달빛무지개분수,서울,attraction,Y,달빛무지개분수,프레임 '달빛무지개분수쇼'
+c071,https://www.youtube.com/shorts/BExGdPBBHbw,목포에 가면 고하도 전망대를 들러보세요~,gemini_only,고하도,,목포,attraction,N,고하도,"PR #442 리뷰(사용자, 2026-11-16): N — GPT는 '고하도'를 낸 적 없음. 정확 일치 단계 추가로 '고하도 전망대'끼리 짝이 되며 한쪽만 남음. 소개 대상은 고하도 전망대(Y 유지)"
+c071,https://www.youtube.com/shorts/BExGdPBBHbw,목포에 가면 고하도 전망대를 들러보세요~,gemini_only,해안데크,,목포,attraction,N,고하도 해안데크,사용자 판정(2026-11-16): N(기준 나(상위 장소만 정답) 검토 — N) — 프레임 '해안데크'
+c071,https://www.youtube.com/shorts/BExGdPBBHbw,목포에 가면 고하도 전망대를 들러보세요~,gemini_only,유달산 스테이션,,목포,attraction,N,유달산 스테이션,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 프레임 — 해상케이블카 정류장, 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
+c071,https://www.youtube.com/shorts/BExGdPBBHbw,목포에 가면 고하도 전망대를 들러보세요~,gemini_only,북항스테이션,,목포,attraction,N,북항스테이션,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 프레임 — 해상케이블카 정류장, 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
+c072,https://www.youtube.com/shorts/lX0Zq2NRw48,A Trail Over Dazzling Waters: Must-Visit Spots in Yangyang,gpt_only,,하조대,강원도 양양군,attraction,N,하조대,"기준 가(주변 언급만 → N) — 설명·자막: 소개 대상은 하조대 전망대, '하조대'는 명승지 설명으로만 나옴. 정확 일치 단계 추가로 새로 생긴 행, Claude 판정"
+c073,https://www.youtube.com/shorts/VS7_5IPEo64,[춘천] 아메리카누🛶~ 카누 탈 수 있는 카페 #풀문 #춘천풀문,gpt_only,,의암호물레길,춘천시,attraction,N,의암호물레길,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 카페의 카누 체험과 같은 곳인지 확인
+c074,https://www.youtube.com/shorts/vBbXNrIlDzk,"남해맛집추천, 사장님이 직접 잡은 돌게로 만든 간장게장",gemini_only,복이네,,남해,lodging,N,복이네,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 '남해펜션 복이네' — 소개한 게장집과 같은 곳(펜션 겸 식당)인지 확인
+c079,https://www.youtube.com/shorts/13jO2PnWIuQ,속초에 이런 숙소가 있었네? 😍 가족여행 숙소 ‘훼미리민박’ #속초여행 #속초숙소,gemini_only,설악산,,강원도,attraction,N,설악산,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명·자막 — 숙소 주변 관광지로 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c080,https://www.youtube.com/shorts/fIJYZR2965U,여수여행 추천 여수 해상케이블카 낭만포차 유람선 불꽃놀이,gemini_only,여수밤바다,,여수,attraction,N,여수밤바다,Gemini 표기 — 풍경 표현(일반명사)
+c080,https://www.youtube.com/shorts/fIJYZR2965U,여수여행 추천 여수 해상케이블카 낭만포차 유람선 불꽃놀이,gpt_only,,여수 해상케이블카,여수시,attraction,Y,여수 해상케이블카,제목·프레임
+c081,https://www.youtube.com/shorts/2bvobs42mFM,시옷서정 Vlog [정원 여행] 담양 카페 '주평',gemini_only,카페 주평,,담양,cafe,Y,카페 주평,제목·설명 — GPT '주평'과 같은 곳
+c081,https://www.youtube.com/shorts/2bvobs42mFM,시옷서정 Vlog [정원 여행] 담양 카페 '주평',gpt_only,,주평,담양,cafe,Y,카페 주평,제목·설명
+c083,https://www.youtube.com/shorts/6uSX1loByS8,남해 드라이브코스 앵강만#Koreatravel,gemini_only,남해,,남해,attraction,N,남해,제목 — 지역 이름
+c083,https://www.youtube.com/shorts/6uSX1loByS8,남해 드라이브코스 앵강만#Koreatravel,gpt_only,,앵강만,남해,attraction,Y,앵강만,제목
+c084,https://www.youtube.com/shorts/qnE0xNkAWrA,춘천 아이랑 가볼 만한 곳 2탄 당일치기로 좋은 실내 애니메이션박물관 #춘천가볼만한곳 #애니메이션박물관 #춘천아이랑 #춘천당일치기여행 #춘천가족여행 #춘천애니메이,gemini_only,토이로봇관,,강원 춘천시,attraction,N,토이로봇관,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 프레임 '2편은 토이로봇관으로' — 다음 편 예고로만 언급
+c084,https://www.youtube.com/shorts/qnE0xNkAWrA,춘천 아이랑 가볼 만한 곳 2탄 당일치기로 좋은 실내 애니메이션박물관 #춘천가볼만한곳 #애니메이션박물관 #춘천아이랑 #춘천당일치기여행 #춘천가족여행 #춘천애니메이,gpt_only,,신동헌 감독 기념홀,춘천시,attraction,N,신동헌 감독 기념홀,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 프레임 자막 — 애니메이션박물관 안 전시실, 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
+c085,https://www.youtube.com/shorts/Kg9OKC93dfs,🌼대표적인 대구 여행지&해돋이 명소! 해맞이공원🌅_유튜브 기자단 2기 박수진,gpt_only,,금호강,대구,attraction,N,금호강,설명 — 강 이름(자연 지명)
+c092,https://www.youtube.com/watch?v=8DfKaU21IYU,오사카 여행 코스 완벽 정리✔ㅣ3박 4일 일정표 나눔 (교토-USJ-오사카)ㅣ 교통 패스 추천,gemini_only,돈키호테,,오사카,shopping,N,돈키호테,"기준 다(번화가·상권·체인 지점 불명 → N) — 자막 — 체인 이름만, 지점 불명"
+c092,https://www.youtube.com/watch?v=8DfKaU21IYU,오사카 여행 코스 완벽 정리✔ㅣ3박 4일 일정표 나눔 (교토-USJ-오사카)ㅣ 교통 패스 추천,gpt_only,,이넨작,교토,attraction,Y,니넨자카,자막 '이넨작과 산넨자카' — 니넨자카 오인식
+c092,https://www.youtube.com/watch?v=8DfKaU21IYU,오사카 여행 코스 완벽 정리✔ㅣ3박 4일 일정표 나눔 (교토-USJ-오사카)ㅣ 교통 패스 추천,gpt_only,,산넨자카,교토,attraction,Y,산넨자카,자막
+c092,https://www.youtube.com/watch?v=8DfKaU21IYU,오사카 여행 코스 완벽 정리✔ㅣ3박 4일 일정표 나눔 (교토-USJ-오사카)ㅣ 교통 패스 추천,gpt_only,,추락의 길,교토,attraction,Y,철학의 길,자막 '은각사…추락의 길' — 철학의 길 오인식
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,엑스포 해물삼합,,여수시,restaurant,N,엑스포 해물삼합,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,수정사우나,,여수시,other,N,수정사우나,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,김경오 패티쓰리,,여수시,cafe,N,김경오 패티쓰리,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,여수케이블카,,여수시,attraction,N,여수케이블카,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,남진이네 게장 갈치명가,,여수시,restaurant,N,남진이네 게장 갈치명가,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,청정게장촌,,여수시,restaurant,N,청정게장촌,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,카페 STAY,,여수시,cafe,N,카페 STAY,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,카페 프롬나드,,여수시,cafe,N,카페 프롬나드,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,청가네 갓.갈치조림.게장,,여수시,restaurant,N,청가네 갓.갈치조림.게장,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,황금게장,,여수시,restaurant,N,황금게장,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,라마다 해상 짚트랙,,여수시,attraction,N,라마다 해상 짚트랙,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,용천 선상 어시장,,여수시,restaurant,N,용천 선상 어시장,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,유월드 루지 테마파크,,여수시,attraction,N,유월드 루지 테마파크,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gemini_only,낭만여수사진관,,여수시,attraction,N,낭만여수사진관,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c093,https://www.youtube.com/shorts/CX8meTvFUt8,[여수] 낭만 야경 크루즈! 미남크루즈 힐링 여행 코스 추천,gpt_only,,여수 EXPO,여수시,attraction,N,여수 EXPO,기준 c093(크루즈 제휴 할인 지도에만 나옴 → N) — 프레임: 크루즈 제휴 할인 지도에만 나온 가게(소개 대상 아님)
+c097,https://www.youtube.com/watch?v=e6TQz-YsfX8,Osaka Travel: From Accommodations to Must-Eat Spots and Shopping—Follow This Guide for a H,gemini_only,우메다 숙소,,오사카,lodging,N,우메다 숙소,설명 — 지역+일반명사(숙소 이름 없음)
+c097,https://www.youtube.com/watch?v=e6TQz-YsfX8,Osaka Travel: From Accommodations to Must-Eat Spots and Shopping—Follow This Guide for a H,gemini_only,알펜,,오사카,shopping,N,알펜,"기준 다(번화가·상권·체인 지점 불명 → N) — 설명 — 체인 이름만, 지점 불명"
+c098,https://www.youtube.com/shorts/7s4_GFaN0-U,[목포여행] 목포 문예역사관 - 이황준 기자,gemini_only,자연사박물관,,목포,attraction,N,자연사박물관,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 프레임 표지판·자막 — 통합 관람권 안내로만 언급
+c098,https://www.youtube.com/shorts/7s4_GFaN0-U,[목포여행] 목포 문예역사관 - 이황준 기자,gemini_only,목포생활도자기박물관,,목포,attraction,N,목포생활도자기박물관,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 프레임 표지판·자막 — 통합 관람권 안내로만 언급
+c102,https://www.youtube.com/shorts/tnq2AzLWVVA,마레지구의 숨겨진 분위기 좋은 이탈리안 맛집 카르보니스,gemini_only,Carboni's,,파리,restaurant,Y,카르보니스(Carboni's),설명 — GPT '카르보니스'와 같은 곳
+c102,https://www.youtube.com/shorts/tnq2AzLWVVA,마레지구의 숨겨진 분위기 좋은 이탈리안 맛집 카르보니스,gpt_only,,카르보니스,파리 3구,restaurant,Y,카르보니스(Carboni's),제목
+c104,https://www.youtube.com/shorts/ZYFOnMRNAPQ,2025 03 10 인천 가볼만한 곳 영흥도 국사봉 선재도 목섬,gpt_only,,선재도 공영주차장,인천 옹진군,other,N,선재도 공영주차장,설명 — 주차장(목적지 아님)
+c105,https://www.youtube.com/shorts/HPkni9cxrO4,2026년 03월16일 @경주 남산 칠불암#쇼츠 #경주남산#일상#힐링#여행,gemini_only,염불사지,,경주,attraction,N,염불사지,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 칠불암 가는 길(주차) 안내로 언급
+c106,https://www.youtube.com/shorts/JUv_tpTPKvo,"여름에 꼭 가야하는 강릉 명소 여행지 BEST 6 | 국내여행추천, 강릉가볼만한곳, 강릉명소",gemini_only,주문진,,강릉,attraction,N,주문진,자막 — 지역(읍) 이름
+c106,https://www.youtube.com/shorts/JUv_tpTPKvo,"여름에 꼭 가야하는 강릉 명소 여행지 BEST 6 | 국내여행추천, 강릉가볼만한곳, 강릉명소",gpt_only,,도깨비 촬영지,강릉시 주문진,attraction,Y,영진해변,사용자 판정(2026-11-16): Y — 자막 — 이름 없이 '도깨비 촬영지'(주문진 영진해변으로 보임)
+c110,https://www.youtube.com/shorts/8a44XAab6Lw,국내 여행지 추천! 떠먹여주는 3분 담양여행 하루코스 🌿 담양맛집 담양카페 담양가볼만한곳,gpt_only,,관방제림,담양군,attraction,N,관방제림,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 '근처에 죽녹원과 관방제림' — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c111,https://www.youtube.com/shorts/uuwXy6Jb_qc,보령줌인🔍ㅣ힐링이 살아 숨 쉬는 대천해수욕장🌊,gemini_only,보령머드,,보령시,attraction,N,보령머드,설명 — 축제·브랜드 이름
+c114,https://www.youtube.com/shorts/KLGhW3Y82D0,#쇼츠 제주올레길 베스트 코스 3박4일 걷기 여행,gemini_only,용천수,,제주,attraction,N,용천수,자막 — 일반명사(샘물)
+c115,https://www.youtube.com/shorts/IqiEKE76CQI,"보령가볼만한곳,대천 해수욕장,브이로그",gemini_only,보령바다,,보령시,attraction,N,보령바다,설명 — 지역+일반명사
+c116,https://www.youtube.com/shorts/evNW6Ib4Eik,오션뷰맛집 브런치맛집  거제 그루브인카페,gemini_only,흥남해수욕장,,거제,attraction,N,흥남해수욕장,"기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 카페 위치 설명, 주변·근처로만 언급(영상이 소개하는 곳 아님)"
+c117,https://www.youtube.com/watch?v=ILdpWjF4N-Q,"대만  🇹🇼 타이베이 자유여행 1일차 : 유산동우육면 , 시먼딩 , 용산사 , 야시장",gemini_only,시티 카페,,대만,cafe,N,시티 카페,"기준 다(번화가·상권·체인 지점 불명 → N) — 자막 '시티 카페를 왔습니다' — 편의점 커피 브랜드일 수 있음, 지점 불명"
+c117,https://www.youtube.com/watch?v=ILdpWjF4N-Q,"대만  🇹🇼 타이베이 자유여행 1일차 : 유산동우육면 , 시먼딩 , 용산사 , 야시장",gemini_only,까르푸,,대만,shopping,N,까르푸,"기준 다(번화가·상권·체인 지점 불명 → N) — 제목·설명·프레임 근거 없음, 체인 이름만, 지점 불명"
+c117,https://www.youtube.com/watch?v=ILdpWjF4N-Q,"대만  🇹🇼 타이베이 자유여행 1일차 : 유산동우육면 , 시먼딩 , 용산사 , 야시장",gemini_only,시먼,,대만,attraction,N,시먼딩,"기준 다(번화가·상권·체인 지점 불명 → N) — 제목·프레임 'ximending' — GPT '시먼딩'과 같은 곳, 번화가·상권(지역 단위) — 장소로 셀지 기준 필요"
+c117,https://www.youtube.com/watch?v=ILdpWjF4N-Q,"대만  🇹🇼 타이베이 자유여행 1일차 : 유산동우육면 , 시먼딩 , 용산사 , 야시장",gemini_only,시먼야시장,,대만,shopping,N,,사용자 판정(2026-11-16): N — 텍스트·프레임 근거 없음(Gemini 오디오로 추정)
+c117,https://www.youtube.com/watch?v=ILdpWjF4N-Q,"대만  🇹🇼 타이베이 자유여행 1일차 : 유산동우육면 , 시먼딩 , 용산사 , 야시장",gemini_only,닝샤야시장,,대만,shopping,N,,사용자 판정(2026-11-16): N — 텍스트·프레임 근거 없음(Gemini 오디오로 추정)
+c117,https://www.youtube.com/watch?v=ILdpWjF4N-Q,"대만  🇹🇼 타이베이 자유여행 1일차 : 유산동우육면 , 시먼딩 , 용산사 , 야시장",gpt_only,,유산동우육면,타이베이,restaurant,Y,유산동우육면,제목
+c117,https://www.youtube.com/watch?v=ILdpWjF4N-Q,"대만  🇹🇼 타이베이 자유여행 1일차 : 유산동우육면 , 시먼딩 , 용산사 , 야시장",gpt_only,,시먼딩,타이베이,attraction,N,시먼딩,기준 다(번화가·상권·체인 지점 불명 → N) — 제목 — 번화가·상권(지역 단위) — 장소로 셀지 기준 필요
+c122,https://www.youtube.com/shorts/aYppl_PRY84,"1분만에 보는 광주송정역 맛집 TOP4 | 광주 출신 SRT 기장님 추천 | 대낮에 술을 부르는 식당? | 광주맛집투어 | 애호박찌개, 한정식, 곱창, 돼지갈비 ",gemini_only,쌍교숯불갈비,,광주,restaurant,Y,쌍교숯불갈비,사용자 판정(2026-11-16): Y(쌍도 숯불갈비와 같은 가게) — Gemini 표기 — GPT '쌍도 숯불갈비'와 같은 가게로 보이나 표기 확인 필요
+c122,https://www.youtube.com/shorts/aYppl_PRY84,"1분만에 보는 광주송정역 맛집 TOP4 | 광주 출신 SRT 기장님 추천 | 대낮에 술을 부르는 식당? | 광주맛집투어 | 애호박찌개, 한정식, 곱창, 돼지갈비 ",gpt_only,,쌍도 숯불갈비,광주,restaurant,Y,쌍교숯불갈비,사용자 판정(2026-11-16): Y(쌍교숯불갈비와 같은 가게) — 자막 — Gemini '쌍교숯불갈비'와 같은 가게로 보이나 표기 확인 필요
+c123,https://www.youtube.com/shorts/yjic23CbFgg,남해 바다 뷰 카페 TOP 5!,gemini_only,남해,,경상남도 남해군,attraction,N,남해,제목 — 지역 이름
+c124,https://www.youtube.com/shorts/bLHemueX3pQ,"[subtitle] Best 10 places to visit in Andong, Gyeongsangbuk-do (Korea travel)",gemini_only,월영공원,,안동,attraction,N,월영공원,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 월영교와 연결된 곳으로 언급
+c124,https://www.youtube.com/shorts/bLHemueX3pQ,"[subtitle] Best 10 places to visit in Andong, Gyeongsangbuk-do (Korea travel)",gemini_only,안동민속촌,,안동,attraction,N,안동민속촌,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 월영교와 연결된 곳으로 언급
+c124,https://www.youtube.com/shorts/bLHemueX3pQ,"[subtitle] Best 10 places to visit in Andong, Gyeongsangbuk-do (Korea travel)",gemini_only,최화정,,안동,attraction,Y,체화정,프레임 '3. 화정 (Chehwajeong Pavilion)' — GPT '화정'과 같은 곳
+c124,https://www.youtube.com/shorts/bLHemueX3pQ,"[subtitle] Best 10 places to visit in Andong, Gyeongsangbuk-do (Korea travel)",gemini_only,만유정,,안동,attraction,Y,만휴정,프레임 '5. 만휴정' — GPT 행과 같은 곳
+c124,https://www.youtube.com/shorts/bLHemueX3pQ,"[subtitle] Best 10 places to visit in Andong, Gyeongsangbuk-do (Korea travel)",gpt_only,,화정,안동,attraction,Y,체화정,프레임 '3. 화정 (Chehwajeong Pavilion)'
+c124,https://www.youtube.com/shorts/bLHemueX3pQ,"[subtitle] Best 10 places to visit in Andong, Gyeongsangbuk-do (Korea travel)",gpt_only,,만휴정,안동,attraction,Y,만휴정,프레임 '5. 만휴정 (Manhyujeong Pavilion)'
+c127,https://www.youtube.com/shorts/CVAFrdaNKAs,[EP.14] 카페VLOG l 남해 할머니집st 유자카스테라 까페 '카페 유자',gemini_only,독일마을,,경상남도 남해군,attraction,N,독일마을,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c130,https://www.youtube.com/shorts/IC2YWfsKK0A,#조개구이 #영일대해수욕장 #영일대해수욕장맛집 #운수대통조개 #포항뷰맛집 #오션뷰맛집 #포항맛집,gemini_only,영일대,,포항,restaurant,N,영일대,제목 — 지역 표현('영일대 조개구이 맛집')
+c130,https://www.youtube.com/shorts/IC2YWfsKK0A,#조개구이 #영일대해수욕장 #영일대해수욕장맛집 #운수대통조개 #포항뷰맛집 #오션뷰맛집 #포항맛집,gpt_only,,운수대통조개,포항시,restaurant,Y,운수대통조개,제목
+c131,https://www.youtube.com/shorts/L-sPWRfX2qI,"2026년 양양 여행 Vlog | 낙산사, 컨센트릭 카페, 이엘호텔, 메밀꽃이 피었습니다",gpt_only,,컨센트릭 카페,양양,cafe,Y,컨센트릭 카페,제목
+c131,https://www.youtube.com/shorts/L-sPWRfX2qI,"2026년 양양 여행 Vlog | 낙산사, 컨센트릭 카페, 이엘호텔, 메밀꽃이 피었습니다",gpt_only,,이엘호텔,양양,lodging,Y,이엘호텔,제목
+c131,https://www.youtube.com/shorts/L-sPWRfX2qI,"2026년 양양 여행 Vlog | 낙산사, 컨센트릭 카페, 이엘호텔, 메밀꽃이 피었습니다",gpt_only,,메밀꽃이 피었습니다,양양,restaurant,Y,메밀꽃이 피었습니다,제목
+c135,https://www.youtube.com/watch?v=bdq2lWUTiWk,"[Yooth] (subtitles) Thailand Travel Vlog | Wat Arun View Restaurant, Temple of the Emerald",gpt_only,,왓 프라깨우,방콕,attraction,Y,왓 프라깨우,제목 'Temple of the Emerald'(에메랄드 사원 = 왓 프라깨우) — 이전 초안은 프레임만 보고 '?'
+c136,https://www.youtube.com/shorts/kSIfHNyD7iI,제주공항근처 포토존 예쁜 진정성카페 방문후기,gemini_only,도두봉,,제주,attraction,N,도두봉,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 프레임 자막 '도두봉(키세스존)도 무지개해안도로도 가까워요' — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c136,https://www.youtube.com/shorts/kSIfHNyD7iI,제주공항근처 포토존 예쁜 진정성카페 방문후기,gemini_only,무지개해안도로,,제주,attraction,N,무지개해안도로,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 프레임 자막 — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c137,https://www.youtube.com/shorts/ePuyndT45JM,파리에서 만난 인생 에그타르트 feat. 파리의 숨겨진 정원,gemini_only,수켓은 정원,,파리,attraction,Y,,사용자 판정(2026-11-16): Y(이름 미정) — 자막 오인식으로 실제 이름 불명
+c142,https://www.youtube.com/shorts/SWhFBQMG0I0,"[26.7.19]대구 북구청 한식 요리주점 ""탄막"" #릴스#쇼츠 #대구술집#주술회전 #진격의거인 #체인소맨 #고성동맛집#대구맛집#요리주점#고성동맛집#한식요리#sh",gpt_only,,탄막,대구 북구,restaurant,Y,탄막,제목
+c143,https://www.youtube.com/watch?v=SXk8HWM53zI,"🇹🇭 Top 3 Restaurants in Bangkok, Thailand! A Fail-Proof Dining Out Course (Prices on the R",gemini_only,시암 MBK,,방콕,shopping,N,시암 MBK,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 붐비는 지역 예시로 언급
+c143,https://www.youtube.com/watch?v=SXk8HWM53zI,"🇹🇭 Top 3 Restaurants in Bangkok, Thailand! A Fail-Proof Dining Out Course (Prices on the R",gemini_only,아이콘시암,,방콕,shopping,N,아이콘시암,"기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 식당 지점이 있는 쇼핑몰, 식당과 따로 셀지 확인"
+c143,https://www.youtube.com/watch?v=SXk8HWM53zI,"🇹🇭 Top 3 Restaurants in Bangkok, Thailand! A Fail-Proof Dining Out Course (Prices on the R",gemini_only,엠쿼티어,,방콕,shopping,N,엠쿼티어,"기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 '엠컬티엄점' — 식당 지점이 있는 쇼핑몰, 식당과 따로 셀지 확인"
+c146,https://www.youtube.com/shorts/l8w-zvMgSH8,[흥미로 쇼츠(shorts)] ☕️ 동리단길카페거리 ☕️| 광주,gemini_only,풍암호수공원,,광주,attraction,N,풍암호수공원,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 해시태그로만 언급
+c148,https://www.youtube.com/shorts/RrGNuxHoa5s,목포 평화광장 바다분수 쇼~,gpt_only,,평화광장 바다분수,목포,attraction,Y,평화광장 바다분수,제목
+c149,https://www.youtube.com/shorts/w83r3r1bIxQ,[EP28. 여수여행] 여수여행 100% 즐기는 법!🤿 | 여수 이색 체험 코스 | 여수여행,gemini_only,여수엑스포,,여수,attraction,N,여수엑스포,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 해시태그로만 언급
+c149,https://www.youtube.com/shorts/w83r3r1bIxQ,[EP28. 여수여행] 여수여행 100% 즐기는 법!🤿 | 여수 이색 체험 코스 | 여수여행,gemini_only,이순신광장,,여수,attraction,N,이순신광장,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 해시태그로만 언급
+c149,https://www.youtube.com/shorts/w83r3r1bIxQ,[EP28. 여수여행] 여수여행 100% 즐기는 법!🤿 | 여수 이색 체험 코스 | 여수여행,gpt_only,,여수케이블카,여수시,attraction,Y,여수 해상케이블카,설명·프레임 '2. 해상 케이블카'
+c149,https://www.youtube.com/shorts/w83r3r1bIxQ,[EP28. 여수여행] 여수여행 100% 즐기는 법!🤿 | 여수 이색 체험 코스 | 여수여행,gpt_only,,이사부크루즈,여수시,attraction,Y,이사부크루즈,프레임 — 크루즈 배에 적힌 이름
+c152,https://www.youtube.com/shorts/Xo8_CP0BYFs,[박원숙 카페 길안내] 독일마을 입구/광장 주차장에서 출발,gemini_only,독일마을 광장,,경상남도 남해군,attraction,N,독일마을 광장,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명·자막 — 길안내 출발점(주차장)
+c152,https://www.youtube.com/shorts/Xo8_CP0BYFs,[박원숙 카페 길안내] 독일마을 입구/광장 주차장에서 출발,gemini_only,원예예술촌,,경상남도 남해군,attraction,N,원예예술촌,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 다음 영상 안내로 언급
+c155,https://www.youtube.com/shorts/qV8dmbaCy90,"광주 동구 관광명소, 인스타 뷰맛집 광주뷰폴리를 즐겨요",gemini_only,국립아시아문화전당,,광주 동구,attraction,N,국립아시아문화전당,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c156,https://www.youtube.com/shorts/4t1Gqo7Ssq0,(국내여행)1월의 걷기여행길#속초 해파랑길45코스,gpt_only,,속초 해파랑길 45코스,속초시,attraction,Y,속초 해파랑길 45코스,제목·설명
+c157,https://www.youtube.com/shorts/K0S42HJWRts,제주 아이와 가볼만한곳 서프라이즈테마파크,gpt_only,,서프라이즈테마파크,제주,attraction,Y,서프라이즈테마파크,제목
+c159,https://www.youtube.com/shorts/NvtD7cN-m5o,담양 창평 슬로시티 삼지내마을 삼지천,gemini_only,좋은날,,담양,restaurant,N,,사용자 판정(2026-11-16): N — 프레임 입간판 '좋은날' — 마을을 걷다 지나친 가게인지 소개한 가게인지 확인
+c159,https://www.youtube.com/shorts/NvtD7cN-m5o,담양 창평 슬로시티 삼지내마을 삼지천,gpt_only,,삼지내마을,담양군 창평면,attraction,Y,삼지내마을,제목
+c159,https://www.youtube.com/shorts/NvtD7cN-m5o,담양 창평 슬로시티 삼지내마을 삼지천,gpt_only,,삼지천,담양군 창평면,attraction,N,,사용자 판정(2026-11-16): N — 제목 — 삼지내마을과 같은 곳일 수 있음
+c163,https://www.youtube.com/shorts/nD6knQvPE1M,남해 여행 1탄: 카페 할로브리즈,gemini_only,독일마을,,남해,attraction,N,독일마을,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명·자막 — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c166,https://www.youtube.com/shorts/R1JdewJIOs0,담양맛집 기막힌 시골촌닭(거목정),gemini_only,용면 가마골,,전남 담양,attraction,N,,"사용자 판정(2026-11-16): N — 텍스트 근거 없음(Gemini 오디오), 계곡 사진만"
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gemini_only,태국 세븐일레븐,,방콕,shopping,N,태국 세븐일레븐,자막 — 편의점 체인(일반)
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gemini_only,아유타야,,방콕,attraction,N,아유타야,"설명·자막 — 도시 이름, 투어 안 장소는 왓 마하탓"
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,아속 로빈슨 맥도날드,방콕,restaurant,N,아속 로빈슨 맥도날드,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 투어 집결 장소로 언급
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,터미널 21 쇼핑몰,방콕,shopping,N,터미널 21 쇼핑몰,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 호텔과 연결된 곳으로 언급
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,더 웨스팅 그랑대 스쿠,방콕,lodging,N,더 웨스팅 그랑대 스쿠,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 대안 숙소로 이름만 나열
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,쉐라톤 그랑데 스쿠,방콕,lodging,N,쉐라톤 그랑데 스쿠,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 대안 숙소로 이름만 나열
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,갤러리아 10,방콕,lodging,N,갤러리아 10,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 대안 숙소로 이름만 나열
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,"센터포인트 호텔, 스콘비 10",방콕,lodging,N,"센터포인트 호텔, 스콘비 10",기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 대안 숙소 두 곳이 한 이름으로 합쳐짐
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,왓 마하탓,아유타야,attraction,Y,왓 마하탓,프레임 '왓 마하탓'
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,에메랄드 사원,방콕,attraction,N,에메랄드 사원,사용자 판정(2026-11-16): N(기준 나(상위 장소만 정답) 검토 — N) — 설명·자막
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,숙시암,방콕,shopping,N,숙시암,사용자 판정(2026-11-16): N(기준 나(상위 장소만 정답) 검토 — N) — 자막 '아이콘 시암 1층에 있는 숙시암'
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,위험한 기찻길 시장,방콕,shopping,N,,"사용자 판정(2026-11-16): N — 설명 — 통칭, 정식 이름(매끌롱 시장) 확인 필요"
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,짜짝 주말 시장,방콕,shopping,Y,짜뚜짝 주말시장,자막 — 표기 오류
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,원방콕,방콕,shopping,N,원방콕,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 더울 때 대안으로 이름만 나열
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,센트럴 파크,방콕,shopping,N,센트럴 파크,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 더울 때 대안으로 이름만 나열
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,시안파곤,방콕,shopping,N,시암 파라곤,"기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 더울 때 대안으로 이름만 나열, 표기 오류"
+c168,https://www.youtube.com/watch?v=nNvwbfWokKo,방콕 여행 고민 끝! 방콕 여행 3박 5일 일정 총정리 🇹🇭 필수 코스부터 숙소 위치 선정까지 완벽 가이드 🗺️,gpt_only,,센트럴 월드,방콕,shopping,N,센트럴 월드,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 더울 때 대안으로 이름만 나열
+c170,https://www.youtube.com/shorts/FtswBTumMUw,고대 맛집 클라스 [KTN 쇼츠] #Shorts,gemini_only,한입,,서울,restaurant,Y,한입 안암,"프레임 '한입, 안암'"
+c172,https://www.youtube.com/shorts/SFVDAXyJ5kY,[알쓸신전] 모든 장소가 포토스팟인 마을이 있다구!? #전주 #전주여행 #자만벽화마을,gpt_only,,한옥마을,전주시,attraction,N,한옥마을,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명·자막 — 길 안내로 언급(소개 대상은 자만벽화마을)
+c173,https://www.youtube.com/watch?v=M_6a03NqKCo,"Follow This Tokyo Travel Guide | The Ultimate 2026 4-Day Tokyo Itinerary (+Travel Budget, ",gemini_only,긴자,,도쿄,shopping,N,긴자,기준 다(번화가·상권·체인 지점 불명 → N) — 설명·자막 — 번화가·상권(지역 단위) — 장소로 셀지 기준 필요
+c173,https://www.youtube.com/watch?v=M_6a03NqKCo,"Follow This Tokyo Travel Guide | The Ultimate 2026 4-Day Tokyo Itinerary (+Travel Budget, ",gemini_only,아키하바라,,도쿄,shopping,N,아키하바라,기준 다(번화가·상권·체인 지점 불명 → N) — 설명·자막 — 번화가·상권(지역 단위) — 장소로 셀지 기준 필요
+c173,https://www.youtube.com/watch?v=M_6a03NqKCo,"Follow This Tokyo Travel Guide | The Ultimate 2026 4-Day Tokyo Itinerary (+Travel Budget, ",gemini_only,가부키초,,도쿄,attraction,N,가부키초,기준 다(번화가·상권·체인 지점 불명 → N) — 설명·자막 — 번화가·상권(지역 단위) — 장소로 셀지 기준 필요
+c173,https://www.youtube.com/watch?v=M_6a03NqKCo,"Follow This Tokyo Travel Guide | The Ultimate 2026 4-Day Tokyo Itinerary (+Travel Budget, ",gpt_only,,도쿄 소라마치,도쿄,shopping,N,도쿄 소라마치,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 자막 — 스카이트리 아래 쇼핑몰, 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
+c173,https://www.youtube.com/watch?v=M_6a03NqKCo,"Follow This Tokyo Travel Guide | The Ultimate 2026 4-Day Tokyo Itinerary (+Travel Budget, ",gpt_only,,디즈니랜드,도쿄,attraction,N,디즈니랜드,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 자막은 '디즈니 리조트' — 랜드·씨 중 어디인지 확인"
+c173,https://www.youtube.com/watch?v=M_6a03NqKCo,"Follow This Tokyo Travel Guide | The Ultimate 2026 4-Day Tokyo Itinerary (+Travel Budget, ",gpt_only,,디즈니 씨,도쿄,attraction,N,디즈니 씨,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 자막은 '디즈니 리조트' — 랜드·씨 중 어디인지 확인"
+c173,https://www.youtube.com/watch?v=M_6a03NqKCo,"Follow This Tokyo Travel Guide | The Ultimate 2026 4-Day Tokyo Itinerary (+Travel Budget, ",gpt_only,,고질라 헤드,도쿄 신주쿠,attraction,N,고질라 헤드,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 자막 — 가부키초 안 조형물"
+c177,https://www.youtube.com/shorts/3HMzCL9YiYw,#먹방 #맛집 #부산 #koreafood #쇼츠 #먹스타그램 #본죽 #부산 #맛집 #먹방 #koreafood #먹스타그램 #쇼츠,gemini_only,해운대,,부산,attraction,N,해운대,자막 — 지역 이름
+c181,https://www.youtube.com/shorts/dKr7-jg8h5A,#쇼츠 #shorts #남양주명소 #다산유적지 #정약용생가,gpt_only,,다산유적지,남양주,attraction,Y,다산유적지,제목
+c181,https://www.youtube.com/shorts/dKr7-jg8h5A,#쇼츠 #shorts #남양주명소 #다산유적지 #정약용생가,gpt_only,,정약용생가,남양주,attraction,N,정약용생가,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 제목 — 다산유적지 안 시설, 따로 셀지 확인"
+c184,https://www.youtube.com/shorts/u61ZgIncQ-o,[광주에서 힐링해 봄] B대면데이트 l 광주시 l 청석공원편 l 제가 많이 서툴렀죠..?,gemini_only,중앙공원,,광주,attraction,N,중앙공원,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 다른 편 안내로 언급
+c184,https://www.youtube.com/shorts/u61ZgIncQ-o,[광주에서 힐링해 봄] B대면데이트 l 광주시 l 청석공원편 l 제가 많이 서툴렀죠..?,gemini_only,송정공원,,광주,attraction,N,송정공원,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 다른 편 안내로 언급
+c184,https://www.youtube.com/shorts/u61ZgIncQ-o,[광주에서 힐링해 봄] B대면데이트 l 광주시 l 청석공원편 l 제가 많이 서툴렀죠..?,gemini_only,청석교,,광주,attraction,N,청석교,"기준 나(다른 장소 안 시설 → N, 상위 장소만 정답) — 프레임 '청석교' — 청석공원 안 다리, 이미 일치한 장소 안의 시설 — 따로 셀지 확인"
+c186,https://www.youtube.com/shorts/XV5-7000hs4,베트남 다낭 맛있는 음식이 먹고 싶을때 달려 가세요!!! #맛집추천 #다낭맛집 #다낭 #베트남여행 #danangfood #foodshorts #shorts,gpt_only,,한시장,다낭,shopping,Y,한시장,자막 '한시장 쇼핑 후' 추천
+c187,https://www.youtube.com/shorts/qENQULkRhqA,[춘천 가볼만 한 곳] 춘천구봉산카페거리 avata2,gemini_only,스타벅스,,춘천시,cafe,N,스타벅스,"기준 다(번화가·상권·체인 지점 불명 → N) — 설명 — 체인 이름만, 지점 불명"
+c187,https://www.youtube.com/shorts/qENQULkRhqA,[춘천 가볼만 한 곳] 춘천구봉산카페거리 avata2,gemini_only,곤트라쉐리에,,춘천시,cafe,N,곤트라쉐리에,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명에 이름만 나열
+c189,https://www.youtube.com/shorts/wt92_0QSh58,아낌없이 넣은 해물! 남해를 한 그릇에 담은 ‘해물짬뽕’ | 생방송 투데이 | SBS Story,gemini_only,욕지도,,통영시,attraction,N,욕지도,"기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 섬 이름(지역), 소개 대상은 짬뽕 가게"
+c190,https://www.youtube.com/watch?v=WtISOFLYL70,"후쿠오카 여행 코스 이 영상 하나로 종결❤️ 일본 후쿠오카 2박 3일 또는 3박 4일 가볼만한곳, 후쿠오카 맛집, 교통 정보, 경비까지 완벽 가이드",gpt_only,,우키미도 정자,후쿠오카,attraction,N,우키미도 정자,사용자 판정(2026-11-16): N(기준 나(상위 장소만 정답) 검토 — N) — 자막
+c190,https://www.youtube.com/watch?v=WtISOFLYL70,"후쿠오카 여행 코스 이 영상 하나로 종결❤️ 일본 후쿠오카 2박 3일 또는 3박 4일 가볼만한곳, 후쿠오카 맛집, 교통 정보, 경비까지 완벽 가이드",gpt_only,,오호리공원 스타벅스,후쿠오카,cafe,N,오호리공원 스타벅스,사용자 판정(2026-11-16): N(기준 나(상위 장소만 정답) 검토 — N) — 설명
+c190,https://www.youtube.com/watch?v=WtISOFLYL70,"후쿠오카 여행 코스 이 영상 하나로 종결❤️ 일본 후쿠오카 2박 3일 또는 3박 4일 가볼만한곳, 후쿠오카 맛집, 교통 정보, 경비까지 완벽 가이드",gpt_only,,앤로컬스 카페,후쿠오카,cafe,Y,앤로컬스 카페,설명·자막
+c190,https://www.youtube.com/watch?v=WtISOFLYL70,"후쿠오카 여행 코스 이 영상 하나로 종결❤️ 일본 후쿠오카 2박 3일 또는 3박 4일 가볼만한곳, 후쿠오카 맛집, 교통 정보, 경비까지 완벽 가이드",gpt_only,,오호리공원 일본정원,후쿠오카,attraction,N,오호리공원 일본정원,사용자 판정(2026-11-16): N(기준 나(상위 장소만 정답) 검토 — N) — 설명
+c190,https://www.youtube.com/watch?v=WtISOFLYL70,"후쿠오카 여행 코스 이 영상 하나로 종결❤️ 일본 후쿠오카 2박 3일 또는 3박 4일 가볼만한곳, 후쿠오카 맛집, 교통 정보, 경비까지 완벽 가이드",gpt_only,,후쿠오카시립미술관,후쿠오카,attraction,Y,후쿠오카시립미술관,설명
+c190,https://www.youtube.com/watch?v=WtISOFLYL70,"후쿠오카 여행 코스 이 영상 하나로 종결❤️ 일본 후쿠오카 2박 3일 또는 3박 4일 가볼만한곳, 후쿠오카 맛집, 교통 정보, 경비까지 완벽 가이드",gpt_only,,타카오 텐푸라 캐널시티점,후쿠오카,restaurant,Y,타카오 텐푸라 캐널시티점,자막
+c190,https://www.youtube.com/watch?v=WtISOFLYL70,"후쿠오카 여행 코스 이 영상 하나로 종결❤️ 일본 후쿠오카 2박 3일 또는 3박 4일 가볼만한곳, 후쿠오카 맛집, 교통 정보, 경비까지 완벽 가이드",gpt_only,,하카타항,후쿠오카,attraction,N,하카타항,"기준 다(지역 단위) — 설명·자막: 항구 일대, 소개 대상은 하카타 포트 타워(일치). 짝 짓기 수정(7-1절)으로 새로 생긴 행, Claude 판정"
+c193,https://www.youtube.com/shorts/5DcxuXFo778,Where Are the Most Popular Travel Destinations in Jeonnam and Gwangju? TOP 15,gemini_only,담양 죽녹원,,전라남도,attraction,Y,죽녹원,자막 '담양 중원'(죽녹원 오인식) — GPT '중원'과 같은 곳
+c193,https://www.youtube.com/shorts/5DcxuXFo778,Where Are the Most Popular Travel Destinations in Jeonnam and Gwangju? TOP 15,gpt_only,,중원,담양,attraction,Y,죽녹원,자막 '담양 중원' — 죽녹원 오인식
+c194,https://www.youtube.com/shorts/n61dwbQt778,"양양여행 낙산해수욕장에 찾아오면 무조건 들려야 하는 브런치 까페!  찐 맛집! 위서퍼스테이블을 제대로 즐기는 8가지 방법 Brunch Cafe, Naksan in",gemini_only,디그니티 호텔,,양양,lodging,N,디그니티 호텔,기준 가(주변·해시태그·대안 목록에 언급만 → N) — 설명 — 주변·근처로만 언급(영상이 소개하는 곳 아님)
+c195,https://www.youtube.com/shorts/i1PhPL7MPDk,BTS 지민 초복 서울 유명한 연예인 삼계탕 맛집 베스트 랭킹 8  #쇼츠  #음식 #삼계탕 #몸보신 #보양식,gpt_only,,약수 한방삼계탕,서울 중구,restaurant,Y,약수 한방삼계탕,설명 순위 목록
+c195,https://www.youtube.com/shorts/i1PhPL7MPDk,BTS 지민 초복 서울 유명한 연예인 삼계탕 맛집 베스트 랭킹 8  #쇼츠  #음식 #삼계탕 #몸보신 #보양식,gpt_only,,평양옥,서울 서대문구,restaurant,Y,평양옥,설명 순위 목록
+c195,https://www.youtube.com/shorts/i1PhPL7MPDk,BTS 지민 초복 서울 유명한 연예인 삼계탕 맛집 베스트 랭킹 8  #쇼츠  #음식 #삼계탕 #몸보신 #보양식,gpt_only,,원조원할매소문난닭한마리,서울 종로구,restaurant,Y,원조원할매소문난닭한마리,설명 순위 목록
+c199,https://www.youtube.com/shorts/rQZUqZTcaw4,Incheon City | Aramaru Circular Observatory Incheon Travel | #2022IncheonMediaCreator,gemini_only,아라뱃길,,인천,attraction,N,아라뱃길,"기준 가(주변·해시태그·대안 목록에 언급만 → N) — 자막 — 운하 이름, 소개 대상은 아라마루 전망대"

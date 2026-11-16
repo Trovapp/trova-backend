@@ -1,0 +1,42 @@
+{
+  "sample_id": "c081",
+  "url": "https://www.youtube.com/shorts/2bvobs42mFM",
+  "seconds": 5.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3064,
+      "totalTokens": 12597
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2496,
+      "totalTokens": 13613
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페 주평",
+      "nameCandidates": [
+        "카페 주평",
+        "카페주평"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "유리창을 통해 하늘과 구름, 꽃과 나무가 보이는 예쁜 정원 카페"
+      ]
+    }
+  ]
+}

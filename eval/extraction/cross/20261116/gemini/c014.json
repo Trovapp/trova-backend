@@ -1,0 +1,28 @@
+{
+  "sample_id": "c014",
+  "url": "https://www.youtube.com/shorts/5KXRmsNezrM",
+  "seconds": 9.9,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "포항 호미곶 해맞이광장",
+      "nameCandidates": [
+        "포항 호미곶 해맞이광장",
+        "호미곶 해맞이광장"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "우리나라에서 가장 먼저 해가 뜨는 일출 명소",
+        "바다 위와 육지에서 서로 마주 보는 '상생의 손' 조형물 위치",
+        "바다를 향해 뻗은 해상 데크길과 에메랄드빛 동해바다 조망"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "sample_id": "c077",
+  "url": "https://www.youtube.com/shorts/QEhHIwRgMe8",
+  "seconds": 9.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4342,
+      "totalTokens": 13897
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4511,
+      "totalTokens": 15868
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "가야갈매기",
+      "nameCandidates": [
+        "가야갈매기",
+        "가야 갈매기"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "숯불에 구워 먹는 고소한 갈매기살이 대표 메뉴",
+        "퇴근 후 한잔하기 좋은 로컬 단골집 분위기"
+      ]
+    },
+    {
+      "name": "초가뭉텅찌개",
+      "nameCandidates": [
+        "초가뭉텅찌개",
+        "초가 뭉텅",
+        "초가뭉텅"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "큼직하게 들어간 고기와 진한 국물이 특징",
+        "추운 날 생각나는 든든한 한끼 맛집"
+      ]
+    },
+    {
+      "name": "스시요혼",
+      "nameCandidates": [
+        "스시요혼",
+        "스시 요혼"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "신선한 재료와 깔끔한 플레이팅이 특징",
+        "춘천에서 초밥이 생각날 때 무난하게 선택 가능한 곳"
+      ]
+    },
+    {
+      "name": "밀두레",
+      "nameCandidates": [
+        "밀두레"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "자극적이지 않고 깊은 국물 맛이 특징",
+        "들깨수제비, 수제비, 김치수제비, 비빔국수, 김치말이국수 메뉴 있음"
+      ]
+    },
+    {
+      "name": "명동우미닭갈비",
+      "nameCandidates": [
+        "명동우미닭갈비",
+        "명동무 닭갈비",
+        "명동우미 닭갈비"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "양념이 과하지 않고 고기 본연의 맛이 살아 있는 스타일",
+        "닭갈비, 닭내장, 막국수 메뉴 있음"
+      ]
+    },
+    {
+      "name": "조부자매운순대가",
+      "nameCandidates": [
+        "조부자매운순대가",
+        "조부자 매운 순대가"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "쫄깃한 순대와 양념이 잘 어우러진 맛",
+        "매운맛 좋아한다면 한 번쯤 도전해 볼 곳"
+      ]
+    },
+    {
+      "name": "풍물옹심이칼국수",
+      "nameCandidates": [
+        "풍물옹심이칼국수",
+        "풍물홍심이칼국수"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "강원도식 감자 옹심이여 쫀득한 식감이 특징",
+        "추운 날 든든하게 생각나는 집"
+      ]
+    },
+    {
+      "name": "플레움",
+      "nameCandidates": [
+        "플레움"
+      ],
+      "region": "춘천",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "청국장 맛집",
+        "부모님 모시고 가기 좋은 편안한 분위기"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "sample_id": "c090",
+  "url": "https://www.youtube.com/shorts/JCuONwuHY_0",
+  "seconds": 6.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3067,
+      "totalTokens": 10167
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2728,
+      "totalTokens": 11304
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "라이라이",
+      "nameCandidates": [
+        "라이라이"
+      ],
+      "region": "서울",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "바늘이야기",
+      "nameCandidates": [
+        "바늘이야기"
+      ],
+      "region": "서울",
+      "address": null,
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "투라이프",
+      "nameCandidates": [
+        "투라이프"
+      ],
+      "region": "서울",
+      "address": null,
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

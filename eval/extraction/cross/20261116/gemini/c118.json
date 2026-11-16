@@ -1,0 +1,41 @@
+{
+  "sample_id": "c118",
+  "url": "https://www.youtube.com/shorts/gQ4-p5nYSMI",
+  "seconds": 6.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3226,
+      "totalTokens": 12314
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2841,
+      "totalTokens": 13314
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페 화산리",
+      "nameCandidates": [
+        "카페 화산리"
+      ],
+      "region": "보령",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "보령 화산리에 위치한 분위기 좋은 카페"
+      ]
+    }
+  ]
+}

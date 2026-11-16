@@ -1,0 +1,27 @@
+{
+  "sample_id": "c011",
+  "url": "https://www.youtube.com/shorts/bisuWyw2NA4",
+  "seconds": 9.4,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "인스파이어 오로라",
+      "nameCandidates": [
+        "인스파이어 오로라",
+        "인스파이어리조트"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "전체쇼는 3분 분량의 고래쇼 영상",
+        "세로 영상을 가로로 변환한 쇼츠 전체 영상"
+      ]
+    }
+  ]
+}

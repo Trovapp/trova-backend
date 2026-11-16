@@ -1,0 +1,43 @@
+{
+  "sample_id": "c144",
+  "url": "https://www.youtube.com/shorts/p8bXsQ9TARc",
+  "seconds": 7.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3719,
+      "totalTokens": 12720
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3543,
+      "totalTokens": 13776
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "향토식당",
+      "nameCandidates": [
+        "향토식당"
+      ],
+      "region": "전주",
+      "address": "전주시 덕진구 산정 1길 6",
+      "category": "restaurant",
+      "confidence": 1,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아침 6시에 문을 여는 30년 업력의 백반집",
+        "향토식당백반정식 12,000원",
+        "제육볶음, 김치찌개, 청국장 등 다양한 반찬 제공"
+      ]
+    }
+  ]
+}

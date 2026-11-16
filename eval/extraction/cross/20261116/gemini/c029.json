@@ -1,0 +1,109 @@
+{
+  "sample_id": "c029",
+  "url": "https://www.youtube.com/shorts/AQI1VgZi3gI",
+  "seconds": 10.6,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "용추계곡",
+      "nameCandidates": [
+        "용추계곡"
+      ],
+      "region": "가평",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "맑고 시원한 물이 흐르는 계곡",
+        "깊은 숲과 폭포가 어우러진 풍경",
+        "계곡을 따라 숲길 산책 가능"
+      ]
+    },
+    {
+      "name": "청평호반",
+      "nameCandidates": [
+        "청평호반"
+      ],
+      "region": "가평",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "북한강과 홍천강이 만나는 호수",
+        "수상 레저를 즐기며 쉴 수 있음"
+      ]
+    },
+    {
+      "name": "아침고요수목원",
+      "nameCandidates": [
+        "아침고요수목원"
+      ],
+      "region": "가평",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "다양한 테마 정원이 있는 곳",
+        "다양한 식물을 감상하고 사진 찍기 좋음"
+      ]
+    },
+    {
+      "name": "제이드가든수목원",
+      "nameCandidates": [
+        "제이드가든수목원",
+        "제이드 가든 수목원"
+      ],
+      "region": "가평",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "숲에서 만나는 작은 유럽 컨셉",
+        "이국적인 분위기의 정원에서 산책 가능"
+      ]
+    },
+    {
+      "name": "호명호수공원",
+      "nameCandidates": [
+        "호명호수공원"
+      ],
+      "region": "가평",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "시원한 바람을 맞으며 산책 가능",
+        "탁 트인 호수와 주변 산들의 경치"
+      ]
+    },
+    {
+      "name": "가평잣향기푸른숲",
+      "nameCandidates": [
+        "가평잣향기푸른숲",
+        "잣향기푸른숲"
+      ],
+      "region": "가평",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "나무향이 가득한 숲",
+        "다양한 산책코스와 산림욕 즐기기 좋음"
+      ]
+    }
+  ]
+}

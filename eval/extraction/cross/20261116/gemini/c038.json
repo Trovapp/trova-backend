@@ -1,0 +1,45 @@
+{
+  "sample_id": "c038",
+  "url": "https://www.youtube.com/shorts/WX6J6q1-qys",
+  "seconds": 7.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3755,
+      "totalTokens": 11080
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3503,
+      "totalTokens": 12152
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "옥마산 패러글라이딩",
+      "nameCandidates": [
+        "옥마산 패러글라이딩",
+        "운마산 패러글라이딩",
+        "은마산 패러글라이딩"
+      ],
+      "region": "보령",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "보령에서 즐길 수 있는 새로운 액티비티",
+        "머리부터 발끝까지 전해지는 짜릿한 스릴",
+        "보령을 한눈에 담을 수 있는 패러글라이딩 체험"
+      ]
+    }
+  ]
+}

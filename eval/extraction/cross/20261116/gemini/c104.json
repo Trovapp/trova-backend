@@ -1,0 +1,91 @@
+{
+  "sample_id": "c104",
+  "url": "https://www.youtube.com/shorts/ZYFOnMRNAPQ",
+  "seconds": 7.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3636,
+      "totalTokens": 13146
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3592,
+      "totalTokens": 14610
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "장경리 제2 공영주차장",
+      "nameCandidates": [
+        "장경리 제2 공영주차장"
+      ],
+      "region": "인천 옹진군",
+      "address": "인천 옹진군 영흥면 내리 1679-22",
+      "category": "other",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "국사봉 가는 방법 중 주차장으로 이용 가능"
+      ]
+    },
+    {
+      "name": "국사봉",
+      "nameCandidates": [
+        "국사봉",
+        "영흥도 국사봉"
+      ],
+      "region": "인천 옹진군",
+      "address": "인천 옹진군 영흥면 내리 1311-2",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "경사도가 심하지 않아 가족과 함께 올라가기 좋음",
+        "장경리 제2 공영주차장 - 통일사 - 국사봉 코스"
+      ]
+    },
+    {
+      "name": "통일사",
+      "nameCandidates": [
+        "통일사"
+      ],
+      "region": "인천 옹진군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "장경리 제2 공영주차장에서 국사봉 가는 길에 위치"
+      ]
+    },
+    {
+      "name": "목섬",
+      "nameCandidates": [
+        "목섬",
+        "항도",
+        "선재도 목섬"
+      ],
+      "region": "인천 옹진군",
+      "address": "인천 옹진군 영흥면 선재리",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "선재도 공영주차장에 주차 후 걸어가면 됨",
+        "바닷가로 데크길이 있음"
+      ]
+    }
+  ]
+}

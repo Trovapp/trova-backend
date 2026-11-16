@@ -1,0 +1,52 @@
+{
+  "sample_id": "c080",
+  "url": "https://www.youtube.com/shorts/fIJYZR2965U",
+  "seconds": 7.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4417,
+      "totalTokens": 10964
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3129,
+      "totalTokens": 12047
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "여수밤바다",
+      "nameCandidates": [
+        "여수밤바다"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "낭만포차",
+      "nameCandidates": [
+        "낭만포차"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

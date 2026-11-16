@@ -1,0 +1,75 @@
+{
+  "sample_id": "c155",
+  "url": "https://www.youtube.com/shorts/qV8dmbaCy90",
+  "seconds": 14.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3357,
+      "totalTokens": 13001
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 2,
+      "success": true,
+      "latencyMs": 10838,
+      "totalTokens": 14300
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "광주영상복합문화관",
+      "nameCandidates": [
+        "광주영상복합문화관"
+      ],
+      "region": "광주 동구",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "8층에 뷰폴리가 설치되어 있음",
+        "무료로 관람할 수 있음"
+      ]
+    },
+    {
+      "name": "광주 뷰폴리",
+      "nameCandidates": [
+        "광주 뷰폴리",
+        "뷰폴리"
+      ],
+      "region": "광주 동구",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "광주영상복합문화관 8층에 위치",
+        "국립아시아문화전당 주변 전망대 폴리",
+        "관람시간 월요일~토요일 12시~20시"
+      ]
+    },
+    {
+      "name": "국립아시아문화전당",
+      "nameCandidates": [
+        "국립아시아문화전당"
+      ],
+      "region": "광주 동구",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "주변을 바라볼 수 있는 전망대 폴리가 있음"
+      ]
+    }
+  ]
+}

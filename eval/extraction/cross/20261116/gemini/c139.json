@@ -1,0 +1,84 @@
+{
+  "sample_id": "c139",
+  "url": "https://www.youtube.com/shorts/z7OWzckgo7g",
+  "seconds": 15.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4018,
+      "totalTokens": 13744
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 2,
+      "success": true,
+      "latencyMs": 11063,
+      "totalTokens": 15129
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페 뉴웨이브",
+      "nameCandidates": [
+        "카페 뉴웨이브"
+      ],
+      "region": "전주시 완산구",
+      "address": "전북 전주시 완산구 천잠로 259-12",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "학교에서 제일 가까운 카페"
+      ]
+    },
+    {
+      "name": "카페 후우링",
+      "nameCandidates": [
+        "카페 후우링"
+      ],
+      "region": "전주시 완산구",
+      "address": "전북 전주시 완산구 봉곡1길 19 1층",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "이소",
+      "nameCandidates": [
+        "이소"
+      ],
+      "region": "전주시 완산구",
+      "address": "전북 전주시 완산구 바우배기1길 31-13",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "은은한 조명 아래에서 이야기 나누기 좋아요"
+      ]
+    },
+    {
+      "name": "볼튼",
+      "nameCandidates": [
+        "볼튼"
+      ],
+      "region": "전주시 완산구",
+      "address": "전북 전주시 완산구 홍산남로 19 1층",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "쿠키, 버터바, 케이크 등 다양한 디저트가 있어요"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "sample_id": "c187",
+  "url": "https://www.youtube.com/shorts/qENQULkRhqA",
+  "seconds": 8.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3474,
+      "totalTokens": 11188
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4367,
+      "totalTokens": 13246
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "구봉산카페거리",
+      "nameCandidates": [
+        "구봉산카페거리"
+      ],
+      "region": "춘천시",
+      "address": "강원 춘천시 동면 순환대로 1154-103",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "춘천시내가 훤히 내려다 보이는 전망 좋은 뷰",
+        "어떤 카페를 가도 좋은 전망을 가지고 있음",
+        "저녁에 구봉산 카페거리를 추천"
+      ]
+    },
+    {
+      "name": "스타벅스",
+      "nameCandidates": [
+        "스타벅스"
+      ],
+      "region": "춘천시",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "구봉산카페거리에 위치"
+      ]
+    },
+    {
+      "name": "투썸플레이스",
+      "nameCandidates": [
+        "투썸플레이스",
+        "투썸플레이스춘천구봉산점"
+      ],
+      "region": "춘천시",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "구봉산카페거리에 위치"
+      ]
+    },
+    {
+      "name": "곤트라쉐리에",
+      "nameCandidates": [
+        "곤트라쉐리에"
+      ],
+      "region": "춘천시",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "구봉산카페거리에 위치"
+      ]
+    },
+    {
+      "name": "이디야커피",
+      "nameCandidates": [
+        "이디야커피",
+        "이디야커피춘천구봉산전망점"
+      ],
+      "region": "춘천시",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "구봉산카페거리에 위치"
+      ]
+    },
+    {
+      "name": "산토리니",
+      "nameCandidates": [
+        "산토리니"
+      ],
+      "region": "춘천시",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "구봉산카페거리에 위치"
+      ]
+    },
+    {
+      "name": "구봉산편의점",
+      "nameCandidates": [
+        "구봉산편의점"
+      ],
+      "region": "춘천시",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "분식과 카페를 합친듯한 곳"
+      ]
+    },
+    {
+      "name": "탑플레이스다이닝",
+      "nameCandidates": [
+        "탑플레이스다이닝"
+      ],
+      "region": "춘천시",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.8,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해시태그로 언급된 장소"
+      ]
+    },
+    {
+      "name": "지씨아뜰리에",
+      "nameCandidates": [
+        "지씨아뜰리에"
+      ],
+      "region": "춘천시",
+      "address": null,
+      "category": "other",
+      "confidence": 0.8,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해시태그로 언급된 장소"
+      ]
+    },
+    {
+      "name": "네이버커넥트원",
+      "nameCandidates": [
+        "네이버커넥트원"
+      ],
+      "region": "춘천시",
+      "address": null,
+      "category": "other",
+      "confidence": 0.8,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해시태그로 언급된 장소"
+      ]
+    }
+  ]
+}

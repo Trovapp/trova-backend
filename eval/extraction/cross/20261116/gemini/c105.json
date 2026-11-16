@@ -1,0 +1,58 @@
+{
+  "sample_id": "c105",
+  "url": "https://www.youtube.com/shorts/HPkni9cxrO4",
+  "seconds": 9.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5973,
+      "totalTokens": 10868
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2770,
+      "totalTokens": 12015
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "염불사지",
+      "nameCandidates": [
+        "염불사지"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "평일 주차 후 2.2km 남짓 도보 이동",
+        "주말에는 가기 전 작디작은 주차장 이용"
+      ]
+    },
+    {
+      "name": "칠불암",
+      "nameCandidates": [
+        "칠불암"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "경주 남산 유일의 국보가 있는 암자",
+        "마애불상군이 있음"
+      ]
+    }
+  ]
+}

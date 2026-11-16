@@ -1,0 +1,18 @@
+{
+  "sample_id": "c181",
+  "url": "https://www.youtube.com/shorts/dKr7-jg8h5A",
+  "seconds": 4.3,
+  "exit": 1,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4141,
+      "totalTokens": 9975
+    }
+  ],
+  "status": "not_place_content",
+  "places": []
+}

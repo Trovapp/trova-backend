@@ -1,0 +1,134 @@
+{
+  "sample_id": "c156",
+  "url": "https://www.youtube.com/shorts/4t1Gqo7Ssq0",
+  "seconds": 7.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3254,
+      "totalTokens": 10861
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4005,
+      "totalTokens": 12592
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "영금정",
+      "nameCandidates": [
+        "영금정"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "동명동 속초 등대 밑 바닷가에 위치한 정자",
+        "동해의 멋진 일출을 감상할 수 있음"
+      ]
+    },
+    {
+      "name": "속초 등대전망대",
+      "nameCandidates": [
+        "속초 등대전망대",
+        "속초 등대"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "속초 일대를 한눈에 내려다볼 수 있는 코스",
+        "아름다운 호수를 배경으로 사색하며 걸을 수 있는 길"
+      ]
+    },
+    {
+      "name": "장사항",
+      "nameCandidates": [
+        "장사항"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "영랑호와 푸른 바다, 거친 바위들이 묘하게 어우러진 장소"
+      ]
+    },
+    {
+      "name": "설악 해맞이 공원",
+      "nameCandidates": [
+        "설악 해맞이 공원"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해파랑길 45코스의 시작점 중 하나"
+      ]
+    },
+    {
+      "name": "아바이마을",
+      "nameCandidates": [
+        "아바이마을"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해파랑길 45코스 경로에 포함됨"
+      ]
+    },
+    {
+      "name": "영랑호",
+      "nameCandidates": [
+        "영랑호"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "푸른 바다와 어우러지는 호수"
+      ]
+    },
+    {
+      "name": "외옹치항",
+      "nameCandidates": [
+        "외옹치항"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "코스 지도 및 경로에 표기된 지점"
+      ]
+    }
+  ]
+}

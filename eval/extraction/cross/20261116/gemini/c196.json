@@ -1,0 +1,88 @@
+{
+  "sample_id": "c196",
+  "url": "https://www.youtube.com/shorts/vW4K3AgI_6M",
+  "seconds": 6.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3153,
+      "totalTokens": 11020
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3166,
+      "totalTokens": 12362
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "경주 크루그스테이",
+      "nameCandidates": [
+        "경주 크루그스테이",
+        "크루그스테이"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "lodging",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "경주 독채펜션"
+      ]
+    },
+    {
+      "name": "경주 대릉원",
+      "nameCandidates": [
+        "경주 대릉원",
+        "대릉원"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "노워즈",
+      "nameCandidates": [
+        "노워즈 카페",
+        "노워즈"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "경주황리단길에 위치"
+      ]
+    },
+    {
+      "name": "로제드파리",
+      "nameCandidates": [
+        "로제드파리 카페",
+        "로제드파리"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "경주황리단길에 위치"
+      ]
+    }
+  ]
+}

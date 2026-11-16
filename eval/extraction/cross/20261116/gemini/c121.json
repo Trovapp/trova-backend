@@ -1,0 +1,60 @@
+{
+  "sample_id": "c121",
+  "url": "https://www.youtube.com/shorts/UP_kzT-pPYc",
+  "seconds": 6.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2715,
+      "totalTokens": 11243
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3939,
+      "totalTokens": 12426
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "영일대 해수욕장",
+      "nameCandidates": [
+        "영일대 해수욕장"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "넓게 쭈욱 펼쳐져 있는 해수욕장",
+        "스페이스워크에서 한눈에 보이는 멋진 뷰"
+      ]
+    },
+    {
+      "name": "포항 스페이스워크",
+      "nameCandidates": [
+        "포항 스페이스워크",
+        "스페이스워크"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "독특한 구조의 계단을 직접 올라가볼 수 있는 곳",
+        "운영시간 평일 10:00~16:00, 주말 10:00~17:00",
+        "무료 입장 (입장료 없음)"
+      ]
+    }
+  ]
+}

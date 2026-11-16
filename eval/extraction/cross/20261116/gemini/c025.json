@@ -1,0 +1,25 @@
+{
+  "sample_id": "c025",
+  "url": "https://www.youtube.com/shorts/aUY1riUowe0",
+  "seconds": 7.9,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "오마이밥",
+      "nameCandidates": [
+        "오마이밥"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "치즈돈까스 등 다양한 덮밥과 돈까스 메뉴 판매"
+      ]
+    }
+  ]
+}

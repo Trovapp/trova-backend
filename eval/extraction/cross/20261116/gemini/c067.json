@@ -1,0 +1,42 @@
+{
+  "sample_id": "c067",
+  "url": "https://www.youtube.com/shorts/Kg1bCW8NRKY",
+  "seconds": 6.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3357,
+      "totalTokens": 10969
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2360,
+      "totalTokens": 12007
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "전통손두부닭갈비",
+      "nameCandidates": [
+        "전통손두부닭갈비"
+      ],
+      "region": "가평",
+      "address": "경기 가평군 가평읍 북한강변로 113",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "3대를 이어온 손두부, 철판닭갈비 맛집",
+        "직접 만든 두부와 감자전 함께 판매"
+      ]
+    }
+  ]
+}

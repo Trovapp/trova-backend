@@ -1,0 +1,43 @@
+{
+  "sample_id": "c096",
+  "url": "https://www.youtube.com/shorts/oF2iHoVn6oY",
+  "seconds": 6.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3683,
+      "totalTokens": 11847
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2716,
+      "totalTokens": 12875
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "북카페 로그",
+      "nameCandidates": [
+        "북카페 로그",
+        "카페 로그"
+      ],
+      "region": "강원도 양양",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "한국교과서협회 연수원 1층에 위치",
+        "전면이 모두 유리창으로 되어 있어 풍경 구경하기 좋음"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "sample_id": "c150",
+  "url": "https://www.youtube.com/shorts/dTNOKX2qp5Y",
+  "seconds": 6.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3105,
+      "totalTokens": 10376
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2722,
+      "totalTokens": 11428
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "보문단지",
+      "nameCandidates": [
+        "보문단지",
+        "보문 단지"
+      ],
+      "region": "경주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "자연이 그려낸 최고의 수채화 같은 가을 풍경",
+        "시간의 흐름을 알려주는 흩날리는 단풍잎",
+        "가을 경주에서 가장 아름다운 순간을 담아갈 수 있는 곳"
+      ]
+    }
+  ]
+}

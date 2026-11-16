@@ -1,0 +1,89 @@
+{
+  "sample_id": "c183",
+  "url": "https://www.youtube.com/shorts/9HqrKU6hkk4",
+  "seconds": 6.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3335,
+      "totalTokens": 9970
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3116,
+      "totalTokens": 11356
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "자유공원",
+      "nameCandidates": [
+        "자유공원"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "자유공원 일대에서 벚꽃축제 개최",
+        "자유공원 부근 방문하기 좋은 전시관 추천"
+      ]
+    },
+    {
+      "name": "중구생활사전시관",
+      "nameCandidates": [
+        "중구생활사전시관",
+        "생활사전시관"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "60~70년대 생활 터전 관람 가능"
+      ]
+    },
+    {
+      "name": "짜장면박물관",
+      "nameCandidates": [
+        "짜장면박물관"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "짜장면 관련 전시품 관람 가능"
+      ]
+    },
+    {
+      "name": "대불호텔전시관",
+      "nameCandidates": [
+        "대불호텔전시관",
+        "대불호텔기념관"
+      ],
+      "region": "인천",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "우리나라 최초의 서양식 호텔"
+      ]
+    }
+  ]
+}

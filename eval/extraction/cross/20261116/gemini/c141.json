@@ -1,0 +1,147 @@
+{
+  "sample_id": "c141",
+  "url": "https://www.youtube.com/shorts/9yK4tY7zYJE",
+  "seconds": 15.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 10183,
+      "totalTokens": 13540
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4912,
+      "totalTokens": 15439
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "학사식당",
+      "nameCandidates": [
+        "학사식당"
+      ],
+      "region": "강릉",
+      "address": "강릉시 지변길 10",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "강릉원주대 바로 앞 돈가스 맛집",
+        "학교라 가격이 착함"
+      ]
+    },
+    {
+      "name": "원성식당",
+      "nameCandidates": [
+        "원성식당"
+      ],
+      "region": "강릉",
+      "address": "강릉시 경강로 2022-1",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "강릉의료원 바로 건너편",
+        "후추 칼칼한 인생 잡채밥 추천",
+        "짬뽕도 판매함"
+      ]
+    },
+    {
+      "name": "빨간삼겹살",
+      "nameCandidates": [
+        "빨간삼겹살"
+      ],
+      "region": "강릉",
+      "address": "강릉시 금성로45번길 14",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "중앙시장에 위치한 매운 갈비찜 맛집",
+        "우동사리 필수, 마지막 볶음밥"
+      ]
+    },
+    {
+      "name": "돈비촌",
+      "nameCandidates": [
+        "돈비촌",
+        "좀비촌"
+      ],
+      "region": "강릉",
+      "address": "강릉시 하슬라로 206번길 23",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "교동택지 위치, 야장 분위기",
+        "연탄불에 구워 먹는 돼지갈비",
+        "추억의 도시락과 된장소면 판매"
+      ]
+    },
+    {
+      "name": "천일식당",
+      "nameCandidates": [
+        "천일식당",
+        "선일식당"
+      ],
+      "region": "강릉",
+      "address": "강릉시 옥천로61번길 6",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "강릉 중앙시장 김치찌개(김치짜그리) 맛집",
+        "짜그리 주문 시 얼큰순두부 공짜 및 생선구이 제공",
+        "가격 단돈 만원"
+      ]
+    },
+    {
+      "name": "진가락",
+      "nameCandidates": [
+        "진가락",
+        "짐가락"
+      ],
+      "region": "강릉",
+      "address": "강릉시 옥계면 현내시장길 60",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "옥계면 농협 바로 근처 위치",
+        "진가락면과 중화비빔밥으로 유명한 곳",
+        "볶음짬뽕과 짜장 소스를 섞은 메뉴"
+      ]
+    },
+    {
+      "name": "남촌곱창",
+      "nameCandidates": [
+        "남촌곱창",
+        "남촌창"
+      ],
+      "region": "강릉",
+      "address": "강릉시 곶감전길 12",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "중앙시장 위치한 돼지곱창 맛집",
+        "무생채와 같이 곁들여 먹기 좋음",
+        "포차 감성의 별관 운영"
+      ]
+    }
+  ]
+}

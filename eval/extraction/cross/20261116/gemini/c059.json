@@ -1,0 +1,58 @@
+{
+  "sample_id": "c059",
+  "url": "https://www.youtube.com/shorts/UvFEU4dwz1w",
+  "seconds": 8.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4934,
+      "totalTokens": 10638
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2826,
+      "totalTokens": 11810
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "포항 호미곶 해맞이광장",
+      "nameCandidates": [
+        "포항 호미곶 해맞이광장",
+        "호미곶 해맞이광장"
+      ],
+      "region": "포항시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "바다 위에 웅장하게 솟아오른 상생의 손이 있음",
+        "시원하게 뻗은 해상 데크길이 있음"
+      ]
+    },
+    {
+      "name": "상생의 손",
+      "nameCandidates": [
+        "상생의 손"
+      ],
+      "region": "포항시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "포항 호미곶 바다 위에 웅장하게 솟아오른 조형물"
+      ]
+    }
+  ]
+}

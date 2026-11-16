@@ -1,0 +1,62 @@
+{
+  "sample_id": "c021",
+  "url": "https://www.youtube.com/shorts/neI64VYXvps",
+  "seconds": 8.3,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "강릉 런닝맨",
+      "nameCandidates": [
+        "강릉 런닝맨",
+        "런닝맨"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "제한시간 60분 내 다양한 미션 수행",
+        "하고싶은 게임을 맘껏 즐기기",
+        "런닝맨 배지 한 개를 받을 수 있음"
+      ]
+    },
+    {
+      "name": "그대 나의 뮤즈 전시",
+      "nameCandidates": [
+        "그대 나의 뮤즈 전시"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "화면 가득 채워놓아 빈백에 앉아 여유롭게 보기 좋음",
+        "전시 규모가 작아 볼거리가 많지는 않음"
+      ]
+    },
+    {
+      "name": "강릉 아르떼뮤지엄",
+      "nameCandidates": [
+        "강릉 아르떼뮤지엄",
+        "아르떼뮤지엄"
+      ],
+      "region": "강릉",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "다양한 색의 빛으로 표현한 STAR 공간",
+        "마지막에 펼쳐지는 GARDEN 테마",
+        "출구로 가기 전 아르떼 카페와 연결"
+      ]
+    }
+  ]
+}

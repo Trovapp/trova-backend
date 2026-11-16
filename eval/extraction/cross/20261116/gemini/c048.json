@@ -1,0 +1,173 @@
+{
+  "sample_id": "c048",
+  "url": "https://www.youtube.com/shorts/LQkEUNCm43U",
+  "seconds": 9.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4514,
+      "totalTokens": 12171
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4268,
+      "totalTokens": 14114
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "호미곶",
+      "nameCandidates": [
+        "호미곶"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "인류가 화합하고 화해하는 상생의 손이 있음"
+      ]
+    },
+    {
+      "name": "스페이스워크",
+      "nameCandidates": [
+        "스페이스워크"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "계단을 오르면 영일만 바다 경치가 일품임"
+      ]
+    },
+    {
+      "name": "구룡포 일본인 가옥 거리",
+      "nameCandidates": [
+        "구룡포 일본인 가옥 거리"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "드라마 동백꽃 필 무렵 촬영지임",
+        "동백이 계단, 까멜리아, 동백이네 집 등이 있음"
+      ]
+    },
+    {
+      "name": "영일대 전망대",
+      "nameCandidates": [
+        "영일대 전망대"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "곤륜산 활공장",
+      "nameCandidates": [
+        "곤륜산",
+        "곤륜산 활공장"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "패러글라이딩 활공장임",
+        "탁 트인 경치를 배경으로 인증샷 가능"
+      ]
+    },
+    {
+      "name": "죽도시장",
+      "nameCandidates": [
+        "죽도시장"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "송도솔밭도시숲",
+      "nameCandidates": [
+        "송도솔밭도시숲",
+        "송도솔밭"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "포항송도해수욕장",
+      "nameCandidates": [
+        "포항송도해수욕장"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해변을 따라 카페거리가 잘 조성되어 있음",
+        "조용하게 휴식하기 좋은 바다임"
+      ]
+    },
+    {
+      "name": "청하공진시장",
+      "nameCandidates": [
+        "청하공진시장"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "보라슈퍼, 공진반점, 청호철물, 오윤카페 등이 있음"
+      ]
+    },
+    {
+      "name": "이가리 닻 전망대",
+      "nameCandidates": [
+        "이가리 닻 전망대"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

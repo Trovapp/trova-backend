@@ -1,0 +1,42 @@
+{
+  "sample_id": "c154",
+  "url": "https://www.youtube.com/shorts/myH1-YK1QQ0",
+  "seconds": 6.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3519,
+      "totalTokens": 9531
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2868,
+      "totalTokens": 10539
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "룩락 레스토랑",
+      "nameCandidates": [
+        "룩락 레스토랑",
+        "룩락"
+      ],
+      "region": "다낭",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "베트남 다낭 맛집"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "sample_id": "c076",
+  "url": "https://www.youtube.com/shorts/sIWI1kKPZew",
+  "seconds": 7.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3993,
+      "totalTokens": 13368
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2983,
+      "totalTokens": 14414
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "삼거리 농원",
+      "nameCandidates": [
+        "삼거리 농원",
+        "삼거리농원"
+      ],
+      "region": "담양",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "닭볶음탕 요리에는 30분 정도 소요됨",
+        "미리 전화해서 예약하는 것을 추천함",
+        "주말에는 웨이팅이 많고 사람들이 바글바글함"
+      ]
+    }
+  ]
+}

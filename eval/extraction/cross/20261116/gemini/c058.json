@@ -1,0 +1,44 @@
+{
+  "sample_id": "c058",
+  "url": "https://www.youtube.com/watch?v=qjBhNfqkN0Y",
+  "seconds": 7.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4115,
+      "totalTokens": 19346
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3065,
+      "totalTokens": 20432
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "미도리",
+      "nameCandidates": [
+        "미도리",
+        "미돌리"
+      ],
+      "region": "오사카",
+      "address": "2 Chome-34-24 Oimazato, Higashinari Ward, Osaka, 537-0012",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "100년 역사를 지닌 로컬 맛집",
+        "시그니처 메뉴인 카츠동 가격은 700엔",
+        "영업시간 11:00 ~ 20:00 (매주 화요일 휴무)"
+      ]
+    }
+  ]
+}

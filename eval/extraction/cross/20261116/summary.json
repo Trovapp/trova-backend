@@ -1,0 +1,10 @@
+{
+  "samples": 196,
+  "places_both": 554,
+  "places_union": 753,
+  "place_agreement": 0.736,
+  "samples_fully_agreed": 103,
+  "samples_no_places": 1,
+  "gemini_only": 104,
+  "gpt_only": 95
+}

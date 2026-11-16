@@ -1,0 +1,41 @@
+{
+  "sample_id": "c177",
+  "url": "https://www.youtube.com/shorts/3HMzCL9YiYw",
+  "seconds": 6.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3342,
+      "totalTokens": 9906
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2901,
+      "totalTokens": 10908
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "해운대",
+      "nameCandidates": [
+        "해운대"
+      ],
+      "region": "부산",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "자막과 음성에서 해운대 감성을 언급함"
+      ]
+    }
+  ]
+}

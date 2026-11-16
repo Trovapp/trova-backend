@@ -1,0 +1,25 @@
+{
+  "sample_id": "c012",
+  "url": "https://www.youtube.com/shorts/PDH8LHm2n74",
+  "seconds": 6.7,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "평양",
+      "nameCandidates": [
+        "평양"
+      ],
+      "region": "광주광역시",
+      "address": null,
+      "category": "other",
+      "confidence": 0.5,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "광주광역시에서 평양냉면이 떴다고 언급됨"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "sample_id": "c180",
+  "url": "https://www.youtube.com/shorts/y6Hjfye1Uyg",
+  "seconds": 7.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3083,
+      "totalTokens": 10187
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3719,
+      "totalTokens": 11231
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "화양연화 카페",
+      "nameCandidates": [
+        "화양연화 카페",
+        "순창 화양연화 카페",
+        "화양연화"
+      ],
+      "region": "순창",
+      "address": "https://naver.me/GKU2GVeN",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "고즈넉한 한옥카페",
+        "항아리 티라미슈 판매",
+        "연예인들이 방문한 핫플"
+      ]
+    }
+  ]
+}

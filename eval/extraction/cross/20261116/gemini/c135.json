@@ -1,0 +1,101 @@
+{
+  "sample_id": "c135",
+  "url": "https://www.youtube.com/watch?v=bdq2lWUTiWk",
+  "seconds": 8.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4605,
+      "totalTokens": 15553
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3821,
+      "totalTokens": 17012
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "아리아솜 빌라",
+      "nameCandidates": [
+        "아리아솜 빌라"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "lodging",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "태국 감성이 느껴지는 숙소"
+      ]
+    },
+    {
+      "name": "After You Dessert Cafe @ Terminal21",
+      "nameCandidates": [
+        "After You Dessert Cafe @ Terminal21"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "cafe",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "차도 무료로 제공 돼요!"
+      ]
+    },
+    {
+      "name": "왓아룬",
+      "nameCandidates": [
+        "왓아룬"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "태국여행 코스"
+      ]
+    },
+    {
+      "name": "EAT SIGHT STORY (BITTER DECK)",
+      "nameCandidates": [
+        "EAT SIGHT STORY (BITTER DECK)"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "Watermelon Shake 160B"
+      ]
+    },
+    {
+      "name": "뷰 아론 레스토랑 & 바",
+      "nameCandidates": [
+        "뷰 아론 레스토랑 & 바"
+      ],
+      "region": "방콕",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "야경 뷰가 보이는 레스토랑 & 바"
+      ]
+    }
+  ]
+}

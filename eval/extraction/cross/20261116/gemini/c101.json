@@ -1,0 +1,57 @@
+{
+  "sample_id": "c101",
+  "url": "https://www.youtube.com/shorts/93Wj8GaFbKw",
+  "seconds": 9.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5476,
+      "totalTokens": 12249
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3330,
+      "totalTokens": 13390
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페한라산",
+      "nameCandidates": [
+        "카페한라산"
+      ],
+      "region": "제주",
+      "address": "제주 제주시 구좌읍 면수1길 48",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "제주의 감성이 그대로 담긴 디자인카페예요.",
+        "주문하는 건물의 창가에 놓인 창가 뷰가 좋아요."
+      ]
+    },
+    {
+      "name": "세화해변",
+      "nameCandidates": [
+        "세화해변"
+      ],
+      "region": "제주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "구좌읍의 아름다운 해변입니다."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "sample_id": "c140",
+  "url": "https://www.youtube.com/shorts/bvRaTRtom38",
+  "seconds": 7.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3796,
+      "totalTokens": 9841
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3746,
+      "totalTokens": 10855
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "연희자연마당",
+      "nameCandidates": [
+        "연희자연마당",
+        "자연마당"
+      ],
+      "region": "인천 서구",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "넓고 한가해서 산책하기 좋음"
+      ]
+    }
+  ]
+}

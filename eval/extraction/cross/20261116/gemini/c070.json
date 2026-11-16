@@ -1,0 +1,58 @@
+{
+  "sample_id": "c070",
+  "url": "https://www.youtube.com/shorts/nJyj_fp4QHo",
+  "seconds": 7.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4257,
+      "totalTokens": 10535
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2723,
+      "totalTokens": 11675
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "남산타워",
+      "nameCandidates": [
+        "남산타워"
+      ],
+      "region": "서울",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "새로운 한류 관광지",
+        "365일 사랑의 빛이 가득한 곳"
+      ]
+    },
+    {
+      "name": "낙산공원",
+      "nameCandidates": [
+        "낙산공원"
+      ],
+      "region": "서울",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아는 사람은 안다는 낙산공원",
+        "성곽과 불빛이 주는 색다른 야경"
+      ]
+    }
+  ]
+}

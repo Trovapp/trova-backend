@@ -1,0 +1,189 @@
+{
+  "sample_id": "c107",
+  "url": "https://www.youtube.com/shorts/qRxJcjpgpJM",
+  "seconds": 10.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4222,
+      "totalTokens": 13905
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5742,
+      "totalTokens": 16188
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "온기당",
+      "nameCandidates": [
+        "온기당"
+      ],
+      "region": "경남 거제시",
+      "address": "경남 거제시 양정동 952-9",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "십전 보양 삼계탕과 사골 전복 삼계탕이 주 메뉴",
+        "정기 휴무일은 없음"
+      ]
+    },
+    {
+      "name": "보그락",
+      "nameCandidates": [
+        "보그락"
+      ],
+      "region": "경남 거제시",
+      "address": "경남 거제시 양정동 448-3",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "버섯 전복 솥밥 정찬과 소고기 솥밥 정찬이 주 메뉴",
+        "정기 휴무일은 매주 일요일"
+      ]
+    },
+    {
+      "name": "만선호해물칼국수",
+      "nameCandidates": [
+        "만선호해물칼국수"
+      ],
+      "region": "경남 거제시",
+      "address": "경남 거제시 연초면 오비리 213-7",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "하선장 칼국수와 만선호 칼국수가 주 메뉴",
+        "정기 휴무일은 없음"
+      ]
+    },
+    {
+      "name": "금농갈비",
+      "nameCandidates": [
+        "금농갈비",
+        "금농달비"
+      ],
+      "region": "경남 거제시",
+      "address": "경남 거제시 옥포동 549-6",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "갈비탕과 설렁탕이 주 메뉴",
+        "정기 휴무일은 없음"
+      ]
+    },
+    {
+      "name": "성내곰탕",
+      "nameCandidates": [
+        "성내곰탕"
+      ],
+      "region": "경남 거제시",
+      "address": "경남 거제시 사등면 사등리 424-10",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "거제도 짬뽕과 한우 곰탕이 주 메뉴",
+        "정기 휴무일은 매주 화요일"
+      ]
+    },
+    {
+      "name": "여기로가조",
+      "nameCandidates": [
+        "여기로가조"
+      ],
+      "region": "경남 거제시",
+      "address": "경남 거제시 사등면 창호리 1444-9",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "황제 해물폭탄 닭짬뽕과 명품 오합마 왕갈비 짬뽕이 주 메뉴",
+        "정기 휴무일은 없음"
+      ]
+    },
+    {
+      "name": "점순이네밥집",
+      "nameCandidates": [
+        "점순이네밥집"
+      ],
+      "region": "경남 거제시",
+      "address": "경남 거제시 장목면 외포리 200-2",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "갈치구이 정식과 멸치회가 주 메뉴",
+        "정기 휴무일은 없음"
+      ]
+    },
+    {
+      "name": "둔덕농협한우관",
+      "nameCandidates": [
+        "둔덕농협한우관"
+      ],
+      "region": "경남 거제시",
+      "address": "경남 거제시 둔덕면 하둔리 64",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "능이 갈비찜과 한우 육회가 주 메뉴",
+        "정기 휴무일은 없음"
+      ]
+    },
+    {
+      "name": "하면옥",
+      "nameCandidates": [
+        "하면옥",
+        "하현욱"
+      ],
+      "region": "경남 거제시",
+      "address": "경남 거제시 연초면 오비리 209-6",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "물 비빔냉면과 소고기 육전이 주 메뉴",
+        "정기 휴무일은 없음"
+      ]
+    },
+    {
+      "name": "강성횟집 본점",
+      "nameCandidates": [
+        "강성횟집 본점",
+        "강성 획집 본점"
+      ],
+      "region": "경남 거제시",
+      "address": "경남 거제시 일운면 지세포리 371",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "강성 스페셜과 달인 물회가 주 메뉴",
+        "정기 휴무일은 없음"
+      ]
+    }
+  ]
+}

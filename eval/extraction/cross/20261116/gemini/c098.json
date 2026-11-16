@@ -1,0 +1,73 @@
+{
+  "sample_id": "c098",
+  "url": "https://www.youtube.com/shorts/7s4_GFaN0-U",
+  "seconds": 7.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3800,
+      "totalTokens": 12372
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3304,
+      "totalTokens": 13764
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "목포문예역사관",
+      "nameCandidates": [
+        "목포문예역사관"
+      ],
+      "region": "목포",
+      "address": "전남 목포시 남농로 149",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1층은 화폐전시실, 2층은 문예역사실과 수석전시실, 3층은 윤림산방작품실로 구분되어 있습니다.",
+        "자연사박물관 입장권 1장으로 자연사박물관, 문예역사관, 생활도자기박물관 전체 관람이 가능합니다.",
+        "입장료는 성인 3,000원, 청소년·군인 2,000원, 어린이 1,000원, 유아 500원이며 목포시 주민은"
+      ]
+    },
+    {
+      "name": "자연사박물관",
+      "nameCandidates": [
+        "자연사박물관"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "자연사박물관 입장권으로 문예역사관과 통합 관람이 가능합니다."
+      ]
+    },
+    {
+      "name": "목포생활도자기박물관",
+      "nameCandidates": [
+        "목포생활도자기박물관"
+      ],
+      "region": "목포",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "자연사박물관 입장권으로 통합 관람이 가능합니다."
+      ]
+    }
+  ]
+}

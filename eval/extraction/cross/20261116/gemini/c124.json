@@ -1,0 +1,219 @@
+{
+  "sample_id": "c124",
+  "url": "https://www.youtube.com/shorts/bLHemueX3pQ",
+  "seconds": 10.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5432,
+      "totalTokens": 14134
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5167,
+      "totalTokens": 16474
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "월영교",
+      "nameCandidates": [
+        "월영교"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "월영공원과 안동민속촌을 연결하는 다리",
+        "밤에 조명이 켜지며 달 모양의 문보트를 탈 수 있음"
+      ]
+    },
+    {
+      "name": "월영공원",
+      "nameCandidates": [
+        "월영공원"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "월영교로 안동민속촌과 연결됨"
+      ]
+    },
+    {
+      "name": "안동민속촌",
+      "nameCandidates": [
+        "안동민속촌"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "월영교와 연결되어 있음"
+      ]
+    },
+    {
+      "name": "안동 하회마을",
+      "nameCandidates": [
+        "안동 하회마을",
+        "하회마을"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2010년 경주 양동마을과 함께 세계문화유산 등재",
+        "초가집과 기와집 등 여러 한옥을 둘러볼 수 있음"
+      ]
+    },
+    {
+      "name": "최화정",
+      "nameCandidates": [
+        "최화정"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "조선시대 정자 건축물",
+        "정자 양쪽에 배롱나무가 한 그루씩 있음"
+      ]
+    },
+    {
+      "name": "안동찜닭 골목",
+      "nameCandidates": [
+        "안동찜닭 골목"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "찜닭 음식점 30여 곳이 있음"
+      ]
+    },
+    {
+      "name": "만유정",
+      "nameCandidates": [
+        "만유정"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1500년대에 지어진 조선시대 정자",
+        "드라마 미스터 션샤인 촬영지로 유명함"
+      ]
+    },
+    {
+      "name": "도산서원",
+      "nameCandidates": [
+        "도산서원"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "퇴계 이황 선생의 합덕을 기리기 위해 1574년 설립",
+        "경주 옥산서원과 함께 한국의 양대 서원으로 불림"
+      ]
+    },
+    {
+      "name": "낙강물길공원",
+      "nameCandidates": [
+        "낙강물길공원",
+        "막강 물개공원"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "안동댐 근처에 위치",
+        "숲길과 정원이 있어 산책하기 좋은 곳"
+      ]
+    },
+    {
+      "name": "선성수산길",
+      "nameCandidates": [
+        "선성수산길"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "안동호의 절경을 느낄 수 있는 곳",
+        "물 위를 걷는 듯한 느낌을 줌"
+      ]
+    },
+    {
+      "name": "봉정사",
+      "nameCandidates": [
+        "봉정사",
+        "동정사"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "신라시대 때 만든 사찰",
+        "영국의 엘리자베스 여왕이 다녀감",
+        "2018년 유네스코 세계문화유산에 등재됨"
+      ]
+    },
+    {
+      "name": "무릉유원지",
+      "nameCandidates": [
+        "무릉유원지"
+      ],
+      "region": "안동",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "물놀이하기 좋은 곳",
+        "최근 캠핑하는 사람들이 많이 찾음"
+      ]
+    }
+  ]
+}

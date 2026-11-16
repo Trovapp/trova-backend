@@ -1,0 +1,75 @@
+{
+  "sample_id": "c114",
+  "url": "https://www.youtube.com/shorts/KLGhW3Y82D0",
+  "seconds": 9.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4922,
+      "totalTokens": 11604
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4307,
+      "totalTokens": 12862
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "제주올레길",
+      "nameCandidates": [
+        "제주올레길",
+        "올레길"
+      ],
+      "region": "제주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "총 27개의 코스가 있음",
+        "베스트 코스 3박 4일 프로그램 운영"
+      ]
+    },
+    {
+      "name": "알파캠프",
+      "nameCandidates": [
+        "알파캠프",
+        "알파 캠프 본점"
+      ],
+      "region": "제주",
+      "address": null,
+      "category": "other",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "매달 1일과 15일에 올레길 베스트 코스 걷기 진행",
+        "365일 쉬는 날 없고 언제나 합류 가능"
+      ]
+    },
+    {
+      "name": "용천수",
+      "nameCandidates": [
+        "용천수"
+      ],
+      "region": "제주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.8,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "여름에 체험할 수 있는 코스 요소"
+      ]
+    }
+  ]
+}

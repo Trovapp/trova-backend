@@ -1,0 +1,73 @@
+{
+  "sample_id": "c175",
+  "url": "https://www.youtube.com/shorts/bEmqhGR1tdo",
+  "seconds": 7.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3394,
+      "totalTokens": 10956
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4212,
+      "totalTokens": 12237
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "속초 해수욕장",
+      "nameCandidates": [
+        "속초 해수욕장"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "속초 해수욕장 공영주차장 2시간 이내 1,000원(비수기)"
+      ]
+    },
+    {
+      "name": "속초 아이 대관람차",
+      "nameCandidates": [
+        "속초 아이 대관람차",
+        "속초아이"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "관람차 이용 요금 성인 12,000원 / 소인 6,000원"
+      ]
+    },
+    {
+      "name": "웨일라잇",
+      "nameCandidates": [
+        "웨일라잇"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대관람차가 보이는 오션뷰 카페",
+        "전망이 압권인 카페"
+      ]
+    }
+  ]
+}

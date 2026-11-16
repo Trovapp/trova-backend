@@ -1,0 +1,73 @@
+{
+  "sample_id": "c129",
+  "url": "https://www.youtube.com/shorts/Q9ULCypS_Us",
+  "seconds": 8.7,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4170,
+      "totalTokens": 9673
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4267,
+      "totalTokens": 10923
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "영금정",
+      "nameCandidates": [
+        "영금정"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "속초 야경을 보러 갈 수 있는 곳입니다.",
+        "두 개의 영금정에 불빛이 환하게 들어옵니다.",
+        "산 위에 있는 영금정에서 동명항과 속초대관람차가 보입니다."
+      ]
+    },
+    {
+      "name": "동명항",
+      "nameCandidates": [
+        "동명항"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "영금정에서 바라보면 동명항이 보입니다."
+      ]
+    },
+    {
+      "name": "속초대관람차",
+      "nameCandidates": [
+        "속초대관람차"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "영금정에서 바라보면 속초대관람차가 보입니다."
+      ]
+    }
+  ]
+}

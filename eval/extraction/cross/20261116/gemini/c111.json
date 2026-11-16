@@ -1,0 +1,58 @@
+{
+  "sample_id": "c111",
+  "url": "https://www.youtube.com/shorts/uuwXy6Jb_qc",
+  "seconds": 6.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2925,
+      "totalTokens": 10502
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3186,
+      "totalTokens": 11660
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "대천해수욕장",
+      "nameCandidates": [
+        "대천해수욕장"
+      ],
+      "region": "보령시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "탁 트인 바다와 함께 소중한 자유를 만끽할 수 있는 곳",
+        "갈매기에게 먹이를 주며 힐링할 수 있는 필수 코스"
+      ]
+    },
+    {
+      "name": "보령머드",
+      "nameCandidates": [
+        "보령머드"
+      ],
+      "region": "보령시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "보령의 대표 힐링 스팟",
+        "머드 조형물이 있는 포토존"
+      ]
+    }
+  ]
+}

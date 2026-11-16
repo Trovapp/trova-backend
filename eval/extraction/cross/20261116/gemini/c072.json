@@ -1,0 +1,90 @@
+{
+  "sample_id": "c072",
+  "url": "https://www.youtube.com/shorts/lX0Zq2NRw48",
+  "seconds": 7.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3585,
+      "totalTokens": 13227
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3481,
+      "totalTokens": 14668
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "하조대 전망대",
+      "nameCandidates": [
+        "하조대 전망대",
+        "하주대 전망대"
+      ],
+      "region": "강원 양양군",
+      "address": "강원 양양군 현북면 하륜길 54",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "가장 높은 곳에 위치한 에메랄드빛 동해와 기암괴석 뷰",
+        "투명유리 전망대 공간이 있음"
+      ]
+    },
+    {
+      "name": "하조대 등대",
+      "nameCandidates": [
+        "하조대 등대"
+      ],
+      "region": "강원 양양군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "동해안의 기암절벽과 노송이 어우러진 명승지"
+      ]
+    },
+    {
+      "name": "하조대 해수욕장",
+      "nameCandidates": [
+        "하조대 해수욕장",
+        "하드디 해수욕장"
+      ],
+      "region": "강원 양양군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "전망대 왼쪽으로 탁 트인 해수욕장이 보임"
+      ]
+    },
+    {
+      "name": "하조대 둘레길",
+      "nameCandidates": [
+        "하조대 둘레길"
+      ],
+      "region": "강원 양양군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "전망대에서 하조대 등대 방향으로 해안을 따라 조성된 길",
+        "2019년 5월 완공된 평탄한 산책로"
+      ]
+    }
+  ]
+}

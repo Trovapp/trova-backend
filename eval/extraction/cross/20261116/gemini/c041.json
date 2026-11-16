@@ -1,0 +1,73 @@
+{
+  "sample_id": "c041",
+  "url": "https://www.youtube.com/shorts/eZ5m4PXc9VY",
+  "seconds": 11.0,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 7726,
+      "totalTokens": 10005
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2877,
+      "totalTokens": 11243
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "공산성",
+      "nameCandidates": [
+        "공산성"
+      ],
+      "region": "공주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "공주 여행 필수 코스"
+      ]
+    },
+    {
+      "name": "공산정",
+      "nameCandidates": [
+        "공산정"
+      ],
+      "region": "공주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "공산성의 하이라이트, 360도 전경",
+        "입장료: 성인 3,000원 (공주시민 무료)",
+        "산책 및 야경 명소로 추천"
+      ]
+    },
+    {
+      "name": "금강",
+      "nameCandidates": [
+        "금강"
+      ],
+      "region": "공주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "하늘에서 바라본 금강과 고즈넉한 성곽길의 조화"
+      ]
+    }
+  ]
+}

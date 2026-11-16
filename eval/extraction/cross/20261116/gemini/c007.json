@@ -1,0 +1,75 @@
+{
+  "sample_id": "c007",
+  "url": "https://www.youtube.com/shorts/wbyerePvE4A",
+  "seconds": 8.0,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "서구근린공원",
+      "nameCandidates": [
+        "서구근린공원",
+        "서곳근린공원"
+      ],
+      "region": "인천 서구",
+      "address": "인천광역시 서구 심곡로 151",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "매년 5월에서 6월 사이 장미축제 개최",
+        "형형색색의 장미꽃밭에서 산책 가능"
+      ]
+    },
+    {
+      "name": "청라호수공원",
+      "nameCandidates": [
+        "청라호수공원"
+      ],
+      "region": "인천 서구",
+      "address": "인천광역시 서구 청라대로 204",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "드라마 더글로리 촬영지",
+        "멜로디에 따라 달라지는 수경분수 관람 가능"
+      ]
+    },
+    {
+      "name": "경인 아라뱃길",
+      "nameCandidates": [
+        "경인 아라뱃길"
+      ],
+      "region": "인천 서구",
+      "address": "인천광역시 서구 정서진1로 41",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "정서진을 만날 수 있는 자연 친수공간",
+        "산책과 자전거 데이트하기 좋은 곳"
+      ]
+    },
+    {
+      "name": "새어도",
+      "nameCandidates": [
+        "새어도"
+      ],
+      "region": "인천 서구",
+      "address": "인천광역시 서구 세어로 29",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "서구의 유일한 친환경 생태섬",
+        "산책과 갯벌 체험 가능"
+      ]
+    }
+  ]
+}

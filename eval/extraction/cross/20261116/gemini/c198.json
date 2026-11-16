@@ -1,0 +1,103 @@
+{
+  "sample_id": "c198",
+  "url": "https://www.youtube.com/shorts/wuwx9iiY-3k",
+  "seconds": 7.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3605,
+      "totalTokens": 10963
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3494,
+      "totalTokens": 12453
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "간절곶등대",
+      "nameCandidates": [
+        "간절곶등대"
+      ],
+      "region": "울산",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아름다운 등대 설문에서 14.6%로 가장 많이 꼽힘"
+      ]
+    },
+    {
+      "name": "호미곶등대",
+      "nameCandidates": [
+        "호미곶등대"
+      ],
+      "region": "포항",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아름다운 등대 설문에서 11.2%로 2위 차지"
+      ]
+    },
+    {
+      "name": "독도등대",
+      "nameCandidates": [
+        "독도등대"
+      ],
+      "region": "울릉도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아름다운 등대 순위 중 하나"
+      ]
+    },
+    {
+      "name": "속초등대",
+      "nameCandidates": [
+        "속초등대",
+        "속초 등대"
+      ],
+      "region": "속초시",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "설악산, 울산바위, 동해바다, 영금정을 한눈에 볼 수 있음",
+        "360도 어디를 봐도 감동이 스며드는 속초 비경"
+      ]
+    },
+    {
+      "name": "우도등대",
+      "nameCandidates": [
+        "우도등대"
+      ],
+      "region": "제주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "아름다운 등대 순위 중 하나"
+      ]
+    }
+  ]
+}

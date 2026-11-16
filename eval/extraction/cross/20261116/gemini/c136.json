@@ -1,0 +1,74 @@
+{
+  "sample_id": "c136",
+  "url": "https://www.youtube.com/shorts/kSIfHNyD7iI",
+  "seconds": 9.1,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4473,
+      "totalTokens": 11407
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4388,
+      "totalTokens": 12665
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "진정성 카페 제주",
+      "nameCandidates": [
+        "진정성 카페 제주",
+        "제주 카페 진정성"
+      ],
+      "region": "제주",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "커피 향과 맛이 좋음",
+        "사람이 몰릴 때는 밭 포토존에 대기가 있음"
+      ]
+    },
+    {
+      "name": "도두봉",
+      "nameCandidates": [
+        "도두봉",
+        "키세스존"
+      ],
+      "region": "제주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "무지개해안도로와 가까움"
+      ]
+    },
+    {
+      "name": "무지개해안도로",
+      "nameCandidates": [
+        "무지개해안도로"
+      ],
+      "region": "제주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "도두봉(키세스존)과 가까움"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+{
+  "sample_id": "c193",
+  "url": "https://www.youtube.com/shorts/5DcxuXFo778",
+  "seconds": 10.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3990,
+      "totalTokens": 11506
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5933,
+      "totalTokens": 14407
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "영암 성기동 관광지",
+      "nameCandidates": [
+        "영암 성기동 관광지"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 15위 관광지, 4만 7천명 방문"
+      ]
+    },
+    {
+      "name": "목포 스카이워크",
+      "nameCandidates": [
+        "목포 스카이워크"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 14위 관광지, 4만 5천명 방문"
+      ]
+    },
+    {
+      "name": "여수 유월드 루지테마파크",
+      "nameCandidates": [
+        "여수 유월드 르지테마파크",
+        "여수 유월드 루지테마파크"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 13위 관광지, 4만 9천명 방문"
+      ]
+    },
+    {
+      "name": "곡성 섬진강 기차마을",
+      "nameCandidates": [
+        "곡성 섬진강 기차 마을"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 11위 관광지, 5만 8천명 방문"
+      ]
+    },
+    {
+      "name": "여수 아쿠아플라넷",
+      "nameCandidates": [
+        "여수 아쿠아 플라네",
+        "여수 아쿠아플라넷"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 11위 관광지, 6만 2천명 방문"
+      ]
+    },
+    {
+      "name": "담양 메타세쿼이아 가로수길",
+      "nameCandidates": [
+        "담양 메타스코이아 가로수길",
+        "담양 메타세쿼이아 가로수길"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 12위 관광지, 6만 3천명 방문"
+      ]
+    },
+    {
+      "name": "담양 죽녹원",
+      "nameCandidates": [
+        "담양 중원",
+        "담양 죽녹원"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 9위 관광지, 6만 6천명 방문"
+      ]
+    },
+    {
+      "name": "여수 예술랜드",
+      "nameCandidates": [
+        "여수 예술랜드"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 8위 관광지, 6만 9천명 방문"
+      ]
+    },
+    {
+      "name": "여수 전라좌수영 거북선",
+      "nameCandidates": [
+        "여수 전라 좌수영 거북선"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 7위 관광지, 7만 4천명 방문"
+      ]
+    },
+    {
+      "name": "순천 낙안읍성 민속마을",
+      "nameCandidates": [
+        "순천 나간성민 마을",
+        "순천 낙안읍성 민속마을"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 6위 관광지, 7만 9천명 방문"
+      ]
+    },
+    {
+      "name": "광주 김대중컨벤션센터",
+      "nameCandidates": [
+        "광주 김대중 컨벤션 센터"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 5위 관광지, 7만 9천명 방문"
+      ]
+    },
+    {
+      "name": "목포해상케이블카",
+      "nameCandidates": [
+        "목포회상 케이블카",
+        "목포해상케이블카"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 4위 관광지, 8만 9천명 방문"
+      ]
+    },
+    {
+      "name": "국립광주과학관",
+      "nameCandidates": [
+        "광주 국립과학관",
+        "국립광주과학관"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 3위 관광지, 9만 4천명 방문"
+      ]
+    },
+    {
+      "name": "여수 돌산공원",
+      "nameCandidates": [
+        "여수 돌산공원"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 2위 관광지, 103만명 방문"
+      ]
+    },
+    {
+      "name": "순천만국가정원",
+      "nameCandidates": [
+        "순천만 국가 청원",
+        "순천만국가정원"
+      ],
+      "region": "전라남도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "2024년 1위 관광지 (3년 연속 1위)"
+      ]
+    }
+  ]
+}

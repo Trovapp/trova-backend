@@ -1,0 +1,90 @@
+{
+  "sample_id": "c100",
+  "url": "https://www.youtube.com/shorts/2V4rZnpBUTA",
+  "seconds": 6.6,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3187,
+      "totalTokens": 10744
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3101,
+      "totalTokens": 12236
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "천제연폭포",
+      "nameCandidates": [
+        "천제연폭포"
+      ],
+      "region": "제주특별자치도 서귀포시",
+      "address": "제주 서귀포시 천제연로 132 천제연폭포관리소",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "상, 중, 하의 3단 폭포",
+        "길이 22m, 수심 21m",
+        "천연기념물 제378호"
+      ]
+    },
+    {
+      "name": "중문색달해수욕장",
+      "nameCandidates": [
+        "중문색달해수욕장"
+      ],
+      "region": "제주특별자치도 서귀포시",
+      "address": "제주 서귀포시 색달동 3039",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "야자수의 이국적인 풍경",
+        "4가지 색의 모래",
+        "서핑하기 좋은 해변"
+      ]
+    },
+    {
+      "name": "주상절리",
+      "nameCandidates": [
+        "주상절리"
+      ],
+      "region": "제주특별자치도 서귀포시",
+      "address": "제주 서귀포시 이어도로 36-24",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "서귀포매일올레시장",
+      "nameCandidates": [
+        "서귀포매일올레시장"
+      ],
+      "region": "제주특별자치도 서귀포시",
+      "address": "제주 서귀포시 중앙로62번길 18",
+      "category": "shopping",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "서귀포에서 가장 규모가 큰 시장",
+        "전통 시장의 제주 향기",
+        "약 300여 개의 점포"
+      ]
+    }
+  ]
+}

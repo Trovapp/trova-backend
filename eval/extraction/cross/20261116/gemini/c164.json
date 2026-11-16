@@ -1,0 +1,43 @@
+{
+  "sample_id": "c164",
+  "url": "https://www.youtube.com/shorts/j2vJ4293eZ0",
+  "seconds": 8.9,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5678,
+      "totalTokens": 10746
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2950,
+      "totalTokens": 11803
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "보령 메타세쿼이아 길",
+      "nameCandidates": [
+        "보령 메타세쿼이아 길",
+        "보령 메타세콰이어 길"
+      ],
+      "region": "보령시",
+      "address": "충남 보령시 주교면 송학리 3-8",
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "초록이 가득한 여름철 산책하기 좋은 명소",
+        "사진 찍기 좋은 보령의 인생샷 명소"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "sample_id": "c023",
+  "url": "https://www.youtube.com/shorts/5L9R8-AKz-U",
+  "seconds": 7.8,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "성심당",
+      "nameCandidates": [
+        "성심당"
+      ],
+      "region": "대전",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "사람들이 많이 줄 서 있음"
+      ]
+    },
+    {
+      "name": "꿈돌이네 굿즈가게",
+      "nameCandidates": [
+        "꿈돌이네 굿즈가게"
+      ],
+      "region": "대전",
+      "address": null,
+      "category": "shopping",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "꿈돌이네 라면가게",
+      "nameCandidates": [
+        "꿈돌이네 라면가게"
+      ],
+      "region": "대전",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "꿈돌이 라면을 먹어볼 수 있음"
+      ]
+    }
+  ]
+}

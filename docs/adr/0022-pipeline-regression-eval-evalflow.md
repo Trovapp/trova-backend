@@ -1,6 +1,6 @@
 # 0022. 장소 추출 회귀 측정은 evalflow 세트로, 정답은 eval/extraction/answers.csv 한 곳
 
-- 상태: 확정
+- 상태: 일부 대체됨 → 0045 (AI 출력을 정답으로 넣지 않는다는 부분만)
 - 날짜: 2026-10-31
 - 관련: 0002(무료 한도 공유), 0003(파이프라인 검증 먼저), #257
 
@@ -14,6 +14,7 @@
 - 회귀 비교는 evalflow 세트 `eval/place-extract/`(promptfoo, 제공자가 `pipeline-test/run_pipeline.py`를 직접 부름)로 한다.
 - **정답은 `eval/extraction/answers.csv` 한 곳에만 둔다.** evalflow 세트의 기대값은 `build_config.py`가 그 표에서 생성하고,
   손으로 옮겨 적거나 AI 출력을 정답으로 넣지 않는다(Part A 규칙 "영상을 보고 직접, AI 결과를 보지 않고"와 같음).
+  → 2026-11-16 [0045](0045-answers-from-cross-check.md)에서 Gemini·GPT 교차 일치분과 판정분(Y)을 정답에 넣는 것으로 바뀜.
 - 이름 비교는 공백 제거 뒤 포함 관계로 느슨하게 본다. 좌표·경유지·비용 판정이 필요하면 Part A를 돌린다.
 - Gemini를 부르므로 실행 전 오늘 사용량을 확인하고(0002) 설정의 `maxCalls` 안에서만 돌린다.
 

@@ -1,0 +1,52 @@
+{
+  "sample_id": "c182",
+  "url": "https://www.youtube.com/shorts/OTgpXe0NwH8",
+  "seconds": 6.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3688,
+      "totalTokens": 10236
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 2306,
+      "totalTokens": 11307
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "성산일출봉",
+      "nameCandidates": [
+        "성산일출봉"
+      ],
+      "region": "제주도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "광치기해변",
+      "nameCandidates": [
+        "광치기해변"
+      ],
+      "region": "제주도",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    }
+  ]
+}

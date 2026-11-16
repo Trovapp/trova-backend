@@ -1,0 +1,83 @@
+{
+  "sample_id": "c184",
+  "url": "https://www.youtube.com/shorts/u61ZgIncQ-o",
+  "seconds": 6.4,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3074,
+      "totalTokens": 11747
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3028,
+      "totalTokens": 13048
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "청석공원",
+      "nameCandidates": [
+        "청석공원"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "저녁마다 와서 운동하기 좋은 공원"
+      ]
+    },
+    {
+      "name": "중앙공원",
+      "nameCandidates": [
+        "중앙공원"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "송정공원",
+      "nameCandidates": [
+        "송정공원",
+        "성정공원"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": []
+    },
+    {
+      "name": "청석교",
+      "nameCandidates": [
+        "청석교"
+      ],
+      "region": "광주",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "청석공원 내에 위치한 다리"
+      ]
+    }
+  ]
+}

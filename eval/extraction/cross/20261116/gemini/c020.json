@@ -1,0 +1,43 @@
+{
+  "sample_id": "c020",
+  "url": "https://www.youtube.com/watch?v=44eJ8mTRBn8",
+  "seconds": 8.7,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "침사추이",
+      "nameCandidates": [
+        "침사추이"
+      ],
+      "region": "홍콩",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "홍콩의 야경을 감상할 수 있는 지역"
+      ]
+    },
+    {
+      "name": "아쿠아루나 이브닝 크루즈",
+      "nameCandidates": [
+        "아쿠아루나 이브닝 크루즈",
+        "루나 아쿠아 크루즈"
+      ],
+      "region": "홍콩",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "19세기 중국 해적선을 본떠 만든 전통 유람선",
+        "최소 열흘 전에는 미리 예약을 해야 할 만큼 경쟁률이 치열함",
+        "45분간의 유유자적 별빛 유람 코스"
+      ]
+    }
+  ]
+}

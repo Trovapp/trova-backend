@@ -1,0 +1,44 @@
+{
+  "sample_id": "c062",
+  "url": "https://www.youtube.com/shorts/585W6V9vSqg",
+  "seconds": 14.3,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3856,
+      "totalTokens": 13133
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 2,
+      "success": true,
+      "latencyMs": 10222,
+      "totalTokens": 14189
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "달맞이밥상",
+      "nameCandidates": [
+        "달맞이밥상",
+        "가평 달맞이밥상"
+      ],
+      "region": "가평",
+      "address": "경기 가평군 상면 수목원로 125 1층",
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "100평 규모의 넓고 쾌적한 한식집",
+        "주차장이 아주 넓어 주차 스트레스가 없는 곳",
+        "초승달 밥상 주문 시 제철 반찬 12가지 제공"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "sample_id": "c034",
+  "url": "https://www.youtube.com/watch?v=LIquTSJZ4BE",
+  "seconds": 11.5,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5504,
+      "totalTokens": 20623
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5607,
+      "totalTokens": 21657
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "MK수끼",
+      "nameCandidates": [
+        "엠케이수끼",
+        "MK수끼",
+        "MK"
+      ],
+      "region": "태국",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 0.99,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "물고기 모양 어묵과 초록 야채 국수는 꼭 시켜야 함",
+        "마늘과 고추를 기본 소스에 넣어 먹으면 맛있음",
+        "마지막에 죽을 만들어 먹는 것을 추천"
+      ]
+    }
+  ]
+}

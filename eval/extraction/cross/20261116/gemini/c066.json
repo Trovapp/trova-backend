@@ -1,0 +1,72 @@
+{
+  "sample_id": "c066",
+  "url": "https://www.youtube.com/watch?v=SWx8B6BbaPU",
+  "seconds": 7.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3814,
+      "totalTokens": 22554
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3674,
+      "totalTokens": 23792
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "루브르박물관",
+      "nameCandidates": [
+        "루브르박물관"
+      ],
+      "region": "파리",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 1,
+      "videoNotes": [
+        "루브르 박물관 앞에서 인증샷을 남기기 좋음"
+      ]
+    },
+    {
+      "name": "르카페마를리",
+      "nameCandidates": [
+        "르카페마를리"
+      ],
+      "region": "파리",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 2,
+      "videoNotes": [
+        "루브르 박물관이 보이는 테라스 카페",
+        "오늘렛과 커피, 음료를 즐길 수 있음"
+      ]
+    },
+    {
+      "name": "튈르리 정원",
+      "nameCandidates": [
+        "튈르리 정원"
+      ],
+      "region": "파리",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": 2,
+      "orderInDay": 3,
+      "videoNotes": [
+        "루브르 박물관 근처에 위치한 산책하기 좋은 공원"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "sample_id": "c133",
+  "url": "https://www.youtube.com/shorts/shvCm1aukxM",
+  "seconds": 10.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 4665,
+      "totalTokens": 12058
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5229,
+      "totalTokens": 14190
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "향일암",
+      "nameCandidates": [
+        "향일암"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "해를 향한 암자라는 뜻의 유명한 명소"
+      ]
+    },
+    {
+      "name": "해양수산과학관",
+      "nameCandidates": [
+        "해양수산과학관"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "다양한 해양 생물들을 전시하고 있는 아이들이 좋아하는 장소"
+      ]
+    },
+    {
+      "name": "여수예술랜드",
+      "nameCandidates": [
+        "여수예술랜드",
+        "예술랜드"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "다양한 예술 테마와 오션뷰를 즐길 수 있는 곳"
+      ]
+    },
+    {
+      "name": "돌산공원",
+      "nameCandidates": [
+        "돌산공원"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "전망대에서 케이블카를 타고 밤바다를 느낄 수 있음"
+      ]
+    },
+    {
+      "name": "자산공원",
+      "nameCandidates": [
+        "자산공원"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "이순신 장군 동상을 중심으로 여수에서 가장 오랜 역사를 자랑함"
+      ]
+    },
+    {
+      "name": "봉산게장거리",
+      "nameCandidates": [
+        "봉산게장거리",
+        "봉산개장거리"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "restaurant",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대표 먹거리 돌게장을 맛볼 수 있는 거리"
+      ]
+    },
+    {
+      "name": "고소동벽화마을",
+      "nameCandidates": [
+        "고소동벽화마을",
+        "고소중 벽화마을"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "골목마다 아기자기한 벽화가 있음"
+      ]
+    },
+    {
+      "name": "낭만포차거리",
+      "nameCandidates": [
+        "낭만포차거리",
+        "낭만 푸 채 거리"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "밤에 방문하기 좋은 낭만이 가득한 거리"
+      ]
+    },
+    {
+      "name": "하멜전시관",
+      "nameCandidates": [
+        "하멜전시관",
+        "카멜 전시관"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "하멜을 기리기 위해 만들어진 전시관"
+      ]
+    },
+    {
+      "name": "하멜등대",
+      "nameCandidates": [
+        "하멜등대",
+        "카멜 등대"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "밤바다의 멋진 경관을 즐길 수 있음"
+      ]
+    },
+    {
+      "name": "스카이타워",
+      "nameCandidates": [
+        "스카이타워"
+      ],
+      "region": "여수",
+      "address": null,
+      "category": "attraction",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "여수 시내와 푸른 남해바다, 전시관을 한눈에 볼 수 있는 타워"
+      ]
+    }
+  ]
+}

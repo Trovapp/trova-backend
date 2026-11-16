@@ -1,0 +1,59 @@
+{
+  "sample_id": "c127",
+  "url": "https://www.youtube.com/shorts/CVAFrdaNKAs",
+  "seconds": 6.8,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3363,
+      "totalTokens": 13888
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 3203,
+      "totalTokens": 15065
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "카페 유자",
+      "nameCandidates": [
+        "카페 유자",
+        "유자카페"
+      ],
+      "region": "경상남도 남해군",
+      "address": "경상남도 남해군 삼동면 동부대로 1423",
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "영업시간은 오전 11시부터 오후 6시까지입니다.",
+        "유자 카스테라는 한 접시 4,500원입니다.",
+        "독일마을에서 가까운 조용한 카페입니다."
+      ]
+    },
+    {
+      "name": "독일마을",
+      "nameCandidates": [
+        "독일마을"
+      ],
+      "region": "경상남도 남해군",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "대부분의 관광시설이 몰려 있는 곳입니다."
+      ]
+    }
+  ]
+}

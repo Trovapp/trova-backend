@@ -1,0 +1,163 @@
+{
+  "sample_id": "c108",
+  "url": "https://www.youtube.com/watch?v=y9tNbUrdyeE",
+  "seconds": 21.2,
+  "exit": 0,
+  "gemini429": false,
+  "api_calls": [
+    {
+      "operation": "extract_places.collect",
+      "attempts": 1,
+      "success": true,
+      "latencyMs": 5659,
+      "totalTokens": 22118
+    },
+    {
+      "operation": "extract_places.filter",
+      "attempts": 2,
+      "success": true,
+      "latencyMs": 15177,
+      "totalTokens": 24323
+    }
+  ],
+  "status": "ok",
+  "places": [
+    {
+      "name": "우메다 공중정원 전망대",
+      "nameCandidates": [
+        "우메다 공중정원 전망대"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "주유 패스를 이용하면 무료 이용 가능"
+      ]
+    },
+    {
+      "name": "기누탄이 고지 천공미술관",
+      "nameCandidates": [
+        "기누탄이 고지 천공미술관",
+        "기누탄이 곧이 천공미술관"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.9,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "주유 패스를 이용하면 무료 이용 가능"
+      ]
+    },
+    {
+      "name": "헤파이브 관람차",
+      "nameCandidates": [
+        "헤파이브 관람차",
+        "HEP FIVE 관람차"
+      ],
+      "region": "오사카",
+      "address": null,
+      "category": "attraction",
+      "confidence": 0.95,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "주유 패스를 이용하면 무료 이용 가능"
+      ]
+    },
+    {
+      "name": "뉴 베이브 토요사키",
+      "nameCandidates": [
+        "뉴 베이브 토요사키",
+        "뉴베이브",
+        "뉴베이브 토요사키지점"
+      ],
+      "region": "오사카",
+      "address": "https://maps.app.goo.gl/PpA9podWiGTpaZp36",
+      "category": "restaurant",
+      "confidence": 0.98,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "등심과 안심을 모두 맛볼 수 있는 하프 메뉴 추천",
+        "저녁에는 400엔 추가 시 밥과 돈지르, 디저트 제공"
+      ]
+    },
+    {
+      "name": "오니니 카나보우",
+      "nameCandidates": [
+        "오니니 카나보우",
+        "오니니 카나보오"
+      ],
+      "region": "오사카",
+      "address": "https://goo.gl/maps/AKPTa714Sc53FvgT9",
+      "category": "restaurant",
+      "confidence": 0.98,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "런치 한정 와규 마부시 1800엔",
+        "QR코드를 스캔하여 휴대폰으로 주문 가능",
+        "총 3번의 맛의 변화(본연의 맛, 양념, 육수)를 즐길 수 있음"
+      ]
+    },
+    {
+      "name": "오코노미야키 유카리",
+      "nameCandidates": [
+        "오코노미야키 유카리",
+        "유카리",
+        "お好み焼ゆかり 曽根崎本店"
+      ],
+      "region": "오사카",
+      "address": "https://goo.gl/maps/z5gjXsKtNHcQLiqP9",
+      "category": "restaurant",
+      "confidence": 0.98,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "1950년 창업한 오코노미야키 체인점",
+        "특선 믹스야키, 유카리야키, 아메리칸야키 등이 인기",
+        "가리가리군 츄하이 추천"
+      ]
+    },
+    {
+      "name": "니쿠쇼우 규지로",
+      "nameCandidates": [
+        "니쿠쇼우 규지로",
+        "니쿠쇼우 규지로 오하츠텐진점"
+      ],
+      "region": "오사카",
+      "address": "https://maps.app.goo.gl/o3EYKU4hzRP1DFp56",
+      "category": "restaurant",
+      "confidence": 0.98,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "하루 10개 한정 자매 3종 덮밥 제공",
+        "우설 비교해 먹어보기와 안창살 비교해 먹어보기 메뉴 추천"
+      ]
+    },
+    {
+      "name": "초밥 우오신",
+      "nameCandidates": [
+        "초밥 우오신",
+        "원조 붓치기레 우오신",
+        "魚心"
+      ],
+      "region": "오사카",
+      "address": "https://goo.gl/maps/L9VynqL4MR9EBbZ6A",
+      "category": "restaurant",
+      "confidence": 0.98,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "일반 초밥 3배 정도 크기의 거대한 초밥 제공",
+        "장어 초밥은 2개에 1,000엔"
+      ]
+    }
+  ]
+}

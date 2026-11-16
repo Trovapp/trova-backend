@@ -1,0 +1,27 @@
+{
+  "sample_id": "c015",
+  "url": "https://www.youtube.com/shorts/ADWLpKS6k9E",
+  "seconds": 11.2,
+  "exit": 0,
+  "gemini429": false,
+  "status": "ok",
+  "places": [
+    {
+      "name": "한옥 카페 도문",
+      "nameCandidates": [
+        "한옥 카페 도문",
+        "도문"
+      ],
+      "region": "속초",
+      "address": null,
+      "category": "cafe",
+      "confidence": 1.0,
+      "dayNumber": null,
+      "orderInDay": null,
+      "videoNotes": [
+        "커피가 맛있는 속초 한옥 카페",
+        "2020년까지 낡은 한옥이었으나 전체 리모델링함"
+      ]
+    }
+  ]
+}
