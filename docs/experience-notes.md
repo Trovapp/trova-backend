@@ -2961,3 +2961,11 @@
 - 정적 확인: 운영 조회 도구에서 입력 검사 함수만 추출해 점검 SQL의 통과를 확인했다(DB 접속·환경 파일 로드 없음). 문장 6개 모두 SELECT임을 확인했다. 도구가 `CASE ... END`의 END도 거부하므로 해당 구문을 피했다. SQL의 DB 실행·재실행 검증은 미확인이다. git 명령·커밋·Gradle·DB 접속은 실행하지 않았다.
 - 확인 — 개발 DB 적용: **미확인**(대장이 실행 후 채움).
 - 확인 — 운영 적용: **미확인**(대장이 실행 후 채움).
+
+## 2026-11-17 약관·개인정보·만 14세 명시 동의 기록 (#456)
+
+- 먼저 읽은 것: CLAUDE.md, ADR 목록의 새 형식, ADR 0036, User·CurrentUserService·UserAccountService, 기존 사용자 컨트롤러·탈퇴 테스트, 고유 H2와 AFTER_CLASS를 적용한 TripShareLinkControllerTest, 테스트 설정과 SecurityConfig.
+- 한 것: UserConsent·ConsentType·저장소와 ConsentService·ConsentController를 추가했다. GET은 현재 두 문서 버전과 연령 확인이 모두 있는지 반환한다. POST는 현재 버전과 ageOver14=true를 검증한 뒤 누락된 기록만 한 트랜잭션으로 저장한다. 사용자·종류·버전 유일 제약을 두고 최초 동의 시각을 보존한다. 연령 확인은 기준 연령 `14`를 version으로 쓰며 문서 개정과 무관하게 유지한다.
+- 한 것: application.yml과 .env.example에 개정일 설정을 추가했다(기본 2026-10-14). 탈퇴 삭제 순서에 동의 기록을 사용자 삭제 직전 넣었다. 인증과 공유 키 경로에는 동의 검사를 추가하지 않았다. 결정·이유·대안·다시 볼 조건과 enum 검사 제약 수동 변경 주의는 ADR 0049와 목록에 기록했다.
+- 작성한 테스트: ConsentControllerTest에 미인증 GET·POST 401, 최초 needed와 설정 버전, 정상 POST 204 후 needed=false, 약관·방침 버전 불일치 400과 미저장, 연령 false/null/누락 400, 버전 null/누락 400, 재전송 시 행·최초 시각 보존, 약관만·방침만 개정 시 재동의, 연령 기록 누락, 미동의 다른 API 허용, 사용자별 상태 분리, 탈퇴 시 과거 버전까지 삭제와 타 사용자 기록 보존을 추가했다. 고유 H2(user-consent-controller)와 @DirtiesContext(AFTER_CLASS)로 격리하고 탈퇴 뒤 flush·clear로 FK 순서를 확인하도록 작성했다.
+- 정적 확인: 생성자 주입·record·명시적 import와 사용자 식별·트랜잭션·삭제 순서를 검토했다. 테스트와 전체 빌드 실행 결과는 미확인이다(사용자 지시로 대장이 실행). git 명령·커밋·./gradlew는 실행하지 않았고 레포 안 로그 파일을 만들지 않았다.

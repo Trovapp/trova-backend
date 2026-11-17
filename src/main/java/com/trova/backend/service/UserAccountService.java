@@ -13,6 +13,7 @@ import com.trova.backend.repository.ShareKeyRepository;
 import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.repository.TripReplanJobRepository;
 import com.trova.backend.repository.TripRepository;
+import com.trova.backend.repository.UserConsentRepository;
 import com.trova.backend.repository.UserPreferenceRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
 import com.trova.backend.repository.UserRepository;
@@ -39,6 +40,7 @@ public class UserAccountService {
     private final PushSubscriptionRepository pushSubscriptionRepository;
     private final ExpoPushTokenRepository expoPushTokenRepository;
     private final KnownUsers knownUsers;
+    private final UserConsentRepository userConsentRepository;
 
     public UserAccountService(
             UserRepository userRepository,
@@ -56,7 +58,8 @@ public class UserAccountService {
             ShareKeyRepository shareKeyRepository,
             PushSubscriptionRepository pushSubscriptionRepository,
             ExpoPushTokenRepository expoPushTokenRepository,
-            KnownUsers knownUsers
+            KnownUsers knownUsers,
+            UserConsentRepository userConsentRepository
     ) {
         this.userRepository = userRepository;
         this.savedPlaceRepository = savedPlaceRepository;
@@ -74,6 +77,7 @@ public class UserAccountService {
         this.pushSubscriptionRepository = pushSubscriptionRepository;
         this.expoPushTokenRepository = expoPushTokenRepository;
         this.knownUsers = knownUsers;
+        this.userConsentRepository = userConsentRepository;
     }
 
     // 회원을 참조하는 데이터를 전부 지운 뒤 회원을 지운다(탈퇴 시 지체 없이 파기).
@@ -106,6 +110,8 @@ public class UserAccountService {
         pushSubscriptionRepository.deleteByUserId(user.getId());
         // 안드로이드 앱 알림 토큰(#190)도 같은 이유로 함께 지운다.
         expoPushTokenRepository.deleteByUserId(user.getId());
+        // 명시 동의 기록도 회원을 FK로 참조하므로 회원보다 먼저 파기한다(#456).
+        userConsentRepository.deleteByUser(user);
         userRepository.delete(user);
         // 조회 API가 기억한 사용자 ID도 커밋 뒤 지운다 — 탈퇴한 토큰이 계속 401을 받게(ADR 0036).
         knownUsers.removeAfterCommit(user.getId());
