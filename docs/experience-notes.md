@@ -2952,3 +2952,12 @@
 - 원인: 테스트 컨텍스트 종류가 늘면서 공용 H2 컨텍스트가 캐시에서 밀려나 종료되고, create-drop이 같은 기본 DB의 테이블을 지워 ProcessingJobLifecycleServiceIntegrationTest 18개가 빈 DB에서 USERS 테이블을 찾지 못했다.
 - 한 것: TripShareLinkControllerTest·AdminActionTransactionTest·PlaceRelocateServiceIntegrationTest의 어노테이션을 먼저 읽고, 대상 테스트에 고유 H2 DB(`jdbc:h2:mem:processing-job-lifecycle;MODE=PostgreSQL;DB_CLOSE_DELAY=-1`)와 `@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)`를 적용했다. 운영 코드는 변경하지 않았다.
 - 확인·미확인: 어노테이션과 명시적 import를 정적으로 확인했다. 사용자 지시로 git·커밋·`./gradlew`는 실행하지 않았다. 테스트 및 전체 빌드 통과는 미확인(대장 실행 예정).
+
+## 2026-11-17 Supabase public 테이블 RLS와 API 역할 권한 회수 (#454)
+
+- 발견 경위: 바이브코딩 체크리스트 점검 중 운영 읽기 전용 조회에서 확인했다. 사용자 제공 실측은 public 테이블 22개·테이블별 권한 7종 × 2역할(`anon`·`authenticated`)이다. 이번 작성 세션에서는 DB에 접속하거나 실측을 재현하지 않았다.
+- 한 것: `db/supabase/rls_lockdown.sql`에 기존 public 테이블 RLS 활성화(FORCE·정책 생성 없음), 두 API 역할의 테이블·시퀀스·함수 권한과 postgres의 public 기본 권한 회수를 작성했다. 새 테이블을 보호하는 SECURITY DEFINER 함수와 재생성 가능한 이벤트 트리거를 포함하고, 실행·복원 방법을 주석에 적었다. Java 코드는 변경하지 않았다.
+- 한 것: SELECT만 있는 `db/supabase/rls_check.sql`에 테이블별 RLS·소유자·정책 수, 두 역할의 직접·유효 권한, 시퀀스·함수 권한, 이벤트 트리거, public·전역 기본 ACL 조회를 작성했다. `PUBLIC EXECUTE`와 전역 기본 부여는 역할별·스키마별 REVOKE만으로 없어지지 않는다는 한계를 기록했다. 결정·대안·재검토 조건은 ADR 0048에 남기고 목록에 추가했다.
+- 정적 확인: 운영 조회 도구에서 입력 검사 함수만 추출해 점검 SQL의 통과를 확인했다(DB 접속·환경 파일 로드 없음). 문장 6개 모두 SELECT임을 확인했다. 도구가 `CASE ... END`의 END도 거부하므로 해당 구문을 피했다. SQL의 DB 실행·재실행 검증은 미확인이다. git 명령·커밋·Gradle·DB 접속은 실행하지 않았다.
+- 확인 — 개발 DB 적용: **미확인**(대장이 실행 후 채움).
+- 확인 — 운영 적용: **미확인**(대장이 실행 후 채움).
