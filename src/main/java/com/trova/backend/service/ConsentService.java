@@ -2,13 +2,14 @@ package com.trova.backend.service;
 
 import com.trova.backend.entity.ConsentType;
 import com.trova.backend.entity.User;
-import com.trova.backend.entity.UserConsent;
 import com.trova.backend.repository.UserConsentRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
 
 @Service
 public class ConsentService {
@@ -54,13 +55,18 @@ public class ConsentService {
         recordVersion(user, ConsentType.TERMS, termsVersion);
         recordVersion(user, ConsentType.PRIVACY, privacyVersion);
         if (!consentRepository.existsByUserAndType(user, ConsentType.AGE_OVER_14)) {
-            consentRepository.save(new UserConsent(user, ConsentType.AGE_OVER_14, AGE_VERSION));
+            insertIfAbsent(user, ConsentType.AGE_OVER_14, AGE_VERSION);
         }
     }
 
     private void recordVersion(User user, ConsentType type, String version) {
         if (!consentRepository.existsByUserAndTypeAndVersion(user, type, version)) {
-            consentRepository.save(new UserConsent(user, type, version));
+            insertIfAbsent(user, type, version);
         }
+    }
+
+    private void insertIfAbsent(User user, ConsentType type, String version) {
+        // 존재 조회 직후 다른 요청이 먼저 저장해도 최초 동의와 시각을 유지한다.
+        consentRepository.insertIfAbsent(user.getId(), type.name(), version, LocalDateTime.now());
     }
 }

@@ -8,6 +8,7 @@ import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtAuthenticationToken;
 import com.trova.backend.service.ConsentService;
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,28 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,17 +67,30 @@ class ConsentControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
+    @MockitoSpyBean
     private UserConsentRepository consentRepository;
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     private User user;
 
     @BeforeEach
     void 사용자를_준비한다() {
         user = userRepository.save(new User("google", "consent-user", "동의 사용자", null));
+    }
+
+    @AfterEach
+    void 트랜잭션_밖에서_저장한_사용자를_삭제한다() {
+        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+            new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
+                consentRepository.deleteByUser(user);
+                userRepository.delete(user);
+            });
+        }
     }
 
     private RequestPostProcessor login() {
@@ -101,6 +130,76 @@ class ConsentControllerTest {
         assertThat(consents).allSatisfy(consent -> assertThat(consent.getAgreedAt()).isNotNull());
         assertThat(consentRepository.existsByUserAndTypeAndVersion(user, ConsentType.TERMS, TERMS_VERSION)).isTrue();
         assertThat(consentRepository.existsByUserAndTypeAndVersion(user, ConsentType.PRIVACY, PRIVACY_VERSION)).isTrue();
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void 트랜잭션_밖에서도_세_동의가_저장되고_더는_동의가_필요하지_않다() throws Exception {
+        mockMvc.perform(post("/api/me/consents").with(login())
+                        .contentType(MediaType.APPLICATION_JSON).content(VALID_REQUEST))
+                .andExpect(status().isNoContent());
+
+        assertThat(consentRepository.findByUser(user)).extracting(UserConsent::getType)
+                .containsExactlyInAnyOrder(ConsentType.TERMS, ConsentType.PRIVACY, ConsentType.AGE_OVER_14);
+        mockMvc.perform(get("/api/me/consents").with(login()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.needed").value(false));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void 두_번째_동의_저장이_실패하면_첫_동의도_롤백한다() throws Exception {
+        doAnswer(invocation -> {
+            assertThat(consentRepository.existsByUserAndTypeAndVersion(user, ConsentType.TERMS, TERMS_VERSION)).isTrue();
+            throw new IllegalStateException("동의 저장 실패");
+        }).when(consentRepository).insertIfAbsent(eq(user.getId()), eq(ConsentType.PRIVACY.name()),
+                eq(PRIVACY_VERSION), any(LocalDateTime.class));
+
+        assertThatThrownBy(() -> mockMvc.perform(post("/api/me/consents").with(login())
+                .contentType(MediaType.APPLICATION_JSON).content(VALID_REQUEST)))
+                .hasRootCauseInstanceOf(IllegalStateException.class)
+                .hasRootCauseMessage("동의 저장 실패");
+
+        assertThat(consentRepository.findByUser(user)).isEmpty();
+        mockMvc.perform(get("/api/me/consents").with(login()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.needed").value(true));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void 같은_동의를_동시에_제출해도_모두_204이고_세_행만_저장한다() throws Exception {
+        CountDownLatch checked = new CountDownLatch(2);
+        // 두 요청 모두 동의가 없다고 조회한 뒤 삽입하는 경합을 재현한다.
+        doAnswer(invocation -> {
+            checked.countDown();
+            assertThat(checked.await(10, TimeUnit.SECONDS)).isTrue();
+            return false;
+        }).when(consentRepository).existsByUserAndTypeAndVersion(any(User.class), eq(ConsentType.TERMS), eq(TERMS_VERSION));
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            Future<?> first = executor.submit(() -> {
+                mockMvc.perform(post("/api/me/consents").with(login())
+                                .contentType(MediaType.APPLICATION_JSON).content(VALID_REQUEST))
+                        .andExpect(status().isNoContent());
+                return null;
+            });
+            Future<?> second = executor.submit(() -> {
+                mockMvc.perform(post("/api/me/consents").with(login())
+                                .contentType(MediaType.APPLICATION_JSON).content(VALID_REQUEST))
+                        .andExpect(status().isNoContent());
+                return null;
+            });
+            first.get(20, TimeUnit.SECONDS);
+            second.get(20, TimeUnit.SECONDS);
+
+            assertThat(consentRepository.findByUser(user)).extracting(UserConsent::getType)
+                    .containsExactlyInAnyOrder(ConsentType.TERMS, ConsentType.PRIVACY, ConsentType.AGE_OVER_14);
+        } finally {
+            executor.shutdownNow();
+            assertThat(executor.awaitTermination(10, TimeUnit.SECONDS)).isTrue();
+        }
     }
 
     @Test
