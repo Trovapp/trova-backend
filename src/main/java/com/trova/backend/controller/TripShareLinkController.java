@@ -8,6 +8,8 @@ import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.DailyQuotaService;
+import com.trova.backend.service.TripService;
 import com.trova.backend.service.TripShareLinkService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +39,14 @@ public class TripShareLinkController {
     private final TripPlaceRepository tripPlaceRepository;
     private final RequestRateLimiter rateLimiter;
     private final int publicPerMinute;
+    private final TripService tripService;
+    private final DailyQuotaService dailyQuotaService;
 
     public TripShareLinkController(
             CurrentUserService currentUserService, TripRepository tripRepository,
             TripShareLinkService shareLinkService, ItineraryRepository itineraryRepository,
             TripPlaceRepository tripPlaceRepository, RequestRateLimiter rateLimiter,
+            TripService tripService, DailyQuotaService dailyQuotaService,
             @Value("${app.share-link.public-per-minute:60}") int publicPerMinute
     ) {
         this.currentUserService = currentUserService;
@@ -51,6 +56,8 @@ public class TripShareLinkController {
         this.tripPlaceRepository = tripPlaceRepository;
         this.rateLimiter = rateLimiter;
         this.publicPerMinute = publicPerMinute;
+        this.tripService = tripService;
+        this.dailyQuotaService = dailyQuotaService;
     }
 
     public record ShareLinkResponse(String token, String url, LocalDateTime createdAt) {
@@ -102,6 +109,34 @@ public class TripShareLinkController {
         }
         return shareLinkService.findPublic(token)
                 .map(trip -> ResponseEntity.ok(toPublicResponse(trip)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    public record CopyTripResponse(Long tripId, String title) {
+    }
+
+    @PostMapping("/api/public/trips/{token}/copy")
+    public ResponseEntity<CopyTripResponse> copyPublicTrip(
+            Authentication authentication, @PathVariable String token, HttpServletRequest http
+    ) {
+        if (!rateLimiter.tryAcquire("public-trip:" + http.getRemoteAddr(), publicPerMinute)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .header(HttpHeaders.RETRY_AFTER, "60").build();
+        }
+        User target = currentUserService.resolve(authentication);
+        return shareLinkService.findPublic(token)
+                .map(source -> {
+                    dailyQuotaService.consumeTripCopy(target);
+                    Trip copy;
+                    try {
+                        copy = tripService.copyTrip(target, source);
+                    } catch (RuntimeException exception) {
+                        dailyQuotaService.releaseTripCopy(target);
+                        throw exception;
+                    }
+                    return ResponseEntity.status(HttpStatus.CREATED)
+                            .body(new CopyTripResponse(copy.getId(), copy.getTitle()));
+                })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 

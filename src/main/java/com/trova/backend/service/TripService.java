@@ -172,6 +172,26 @@ public class TripService {
         return trip;
     }
 
+    /** 공유 응답 범위만 독립된 여행으로 복사한다. 날짜 없는 초안도 원본 일차를 그대로 보존한다(#446). */
+    @Transactional
+    public Trip copyTrip(User target, Trip source) {
+        Trip copy = tripRepository.save(new Trip(target, source.getTitle(), source.getStartDate(), source.getEndDate()));
+        for (Itinerary sourceDay : itineraryRepository.findByTripOrderByDay(source)) {
+            Itinerary copyDay = itineraryRepository.save(new Itinerary(
+                    copy, sourceDay.getDay(), sourceDay.getDate()));
+            for (TripPlace sourcePlace : tripPlaceRepository.findByItineraryOrderByVisitOrder(sourceDay)) {
+                TripPlace copyPlace = new TripPlace(
+                        copyDay, sourcePlace.getPlaceName(), sourcePlace.getRegion(), sourcePlace.getCategory(),
+                        sourcePlace.getLatitude(), sourcePlace.getLongitude(), sourcePlace.getPhone(), sourcePlace.getAddress(),
+                        sourcePlace.getVisitOrder(), PlaceSource.NORMAL, null);
+                copyPlace.applyDetails(sourcePlace.getVisitStartTime(), sourcePlace.getVisitEndTime(),
+                        sourcePlace.getArrivalTransportMode(), null);
+                tripPlaceRepository.save(copyPlace);
+            }
+        }
+        return copy;
+    }
+
     /**
      * 여행 날짜를 정하거나 바꾼다(#181). 시작일만 받고 종료일은 지금 일차 수로 계산해 일차마다 날짜를 채운다 —
      * 자동 초안으로 만든 여행은 날짜가 없어 날씨 확인·비 알림·다가오는/지난 여행 구분이 안 됐다.
