@@ -127,7 +127,13 @@ public class TripShareLinkController {
         return shareLinkService.findPublic(token)
                 .map(source -> {
                     dailyQuotaService.consumeTripCopy(target);
-                    Trip copy = tripService.copyTrip(target, source);
+                    Trip copy;
+                    try {
+                        copy = tripService.copyTrip(target, source);
+                    } catch (RuntimeException exception) {
+                        dailyQuotaService.releaseTripCopy(target);
+                        throw exception;
+                    }
                     return ResponseEntity.status(HttpStatus.CREATED)
                             .body(new CopyTripResponse(copy.getId(), copy.getTitle()));
                 })

@@ -38,4 +38,21 @@ class DailyQuotaTripCopyTest {
         when(clock.withZone(korea)).thenReturn(Clock.fixed(Instant.parse("2026-11-17T15:00:00Z"), korea));
         assertThatCode(() -> quota.consumeTripCopy(user)).doesNotThrowAnyException();
     }
+
+    @Test
+    void 복사_한도_복원은_0_아래로_내려가지_않는다() {
+        DailyQuotaService quota = new DailyQuotaService(mock(ProcessingJobRepository.class), 10, 1, 2);
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(1L);
+
+        quota.releaseTripCopy(user);
+        quota.consumeTripCopy(user);
+        quota.releaseTripCopy(user);
+        quota.releaseTripCopy(user);
+        quota.consumeTripCopy(user);
+        quota.consumeTripCopy(user);
+
+        assertThatThrownBy(() -> quota.consumeTripCopy(user))
+                .isInstanceOf(DailyQuotaService.QuotaExceededException.class);
+    }
 }

@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -88,7 +89,7 @@ class TripServiceCopyTest {
         assertThat(copied.getVisitStartTime()).isEqualTo(original.getVisitStartTime());
         assertThat(copied.getVisitEndTime()).isEqualTo(original.getVisitEndTime());
         assertThat(copied.getArrivalTransportMode()).isEqualTo(TransportMode.WALK);
-        assertThat(copied.getSource()).isEqualTo(PlaceSource.MANUAL);
+        assertThat(copied.getSource()).isEqualTo(PlaceSource.NORMAL);
         assertThat(copied.getMemo()).isNull();
         assertThat(copied.getSavedPlaceId()).isNull();
         assertThat(copied.getGooglePlaceId()).isNull();
@@ -121,5 +122,44 @@ class TripServiceCopyTest {
             assertThat(day.getTrip()).isSameAs(copy);
             assertThat(day.getDate()).isNull();
         });
+    }
+
+    @Test
+    void 일차별_장소와_방문_순서를_그대로_복사한다() {
+        User owner = new User("google", "owner", "소유자", null);
+        User target = new User("google", "target", "요청자", null);
+        LocalDate date = LocalDate.of(2026, 11, 17);
+        Trip source = new Trip(owner, "이틀 여행", date, date.plusDays(1));
+        Itinerary firstDay = new Itinerary(source, 1, date);
+        Itinerary secondDay = new Itinerary(source, 2, date.plusDays(1));
+        TripPlace first = new TripPlace(firstDay, "첫날 장소", null, null, null, null,
+                null, null, 3, PlaceSource.NORMAL, null);
+        TripPlace second = new TripPlace(secondDay, "둘째 날 첫 장소", null, null, null, null,
+                null, null, 2, PlaceSource.NORMAL, null);
+        TripPlace third = new TripPlace(secondDay, "둘째 날 다음 장소", null, null, null, null,
+                null, null, 5, PlaceSource.NORMAL, null);
+        when(tripRepository.save(any(Trip.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(itineraryRepository.save(any(Itinerary.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(itineraryRepository.findByTripOrderByDay(source)).thenReturn(List.of(firstDay, secondDay));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(firstDay)).thenReturn(List.of(first));
+        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(secondDay)).thenReturn(List.of(second, third));
+
+        Trip copy = tripService.copyTrip(target, source);
+
+        ArgumentCaptor<Itinerary> dayCaptor = ArgumentCaptor.forClass(Itinerary.class);
+        verify(itineraryRepository, times(2)).save(dayCaptor.capture());
+        List<Itinerary> days = dayCaptor.getAllValues();
+        assertThat(days).extracting(Itinerary::getDay).containsExactly(1, 2);
+        assertThat(days).allSatisfy(day -> assertThat(day.getTrip()).isSameAs(copy));
+        ArgumentCaptor<TripPlace> placeCaptor = ArgumentCaptor.forClass(TripPlace.class);
+        verify(tripPlaceRepository, times(3)).save(placeCaptor.capture());
+        List<TripPlace> places = placeCaptor.getAllValues();
+        assertThat(places).filteredOn(place -> place.getItinerary() == days.get(0))
+                .extracting(TripPlace::getPlaceName, TripPlace::getVisitOrder)
+                .containsExactly(tuple("첫날 장소", 3));
+        assertThat(places).filteredOn(place -> place.getItinerary() == days.get(1))
+                .extracting(TripPlace::getPlaceName, TripPlace::getVisitOrder)
+                .containsExactly(tuple("둘째 날 첫 장소", 2),
+                        tuple("둘째 날 다음 장소", 5));
     }
 }

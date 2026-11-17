@@ -178,12 +178,12 @@ public class TripService {
         Trip copy = tripRepository.save(new Trip(target, source.getTitle(), source.getStartDate(), source.getEndDate()));
         for (Itinerary sourceDay : itineraryRepository.findByTripOrderByDay(source)) {
             Itinerary copyDay = itineraryRepository.save(new Itinerary(
-                    copy, sourceDay.getDay(), source.getStartDate() == null ? null : sourceDay.getDate()));
+                    copy, sourceDay.getDay(), sourceDay.getDate()));
             for (TripPlace sourcePlace : tripPlaceRepository.findByItineraryOrderByVisitOrder(sourceDay)) {
                 TripPlace copyPlace = new TripPlace(
                         copyDay, sourcePlace.getPlaceName(), sourcePlace.getRegion(), sourcePlace.getCategory(),
                         sourcePlace.getLatitude(), sourcePlace.getLongitude(), sourcePlace.getPhone(), sourcePlace.getAddress(),
-                        sourcePlace.getVisitOrder(), PlaceSource.MANUAL, null);
+                        sourcePlace.getVisitOrder(), PlaceSource.NORMAL, null);
                 copyPlace.applyDetails(sourcePlace.getVisitStartTime(), sourcePlace.getVisitEndTime(),
                         sourcePlace.getArrivalTransportMode(), null);
                 tripPlaceRepository.save(copyPlace);

@@ -108,6 +108,15 @@ public class DailyQuotaService {
         }
     }
 
+    /** 복사 실패 시 쓴 한도를 돌려준다 — 카운터는 0 아래로 내려가지 않는다. */
+    public void releaseTripCopy(User user) {
+        LocalDate today = LocalDate.now(clock.withZone(KOREA));
+        AtomicInteger count = copyCounts.get(today + ":" + user.getId());
+        if (count != null) {
+            count.updateAndGet(value -> Math.max(0, value - 1));
+        }
+    }
+
     public static class QuotaExceededException extends RuntimeException {
         public QuotaExceededException(String message) {
             super(message);
