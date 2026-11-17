@@ -44,7 +44,7 @@ class PlaceRelocateServiceTest {
         TripDraft other = TripDraft.auto(user, List.of(8L), "당일치기");
         when(placeRepository.findById(3L)).thenReturn(Optional.of(picked));
         when(savedPlaceRepository.findByIdAndUser(1L, user)).thenReturn(Optional.of(saved));
-        when(tripDraftRepository.findByUserAndAutoCreatedTrue(user)).thenReturn(List.of(same, other));
+        when(tripDraftRepository.findListedForPlacesChangeByUser(user)).thenReturn(List.of(same, other));
 
         assertThat(service.relocate(1L, user, 3L)).isPresent();
 
@@ -64,6 +64,7 @@ class PlaceRelocateServiceTest {
 
         assertThat(dismissed.markPlacesChanged()).isFalse();
         assertThat(approved.markPlacesChanged()).isFalse();
+        assertThat(dismissed.getPlacesChangedAt()).isNull();
         assertThat(approved.getPlacesChangedAt()).isNull();
     }
 }
