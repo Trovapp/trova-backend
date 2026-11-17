@@ -34,6 +34,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
@@ -50,6 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @TestPropertySource(properties = {
         "app.share-link.public-per-minute=3",
+        "app.share-link.copy-per-day=2",
         "app.web-app-url=https://app.example.test"
 })
 class TripShareLinkControllerTest {
@@ -410,5 +412,253 @@ class TripShareLinkControllerTest {
         mockMvc.perform(get("/api/public/trips/{token}", token).with(fromIp("192.0.2.12")))
                 .andExpect(status().isTooManyRequests())
                 .andExpect(header().string(HttpHeaders.RETRY_AFTER, "60"));
+    }
+
+    private Long copyTrip(String token, String sub, String ip) throws Exception {
+        String body = mockMvc.perform(post("/api/public/trips/{token}/copy", token)
+                        .with(loginAs(sub, "복사 사용자")).with(fromIp(ip)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.tripId").isNumber())
+                .andExpect(jsonPath("$.title").value("테스트 여행"))
+                .andReturn().getResponse().getContentAsString();
+        return Long.valueOf(body.replaceAll(".*\"tripId\":([0-9]+).*", "$1"));
+    }
+
+    @Test
+    void 로그인_없이_복사하면_401이다() throws Exception {
+        String token = createLink(trip(owner(), 1));
+        mockMvc.perform(post("/api/public/trips/{token}/copy", token))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void 모르는_토큰을_복사하면_404이다() throws Exception {
+        userRepository.save(new User("google", "copy-unknown", "복사 사용자", null));
+        mockMvc.perform(post("/api/public/trips/unknown-token/copy")
+                        .with(loginAs("copy-unknown", "복사 사용자")).with(fromIp("192.0.2.20")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void 꺼진_링크를_복사하면_404이다() throws Exception {
+        userRepository.save(new User("google", "copy-revoked", "복사 사용자", null));
+        Trip source = trip(owner(), 1);
+        String token = createLink(source);
+        tripShareLinkService.revoke(source);
+        mockMvc.perform(post("/api/public/trips/{token}/copy", token)
+                        .with(loginAs("copy-revoked", "복사 사용자")).with(fromIp("192.0.2.21")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void 정지된_소유자의_여행을_복사하면_404이다() throws Exception {
+        userRepository.save(new User("google", "copy-suspended", "복사 사용자", null));
+        User user = owner();
+        String token = createLink(trip(user, 1));
+        suspendedUsers.add(user.getId());
+        try {
+            mockMvc.perform(post("/api/public/trips/{token}/copy", token)
+                            .with(loginAs("copy-suspended", "복사 사용자")).with(fromIp("192.0.2.22")))
+                    .andExpect(status().isNotFound());
+        } finally {
+            suspendedUsers.remove(user.getId());
+        }
+    }
+
+    @Test
+    void 복사하면_요청자_소유로_공개_일정만_보존하고_원본은_그대로다() throws Exception {
+        userRepository.save(new User("google", "copy-recipient", "복사 사용자", null));
+        Trip source = trip(owner(), 2);
+        Itinerary firstDay = itineraryRepository.findByTripOrderByDay(source).get(0);
+        TripPlace original = new TripPlace(firstDay, "공유 장소", "부산", "cafe", 35.1, 129.0,
+                "051-123-4567", "부산 주소", 2, PlaceSource.VIDEO, 123L);
+        original.applyDetails(LocalTime.of(10, 0), LocalTime.of(11, 0), TransportMode.WALK, "비공개 메모");
+        original.applyGooglePlaceId("private-google-id");
+        original.applySpace("INDOOR");
+        tripPlaceRepository.save(original);
+        tripPlaceRepository.save(new TripPlace(firstDay, "먼저 갈 곳", null, null, null, null,
+                null, null, 1, PlaceSource.NORMAL, null));
+        String token = createLink(source);
+
+        Trip copy = tripRepository.findById(copyTrip(token, "copy-recipient", "192.0.2.23")).orElseThrow();
+
+        User recipient = userRepository.findByProviderAndProviderUserId("google", "copy-recipient").orElseThrow();
+        assertThat(copy.getId()).isNotEqualTo(source.getId());
+        assertThat(copy.getUser().getId()).isEqualTo(recipient.getId());
+        assertThat(copy.getStartDate()).isEqualTo(source.getStartDate());
+        assertThat(copy.getEndDate()).isEqualTo(source.getEndDate());
+        List<Itinerary> days = itineraryRepository.findByTripOrderByDay(copy);
+        assertThat(days).extracting(Itinerary::getDay).containsExactly(1, 2);
+        assertThat(days).extracting(Itinerary::getDate).containsExactly(source.getStartDate(), source.getEndDate());
+        assertThat(tripPlaceRepository.findByItineraryOrderByVisitOrder(days.get(1))).isEmpty();
+        List<TripPlace> places = tripPlaceRepository.findByItineraryOrderByVisitOrder(days.get(0));
+        assertThat(places).extracting(TripPlace::getVisitOrder).containsExactly(1, 2);
+        assertThat(places).extracting(TripPlace::getPlaceName).containsExactly("먼저 갈 곳", "공유 장소");
+        TripPlace copied = places.get(1);
+        assertThat(copied.getId()).isNotEqualTo(original.getId());
+        assertThat(copied.getRegion()).isEqualTo("부산");
+        assertThat(copied.getCategory()).isEqualTo("cafe");
+        assertThat(copied.getLatitude()).isEqualTo(35.1);
+        assertThat(copied.getLongitude()).isEqualTo(129.0);
+        assertThat(copied.getPhone()).isEqualTo("051-123-4567");
+        assertThat(copied.getAddress()).isEqualTo("부산 주소");
+        assertThat(copied.getVisitStartTime()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(copied.getVisitEndTime()).isEqualTo(LocalTime.of(11, 0));
+        assertThat(copied.getArrivalTransportMode()).isEqualTo(TransportMode.WALK);
+        for (TripPlace place : places) {
+            assertThat(place.getSource()).isEqualTo(PlaceSource.NORMAL);
+            assertThat(place.getMemo()).isNull();
+            assertThat(place.getSavedPlaceId()).isNull();
+            assertThat(place.getGooglePlaceId()).isNull();
+            assertThat(place.getSpace()).isNull();
+        }
+        assertThat(places.get(0).getVisitStartTime()).isNull();
+        assertThat(places.get(0).getVisitEndTime()).isNull();
+        assertThat(places.get(0).getArrivalTransportMode()).isNull();
+        assertThat(tripPlaceRepository.findByItineraryOrderByVisitOrder(firstDay)).hasSize(2);
+        assertThat(original.getMemo()).isEqualTo("비공개 메모");
+        assertThat(original.getSource()).isEqualTo(PlaceSource.VIDEO);
+        assertThat(original.getSavedPlaceId()).isEqualTo(123L);
+        assertThat(original.getGooglePlaceId()).isEqualTo("private-google-id");
+        assertThat(original.getSpace()).isEqualTo("INDOOR");
+    }
+
+    @Test
+    void 날짜_없는_여행도_빈_일차와_장소를_복사한다() throws Exception {
+        userRepository.save(new User("google", "copy-undated", "복사 사용자", null));
+        Trip source = tripRepository.save(new Trip(owner(), "테스트 여행", null, null));
+        itineraryRepository.save(new Itinerary(source, 1, null));
+        itineraryRepository.save(new Itinerary(source, 2, null));
+        place(source);
+        String token = createLink(source);
+
+        Trip copy = tripRepository.findById(copyTrip(token, "copy-undated", "192.0.2.24")).orElseThrow();
+
+        assertThat(copy.getStartDate()).isNull();
+        assertThat(copy.getEndDate()).isNull();
+        List<Itinerary> days = itineraryRepository.findByTripOrderByDay(copy);
+        assertThat(days).extracting(Itinerary::getDay).containsExactly(1, 2);
+        assertThat(days).allSatisfy(day -> assertThat(day.getDate()).isNull());
+        assertThat(tripPlaceRepository.findByItineraryOrderByVisitOrder(days.get(0))).hasSize(1);
+        assertThat(tripPlaceRepository.findByItineraryOrderByVisitOrder(days.get(1))).isEmpty();
+    }
+
+    @Test
+    void 자기_여행도_복사할_수_있고_하루_한도를_넘으면_429이다() throws Exception {
+        userRepository.save(new User("google", "copy-separate-user", "복사 사용자", null));
+        User user = owner();
+        Trip source = trip(user, 1);
+        String token = createLink(source);
+        copyTrip(token, "trip-share-owner", "192.0.2.25");
+        copyTrip(token, "trip-share-owner", "192.0.2.26");
+
+        mockMvc.perform(post("/api/public/trips/{token}/copy", token)
+                        .with(loginAs("trip-share-owner", "소유자")).with(fromIp("192.0.2.27")))
+                .andExpect(status().isTooManyRequests());
+        assertThat(tripRepository.findByUserOrderByCreatedAtDesc(user)).hasSize(3);
+        copyTrip(token, "copy-separate-user", "192.0.2.28");
+    }
+
+    @Test
+    void 공개_조회와_복사는_IP_분당_한도를_공유한다() throws Exception {
+        User recipient = userRepository.save(new User("google", "copy-shared-ip", "복사 사용자", null));
+        RateLimitWindow.awaitFreshMinute();
+        String token = createLink(trip(owner(), 1));
+        for (int i = 0; i < 2; i++) {
+            mockMvc.perform(get("/api/public/trips/{token}", token).with(fromIp("192.0.2.29")))
+                    .andExpect(status().isOk());
+        }
+        copyTrip(token, "copy-shared-ip", "192.0.2.29");
+        mockMvc.perform(post("/api/public/trips/{token}/copy", token)
+                        .with(loginAs("copy-shared-ip", "복사 사용자")).with(fromIp("192.0.2.29")))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string(HttpHeaders.RETRY_AFTER, "60"));
+        assertThat(tripRepository.findByUserOrderByCreatedAtDesc(recipient)).hasSize(1);
+        copyTrip(token, "copy-shared-ip", "192.0.2.30");
+        assertThat(tripRepository.findByUserOrderByCreatedAtDesc(recipient)).hasSize(2);
+        mockMvc.perform(post("/api/public/trips/{token}/copy", token)
+                        .with(loginAs("copy-shared-ip", "복사 사용자")).with(fromIp("192.0.2.31")))
+                .andExpect(status().isTooManyRequests());
+    }
+
+    @Test
+    void 모르는_토큰과_꺼진_링크는_하루_복사_한도를_쓰지_않는다() throws Exception {
+        User recipient = userRepository.save(new User("google", "copy-invalid-quota", "복사 사용자", null));
+        Trip source = trip(owner(), 1);
+        String revoked = createLink(source);
+        tripShareLinkService.revoke(source);
+        String active = createLink(source);
+
+        for (String token : List.of("unknown-token", revoked)) {
+            mockMvc.perform(post("/api/public/trips/{token}/copy", token)
+                            .with(loginAs("copy-invalid-quota", "복사 사용자")).with(fromIp("192.0.2.32")))
+                    .andExpect(status().isNotFound());
+        }
+        assertThat(tripRepository.findByUserOrderByCreatedAtDesc(recipient)).isEmpty();
+        copyTrip(active, "copy-invalid-quota", "192.0.2.33");
+        copyTrip(active, "copy-invalid-quota", "192.0.2.33");
+        assertThat(tripRepository.findByUserOrderByCreatedAtDesc(recipient)).hasSize(2);
+    }
+
+    @Test
+    void 모르는_토큰_반복_복사도_IP_한도에_세고_429는_여행과_하루_한도를_쓰지_않는다() throws Exception {
+        User recipient = userRepository.save(new User("google", "copy-unknown-ip", "복사 사용자", null));
+        String token = createLink(trip(owner(), 1));
+        RateLimitWindow.awaitFreshMinute();
+
+        for (int i = 1; i <= 3; i++) {
+            mockMvc.perform(post("/api/public/trips/{token}/copy", "unknown-copy-" + i)
+                            .with(loginAs("copy-unknown-ip", "복사 사용자")).with(fromIp("192.0.2.34")))
+                    .andExpect(status().isNotFound());
+        }
+        mockMvc.perform(post("/api/public/trips/{token}/copy", token)
+                        .with(loginAs("copy-unknown-ip", "복사 사용자")).with(fromIp("192.0.2.34")))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string(HttpHeaders.RETRY_AFTER, "60"));
+        assertThat(tripRepository.findByUserOrderByCreatedAtDesc(recipient)).isEmpty();
+        copyTrip(token, "copy-unknown-ip", "192.0.2.35");
+        copyTrip(token, "copy-unknown-ip", "192.0.2.35");
+        assertThat(tripRepository.findByUserOrderByCreatedAtDesc(recipient)).hasSize(2);
+    }
+
+    private record CopyTripFixture(Long ownerId, Long tripId, Long recipientId, String token) {
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void 복사는_트랜잭션_밖에서도_사본을_만든다() throws Exception {
+        TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+        CopyTripFixture fixture = transaction.execute(status -> {
+            User owner = owner();
+            User recipient = userRepository.save(new User("google", "copy-outside-tx", "복사 사용자", null));
+            Trip source = trip(owner, 2);
+            place(source);
+            String token = tripShareLinkService.createOrGet(source).link().getToken();
+            return new CopyTripFixture(owner.getId(), source.getId(), recipient.getId(), token);
+        });
+        assertThat(fixture).isNotNull();
+        try {
+            Long copyId = copyTrip(fixture.token(), "copy-outside-tx", "192.0.2.36");
+            transaction.executeWithoutResult(status -> {
+                Trip copy = tripRepository.findById(copyId).orElseThrow();
+                assertThat(copy.getId()).isNotEqualTo(fixture.tripId());
+                assertThat(copy.getUser().getId()).isEqualTo(fixture.recipientId());
+                List<Itinerary> days = itineraryRepository.findByTripOrderByDay(copy);
+                assertThat(days).extracting(Itinerary::getDay).containsExactly(1, 2);
+                assertThat(tripPlaceRepository.findByItineraryOrderByVisitOrder(days.get(0))).hasSize(1);
+                assertThat(tripPlaceRepository.findByItineraryOrderByVisitOrder(days.get(1))).isEmpty();
+            });
+        } finally {
+            transaction.executeWithoutResult(status -> {
+                User recipient = userRepository.findById(fixture.recipientId()).orElseThrow();
+                for (Trip copy : tripRepository.findByUserOrderByCreatedAtDesc(recipient)) {
+                    tripService.deleteTrip(recipient, copy.getId());
+                }
+                userRepository.delete(recipient);
+                User owner = userRepository.findById(fixture.ownerId()).orElseThrow();
+                tripService.deleteTrip(owner, fixture.tripId());
+                userRepository.delete(owner);
+            });
+        }
     }
 }
