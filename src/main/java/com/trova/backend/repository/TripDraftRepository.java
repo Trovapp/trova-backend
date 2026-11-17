@@ -32,6 +32,13 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
     // 자동 생성 초안 중 같은 영상으로 또 만들지 않았는지 확인할 때 쓴다(#136).
     List<TripDraft> findByUserAndAutoCreatedTrue(User user);
 
+    // 위치 바로잡기 표시용 — 홈에 보이는 초안 중 승인·닫힘·실패는 제외한다(#450).
+    @Query("select d from TripDraft d where d.user = :user "
+            + "and (d.autoCreated = true or d.replacesDraftId is not null) and d.dismissedAt is null "
+            + "and d.status not in (com.trova.backend.entity.TripDraftStatus.APPROVED, "
+            + "com.trova.backend.entity.TripDraftStatus.FAILED)")
+    List<TripDraft> findListedForPlacesChangeByUser(@Param("user") User user);
+
     // 홈 화면에 보여줄 자동 초안 — 닫지 않았고 아직 끝나지 않은 것만, 최신순.
     List<TripDraft> findByUserAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(
             User user, List<TripDraftStatus> statuses);

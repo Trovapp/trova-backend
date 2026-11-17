@@ -85,6 +85,8 @@ public class AutoDraftService {
             return null;
         }
         String key = VideoKey.of(job.getSourceUrl());
+        // 홈 목록 조회가 아니라 같은 영상의 자동 초안 중복 생성 방지다(#136, #450).
+        // 승인·닫힘·실패한 자동 초안도 이력으로 남겨 다시 만들지 않으므로 autoCreated 기준을 유지한다.
         List<Long> autoDraftJobIds = tripDraftRepository.findByUserAndAutoCreatedTrue(user).stream()
                 .flatMap(d -> d.getJobIds().stream())
                 .toList();

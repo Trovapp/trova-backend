@@ -2938,3 +2938,11 @@
 
 ### 확인하지 않은 것
 - API 실동작·운영 부하와 적정 복사 한도는 미확인이다.
+
+## 2026-11-17 위치 바로잡기 뒤 다시 짠 홈 초안에도 변경 표시 (#450)
+
+- 범위 근거: 앱 QA #151·Windows 세션 분석에서 제기된 "다시 짠 초안에 위치 변경 안내가 안 뜸". 코드와 #414·#424 기록을 읽어, 홈 초안 기준(`autoCreated || replacesDraftId != null`)과 위치 바로잡기의 자동 초안 전용 조회가 달랐음을 확인했다. Windows 세션 원문이나 앱 화면을 이번 작업에서 직접 확인하지는 않았다.
+- 한 것: `TripDraftRepository.findListedForPlacesChangeByUser`를 추가해 사용자별 홈 초안 중 APPROVED·dismissedAt 있음·FAILED를 제외한다. `PlaceRelocateService.markListedDrafts`가 이 조회를 쓰도록 바꾸고, 고친 장소의 job을 포함한 초안에만 `placesChangedAt`을 찍는 조건은 유지했다. 직접 만든 초안(`autoCreated=false`, `replacesDraftId=null`)은 #414의 범위대로 제외한다.
+- 한 것: `AutoDraftService`의 자동 초안 조회는 홈 목록 조회가 아닌 같은 영상의 중복 생성 방지이므로 유지하고, 승인·닫힘·실패 이력도 포함해야 하는 이유를 주석에 적었다. Gemini 호출이나 자동 재생성은 추가하지 않았다.
+- 테스트: 기존 `PlaceRelocateServiceTest`의 저장소 조회를 변경하고 닫힌 초안의 타임스탬프가 null인지도 단언했다. 실제 JPA 저장소를 사용하는 `PlaceRelocateServiceIntegrationTest`에 자동·다시 짠 초안의 PENDING/PROCESSING/NEEDS_INPUT/READY 표시, 직접 만든 초안 제외, 승인·닫힘·실패 각각 제외(자동·다시 짠 초안 모두), 다른 사용자·다른 job 제외를 추가했다. 제외 대상은 조회 결과와 저장 후 타임스탬프를 함께 단언해 엔티티 방어 로직이 쿼리 조건 누락을 가리지 않게 했다.
+- 확인: 실측 없음. 코드와 테스트의 분기·단언을 정적으로 검토했다. 사용자 지시로 git·커밋·`./gradlew`는 실행하지 않았고 레포 안에 로그 파일을 만들지 않았다. 테스트 실행·빌드 통과·돌연변이 테스트 실행·앱 안내 띠 표시는 미확인(대장 검증 필요).
