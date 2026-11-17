@@ -42,7 +42,7 @@ class TripReplanAdmissionTest {
     private final TripRepository trips = mock(TripRepository.class);
     private final TripReplanJobRepository jobs = mock(TripReplanJobRepository.class);
     private final TripReplanJobService worker = mock(TripReplanJobService.class);
-    private final DailyQuotaService quota = new DailyQuotaService(mock(ProcessingJobRepository.class), 20, 1);
+    private final DailyQuotaService quota = new DailyQuotaService(mock(ProcessingJobRepository.class), 20, 1, 20);
     private final TripReplanJob saved = mock(TripReplanJob.class);
     private TripReplanController controller;
 

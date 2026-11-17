@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *   이전에는 한국 자정 기준 하루 한도였다(#33 20건 → #420 10건).
  * - 장소 API(Google Places를 부르는 조회): 한국 시간 하루 기준으로 메모리에서 센다 — 서버 재시작 시 초기화되지만
  *   남용을 막는 데는 충분하다.
+ * - 공유 여행 복사: 장소 호출과 별도 카운터로 한국 시간 하루 기준 메모리에서 센다(#446).
  */
 @Service
 public class DailyQuotaService {
@@ -39,22 +40,29 @@ public class DailyQuotaService {
     private final ProcessingJobRepository processingJobRepository;
     private final int sharesPerWeek;
     private final int placeCallsPerDay;
+    private final int copiesPerDay;
     private final Clock clock;
     private final Map<String, AtomicInteger> placeCallCounts = new ConcurrentHashMap<>();
+    private final Map<String, AtomicInteger> copyCounts = new ConcurrentHashMap<>();
 
     @Autowired
     public DailyQuotaService(
             ProcessingJobRepository processingJobRepository,
             @Value("${app.quota.shares-per-week:10}") int sharesPerWeek,
-            @Value("${app.quota.place-calls-per-day:100}") int placeCallsPerDay
+            @Value("${app.quota.place-calls-per-day:100}") int placeCallsPerDay,
+            @Value("${app.share-link.copy-per-day:20}") int copiesPerDay
     ) {
-        this(processingJobRepository, sharesPerWeek, placeCallsPerDay, Clock.systemDefaultZone());
+        this(processingJobRepository, sharesPerWeek, placeCallsPerDay, copiesPerDay, Clock.systemDefaultZone());
     }
 
-    DailyQuotaService(ProcessingJobRepository processingJobRepository, int sharesPerWeek, int placeCallsPerDay, Clock clock) {
+    DailyQuotaService(
+            ProcessingJobRepository processingJobRepository, int sharesPerWeek, int placeCallsPerDay,
+            int copiesPerDay, Clock clock
+    ) {
         this.processingJobRepository = processingJobRepository;
         this.sharesPerWeek = sharesPerWeek;
         this.placeCallsPerDay = placeCallsPerDay;
+        this.copiesPerDay = copiesPerDay;
         this.clock = clock;
     }
 
@@ -85,6 +93,18 @@ public class DailyQuotaService {
         if (count.incrementAndGet() > placeCallsPerDay) {
             count.decrementAndGet();
             throw new QuotaExceededException("오늘 장소 검색·추천을 모두 사용했어요. 내일 다시 시도해주세요.");
+        }
+    }
+
+    /** 공유 여행 복사 1회를 쓴다 — 장소 호출과 분리하고 한국 자정에 초기화한다(#446). */
+    public void consumeTripCopy(User user) {
+        LocalDate today = LocalDate.now(clock.withZone(KOREA));
+        String todayPrefix = today + ":";
+        copyCounts.keySet().removeIf(key -> !key.startsWith(todayPrefix));
+        AtomicInteger count = copyCounts.computeIfAbsent(todayPrefix + user.getId(), key -> new AtomicInteger());
+        if (count.incrementAndGet() > copiesPerDay) {
+            count.decrementAndGet();
+            throw new QuotaExceededException("오늘 여행 복사를 모두 사용했어요. 내일 다시 시도해주세요.");
         }
     }
 
