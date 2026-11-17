@@ -27,8 +27,11 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ConversationToolExecutorTest {
@@ -68,15 +71,15 @@ class ConversationToolExecutorTest {
     void find_alternatives는_세션의_tripPlaceId로_AlternativeFinderService를_호출한다() {
         ConversationState state = new ConversationState(1L, 10L, 100L, null, null);
         List<AlternativeCandidate> candidates = List.of(candidate(5L, "커피한약방"));
-        when(alternativeFinderService.findAlternatives(eq(user), eq(100L), any(AlternativeFilter.class)))
+        when(alternativeFinderService.findAlternatives(eq(user), eq(100L), any(AlternativeFilter.class), eq(false)))
                 .thenReturn(Optional.of(candidates));
 
-        var call = new GeminiChatClient.FunctionCall(
+        GeminiChatClient.FunctionCall call = new GeminiChatClient.FunctionCall(
                 "find_alternatives", Map.of("category", "카페", "indoor", true), "sig");
         ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         ArgumentCaptor<AlternativeFilter> filterCaptor = ArgumentCaptor.forClass(AlternativeFilter.class);
-        verify(alternativeFinderService).findAlternatives(eq(user), eq(100L), filterCaptor.capture());
+        verify(alternativeFinderService).findAlternatives(eq(user), eq(100L), filterCaptor.capture(), eq(false));
         assertThat(filterCaptor.getValue().category()).isEqualTo("카페");
         assertThat(filterCaptor.getValue().indoorOnly()).isTrue();
         assertThat(result.candidates()).hasSize(1);
@@ -94,10 +97,10 @@ class ConversationToolExecutorTest {
         List<AlternativeCandidate> tenSorted = java.util.stream.IntStream.rangeClosed(1, 10)
                 .mapToObj(i -> candidate((long) i, "장소" + i))
                 .toList();
-        when(alternativeFinderService.findAlternatives(eq(user), eq(100L), any(AlternativeFilter.class)))
+        when(alternativeFinderService.findAlternatives(eq(user), eq(100L), any(AlternativeFilter.class), eq(false)))
                 .thenReturn(Optional.of(tenSorted));
 
-        var call = new GeminiChatClient.FunctionCall("find_alternatives", Map.of(), "sig");
+        GeminiChatClient.FunctionCall call = new GeminiChatClient.FunctionCall("find_alternatives", Map.of(), "sig");
         ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         assertThat(result.candidates()).hasSize(7);
@@ -111,12 +114,12 @@ class ConversationToolExecutorTest {
         // 3위였던 후보(placeId=3)가 요청 문장과 유사도가 가장 높으면 1위로 올라와야 한다.
         List<AlternativeCandidate> ranked = List.of(
                 candidate(1L, "장소1"), candidate(2L, "장소2"), candidate(3L, "장소3"));
-        when(alternativeFinderService.findAlternatives(eq(user), eq(100L), any(AlternativeFilter.class)))
+        when(alternativeFinderService.findAlternatives(eq(user), eq(100L), any(AlternativeFilter.class), eq(false)))
                 .thenReturn(Optional.of(ranked));
         when(personalizationService.queryScores(eq("조용한 곳 알려줘"), eq(List.of(1L, 2L, 3L))))
                 .thenReturn(Map.of(1L, 0.1, 2L, 0.1, 3L, 0.95));
 
-        var call = new GeminiChatClient.FunctionCall("find_alternatives", Map.of(), "sig");
+        GeminiChatClient.FunctionCall call = new GeminiChatClient.FunctionCall("find_alternatives", Map.of(), "sig");
         ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "조용한 곳 알려줘");
 
         assertThat(result.candidates().get(0).placeId()).isEqualTo(3L);
@@ -125,12 +128,12 @@ class ConversationToolExecutorTest {
     @Test
     void get_gap_recommendations는_세션의_gapBeforePlaceId와_일치하는_gap만_반환한다() {
         ConversationState state = new ConversationState(1L, 10L, null, 2, 50L);
-        var matchingGap = new GapRecommendationService.Gap(50L, 60L, 40, List.of(candidate(7L, "카페A")));
-        var otherGap = new GapRecommendationService.Gap(99L, 100L, 35, List.of(candidate(8L, "카페B")));
+        GapRecommendationService.Gap matchingGap = new GapRecommendationService.Gap(50L, 60L, 40, List.of(candidate(7L, "카페A")));
+        GapRecommendationService.Gap otherGap = new GapRecommendationService.Gap(99L, 100L, 35, List.of(candidate(8L, "카페B")));
         when(gapRecommendationService.findGaps(user, 10L, 2))
                 .thenReturn(Optional.of(List.of(otherGap, matchingGap)));
 
-        var call = new GeminiChatClient.FunctionCall("get_gap_recommendations", Map.of(), "sig");
+        GeminiChatClient.FunctionCall call = new GeminiChatClient.FunctionCall("get_gap_recommendations", Map.of(), "sig");
         ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         assertThat(result.candidates()).hasSize(1);
@@ -147,7 +150,7 @@ class ConversationToolExecutorTest {
         setId(place, 5L);
         when(placeRepository.findById(5L)).thenReturn(Optional.of(place));
 
-        var call = new GeminiChatClient.FunctionCall("note_preference", Map.of("placeId", 5), "sig");
+        GeminiChatClient.FunctionCall call = new GeminiChatClient.FunctionCall("note_preference", Map.of("placeId", 5), "sig");
         executor.execute(user, state, call, "메시지");
 
         verify(userPreferenceSignalRepository).save(argThat(signal ->
@@ -160,7 +163,7 @@ class ConversationToolExecutorTest {
         ConversationState state = new ConversationState(1L, 10L, 100L, null, null);
         // shownCandidateIds가 비어있음 — placeId 9는 이 세션에서 보여준 적 없음.
 
-        var call = new GeminiChatClient.FunctionCall("note_preference", Map.of("placeId", 9), "sig");
+        GeminiChatClient.FunctionCall call = new GeminiChatClient.FunctionCall("note_preference", Map.of("placeId", 9), "sig");
         ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         verify(userPreferenceSignalRepository, never()).save(any());
@@ -170,7 +173,7 @@ class ConversationToolExecutorTest {
     @Test
     void 알수없는_도구_이름이면_에러_응답을_돌려준다() {
         ConversationState state = new ConversationState(1L, 10L, 100L, null, null);
-        var call = new GeminiChatClient.FunctionCall("delete_everything", Map.of(), "sig");
+        GeminiChatClient.FunctionCall call = new GeminiChatClient.FunctionCall("delete_everything", Map.of(), "sig");
 
         ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
@@ -184,10 +187,10 @@ class ConversationToolExecutorTest {
     @Test
     void 도구_실행_중_예외가_나면_500대신_에러_응답으로_폴백한다() {
         ConversationState state = new ConversationState(1L, 10L, 100L, null, null);
-        when(alternativeFinderService.findAlternatives(any(), anyLong(), any()))
+        when(alternativeFinderService.findAlternatives(any(), anyLong(), any(), eq(false)))
                 .thenThrow(new RuntimeException("DB 오류"));
 
-        var call = new GeminiChatClient.FunctionCall("find_alternatives", Map.of(), "sig");
+        GeminiChatClient.FunctionCall call = new GeminiChatClient.FunctionCall("find_alternatives", Map.of(), "sig");
         ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
 
         assertThat(result.responseForGemini()).containsKey("error");

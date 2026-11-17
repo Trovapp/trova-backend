@@ -102,7 +102,7 @@ public class ConversationToolExecutor {
         Boolean indoor = (Boolean) args.get("indoor");
         AlternativeFilter filter = new AlternativeFilter(category, indoor, null, null, null);
         List<AlternativeCandidate> candidates = alternativeFinderService
-                .findAlternatives(user, state.getTripPlaceId(), filter)
+                .findAlternatives(user, state.getTripPlaceId(), filter, false)
                 .orElse(List.of());
         candidates = rerankByQuerySimilarity(message, candidates).stream().limit(MAX_CANDIDATES_IN_CHAT).toList();
         return new ToolExecutionResult(candidates, toGeminiResponse(candidates));

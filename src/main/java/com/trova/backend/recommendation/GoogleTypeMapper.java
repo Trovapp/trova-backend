@@ -54,7 +54,7 @@ public final class GoogleTypeMapper {
                 || type.equals("guest_house") || type.equals("motel") || type.equals("hostel")) {
             return Optional.of("lodging");
         }
-        if (type.equals("shopping_mall") || type.equals("department_store")
+        if (type.equals("shopping") || type.equals("shopping_mall") || type.equals("department_store")
                 || type.endsWith("_store") || type.equals("market")) {
             return Optional.of("shopping_mall");
         }

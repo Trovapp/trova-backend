@@ -52,7 +52,7 @@ class GoogleTypeMapperTest {
 
     @Test
     void 쇼핑류는_쇼핑몰을_기본_검색_종류로_반환한다() {
-        for (String category : new String[]{"shopping_mall", "department_store", "clothing_store",
+        for (String category : new String[]{"shopping", "shopping_mall", "department_store", "clothing_store",
                 "grocery_store", "market", "쇼핑"}) {
             assertThat(GoogleTypeMapper.defaultTypeFor(category)).as(category).contains("shopping_mall");
         }

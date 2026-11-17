@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -202,7 +203,7 @@ class AlternativeFinderServiceTest {
     }
 
     @Test
-    void 구글_검색이_실패하면_500_대신_빈_목록을_반환한다() {
+    void 일차_검색이_실패하면_빈_목록을_반환하고_보충_검색하지_않는다() {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
@@ -215,6 +216,7 @@ class AlternativeFinderServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get()).isEmpty();
+        verify(googlePlacesApiClient, never()).searchNearby(37.5, 127.0, 2000, null);
     }
 
     @Test
@@ -623,6 +625,9 @@ class AlternativeFinderServiceTest {
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
 
         assertThat(result.orElseThrow()).extracting(AlternativeCandidate::googlePlaceId).containsExactly("카페");
+        verify(apiCallLogService).record(
+                eq("google-places"), eq("nearby-search-alternative"), eq(null), anyLong(),
+                eq(false), eq("보충 검색 실패"), eq(null), eq(null), eq(null));
     }
 
     @Test
@@ -639,18 +644,22 @@ class AlternativeFinderServiceTest {
         verifyNoMoreInteractions(googlePlacesApiClient);
     }
 
-
     @Test
-    void 명시한_분류_필터는_원본_종류보다_우선한다() {
+    void 명시한_분류_필터는_원본_종류보다_우선하고_두곳이어도_보충하지_않는다() {
         User owner = prepareTarget();
+        List<GooglePlacesNearbySearchResponse.Place> raw = List.of(
+                rawPlace("박물관1", "museum"), rawPlace("박물관2", "museum"));
         when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "museum"))
-                .thenReturn(new GooglePlacesNearbySearchResponse(List.of()));
+                .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+        prepareCandidates(raw);
 
-        alternativeFinderService.findAlternatives(
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter("박물관", null, null, null, null));
 
+        assertThat(result.orElseThrow()).hasSize(2);
         verify(googlePlacesApiClient).searchNearby(37.5, 127.0, 2000, "museum");
         verify(googlePlacesApiClient, never()).searchNearby(37.5, 127.0, 2000, "cafe");
+        verify(googlePlacesApiClient, never()).searchNearby(37.5, 127.0, 2000, null);
     }
 
     @Test
@@ -666,6 +675,93 @@ class AlternativeFinderServiceTest {
 
         assertThat(result.orElseThrow()).extracting(AlternativeCandidate::googlePlaceId).containsExactly("호텔");
         verify(googlePlacesApiClient).searchNearby(37.5, 127.0, 2000, "lodging");
+    }
+
+    @Test
+    void 원본_분류가_null이면_종류_없이_한번_검색하고_숙소와_역을_제외한다() {
+        User owner = prepareTarget(null);
+        List<GooglePlacesNearbySearchResponse.Place> raw = List.of(
+                rawPlace("공원", "park"), rawPlace("숙소", "lodging"), rawPlace("역", "train_station"),
+                rawPlace("분류없는곳", "unknown"));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+        Place park = new Place("공원", "공원", "park", 4.0, 10, null, 37.501, 127.001, "주소");
+        Place lodging = new Place("숙소", "숙소", "lodging", 4.0, 10, null, 37.501, 127.001, "주소");
+        Place station = new Place("역", "역", "train_station", 4.0, 10, null, 37.501, 127.001, "주소");
+        Place uncategorized = new Place("분류없는곳", "분류없는곳", null, 4.0, 10, null, 37.501, 127.001, "주소");
+        setId(park, 10L);
+        setId(uncategorized, 11L);
+        when(placeCatalogService.upsertAll(raw)).thenReturn(List.of(park, lodging, station, uncategorized));
+        when(personalizationService.retrieveAndScore(any(), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result.orElseThrow()).extracting(AlternativeCandidate::googlePlaceId)
+                .containsExactly("공원", "분류없는곳");
+        verify(googlePlacesApiClient).searchNearby(37.5, 127.0, 2000, null);
+        verifyNoMoreInteractions(googlePlacesApiClient);
+    }
+
+    @Test
+    void 아침_카페_대안의_보충_응답에서_한식당을_제외한다() {
+        User owner = prepareTarget();
+        TripPlace target = tripPlaceRepository.findById(1L).orElseThrow();
+        target.restoreSchedule(1, LocalTime.of(9, 0), LocalTime.of(10, 0));
+        GooglePlacesNearbySearchResponse.Place cafe = rawPlace("카페", "cafe");
+        GooglePlacesNearbySearchResponse.Place restaurant = rawPlace("한식당", "korean_restaurant");
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "cafe"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(cafe)));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(restaurant)));
+        prepareCandidates(List.of(cafe, restaurant));
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result.orElseThrow()).extracting(AlternativeCandidate::googlePlaceId).containsExactly("카페");
+        verify(googlePlacesApiClient).searchNearby(37.5, 127.0, 2000, null);
+    }
+
+    @Test
+    void 원본_자신이_포함된_세곳이면_보충_검색한다() {
+        User owner = prepareTarget();
+        TripPlace target = tripPlaceRepository.findById(1L).orElseThrow();
+        target.applyGooglePlaceId("원본");
+        List<GooglePlacesNearbySearchResponse.Place> primary = List.of(
+                rawPlace("원본", "cafe"), rawPlace("카페1", "cafe"), rawPlace("카페2", "cafe"));
+        GooglePlacesNearbySearchResponse.Place extra = rawPlace("공원", "park");
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "cafe"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(primary));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(extra)));
+        prepareCandidates(List.of(primary.get(0), primary.get(1), primary.get(2), extra));
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null));
+
+        assertThat(result.orElseThrow()).extracting(AlternativeCandidate::googlePlaceId)
+                .containsExactly("카페1", "카페2", "공원");
+        verify(googlePlacesApiClient).searchNearby(37.5, 127.0, 2000, null);
+    }
+
+    @Test
+    void 보충을_허용하지_않으면_두곳이어도_보충_검색하지_않는다() {
+        User owner = prepareTarget();
+        List<GooglePlacesNearbySearchResponse.Place> raw = List.of(
+                rawPlace("카페1", "cafe"), rawPlace("카페2", "cafe"));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "cafe"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+        prepareCandidates(raw);
+
+        Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
+                owner, 1L, new AlternativeFilter(null, null, null, null, null), false);
+
+        assertThat(result.orElseThrow()).hasSize(2);
+        verify(googlePlacesApiClient).searchNearby(37.5, 127.0, 2000, "cafe");
+        verify(googlePlacesApiClient, never()).searchNearby(37.5, 127.0, 2000, null);
+        verifyNoMoreInteractions(googlePlacesApiClient);
     }
 
 }
