@@ -1,8 +1,6 @@
 # Grafana Cloud 저장본
 
 운영 모니터링(Grafana Cloud `indigostork3365`)의 대시보드·경보·알림 설정을 그대로 받아 둔 것이다.
-**2026-11-18 예외:** `alerting/rules-trova-host.json`만 아직 Cloud에 반영하지 않은 변경 후보다(PSI 공백 때 마지막 계산값으로 최대 5분 보완, 보조 B 제거·주석 수정). 이 파일을 재수신으로 덮어쓰지 않는다. [검토·정확한 승인 항목](../../docs/monitoring/2026-11-18-memory-pressure-alert-review.md)을 승인한 뒤 매니저가 해당 규칙 하나에 반영하고 다시 받아 동기화한다. 이번 작업은 Cloud를 바꾸지 않았다.
-
 **기준은 Cloud다.** 여기 파일은 기록·복구용이고, Cloud에서 바꾸면 다시 받아서 덮어쓴다(이 파일을 고쳐 Cloud에 올리지 않는다).
 결정 배경은 [ADR 0039](../../docs/adr/0039-direct-otlp-metrics-and-external-health-check.md)(지표 직접 전송·외부 헬스 체크),
 [ADR 0041](../../docs/adr/0041-grafana-cloud-alert-rules-and-routing.md)(경보 기준·알림 정책), 대응은 [docs/runbooks](../../docs/runbooks/README.md).
@@ -40,7 +38,13 @@ Grafana에 로그인한 브라우저에서 아래를 GET으로 받는다(조회�
 
 받은 뒤 `grep -rE 'hooks\.slack\.com|xox[abp]-|glc_' monitoring/grafana-cloud`로 시크릿이 없는지 확인한다(연락처 export는 기본으로 가려져 나온다).
 
+## 승인 대기 후보
+
+`alerting/candidates/high-memory-pressure-gap.json`은 PSI 공백 보완 **미승인 후보**이며 Cloud 저장본·복구 입력이 아니다. 현재 규칙은 `alerting/rules-trova-host.json`에 그대로 보관한다. [검토·승인할 변경](../../docs/monitoring/2026-11-18-memory-pressure-alert-review.md) 승인 뒤 매니저가 지정 규칙 하나만 수정하고 실제 Cloud export로 현재 저장본을 갱신한다. 후보 파일은 자동 적용하지 않는다.
+
 ## 되돌리기·복구
+
+**`alerting/candidates/` 아래 파일은 복구 대상에서 제외하며 PUT·Import하지 않는다.** 아래 경보 복구는 `alerting/rules-*.json`의 현재 저장본만 대상으로 한다. 재귀 glob으로 후보까지 수집하지 않는다.
 
 - 대시보드: Grafana → Dashboards → New → Import에 JSON을 넣는다(uid가 같으면 덮어쓴다).
 - 경보·정책·템플릿: Grafana provisioning API(`PUT /api/v1/provisioning/alert-rules/{uid}`, `PUT /api/v1/provisioning/policies`,
@@ -50,3 +54,5 @@ Grafana에 로그인한 브라우저에서 아래를 GET으로 받는다(조회�
 ## 로컬 경보 검증
 
 `python3 monitoring/grafana-cloud/validate_host_alert.py` — JSON 참조·조건 검사와 설치된 `promtool`을 이용한 공백/복귀/빈 시계열 합성 검증. 로컬 `alerts.yml`은 별도이며 `promtool test rules monitoring/alerts.test.yml`로 검사한다. 실제 Cloud 전이·r28 원시 시계열 재생은 아니다.
+
+실패 대조군: `python3 monitoring/grafana-cloud/validate_host_alert.py --variant original`, `--variant max`는 각각 종료 코드 1이어야 한다. `python3 -O monitoring/grafana-cloud/validate_host_alert.py`도 같은 검사를 수행한다.

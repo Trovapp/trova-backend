@@ -1,0 +1,21 @@
+$ python3 monitoring/grafana-cloud/validate_host_alert.py --variant max
+Checking rules.yml
+  SUCCESS: 1 rules found
+
+  FAILED:
+    expr: "(100 * sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\", resource=\"memory\", type=\"full\"}[5m])))\nor\nmax_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\", resource=\"memory\", type=\"full\"}[5m])))[5m:1m])", time: 5m,
+        exp: {} 4.5E+01
+        got: {} 6.000000000000001E+01
+
+    expr: "(100 * sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\", resource=\"memory\", type=\"full\"}[5m])))\nor\nmax_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\", resource=\"memory\", type=\"full\"}[5m])))[5m:1m])", time: 6m,
+        exp: {} 0E+00
+        got: {} 6.000000000000001E+01
+
+    expr: "(100 * sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\", resource=\"memory\", type=\"full\"}[5m])))\nor\nmax_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\", resource=\"memory\", type=\"full\"}[5m])))[5m:1m])", time: 6m,
+        exp: {} 4.5E+01
+        got: {} 6.000000000000001E+01
+
+
+검증 실패: Command '['/opt/homebrew/bin/promtool', 'test', 'rules', 'tests.yml']' returned non-zero exit status 1.
+
+exit_code=1

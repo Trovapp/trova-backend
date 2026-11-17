@@ -1,7 +1,5 @@
 # Runbook: 서버 메모리 압박 (HighMemoryPressure)
 
-**2026-11-18 레포 변경안(Cloud 미반영)**: 아래 공백 보완은 승인 후 적용한다. 현재 Cloud는 원래 PSI 5분 평균·2분 조건이며 공백을 정상 처리한다.
-
 Slack 알림의 "Runbook" 링크가 이 문서다. 응답이 **느려지기 직전**에 울리도록 만든 조기 경보다.
 운영에 영향을 주는 작업(재시작·설정 변경)은 **원인을 확인한 뒤 담당자(사용자) 승인을 받고** 한다.
 
@@ -15,13 +13,11 @@ Slack 알림의 "Runbook" 링크가 이 문서다. 응답이 **느려지기 직�
 |---|---|
 | 경보 이름 | `HighMemoryPressure` (Grafana Cloud, 규칙 그룹 `trova-host`) |
 | 심각도 | warning (Slack 반복 4시간 간격, 해제되면 RESOLVED) |
-| 조건 | 최근 **5분** 평균 PSI 메모리 full > **20%**, 그 상태가 **2분** 이어짐. 계산값이 없을 때만 최근 5분 안의 마지막 계산값으로 보완. 그 값도 없으면 정상 처리(장기 끊김·다운은 별도 경보) |
+| 조건 | 최근 **5분** 평균 PSI 메모리 full > **20%**, 그 상태가 **2분** 이어짐. 지표가 없으면 정상 처리(서버 다운은 다른 경보가 맡음) |
 | 사용자 영향 | 아직 없거나 시작 단계. 이어서 p95 지연·시간 초과가 온다 |
 
 ```promql
-(100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod", resource="memory", type="full"}[5m])))
-or
-last_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod", resource="memory", type="full"}[5m])))[5m:1m])
+100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod", resource="memory", type="full"}[5m]))
 ```
 
 **PSI(Pressure Stall Information)란:** 리눅스가 "프로그램이 자원을 기다리느라 멈춰 있던 시간 비율"을 알려 주는 값(`/proc/pressure/memory`).
@@ -39,14 +35,7 @@ last_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod
 10%로 잡으면 멀쩡한 분석 중에도 울리고, 25%로 잡으면 오류 8.2%였던 r20을 놓친다(25% 넘은 시간 0.6분).
 
 **경보를 만든 뒤 실측 (2026-11-11 r26, #384):** 릴스 분석 + 조회(오류 0.7%)에서 PSI 5분 평균 최고 11.3% → 이 경보는 울리지 않았다(의도대로).
-같은 회차에서 HighHttpLatencyP95는 19:12~19:16 울렸다 — 분석이 겹치면 p95가 먼저 2초를 넘는다. 이후 r28(11-13)에서 실제 발화가 확인됐다(아래 6절).
-
-## 배포·재시작·부하 측정 사일런스 (변경안 적용 시 필수)
-
-- 재시작 **전에** `alertname=HighMemoryPressure`, `service=trova-backend`, `environment=production`으로 종료 시각이 있는 사일런스를 건다. 133~146초 재시작도 직전 압박값 보완으로 발화할 수 있다.
-- 정상 UP와 **지표 재수신 확인 뒤 최소 5분까지** 유지한다. 예상 종료+10분 등 유한 종료를 잡고 지연되면 만료 전에 연장한다. 종료 전 A가 최신 정상값(≤20%)이고 규칙이 Normal인지 확인한다. 압박 지속이면 담당자에게 알린다. 사일런스는 평가·Pending을 멈추지 않으며 자동화돼 있지 않다.
-- 부하 측정 사일런스는 기존 p95·Synthetic에 **HighMemoryPressure도 포함**한다. 무기한 사일런스는 금지한다. 이 변경 작업에서 실제 사일런스 생성이나 측정은 하지 않는다.
-- 알림의 값은 마지막 계산값일 수 있다. 원본 PSI가 비었는데 보완값이 높으면 회복으로 단정하지 않는다. 원시 rate 창 5분+보완 5분으로 오래된 압박이 약 10분 남을 수 있다. 새 낮은 계산값이 오면 즉시 우선한다.
+같은 회차에서 HighHttpLatencyP95는 19:12~19:16 울렸다 — 분석이 겹치면 p95가 먼저 2초를 넘는다. 이후 r28(11-13)에서 실제 발화가 확인됐다(6절).
 
 ## 2. 최초 확인 (5분 안에)
 
@@ -79,7 +68,7 @@ ssh -i ~/.ssh/oracle_buildlog_vm ubuntu@193.123.161.217 'free -m; cat /proc/pres
 
 ## 5. 정상화 확인
 
-- [ ] 원본 PSI 메모리 full 5분 평균이 새 표본으로 20% 아래임을 확인하고 Slack에 RESOLVED가 왔다. 원본 공백으로 보완이 만료된 해제는 정상화 근거가 아니다.
+- [ ] PSI 메모리 full 5분 평균이 20% 아래로 내려오고 Slack에 RESOLVED가 왔다.
 - [ ] 스왑 읽기가 초당 수십 이하로 내려왔다.
 - [ ] p95가 평소(1초 안팎)로 돌아왔다.
 
@@ -87,6 +76,27 @@ ssh -i ~/.ssh/oracle_buildlog_vm ubuntu@193.123.161.217 'free -m; cat /proc/pres
 
 `docs/monitoring/2026-11-04-capacity-issue-log.md`에 한 절. 특히 이 경보가 p95 경보보다 **얼마나 먼저** 울렸는지 적는다 — 조기 경보로서 쓸모를 판단하는 근거다.
 
-r28(2026-11-13): 외부 경보 15:40:50 → PSI Pending 15:49:10 → 15:51:10·15:54:10 공백으로 리셋 → 15:57:10 첫 발화. 첫 발화 전 리셋은 2번이고 15:59:10은 발화 뒤 공백 해제다. 본 변경안은 마지막 계산값을 보완해 15:51:10 부근 발화(약 6분 단축)를 예상하지만 실제 원시 시계열 재생 결과는 아니다. 외부 경보는 이미 반쯤 멈춘 장애를 잡았다.
 
-근거·전체 타임라인·비교표·Cloud 승인 항목·남은 위험: [r28 검토](../monitoring/2026-11-18-memory-pressure-alert-review.md), 결정 초안: [ADR 0046](../adr/0046-memory-pressure-alert-gap-continuity.md).
+r28(2026-11-13): 외부 경보 15:40:50 → PSI Pending 15:49:10 → 15:51:10·15:54:10 공백으로 리셋 → 15:57:10 첫 발화. 첫 발화 전 리셋은 2번이고 15:59:10은 발화 뒤 공백 해제다. 외부 경보는 이미 반쯤 멈춘 장애를 잡았다. [근거·전체 타임라인](../monitoring/2026-11-18-memory-pressure-alert-review.md).
+
+## 7. 승인 대기 변경 (Cloud 미반영)
+
+위 1~6절은 현재 Cloud 규칙 기준이다. 별도 [후보 JSON](../../monitoring/grafana-cloud/alerting/candidates/high-memory-pressure-gap.json)은 현재 계산값이 없을 때만 최근 5분 안의 마지막 유효 PSI 계산값을 보완한다. 20%·2분 조건은 유지한다. 후보를 현재 규칙으로 복구하거나 승인 전에 PUT하지 않는다.
+
+```promql
+(100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod", resource="memory", type="full"}[5m])))
+or
+last_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod", resource="memory", type="full"}[5m])))[5m:1m])
+```
+
+유효한 현재 rate 값이 생기면 보완값보다 우선한다. 표본 하나가 돌아오는 것과 rate 계산값 복귀는 다르다. 4분 넘게 끊긴 뒤 첫 표본만으로는 rate가 없어 다음 표본까지 약 1분간 오래된 보완값이 쓰일 수 있다. 원래 rate 창과 보완 창을 합쳐 오래된 압박이 약 10분 남을 수 있다. 보완 만료로 해제된 경보를 회복으로 판단하지 말고 원본 PSI의 새 계산값이 ≤20%인지 확인한다.
+
+### 후보 승인·반영 시 필요한 사일런스
+
+- 재시작 **전에** `alertname=HighMemoryPressure`, `service=trova-backend`, `environment=production`으로 종료 시각이 있는 사일런스를 건다. 133~146초 재시작도 직전 압박값 보완으로 발화할 수 있다.
+- 정상 UP와 **지표 재수신 확인 뒤 최소 5분까지** 유지한다. 예상 종료+10분 등 유한 종료를 잡고 지연되면 만료 전에 연장한다. 종료 전 A가 최신 정상값(≤20%)이고 규칙이 Normal인지 확인한다. 압박 지속이면 담당자에게 알린다. 사일런스는 평가·Pending을 멈추지 않으며 자동화돼 있지 않다.
+- 부하 측정 사일런스는 기존 p95·Synthetic에 **HighMemoryPressure도 포함**한다. 무기한 사일런스는 금지한다. 이 변경 작업에서 실제 사일런스 생성이나 측정은 하지 않는다.
+- 알림의 값은 마지막 계산값일 수 있다. 원본 PSI가 비었는데 보완값이 높으면 회복으로 단정하지 않는다. 원시 rate 창 5분+보완 5분으로 오래된 압박이 약 10분 남을 수 있다. 유효한 낮은 rate 계산값이 생기면 우선한다. 4분 넘는 공백 뒤 첫 표본만으로는 rate가 없어, 다음 표본까지 약 1분은 오래된 보완값이 쓰일 수 있다.
+
+
+정확한 Cloud 변경·롤백과 남은 위험은 [검토 보고서](../monitoring/2026-11-18-memory-pressure-alert-review.md), 결정안은 [ADR 0046](../adr/0046-memory-pressure-alert-gap-continuity.md)에 있다. 이 절의 수동 절차를 devflow·CLAUDE.md에 반영할지는 승인 뒤 후속 과제다.

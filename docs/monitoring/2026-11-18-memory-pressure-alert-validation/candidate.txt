@@ -1,0 +1,9 @@
+$ python3 monitoring/grafana-cloud/validate_host_alert.py --variant candidate
+Checking rules.yml
+  SUCCESS: 1 rules found
+
+  SUCCESS
+
+candidate: JSON 참조 및 합성 PromQL 6개 시나리오 통과 (Cloud 엔진 검증 아님)
+
+exit_code=0

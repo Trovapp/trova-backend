@@ -34,14 +34,14 @@ PSI **평가 결과** 공백은 15:51:10·15:54:10·15:59:10 전이에서 확인
 | 방법 | r28 예상 및 기존 PSI 첫 발화 대비 | 배포 133~146초·오탐·사일런스 | 비용/판단 |
 |---|---|---|---|
 | A. PSI `noDataState=Alerting`(오류도 Alerting 또는 KeepLast) | 15:49:10 Pending 뒤 공백을 Alerting 조건으로 취급하면 15:51:10 부근, 약 6분 앞당김. MissingSeries라면 같은 효과를 보장 못 함 | 정상 재시작의 지표 공백도 PSI 장애로 오인. 2분을 넘는 재시작은 사일런스 필수. 오류까지 Alerting이면 Grafana 조회 장애도 메모리 압박으로 오인 | 0원, 새 수집 없음. 원인 구분·MissingSeries 불확실성 때문에 기각 |
-| **B. PSI 계산값이 없을 때만 최근 5분 마지막 유효 계산값으로 보완(추천)** | 15:49:10의 >20% 값으로 15:51:10 공백을 이어 15:51:10 부근 발화, 약 **6분 빠름**(1분 subquery 위상·미보관 원시값에 따른 오차 가능). 장애 시작 이후 약 10분이라 외부 경보보다 여전히 늦음 | 새 낮은 값은 즉시 우선하므로 정상 회차의 짧은 >20%를 무조건 5분 늘리지 않음. 압박 직후 공백이면 회복 여부를 모르므로 오탐 가능. 계획 재시작 전·부하 측정 전 종료 시각 있는 사일런스 필수 | **0원**, 기존 시계열만 조회, 새 프로세스·외부 서비스·수집 횟수 없음. 조회량은 소폭 증가 |
+| **B. PSI 계산값이 없을 때만 최근 5분 마지막 유효 계산값으로 보완(추천)** | 15:49:10의 >20% 값으로 15:51:10 공백을 이어 15:51:10 부근 발화, 약 **6분 빠름**(1분 subquery 위상·미보관 원시값에 따른 오차 가능). 장애 시작 이후 약 10분이라 외부 경보보다 여전히 늦음 | 유효한 낮은 rate 계산값은 우선하므로 정상 회차의 짧은 >20%를 무조건 5분 늘리지 않음. 압박 직후 공백이면 회복 여부를 모르므로 오탐 가능. 계획 재시작 전·부하 측정 전 종료 시각 있는 사일런스 필수 | **0원**, 기존 시계열만 조회, 새 프로세스·외부 서비스·수집 횟수 없음. 조회량은 소폭 증가 |
 | C. 기존 외부 Synthetic 실패 경보 유지(지연 조건 추가는 보류) | 이미 15:40:50 발화, PSI보다 16분 20초 빠름. 지연 전용 추가 경보의 개선 분수는 지연 원시 자료가 없어 계산 불가 | 1분 체크·5분 중 3회 실패. 146초 재시작은 위상에 따라 3번 실패할 수 있어 재시작은 항상 무음이라고 보장 못 함. 배포·부하 측정 사일런스 필요 | 기존 체크 그대로면 0원·추가 사용량 0. 새 체크/서비스 없이 기존 경보를 1차 대응 신호로 사용 |
 
 대기 시간만 2분→0~1분이면 15:49:10~15:50:10(7~8분 빠름)이 가능하지만, 기존 정상 회차에서 20% 초과 최대 0.5분도 울릴 수 있다. 임계값/평균 창까지 낮추면 기존 정상·비정상 분리 근거를 다시 검증해야 하므로 이번에는 유지한다. `absent_over_time(...[5m])`는 이미 약 7분 지연 경보로 존재하고 간헐 수신마다 리셋되므로 r28의 짧은 평가 공백 대책은 아니다. 새 공백 경보를 짧게 추가해도 PSI와 배포 무음 문제를 함께 풀지 못한다.
 
 ## 추천 구현과 승인할 정확한 Cloud 변경
 
-`trova-host` 그룹, UID **bg3yd8j9d5fr4a**, `HighMemoryPressure`만 변경한다. Cloud가 기준인 기존 정책의 예외로 **아직 반영하지 않은 후보**를 해당 JSON에 보관한다. 승인 후 매니저가 기존 Cloud 규칙과 차이를 확인하고 그 규칙 하나만 수정한다(폴더 UID가 비어 있는 export 파일 전체를 그대로 업로드하지 않는다).
+`trova-host` 그룹, UID **bg3yd8j9d5fr4a**, `HighMemoryPressure`만 변경한다. **현재 Cloud 저장본 `alerting/rules-trova-host.json`은 원복·유지하고, 아직 반영하지 않은 후보는 `alerting/candidates/high-memory-pressure-gap.json`에 별도로 보관한다.** 후보는 복구 입력이 아니며 승인 전 PUT하지 않는다. 승인 후 매니저가 기존 Cloud 규칙과 차이를 확인하고 그 규칙 하나만 수정한다(폴더 UID가 비어 있는 export 파일 전체를 그대로 업로드하지 않는다).
 
 1. A의 instant PromQL을 아래로 교체한다.
 
@@ -53,11 +53,11 @@ last_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod
 
 2. B(스왑 조회)를 제거한다. 보조 조회가 비어 보완된 A와 별개로 NoData를 만들 가능성을 없애고, 스왑 확인은 대시보드에서 한다. `context`, `description`, `summary`, `value_label`을 JSON 후보 그대로 바꿔 마지막 계산값일 수 있음을 표시한다.
 3. **유지:** C→A >20, `for=2m`, 평가 1m, `noDataState=OK`, `execErrState=KeepLast`, UID·라벨·라우팅·나머지 규칙. 알림 warning의 group_wait=1m는 별도라 발화 뒤 통지에 시간이 더 든다.
-4. 배포·재시작 **중지 전에** `alertname=HighMemoryPressure`, `service=trova-backend`, `environment=production`의 사일런스를 시작해 **정상 UP 및 지표 재수신 확인 뒤 최소 5분까지** 유지한다. 처음에는 예상 종료+10분처럼 유한 종료를 잡고, 지연 시 종료 전에 연장한다. 이미 높은 PSI가 남은 상태의 133~146초 재시작도 이것으로 알림을 막는다. 사일런스는 평가/Pending을 멈추지 않는다. 종료 전에 A가 최신값으로 20% 이하이고 Normal인지 확인하고, 압박 지속이면 사일런스를 자동 연장해 숨기지 말고 담당자에게 알린다.
-5. 부하 측정은 기존 p95·Synthetic 사일런스에 PSI를 명시적으로 포함한다. 이번 작업에서는 사일런스 생성·측정·운영 변경을 하지 않았다.
+4. 배포·재시작·부하 측정의 사일런스 단계는 [runbook 승인 대기 절](../runbooks/memory-pressure.md#후보-승인반영-시-필요한-사일런스)에 모았다. 높은 PSI 직후 133~146초 재시작은 자동 구분하지 못하므로 이 절차가 필요하다.
+5. 이번 작업에서는 사일런스 생성·측정·운영 변경을 하지 않았다.
 6. 승인 후 Cloud 미리보기에서 A 공백 보완·임계값·Normal 복귀와 주석을 확인한다. 적용 뒤 원본 PSI, 보완값 A, 규칙 전이, Slack 수신 시각을 비교한다. 롤백은 A를 첫 줄의 원래 쿼리로 복원하고 B·주석을 변경 전 저장본으로 복원하는 것이다.
 
-`or`는 현재값이 있으면 현재값을 택하고, `last_over_time`은 과거 최대가 아닌 마지막 값을 택한다. 따라서 실제 낮은 관측으로 회복하면 즉시 정상 판단할 수 있다. 이 동작의 근거는 [Prometheus 함수](https://prometheus.io/docs/prometheus/latest/querying/functions/)·[연산자](https://prometheus.io/docs/prometheus/latest/querying/operators/), NoData와 MissingSeries 차이는 [Grafana 공식 설명](https://grafana.com/docs/grafana/latest/alerting/guides/missing-data/)이다.
+`or`는 현재값이 있으면 현재값을 택하고, `last_over_time`은 과거 최대가 아닌 마지막 값을 택한다. 유효한 현재 rate가 낮아지면 정상 판단에 사용한다. 단, 4분 넘는 공백 뒤 첫 표본만으로는 rate를 계산하지 못하므로, 다음 표본까지 약 1분은 오래된 보완값이 남을 수 있다. 이 동작의 근거는 [Prometheus 함수](https://prometheus.io/docs/prometheus/latest/querying/functions/)·[연산자](https://prometheus.io/docs/prometheus/latest/querying/operators/), NoData와 MissingSeries 차이는 [Grafana 공식 설명](https://grafana.com/docs/grafana/latest/alerting/guides/missing-data/)이다.
 
 ## 남은 위험과 검증 한계
 
@@ -69,11 +69,42 @@ last_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod
 - Cloud 전이 엔진/Slack을 로컬 promtool로 검증할 수는 없다. 계산식과 정상값 우선·장기 공백·빈 시계열은 로컬 합성 데이터로 검증하고, 실제 r28 전이 해석과 구분한다.
 
 
-## 로컬 검증 결과
+## 로컬 검증 결과 (리뷰 반영 후)
 
-- `python3 monitoring/grafana-cloud/validate_host_alert.py`: alerting JSON 전체 파싱, 후보 참조·임계값·UID·라벨·정책 검사 및 promtool 3.13.2로 실제 후보 PromQL 5개 합성 시나리오 통과. 압박 뒤 공백 유지/장기 공백 만료, 새 정상값 우선 및 정상값 뒤 재공백, 최초 무자료, 정상 재시작 상당 133·146초 공백을 검사했다. 높은 값 뒤 계획 재시작은 자동으로 구분할 수 없어 문서의 사일런스가 필요하다.
+- `python3 monitoring/grafana-cloud/validate_host_alert.py`: 현재 저장본/후보 JSON 파싱, 쿼리 참조·`$values.<refId>` 및 `index $values "refId"` 주석 참조, 임계값·UID·라벨·정책 검사와 promtool 합성 **6개** 시나리오 통과. 검사는 `assert` 대신 명시적 조건 검사와 비정상 종료를 사용한다.
+- 높은 PSI→공백에서 원래 rate는 5분 시점에 값이 없지만 후보는 45%를 유지하고 경보 조건도 이어진다. 높은 값→낮은 값→공백에서는 6분 시점에 마지막 값 0%를 유지해야 한다. 원시 rate와 후보의 **실제 숫자**를 비교하며, 0/1만 비교하던 한계를 고쳤다.
+- 보완 창 경계 직전 8m59s에는 45%, 9m 경계 및 9m1s에는 표본 없음; 정상값 보완도 9m59s에는 0%, 10m 및 10m1s에는 표본 없음으로 단언한다. 빈 입력은 0m/10m 모두 결과 벡터가 비어야 한다(0값 한 개도 실패).
+- 높은 PSI 직후 133·146초 공백과 복귀 카운터 리셋을 구성했다. 두 경우 모두 공백 중 7분 평가에서는 경보가 유지된다. 이 정도 짧은 공백은 기존 rate 창에도 남으므로, 이 시나리오는 보완 연산 판별용이 아니라 사일런스 필요성을 확인한다. 높은 PSI 뒤 긴 공백을 사용하는 별도 시나리오가 보완 없는 식을 판별한다.
+- 4분 넘는 공백 뒤 6분 첫 복귀 표본에서 원시 rate 없음/후보 45%, 7분 두 번째 표본 뒤 후보 0%를 검사해 첫 표본 복귀와 유효 rate 복귀를 구분한다.
+- `python3 -O monitoring/grafana-cloud/validate_host_alert.py`: 최적화 모드에서도 동일 검사 통과.
 - `promtool test rules monitoring/alerts.test.yml`: 기존 로컬 경보 테스트 통과(Cloud와 별개).
-- `./gradlew build -x test`: 성공. 앱 코드·설정 변경이 없으므로 과제의 허용에 따라 Java 테스트는 생략하고 규칙 전용 검증을 수행했다. 빌드에는 운영 환경 파일을 사용하지 않았다.
+- 이전 작업의 `./gradlew build -x test`는 **Java 테스트를 제외한 빌드만** 성공한 결과였다. 이는 `./gradlew build` 전체 검증 성공이 아니며 커밋 전 전체 빌드를 요구하는 CLAUDE.md를 충족하지 못했다. 이번 리뷰 수정에서는 **`./gradlew build`를 실제 실행해 테스트 포함 성공**했다(1분 55초). 운영 환경 파일을 사용하지 않았다.
 - `git diff --check`: 통과. 운영 접근·측정·Cloud API/UI 변경·push·PR 생성 없음.
 
-변경 파일: `monitoring/grafana-cloud/alerting/rules-trova-host.json`, `monitoring/grafana-cloud/validate_host_alert.py`, `monitoring/grafana-cloud/README.md`, `docs/runbooks/memory-pressure.md`, `docs/adr/0046-memory-pressure-alert-gap-continuity.md`, `docs/adr/README.md`, 본 보고서. 기존 ADR 0041은 확정 정책을 유지하고 새 ADR을 승인 대기 초안으로 연결했다.
+### 실패 대조군 실행 출력
+
+후보 파일을 바꾸지 않고 `--variant`가 검증할 PromQL만 치환한다. 동일한 기대값을 그대로 적용하며, 예상 실패여도 스크립트 자체는 종료 코드 1을 반환한다. 전체 출력: [후보](2026-11-18-memory-pressure-alert-validation/candidate.txt), [원래 식](2026-11-18-memory-pressure-alert-validation/original.txt), [max 변형](2026-11-18-memory-pressure-alert-validation/max.txt).
+
+```text
+$ python3 monitoring/grafana-cloud/validate_host_alert.py --variant candidate
+candidate: JSON 참조 및 합성 PromQL 6개 시나리오 통과 (Cloud 엔진 검증 아님)
+exit_code=0
+
+$ python3 monitoring/grafana-cloud/validate_host_alert.py --variant original
+FAILED: high-then-gap-and-five-minute-boundary
+alertname: HighMemoryPressure, time: 5m, exp: [Alerting], got: []
+expr time: 5m, exp: {} 4.5E+01, got: nil
+exit_code=1
+
+$ python3 monitoring/grafana-cloud/validate_host_alert.py --variant max
+FAILED: time: 6m, exp: {} 0E+00, got: {} 6.000000000000001E+01
+exit_code=1
+```
+
+max 변형은 정상 관측 0% 뒤 공백에서 과거 높은 60%를 선택해 실패한다. 정상 후보만 모든 기대값을 충족한다. 비교값의 부동소수점 마지막 1비트 차이는 promtool `fuzzy_compare`로 허용한다. 실제 r28 전이 엔진/Slack 재생 결과는 아니다.
+
+### 변경 파일과 후속 과제
+
+현재 저장본 `monitoring/grafana-cloud/alerting/rules-trova-host.json`은 변경 전으로 원복했다. 후보는 `monitoring/grafana-cloud/alerting/candidates/high-memory-pressure-gap.json`에 두고 README 복구 절에서 후보 PUT·Import를 제외했다. `validate_host_alert.py`, runbook(현재 Cloud 본문과 승인 대기 절 분리), ADR 0046·목록(대기 상태·표준 절), 본 보고서와 대조군 출력 3개를 갱신했다.
+
+사일런스 실행 단계는 runbook에만 두었다. **devflow 배포 절차·CLAUDE.md 반영은 승인 후 별도 후속 과제**이며 이번에는 수정하지 않았다. Cloud 반영·복구·사일런스 생성도 하지 않았다.

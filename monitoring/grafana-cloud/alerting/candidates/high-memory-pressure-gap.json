@@ -1,0 +1,102 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "trova-host",
+      "folder": "",
+      "interval": "1m",
+      "rules": [
+        {
+          "uid": "bg3yd8j9d5fr4a",
+          "title": "HighMemoryPressure",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "editorMode": "code",
+                "expr": "(100 * sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\", resource=\"memory\", type=\"full\"}[5m])))\nor\nlast_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job=\"trova-prod\", resource=\"memory\", type=\"full\"}[5m])))[5m:1m])",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        20
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "KeepLast",
+          "for": "2m",
+          "annotations": {
+            "context": "현재 PSI 계산값이 없을 때만 최근 5분 안의 마지막 계산값을 사용합니다. 보완값일 수 있으므로 원본 PSI·외부 헬스 체크를 함께 확인하세요.",
+            "current_value": "{{ with $values.A }}{{ printf \"%.1f\" .Value }}%{{ end }}",
+            "dashboard_url": "https://indigostork3365.grafana.net/d/trova-essentials",
+            "description": "PSI 5분 평균 > 20%가 2분 지속되면 알립니다. 계산값 공백은 최대 5분 보완하며 유효한 rate 계산값(20% 이하 포함)이 생기면 우선합니다. 4분 넘는 공백 뒤 첫 표본만으로는 rate가 없어 다음 표본까지 약 1분간 오래된 보완값일 수 있습니다. 5분 내 계산값도 없으면 OK이며 장기 끊김은 TrovaCloudScrapeUnavailable이 맡습니다. 배포·재시작 전과 부하 측정 중에는 이 경보에 종료 시각이 있는 사일런스를 거세요.",
+            "pending": "2분",
+            "runbook_url": "https://github.com/Trovapp/trova-backend/blob/main/docs/runbooks/memory-pressure.md",
+            "summary": "최근 PSI memory full 5분 평균(공백이면 최근 5분 내 마지막 계산값)이 20%를 넘는 상태가 2분 이어졌습니다.",
+            "threshold": "20%",
+            "title": "서버 메모리 압박(PSI)",
+            "value_label": "메모리 대기(공백 시 마지막 계산값)",
+            "window": "최근 5분"
+          },
+          "labels": {
+            "environment": "production",
+            "service": "trova-backend",
+            "severity": "warning"
+          },
+          "isPaused": false
+        }
+      ]
+    }
+  ]
+}
