@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -91,20 +92,16 @@ public class AlternativeFinderService {
 
     private static final LocalTime MORNING_UNTIL = LocalTime.of(10, 30);
 
-    static boolean isRestaurant(String category) {
-        return category != null && (category.equals("restaurant") || category.endsWith("_restaurant"));
-    }
-
     static boolean isMorningFriendly(String category) {
-        if (category == null) {
-            return false;
-        }
-        return category.contains("cafe") || category.contains("coffee") || category.contains("bakery")
-                || category.contains("breakfast") || category.contains("brunch") || category.contains("sandwich")
-                || category.contains("dessert") || category.contains("tea_house");
+        return GoogleTypeMapper.isMorningFriendly(category);
     }
 
     public Optional<List<AlternativeCandidate>> findAlternatives(User user, Long tripPlaceId, AlternativeFilter filter) {
+        return findAlternatives(user, tripPlaceId, filter, true);
+    }
+
+    public Optional<List<AlternativeCandidate>> findAlternatives(
+            User user, Long tripPlaceId, AlternativeFilter filter, boolean allowSupplement) {
         Optional<TripPlace> maybeTarget = tripPlaceRepository.findById(tripPlaceId)
                 .filter(p -> isOwner(p, user));
         if (maybeTarget.isEmpty()) {
@@ -115,35 +112,34 @@ public class AlternativeFinderService {
             return Optional.of(List.of());
         }
 
-        // 필터를 안 걸었어도 식당 자리의 대안은 식당에서 찾는다 — 10:20 돼지국밥집의 대안이 호텔 6곳·백화점·
-        // 지하철역이었다(수정 확인 QA 2026-11-12, #416).
+        // 필터가 없으면 원본과 같은 종류를 먼저 찾는다(QA #152, #447).
         String includedType = filter.category() != null
                 ? GoogleTypeMapper.toGoogleType(filter.category()).orElse(null)
-                : (isRestaurant(target.getCategory()) ? "restaurant" : null);
+                : GoogleTypeMapper.defaultTypeFor(target.getCategory()).orElse(null);
 
         // next는 검색 성공 여부와 무관하게 항상 구해둔다(검색이 실패해도 형제 조회는
         // 이미 끝나 있어야 이후 로직이 next 유무를 일관되게 판단할 수 있다).
         TripPlace next = findNext(target);
 
-        // 검색 실패(재시도 3회 소진 후 예외)를 500으로 흘려보내지 않는다 — 대안
-        // 찾기는 부가 기능이라 빈 결과로 조용히 낮춘다(스펙 "에러 처리" 절 참고).
+        // 명시 필터 없이 같은 종류 검색에 성공했고 원본을 뺀 후보가 3곳 미만이면 한 번만 보충한다.
+        // 검색 실패와 성공한 빈 결과를 구분하고, 보충 실패가 이미 확보한 후보를 지우지 않도록 한다.
         long searchStart = System.currentTimeMillis();
-        GooglePlacesNearbySearchResponse response;
-        try {
-            response = googlePlacesApiClient.searchNearby(
-                    target.getLatitude(), target.getLongitude(), SEARCH_RADIUS_METERS, includedType);
-            apiCallLogService.record(
-                    "google-places", "nearby-search-alternative", null,
-                    System.currentTimeMillis() - searchStart, true, null, null, null, null);
-        } catch (Exception e) {
-            apiCallLogService.record(
-                    "google-places", "nearby-search-alternative", null,
-                    System.currentTimeMillis() - searchStart, false, e.getMessage(), null, null, null);
-            return Optional.of(List.of());
+        Optional<List<GooglePlacesNearbySearchResponse.Place>> primarySearch = searchNearby(target, includedType);
+        List<GooglePlacesNearbySearchResponse.Place> primary = primarySearch.orElse(List.of());
+        Set<String> primaryIds = primary.stream()
+                .map(GooglePlacesNearbySearchResponse.Place::id).collect(Collectors.toSet());
+        Map<String, GooglePlacesNearbySearchResponse.Place> rawById = new LinkedHashMap<>();
+        primary.forEach(p -> rawById.putIfAbsent(p.id(), p));
+        long primaryCount = primaryIds.stream()
+                .filter(id -> !Objects.equals(id, target.getGooglePlaceId()))
+                .count();
+        boolean supplemented = allowSupplement && filter.category() == null && includedType != null
+                && primarySearch.isPresent() && primaryCount < 3;
+        if (supplemented) {
+            searchNearby(target, null).orElse(List.of()).forEach(p -> rawById.putIfAbsent(p.id(), p));
         }
         long searchMs = System.currentTimeMillis() - searchStart;
-        List<GooglePlacesNearbySearchResponse.Place> raw =
-                response.places() != null ? response.places() : List.of();
+        List<GooglePlacesNearbySearchResponse.Place> raw = new ArrayList<>(rawById.values());
         if (raw.isEmpty()) {
             return Optional.of(List.of());
         }
@@ -175,9 +171,11 @@ public class AlternativeFinderService {
 
         // 필터 없이 찾을 때 숙소·역·학교는 대신 갈 곳이 아니라 뺀다(빈 시간 추천과 같은 규칙, #416).
         // 바꾸려는 곳이 숙소·역이면 같은 종류가 대안이므로 그대로 둔다.
-        if (filter.category() == null && !GapRecommendationService.NOT_A_STOP.contains(target.getCategory())) {
+        boolean lodgingTarget = GoogleTypeMapper.defaultTypeFor(target.getCategory()).filter("lodging"::equals).isPresent();
+        if (filter.category() == null && !lodgingTarget
+                && (target.getCategory() == null || !GapRecommendationService.NOT_A_STOP.contains(target.getCategory()))) {
             candidates = candidates.stream()
-                    .filter(p -> !GapRecommendationService.NOT_A_STOP.contains(p.getCategory()))
+                    .filter(p -> !(p.getCategory() != null && GapRecommendationService.NOT_A_STOP.contains(p.getCategory())))
                     .toList();
         }
 
@@ -196,9 +194,9 @@ public class AlternativeFinderService {
         }
 
         // 아침 자리(10:30 전)를 바꾸면 고깃집이 09:00에 들어갔다(안드로이드 사용성 테스트 2026-11-12, #414) —
-        // 음식점·전체에서 찾을 때 아침이면 카페·빵집·브런치처럼 아침에 갈 만한 곳만 남긴다. 하나도 없으면 그대로 둔다.
+        // 음식점·전체 또는 보충 검색을 했을 때 아침이면 카페·빵집·브런치처럼 아침에 갈 만한 곳만 남긴다. 하나도 없으면 그대로 둔다.
         if (target.getVisitStartTime() != null && target.getVisitStartTime().isBefore(MORNING_UNTIL)
-                && (includedType == null || "restaurant".equals(includedType))) {
+                && (includedType == null || "restaurant".equals(includedType) || supplemented)) {
             List<Place> morning = candidates.stream().filter(p -> isMorningFriendly(p.getCategory())).toList();
             if (!morning.isEmpty()) {
                 candidates = morning;
@@ -278,7 +276,9 @@ public class AlternativeFinderService {
         }
 
         result = result.stream()
-                .sorted(Comparator.comparingDouble((AlternativeCandidate c) -> scoreByPlaceId.get(c.placeId())).reversed())
+                .sorted(Comparator.comparingInt((AlternativeCandidate c) -> primaryIds.contains(c.googlePlaceId()) ? 0 : 1)
+                        .thenComparing(Comparator.comparingDouble(
+                                (AlternativeCandidate c) -> scoreByPlaceId.get(c.placeId())).reversed()))
                 .toList();
 
         // 상위 EXPLANATION_TOP_N개에만 추천 이유를 생성한다 — 무료 티어 한도 안에서
@@ -311,6 +311,23 @@ public class AlternativeFinderService {
                 upsertMs, raw.size(), tagMs, embeddingMs, congestionMs, personalizationMs, result.size(),
                 System.currentTimeMillis() - explanationStart);
         return Optional.of(withReasons);
+    }
+
+    private Optional<List<GooglePlacesNearbySearchResponse.Place>> searchNearby(TripPlace target, String includedType) {
+        long start = System.currentTimeMillis();
+        try {
+            GooglePlacesNearbySearchResponse response = googlePlacesApiClient.searchNearby(
+                    target.getLatitude(), target.getLongitude(), SEARCH_RADIUS_METERS, includedType);
+            apiCallLogService.record(
+                    "google-places", "nearby-search-alternative", null,
+                    System.currentTimeMillis() - start, true, null, null, null, null);
+            return Optional.of(response.places() != null ? response.places() : List.of());
+        } catch (Exception e) {
+            apiCallLogService.record(
+                    "google-places", "nearby-search-alternative", null,
+                    System.currentTimeMillis() - start, false, e.getMessage(), null, null, null);
+            return Optional.empty();
+        }
     }
 
     // 구글 이름엔 종단명·상호가 앞에 붙는다("대한불교조계종 진관사") — 여행 장소 이름으로 끝나고 가까우면 같은 곳.
