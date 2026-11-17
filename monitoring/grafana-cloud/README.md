@@ -1,6 +1,8 @@
 # Grafana Cloud 저장본
 
 운영 모니터링(Grafana Cloud `indigostork3365`)의 대시보드·경보·알림 설정을 그대로 받아 둔 것이다.
+**2026-11-18 예외:** `alerting/rules-trova-host.json`만 아직 Cloud에 반영하지 않은 변경 후보다(PSI 공백 때 마지막 계산값으로 최대 5분 보완, 보조 B 제거·주석 수정). 이 파일을 재수신으로 덮어쓰지 않는다. [검토·정확한 승인 항목](../../docs/monitoring/2026-11-18-memory-pressure-alert-review.md)을 승인한 뒤 매니저가 해당 규칙 하나에 반영하고 다시 받아 동기화한다. 이번 작업은 Cloud를 바꾸지 않았다.
+
 **기준은 Cloud다.** 여기 파일은 기록·복구용이고, Cloud에서 바꾸면 다시 받아서 덮어쓴다(이 파일을 고쳐 Cloud에 올리지 않는다).
 결정 배경은 [ADR 0039](../../docs/adr/0039-direct-otlp-metrics-and-external-health-check.md)(지표 직접 전송·외부 헬스 체크),
 [ADR 0041](../../docs/adr/0041-grafana-cloud-alert-rules-and-routing.md)(경보 기준·알림 정책), 대응은 [docs/runbooks](../../docs/runbooks/README.md).
@@ -44,3 +46,7 @@ Grafana에 로그인한 브라우저에서 아래를 GET으로 받는다(조회�
 - 경보·정책·템플릿: Grafana provisioning API(`PUT /api/v1/provisioning/alert-rules/{uid}`, `PUT /api/v1/provisioning/policies`,
   `PUT /api/v1/provisioning/templates/trova.slack`)에 해당 내용을 넣는다. 연락처는 webhook 주소를 다시 넣어야 한다.
 - 레포의 `monitoring/alerts.yml`은 로컬 Prometheus(docker)용 규칙이라 이 Cloud 경보와 별개다.
+
+## 로컬 경보 검증
+
+`python3 monitoring/grafana-cloud/validate_host_alert.py` — JSON 참조·조건 검사와 설치된 `promtool`을 이용한 공백/복귀/빈 시계열 합성 검증. 로컬 `alerts.yml`은 별도이며 `promtool test rules monitoring/alerts.test.yml`로 검사한다. 실제 Cloud 전이·r28 원시 시계열 재생은 아니다.

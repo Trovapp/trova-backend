@@ -89,3 +89,4 @@
 | [0047](0047-trip-copy-from-share-link.md) | 공유 링크에서 내 여행 사본 만들기 — 공개 범위 복사, 원본 보호, 독립된 일정 (0046의 공개 API 원칙에 예외 추가) | 확정 | 2026-11-17 |
 | [0048](0048-supabase-rls-lockdown.md) | Supabase public 테이블 RLS 활성화와 API 역할 권한 회수, 새 테이블 자동 보호 | 확정 | 2026-11-17 |
 | [0049](0049-user-consent-records.md) | 명시 동의·약관과 방침 버전·만 14세 확인 기록, 서버는 다른 API를 차단하지 않음 | 확정 | 2026-11-17 |
+| [0046](0046-memory-pressure-alert-gap-continuity.md) | 메모리 압박 경보의 짧은 계산 공백을 마지막 유효값으로 잇는다 | 초안(Cloud 미반영) | 2026-11-18 |
