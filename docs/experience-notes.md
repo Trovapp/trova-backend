@@ -2946,3 +2946,9 @@
 - 한 것: `AutoDraftService`의 자동 초안 조회는 홈 목록 조회가 아닌 같은 영상의 중복 생성 방지이므로 유지하고, 승인·닫힘·실패 이력도 포함해야 하는 이유를 주석에 적었다. Gemini 호출이나 자동 재생성은 추가하지 않았다.
 - 테스트: 기존 `PlaceRelocateServiceTest`의 저장소 조회를 변경하고 닫힌 초안의 타임스탬프가 null인지도 단언했다. 실제 JPA 저장소를 사용하는 `PlaceRelocateServiceIntegrationTest`에 자동·다시 짠 초안의 PENDING/PROCESSING/NEEDS_INPUT/READY 표시, 직접 만든 초안 제외, 승인·닫힘·실패 각각 제외(자동·다시 짠 초안 모두), 다른 사용자·다른 job 제외를 추가했다. 제외 대상은 조회 결과와 저장 후 타임스탬프를 함께 단언해 엔티티 방어 로직이 쿼리 조건 누락을 가리지 않게 했다.
 - 확인: 실측 없음. 코드와 테스트의 분기·단언을 정적으로 검토했다. 사용자 지시로 git·커밋·`./gradlew`는 실행하지 않았고 레포 안에 로그 파일을 만들지 않았다. 테스트 실행·빌드 통과·돌연변이 테스트 실행·앱 안내 띠 표시는 미확인(대장 검증 필요).
+
+## 2026-11-17 라이프사이클 통합 테스트의 공용 H2 간섭 격리 (#452)
+
+- 원인: 테스트 컨텍스트 종류가 늘면서 공용 H2 컨텍스트가 캐시에서 밀려나 종료되고, create-drop이 같은 기본 DB의 테이블을 지워 ProcessingJobLifecycleServiceIntegrationTest 18개가 빈 DB에서 USERS 테이블을 찾지 못했다.
+- 한 것: TripShareLinkControllerTest·AdminActionTransactionTest·PlaceRelocateServiceIntegrationTest의 어노테이션을 먼저 읽고, 대상 테스트에 고유 H2 DB(`jdbc:h2:mem:processing-job-lifecycle;MODE=PostgreSQL;DB_CLOSE_DELAY=-1`)와 `@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)`를 적용했다. 운영 코드는 변경하지 않았다.
+- 확인·미확인: 어노테이션과 명시적 import를 정적으로 확인했다. 사용자 지시로 git·커밋·`./gradlew`는 실행하지 않았다. 테스트 및 전체 빌드 통과는 미확인(대장 실행 예정).

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
@@ -27,7 +28,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
  * 각 lifecycle 메서드가 자기 트랜잭션으로 커밋되는지, 그리고 error_message 길이 처리(varchar(2000) +
  * 꼬리 잘라내기)가 실제 DB에 반영되는지 확인한다.
  */
-@SpringBootTest
+@SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:processing-job-lifecycle;MODE=PostgreSQL;DB_CLOSE_DELAY=-1")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class ProcessingJobLifecycleServiceIntegrationTest {
 
     private static final String PROVIDER_USER_ID = "lifecycle-integration-1";
