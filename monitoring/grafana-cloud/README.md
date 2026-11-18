@@ -16,7 +16,7 @@
 | `alerting/rules-trova-http.json` | 경보 그룹 `trova-http` | HighHttp5xxErrorRate(critical), HighHttpLatencyP95(warning) |
 | `alerting/rules-trova-cloud-logs.json` | `trova-cloud-logs` | TrovaApplicationErrorLogs(warning, `logback_events_total` 기준) |
 | `alerting/rules-trova-cloud-availability.json` | `trova-cloud-availability` | TrovaCloudScrapeUnavailable(warning) |
-| `alerting/rules-trova-host.json` | `trova-host` | HighMemoryPressure(warning, PSI memory full 5분 > 20%, 2분 지속) — 기준 근거는 ADR 0042·`docs/runbooks/memory-pressure.md`(PR #381) |
+| `alerting/rules-trova-host.json` | `trova-host` | HighMemoryPressure(warning, PSI memory full 5분 > 20%, 2분 지속, 계산 공백 시 최근 5분 마지막 값 보완) — 기준 근거는 ADR 0042·`docs/runbooks/memory-pressure.md`(PR #381) |
 | `alerting/rules-trova-kafka.json` | `trova-kafka` | TrovaKafkaConsumerLag(warning, 토픽별 처리 못 한 메시지 > 3개 15분), TrovaKafkaDeadLetter(warning, 실패 작업 토픽으로 보낸 메시지 15분 > 0) — `docs/runbooks/kafka-queue.md` |
 | `alerting/notification-policies.json` | 알림 정책 | 묶음·반복 주기(critical 1시간, warning 4시간) |
 | `alerting/contact-points.json` | 연락처 `trova-slack-alerts` | Slack. **webhook 주소는 `[REDACTED]`** — 복구할 때 Slack 앱에서 다시 넣는다 |
@@ -38,13 +38,9 @@ Grafana에 로그인한 브라우저에서 아래를 GET으로 받는다(조회�
 
 받은 뒤 `grep -rE 'hooks\.slack\.com|xox[abp]-|glc_' monitoring/grafana-cloud`로 시크릿이 없는지 확인한다(연락처 export는 기본으로 가려져 나온다).
 
-## 승인 대기 후보
+## 메모리 압박 경보 반영 완료
 
-`proposals/high-memory-pressure-gap.json`은 PSI 공백 보완 **미승인 후보**이며 Cloud 저장본·복구 입력이 아니다. 현재 규칙은 `alerting/rules-trova-host.json`에 그대로 보관한다. 후보는 복구 경로 `alerting/` 밖에 두어 폴더 전체를 재귀 수집해도 섞이지 않게 한다. 후보 전용 UID `candidate-memory-pressure-gap`, 이름 `[Candidate] HighMemoryPressure gap continuity`, 그룹 `trova-host-candidate`, `isPaused: true`를 사용하므로 더 넓은 경로를 실수로 import해도 운영 UID·그룹을 덮어쓰거나 같은 이름의 활성 경보를 만들지 않는다. 후보를 복구 폴더에 복사하거나 후보 전용 식별자로 Cloud 경보를 생성하지 않는다.
-
-[검토·승인할 변경](../../docs/monitoring/2026-11-18-memory-pressure-alert-review.md) 승인 뒤 매니저가 **기존 UID `bg3yd8j9d5fr4a`를 유지한 채** 수정한다. 식별자·일시중지 값을 통째 복사하지 않는 순서, export 갱신·후보 삭제와 롤백은 [runbook 7절](../../docs/runbooks/memory-pressure.md#7-승인-대기-변경-cloud-미반영)에 따른다.
-
-적용 경로 조사: 레포에는 Cloud `alerting/`을 자동 provisioning/import하는 CI·스크립트·마운트가 없다. `docker-compose.monitoring.yml`은 별도 로컬 경로 `monitoring/grafana/provisioning/`만 마운트하고 그곳의 provider는 대시보드만 읽는다. Cloud는 아래 수동 복구 절차를 사용한다. 따라서 문구로 하위 폴더를 제외하던 방식 대신 경로 자체를 분리하고 식별자도 나눴다.
+2026-11-18 12:04:41 KST 사용자 승인으로 기존 UID `bg3yd8j9d5fr4a`에 계산 공백 보완식을 반영했다. `alerting/rules-trova-host.json`은 실제 Cloud export이며 폴더 `Trova`, A/C 쿼리와 주석을 보존한다. 후보 JSON은 삭제했다. [반영 결과](../../docs/monitoring/2026-11-18-memory-pressure-alert-review.md#cloud-반영-결과와-저장본-동기화)와 [runbook 7절](../../docs/runbooks/memory-pressure.md#7-공백-보완-반영-완료-2026-11-18)에 사일런스·확인·롤백을 기록했다.
 
 ## 되돌리기·복구
 
@@ -57,6 +53,6 @@ Grafana에 로그인한 브라우저에서 아래를 GET으로 받는다(조회�
 
 ## 로컬 경보 검증
 
-`python3 monitoring/grafana-cloud/validate_host_alert.py` — 저장본 UID/title 유일성, 후보 경로·별도 식별자·일시중지, JSON 참조·조건 검사와 설치된 `promtool`을 이용한 공백/복귀/빈 시계열 합성 검증. `python3 -m unittest discover -s monitoring/grafana-cloud -p 'test_validate_host_alert.py' -v`는 후보와 저장본 충돌·복구 경로 재유입 회귀를 검사한다. 로컬 `alerts.yml`은 별도이며 `promtool test rules monitoring/alerts.test.yml`로 검사한다. 실제 Cloud 전이·r28 원시 시계열 재생은 아니다.
+`python3 monitoring/grafana-cloud/validate_host_alert.py` — 저장본 UID/title 유일성, 운영 식별자·폴더·활성 상태, A/C 참조·조건·정책 검사와 설치된 `promtool`을 이용한 공백/복귀/빈 시계열 합성 검증. `python3 -m unittest discover -s monitoring/grafana-cloud -p 'test_validate_host_alert.py' -v`는 운영 저장본 변경·중복·후보 재유입 회귀를 검사한다. 로컬 `alerts.yml`은 별도이며 `promtool test rules monitoring/alerts.test.yml`로 검사한다. 실제 Cloud 전이·r28 원시 시계열 재생은 아니다.
 
 실패 대조군: `python3 monitoring/grafana-cloud/validate_host_alert.py --variant original`, `--variant max`는 각각 종료 코드 1이어야 한다. `python3 -O monitoring/grafana-cloud/validate_host_alert.py`도 같은 검사를 수행한다.

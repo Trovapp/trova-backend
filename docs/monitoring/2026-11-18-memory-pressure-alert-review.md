@@ -1,6 +1,6 @@
 # r28 메모리 압박 경보 지연 검토
 
-날짜: 2026-11-18 · #428 · **레포 변경 제안만, Cloud 미반영**.
+날짜: 2026-11-18 · #428 · **2026-11-18 12:04:41 KST Cloud 반영 완료**. 아래 제안·기존 검증 절은 승인 전 이력이며, 최신 상태는 마지막 반영 결과 절을 따른다.
 
 ## 근거와 확인 범위
 
@@ -39,9 +39,9 @@ PSI **평가 결과** 공백은 15:51:10·15:54:10·15:59:10 전이에서 확인
 
 대기 시간만 2분→0~1분이면 15:49:10~15:50:10(7~8분 빠름)이 가능하지만, 기존 정상 회차에서 20% 초과 최대 0.5분도 울릴 수 있다. 임계값/평균 창까지 낮추면 기존 정상·비정상 분리 근거를 다시 검증해야 하므로 이번에는 유지한다. `absent_over_time(...[5m])`는 이미 약 7분 지연 경보로 존재하고 간헐 수신마다 리셋되므로 r28의 짧은 평가 공백 대책은 아니다. 새 공백 경보를 짧게 추가해도 PSI와 배포 무음 문제를 함께 풀지 못한다.
 
-## 추천 구현과 승인할 정확한 Cloud 변경
+## 승인 전 제안 이력: 추천 구현과 Cloud 변경
 
-`trova-host` 그룹, UID **bg3yd8j9d5fr4a**, `HighMemoryPressure`만 변경한다. **현재 Cloud 저장본 `alerting/rules-trova-host.json`은 원복·유지하고, 아직 반영하지 않은 후보는 `proposals/high-memory-pressure-gap.json`에 별도로 보관한다.** 후보는 복구 경로 밖에 있고 전용 UID `candidate-memory-pressure-gap`·이름 `[Candidate] HighMemoryPressure gap continuity`·그룹 `trova-host-candidate`·일시중지 상태를 사용한다. 복구 입력이 아니며 PUT하지 않는다. 단계별 반영·export 갱신·후보 삭제·롤백은 [runbook 7절](../runbooks/memory-pressure.md#7-승인-대기-변경-cloud-미반영)에 기록했다. 승인 후 매니저가 기존 Cloud 규칙과 차이를 확인하고 그 규칙 하나만 수정한다(폴더 UID가 비어 있는 export 파일 전체를 그대로 업로드하지 않는다).
+`trova-host` 그룹, UID **bg3yd8j9d5fr4a**, `HighMemoryPressure`만 변경한다. **현재 Cloud 저장본 `alerting/rules-trova-host.json`은 원복·유지하고, 아직 반영하지 않은 후보는 `proposals/high-memory-pressure-gap.json`에 별도로 보관한다.** 후보는 복구 경로 밖에 있고 전용 UID `candidate-memory-pressure-gap`·이름 `[Candidate] HighMemoryPressure gap continuity`·그룹 `trova-host-candidate`·일시중지 상태를 사용한다. 복구 입력이 아니며 PUT하지 않는다. 단계별 반영·export 갱신·후보 삭제·롤백은 [runbook 7절](../runbooks/memory-pressure.md#7-공백-보완-반영-완료-2026-11-18)에 기록했다. 승인 후 매니저가 기존 Cloud 규칙과 차이를 확인하고 그 규칙 하나만 수정한다(폴더 UID가 비어 있는 export 파일 전체를 그대로 업로드하지 않는다).
 
 1. A의 instant PromQL을 아래로 교체한다.
 
@@ -53,7 +53,7 @@ last_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod
 
 2. B(스왑 조회)를 제거한다. 보조 조회가 비어 보완된 A와 별개로 NoData를 만들 가능성을 없애고, 스왑 확인은 대시보드에서 한다. `context`, `description`, `summary`, `value_label`을 JSON 후보 그대로 바꿔 마지막 계산값일 수 있음을 표시한다.
 3. **유지:** C→A >20, `for=2m`, 평가 1m, `noDataState=OK`, `execErrState=KeepLast`, UID·라벨·라우팅·나머지 규칙. 알림 warning의 group_wait=1m는 별도라 발화 뒤 통지에 시간이 더 든다.
-4. 배포·재시작·부하 측정의 사일런스 단계는 [runbook 승인 대기 절](../runbooks/memory-pressure.md#후보-승인반영-시-필요한-사일런스)에 모았다. 높은 PSI 직후 133~146초 재시작은 자동 구분하지 못하므로 이 절차가 필요하다.
+4. 배포·재시작·부하 측정의 사일런스 단계는 [runbook 사일런스 절](../runbooks/memory-pressure.md#배포재시작부하-측정-사일런스)에 모았다. 높은 PSI 직후 133~146초 재시작은 자동 구분하지 못하므로 이 절차가 필요하다.
 5. 이번 작업에서는 사일런스 생성·측정·운영 변경을 하지 않았다.
 6. 승인 후 Cloud 미리보기에서 A 공백 보완·임계값·Normal 복귀와 주석을 확인한다. 적용 뒤 원본 PSI, 보완값 A, 규칙 전이, Slack 수신 시각을 비교한다. 롤백은 A를 첫 줄의 원래 쿼리로 복원하고 B·주석을 변경 전 저장본으로 복원하는 것이다.
 
@@ -69,7 +69,7 @@ last_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod
 - Cloud 전이 엔진/Slack을 로컬 promtool로 검증할 수는 없다. 계산식과 정상값 우선·장기 공백·빈 시계열은 로컬 합성 데이터로 검증하고, 실제 r28 전이 해석과 구분한다.
 
 
-## 로컬 검증 결과 (리뷰 반영 후)
+## 승인 전 로컬 검증 결과 (리뷰 반영 후)
 
 - `python3 monitoring/grafana-cloud/validate_host_alert.py`: 현재 저장본/후보 JSON 파싱, 쿼리 참조·`$values.<refId>` 및 `index $values "refId"` 주석 참조, 저장본 UID/title 유일성·후보와의 충돌 방지·후보 전용 식별자/그룹·복구 경로 밖 위치·일시중지·임계값·라벨·정책 검사와 promtool 합성 **6개** 시나리오 통과. 검사는 `assert` 대신 명시적 조건 검사와 비정상 종료를 사용한다.
 - 높은 PSI→공백에서 원래 rate는 5분 시점에 값이 없지만 후보는 45%를 유지하고 경보 조건도 이어진다. 높은 값→낮은 값→공백에서는 6분 시점에 마지막 값 0%를 유지해야 한다. 원시 rate와 후보의 **실제 숫자**를 비교하며, 0/1만 비교하던 한계를 고쳤다.
@@ -104,10 +104,23 @@ exit_code=1
 
 max 변형은 정상 관측 0% 뒤 공백에서 과거 높은 60%를 선택해 실패한다. 정상 후보만 모든 기대값을 충족한다. 비교값의 부동소수점 마지막 1비트 차이는 promtool `fuzzy_compare`로 허용한다. 실제 r28 전이 엔진/Slack 재생 결과는 아니다.
 
-### 변경 파일과 후속 과제
+### 승인 전 변경 파일과 후속 과제
 
 현재 저장본 `monitoring/grafana-cloud/alerting/rules-trova-host.json`은 변경 전으로 원복했다. 후보는 `monitoring/grafana-cloud/proposals/high-memory-pressure-gap.json`에 두고 README 복구 절에서 후보 PUT·Import를 제외했다. `validate_host_alert.py`, runbook(현재 Cloud 본문과 승인 대기 절 분리), ADR 0050·목록(대기 상태·표준 절), 본 보고서와 대조군 출력 3개를 갱신했다.
 
 사일런스 실행 단계는 runbook에만 두었다. **devflow 배포 절차·CLAUDE.md 반영은 승인 후 별도 후속 과제**이며 이번에는 수정하지 않았다. Cloud 반영·복구·사일런스 생성도 하지 않았다.
 
 main 최신화: `origin/main` e9ef8e8 위로 두 커밋을 rebase했다. ADR 목록 충돌 두 건은 main의 0046~0049와 메모리 경보 항목을 모두 보존해 해결했다. main이 이미 0046을 쓰므로 이 초안은 ADR 0050으로 옮기고 참조를 갱신했다. 운영 저장본은 수정하지 않았다.
+
+
+## Cloud 반영 결과와 저장본 동기화
+
+- 승인 `grafana-alert-bg3yd8j9d5fr4a`, 저장 **2026-11-18 12:04:41 KST**. 기존 UID `bg3yd8j9d5fr4a`만 Edit했다. A 공백 보완, B 삭제, C→A >20과 주석 4개 변경. 운영 UID·이름·폴더 Trova(fnzq94)·그룹 trova-host·orgId 1·datasource·라벨·활성 상태, 2m·평가 1m·NoData OK·KeepLast 보존.
+- 사일런스 `16caa06a-246a-4686-8e20-4977f00ec9be`: 정확 일치 alertname=HighMemoryPressure, service=trova-backend, environment=production. 시작 약 11:53 KST, 입력 종료 12:20:49 KST, UI 기간 27m 33s. 12:12경 Active·silenced instances 0 확인 후 연장·강제 해제 없이 예정 만료에 맡겼다. 만료 이후 관측은 하지 않았다.
+- Preview A=0.0003875%, C=0, 0 firing/1 normal. 12:10경 원본 PSI·보완식 모두 0.0001012500009286062%, 12:10:50경 Normal·마지막 평가 33초 전. 12:14경 운영 규칙 정확히 하나, 후보 경보 없음. 평가 오류 징후가 없어 롤백하지 않았다.
+- 증빙: 작업 PC `C:/Users/user/Desktop/trova-qa-2026-11-18/grafana-o1/`의 before.json·after.json·report-ko.txt. 위 관측은 해당 운영 작업 보고서에 근거하며 이번 레포 후속 작업에서 Cloud에 재접속하지 않았다.
+- 실제 after.json은 provisioning export 형식(apiVersion/groups)이므로 들여쓰기만 정리해 저장했다. A의 CRLF·끝 개행까지 JSON 값은 실제 export와 같다. 폴더명은 기존 빈 문자열 대신 실제 `Trova`다. 비밀값 검사 후 후보 JSON을 삭제하고 validator·테스트를 실제 저장본 A/C로 전환했다.
+- 후속 검증: Python validator 합성 PromQL 6개와 unittest 10개 통과. `-O`도 통과했고 `--variant original`, `--variant max`는 각각 예상대로 종료 코드 1이었다. promtool 3.5.0 공식 배포본 SHA256을 확인했다. `git diff --check` 통과. 이전 후보 대조군 출력은 승인 전 이력으로 보존하며 현재 기본 variant는 `snapshot`이다.
+- 남은 일: 실제 장애 공백/복귀 전이, Slack 발화·해제 전달, 사일런스 예정 만료 이후 상태 확인. devflow·CLAUDE.md의 배포 사일런스 자동화/절차 반영은 별도 과제다. 합성 검사는 Cloud 전이·Slack 전달을 증명하지 않는다.
+
+- 추가 전체 빌드: `./gradlew.bat build`는 1,220개 중 31개 실패·6개 skipped로 실패했다(`BUILD FAILED in 8m 9s`, 마지막 줄 `8 actionable tasks: 8 executed`). 실패는 수정하지 않은 파이프라인 실행 테스트 5개 클래스에 있으며 python3·nice 등 Windows 실행 환경 관련 문제를 포함한다. Java/Gradle 변경은 하지 않았고 전체 빌드 통과로 보고하지 않는다.
