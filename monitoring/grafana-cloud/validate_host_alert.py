@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""현재 저장본/후보의 참조와 후보 PromQL을 검사한다. --variant는 실패 대조군용."""
+"""실제 Cloud 저장본 A/C의 참조와 PromQL을 검사한다. --variant는 실패 대조군용."""
 import argparse
 import json
 from pathlib import Path
@@ -11,9 +11,8 @@ import tempfile
 
 PRODUCTION_UID = 'bg3yd8j9d5fr4a'
 PRODUCTION_TITLE = 'HighMemoryPressure'
-CANDIDATE_UID = 'candidate-memory-pressure-gap'
-CANDIDATE_TITLE = '[Candidate] HighMemoryPressure gap continuity'
-CANDIDATE_PATH = Path('proposals/high-memory-pressure-gap.json')
+SNAPSHOT_PATH = Path('alerting/rules-trova-host.json')
+ORIGINAL_EXPRESSION = '100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod", resource="memory", type="full"}[5m]))'
 
 
 def require(condition, message):
@@ -33,59 +32,68 @@ def validate_references(rule):
 
 
 def validate_identity_layout(root):
-    """복구 경로에는 현재 저장본만, 경로 밖 후보에는 별도 식별자만 허용한다."""
+    """운영 저장본 식별자·중복·후보 재유입을 검사한다."""
     alerting = (root / 'alerting').resolve()
-    candidate_path = root / CANDIDATE_PATH
-    require(not candidate_path.resolve().is_relative_to(alerting), '후보는 alerting 밖에 있어야 합니다')
     identities = {'uid': set(), 'title': set()}
     for path in sorted(alerting.rglob('*.json')):
-        document = json.loads(path.read_text())
+        document = json.loads(path.read_text(encoding='utf-8'))
         if not isinstance(document, dict):
-            continue  # templates.json은 규칙 그룹이 아닌 템플릿 배열이다.
+            continue
         for group in document.get('groups', []):
             for rule in group.get('rules', []):
                 for field, seen in identities.items():
                     value = rule[field]
                     require(value not in seen, f'저장본 {field} 충돌: {value}')
                     seen.add(value)
-                require(rule['uid'] != CANDIDATE_UID and rule['title'] != CANDIDATE_TITLE,
+                require(not rule['uid'].startswith('candidate-')
+                        and not rule['title'].startswith('[Candidate]'),
                         '후보를 alerting 복구 경로에 두면 안 됩니다')
-    snapshot = json.loads((alerting / 'rules-trova-host.json').read_text())
-    current = snapshot['groups'][0]['rules'][0]
+    snapshot = json.loads((root / SNAPSHOT_PATH).read_text(encoding='utf-8'))
+    require(snapshot['apiVersion'] == 1 and len(snapshot['groups']) == 1,
+            'provisioning export 그룹 하나가 필요합니다')
+    group = snapshot['groups'][0]
+    require(len(group['rules']) == 1, '운영 규칙 하나만 허용합니다')
+    current = group['rules'][0]
     require(current['uid'] == PRODUCTION_UID and current['title'] == PRODUCTION_TITLE,
             '운영 UID/title이 바뀌었습니다')
-    document = json.loads(candidate_path.read_text())
-    require(len(document['groups']) == 1 and len(document['groups'][0]['rules']) == 1,
-            '후보는 그룹 하나와 규칙 하나만 허용합니다')
-    group = document['groups'][0]
-    require(group['name'] == 'trova-host-candidate', '후보 전용 그룹이 필요합니다')
-    rule = group['rules'][0]
-    for field, seen in identities.items():
-        require(rule[field] not in seen, f'후보/저장본 {field} 충돌: {rule[field]}')
-    require(rule['uid'] == CANDIDATE_UID and rule['title'] == CANDIDATE_TITLE,
-            '후보 전용 UID/title이 필요합니다')
-    require(rule['isPaused'] is True, '후보는 일시중지 상태여야 합니다')
+    require(group['name'] == 'trova-host' and group['folder'] == 'Trova'
+            and group['orgId'] == 1, '운영 그룹/폴더/orgId 불일치')
+    require(current['isPaused'] is False, '운영 규칙은 활성 상태여야 합니다')
     return current, group
+
+
+def validate_snapshot(root):
+    rule, group = validate_identity_layout(root)
+    queries = validate_references(rule)
+    require(len(rule['data']) == 2 and set(queries) == {'A', 'C'}, '운영 저장본은 A/C 쿼리만 사용합니다')
+    a, c = queries['A'], queries['C']
+    require(rule['condition'] == 'C' and c['model']['expression'] == 'A', '조건 참조 불일치')
+    require(c['model']['type'] == 'threshold' and c['datasourceUid'] == '__expr__', 'C threshold 불일치')
+    require(c['model']['conditions'] == [{'evaluator': {'params': [20], 'type': 'gt'},
+            'operator': {'type': 'and'}, 'query': {'params': ['C']},
+            'reducer': {'params': [], 'type': 'last'}, 'type': 'query'}], '임계값/조건 불일치')
+    require(rule['for'] == '2m' and group['interval'] == '1m', '지속/평가 주기 불일치')
+    require(rule['noDataState'] == 'OK' and rule['execErrState'] == 'KeepLast', 'NoData/오류 정책 불일치')
+    require(rule['labels'] == {'environment': 'production', 'service': 'trova-backend',
+                              'severity': 'warning'}, '라벨 불일치')
+    require(a['datasourceUid'] == 'grafanacloud-prom' and a['model']['instant'] is True
+            and a['model']['range'] is False, 'A datasource/instant 불일치')
+    for ref, query in queries.items():
+        require(query['model']['refId'] == ref, 'model refId 불일치')
+    expression = a['model']['expr']
+    expected = f'({ORIGINAL_EXPRESSION}) or last_over_time(({ORIGINAL_EXPRESSION})[5m:1m])'
+    require(re.sub(r'\s+', '', expression) == re.sub(r'\s+', '', expected), '운영 공백 보완식 불일치')
+    return rule, group
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--variant', choices=['candidate', 'original', 'max'], default='candidate')
+    parser.add_argument('--variant', choices=['snapshot', 'original', 'max'], default='snapshot')
     args = parser.parse_args()
     root = Path(__file__).resolve().parent
-    current, group = validate_identity_layout(root)
-    require(set(validate_references(current)) == {'A', 'B', 'C'}, '현재 Cloud 저장본 A/B/C가 바뀌었습니다')
-    original = current['data'][0]['model']['expr']
-    rule = group['rules'][0]
-    queries = validate_references(rule)
-    require(set(queries) == {'A', 'C'}, '후보는 A/C 쿼리만 사용합니다')
-    require(rule['condition'] == 'C' and queries['C']['model']['expression'] == 'A', '후보 조건 참조 불일치')
-    require(queries['C']['model']['conditions'][0]['evaluator'] == {'params': [20], 'type': 'gt'}, '임계값 불일치')
-    require(rule['for'] == '2m' and group['interval'] == '1m', '지속/평가 주기 불일치')
-    require(rule['noDataState'] == 'OK' and rule['execErrState'] == 'KeepLast', 'NoData/오류 정책 불일치')
-    require(rule['labels'] == current['labels'], '라벨 불일치')
-    require(queries['A']['model']['instant'] is True, 'A는 instant 쿼리여야 합니다')
-    expression = queries['A']['model']['expr']
+    rule, group = validate_snapshot(root)
+    original = ORIGINAL_EXPRESSION
+    expression = next(query['model']['expr'] for query in rule['data'] if query['refId'] == 'A')
     # 변형도 같은 기대 결과로 실행한다. 실패를 성공으로 뒤집어 반환하지 않는다.
     if args.variant == 'original':
         expression = original
@@ -105,7 +113,7 @@ def main():
                 'exp_alerts': [{'exp_labels': {}, 'exp_annotations': {}}] if firing else []}
 
     tests = [
-        # raw rate는 4m에 45%, 5m부터 없음. 후보만 Alerting을 유지한다.
+        # raw rate는 4m에 45%, 5m부터 없음. 운영 보완식만 Alerting을 유지한다.
         {'name': 'high-then-gap-and-five-minute-boundary', 'interval': '1m',
          'input_series': [{'series': metric, 'values': '0 90 _ _ _ _ _ _ _ _ _'}],
          'promql_expr_test': [sample('5m', None, original), sample('5m', 45),

@@ -2969,3 +2969,13 @@
 - 한 것: application.yml과 .env.example에 개정일 설정을 추가했다(기본 2026-10-14). 탈퇴 삭제 순서에 동의 기록을 사용자 삭제 직전 넣었다. 인증과 공유 키 경로에는 동의 검사를 추가하지 않았다. 결정·이유·대안·다시 볼 조건과 enum 검사 제약 수동 변경 주의는 ADR 0049와 목록에 기록했다.
 - 작성한 테스트: ConsentControllerTest에 미인증 GET·POST 401, 최초 needed와 설정 버전, 정상 POST 204 후 needed=false, 약관·방침 버전 불일치 400과 미저장, 연령 false/null/누락 400, 버전 null/누락 400, 재전송 시 행·최초 시각 보존, 약관만·방침만 개정 시 재동의, 연령 기록 누락, 미동의 다른 API 허용, 사용자별 상태 분리, 탈퇴 시 과거 버전까지 삭제와 타 사용자 기록 보존을 추가했다. 고유 H2(user-consent-controller)와 @DirtiesContext(AFTER_CLASS)로 격리하고 탈퇴 뒤 flush·clear로 FK 순서를 확인하도록 작성했다.
 - 정적 확인: 생성자 주입·record·명시적 import와 사용자 식별·트랜잭션·삭제 순서를 검토했다. 테스트와 전체 빌드 실행 결과는 미확인이다(사용자 지시로 대장이 실행). git 명령·커밋·./gradlew는 실행하지 않았고 레포 안 로그 파일을 만들지 않았다.
+
+
+## 2026-11-18 메모리 압박 경보 Cloud 반영 후 저장본 동기화 (#460, PR #461)
+
+- 한 것: 12:04:41 KST 운영 반영의 실제 after.json을 provisioning export 형식으로 저장하고 후보 JSON을 삭제했다. validator·테스트를 운영 A/C 기준으로 바꾸고 runbook·ADR 0050·검토 보고서·목차에 승인·반영과 사일런스 기록을 반영했다.
+- 확인한 것: 저장본 JSON 값이 실제 export와 동일하고 비밀값 패턴이 없다. promtool 합성 6개·단위 테스트 10개·최적화 모드 통과, 원래 식·max 변형은 예상 실패, 변경 문서 상대 링크와 diff 공백 검사 통과.
+- 확인하지 않은 것: 실제 장애 공백/복귀 전이·Slack 전달·사일런스 예정 만료 후 상태. Cloud 관측은 기존 report-ko.txt에 근거하며 이번 작업에서 운영 접속·변경은 하지 않았다. 루트 .env를 복사하지 않았고 Java·Gradle 파일 변경도 없다.
+- 남긴 지식: ADR 0050 승인·반영 완료와 runbook의 최신 원본 PSI 기반 회복 확인·배포 사일런스 절차.
+
+- 추가 전체 빌드: `./gradlew.bat build`는 1,220개 중 31개 실패·6개 skipped로 실패했다(`BUILD FAILED in 8m 9s`, 마지막 줄 `8 actionable tasks: 8 executed`). 실패는 수정하지 않은 파이프라인 실행 테스트 5개 클래스에 있으며 python3·nice 등 Windows 실행 환경 관련 문제를 포함한다. Java/Gradle 변경은 하지 않았고 전체 빌드 통과로 보고하지 않는다.
