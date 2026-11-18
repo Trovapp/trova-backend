@@ -130,3 +130,70 @@ java -classpath gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapp
 - SQL 문장 수는 고정됐지만 영상 조회는 여전히 사용자의 작업 목록을 읽는다. 데이터 행 수·메모리 사용까지 고정된 것은 아니다.
 - 관리자 최신 판단은 한 번 읽은 목록의 스냅샷이다. 조회 직후 새 작업이 생길 수 있으므로 실제 재시도 실행에서 기존 DB 재확인을 유지한다.
 - P1과 이번 작업 모두 H2에서 검증했다. 운영 PostgreSQL 실행 계획과 p95 개선 폭은 확인하지 않았다.
+
+## P3 자동 초안 목록 조회 (#466)
+
+PR: [#467](https://github.com/Trovapp/trova-backend/pull/467).
+
+### 분석과 기준선
+
+대상은 홈·내 여행·영상 기록에서 호출하는 `GET /api/trip-drafts/auto`다. 요청에서 전달된 운영 p95 약 351ms는 이번 작업에서 재측정하지 않았다. 화면 조작 도구가 제공되지 않아 허용된 예외에 따라 Chrome/Grafana 캡처는 건너뛰었다. 새 캡처 파일·운영 API 호출·운영 DB/서버 접근은 없다.
+
+변경 전 경로는 `TripDraftController.autoDrafts` → `TripDraftRepository.findListedByUserId` → `TripPlannerService.analysesOf` → `TripService.jobIdsWithExistingTrip`이었다. 사용자별 미닫힘 자동/대체 초안(PENDING·PROCESSING·READY), 사용자의 분석 전체, 여행에 포함된 저장 장소의 영상 URL을 읽었다. `VideoKey`로 URL 별칭을 통일해 이미 여행이 된 영상을 숨기고 같은 영상의 최대 ID인 DONE 분석을 표시한다. 필터링 뒤 최신 초안 10개에만 READY JSON을 파싱해 장소 수를 센다. **DB 조회와 메모리 계산만 하며 Gemini·카카오 등 외부 호출은 없다.**
+
+기억된 JWT 사용자로 테스트 트랜잭션 없이 MockMvc HTTP 요청을 예열한 뒤 Hibernate Statistics를 초기화해 측정했다. 기존 테스트의 트랜잭션 안에서는 사용자 엔티티가 공유돼 가려졌던 추가 조회가 여기서는 드러난다. 변경 전 SQL 5회는 초안·그 사용자, 분석·그 사용자, 여행 영상 URL이다. 변경 후에는 초안 값·분석 값·여행 URL의 3회만 남는다. 사용자 존재 확인이 기억되지 않은 JWT 첫 요청에는 별도 SQL 1회가 더해진다(기존 ADR 0036 정책 유지).
+
+| 로컬 H2 HTTP 시나리오 | 변경 전 SQL | 변경 후 SQL | 변경 전 엔티티 로딩 | 변경 후 엔티티 로딩 |
+|---|---:|---:|---:|---:|
+| 초안/분석 1개 | 5 | 3 | 4 | 0 |
+| 초안/분석 8개 | 5 | 3 | 18 | 0 |
+| 초안/분석 20개, 응답 10개 | 5 | 3 | 42 | 0 |
+| 빈 목록, 예열 JWT | 1 | 1 | 0 | 0 |
+
+근거: `src/test/java/com/trova/backend/controller/AutoDraftReadPerformanceTest.java`의 SQL·엔티티 수 단언. 변경 전 새 테스트 2개 중 SQL 목표 테스트 1개가 실패했고, 쓰기 직후 반영 테스트는 통과했다.
+
+```text
+변경 전: P3 drafts=1,8,20 SQL=[5, 5, 5] entities=[4, 18, 42]
+2 tests completed, 1 failed
+BUILD FAILED in 1m 21s
+변경 후: P3 drafts=1,8,20 SQL=[3, 3, 3] entities=[0, 0, 0]
+```
+
+### 방법 비교와 선택
+
+| 방법 | 장점 | 비용·위험 | 결정 |
+|---|---|---|---|
+| (a) SQL·불필요 조회 줄이기 | 추가 SELECT 2개 제거, 필요한 6개 초안 값·4개 분석 값만 로딩, 사용자 엔티티와 큰 상세 요약 제외 | 사용자의 전체 후보 초안·분석은 여전히 읽음 | 선택 |
+| (b) 사용자별 짧은 캐시 | 적중 시 본 조회 SQL을 없앨 수 있음 | 아래 쓰기 경로 전체의 커밋 후 무효화, 조회/무효화 경합, 크기·만료 검증 필요; 144MiB 힙에서 상주 데이터 증가 | 보류 |
+| (c) 둘 다 | 미적중·적중 모두 개선 | (b)의 운영·구현 비용이 그대로 필요 | 보류 |
+
+기존 scalar projection 방식(ADR 0034·0036)을 적용했다. `AutoDraftQueryService`는 연관 엔티티나 추가 서비스 읽기 트랜잭션 없이 값을 조합하고, 영상 키는 요청 안에서 한 번 계산해 재사용한다. 응답 캐시는 전후 모두 **없음**이며 적중률·만료·무효화 테스트는 해당 없음이다. 영구 메모리 증가 없이 확인된 추가 조회부터 제거한다. 힙 바이트·운영 응답 시간 개선 폭을 측정한 것은 아니다.
+
+### 결과에 영향을 주는 쓰기 경로와 무효화 검토
+
+응답 캐시가 없으므로 아래 커밋 이후 다음 요청은 DB를 다시 읽는다. 무효화 훅을 추가하지 않았다. 한 요청의 여러 SELECT 사이에 동시 쓰기가 끼는 기존 일관성 한계는 남는다.
+
+| 쓰기 경로(코드 근거) | 목록/상세에 미치는 영향 |
+|---|---|
+| `AutoDraftService.create`의 초안 저장·실패 시 삭제 (`service/AutoDraftService.java:63,98`) | 새 자동 카드 생성/삭제 |
+| `TripPlannerService.create`, `dismissReplaced`, `answer`, `processSerially` (`service/TripPlannerService.java:103,142,196,229`) | 대체 초안 생성, 이전 카드 닫기, 상태·days·jobIds·draftJson·placeCount 변경 |
+| `TripDraftController.dismiss` 및 `admin/action/HideDraftAction.java:35` | 사용자·관리자 카드 숨김 |
+| `TripDraftApprovalService.approve` (`service/TripDraftApprovalService.java:86,102,106`) | APPROVED 초안 제외, 여행 장소 연결로 같은 영상의 다른 카드도 숨김 |
+| `TripService.confirmVideoPlacesIntoTrip`, 여행 장소 추가·교체·삭제, `deleteTrip` (`service/TripService.java:274,310,568,738,114`), `admin/action/DeleteTripAction` | SavedPlace 연결이 생기거나 없어지면 같은 영상 카드 숨김/재등장; 빈 여행 생성·제목/날짜 변경은 영상 연결에 영향 없음 |
+| `ProcessingJobLifecycleService.completeAnalysis`, `markDone`, 제목·상태 변경 (`service/ProcessingJobLifecycleService.java:99,221`), `ItineraryGenerationService` | 저장 장소 교체, 최신 DONE 분석 ID·제목 변경. 실패/진행 중 최신 분석은 완료 분석을 대체하지 않음 |
+| `PlacesController` 장소 삭제 (`controller/PlacesController.java:211`), 분석 중 장소 저장 (`service/ProcessingJobLifecycleService.java:88,109,118`) | 여행 장소와 SavedPlace의 연결 존재 여부가 바뀌면 카드 숨김 판단 변경. 단순 저장 장소 수가 아니라 초안 JSON이 placeCount 기준 |
+| `PlaceRelocateService.relocate/markListedDrafts` (`service/PlaceRelocateService.java:43,58`) | 좌표 변경 및 자동/대체 초안의 placesChangedAt 표시. 목록 DTO에는 이 표시가 없고 상세 DTO의 placesChanged로 안내 띠를 유지 |
+| `OrphanedJobRecoveryService` (`service/OrphanedJobRecoveryService.java:81`) | 멈춘 초안을 FAILED로 바꾸면 목록에서 제외 |
+| `UserAccountService.withdraw` (`service/UserAccountService.java:102,105`) 및 관리자 계정 삭제 | 사용자 데이터 삭제, 기존 KnownUsers 탈퇴 처리 유지 |
+
+경로의 앞부분은 `src/main/java/com/trova/backend/`다. #151 관련 `findListedForPlacesChangeByUser`, `markListedDrafts`, 상세 응답의 placesChanged/currentJobIds는 변경하지 않았다. 다시 짠 초안도 홈에 포함하며 최신 DONE 분석 선택, 없는 작업 fallback, URL 별칭, 여행 제외 후 10개 제한, JSON 오류 시 null을 유지한다.
+
+### 검증과 한계
+
+- 새 회귀 테스트: SQL 수·엔티티 수, 이전 엔티티 경로와 전체 DTO/순서 동등성, 응답 10개 경계, READY 장소 수/잘못된 JSON, 자동/대체/직접/타 사용자 초안, 최신 DONE/실패 분석·없는 영상, 빈 목록 뒤 생성·분석 완료·닫기, 여행 연결·저장 장소 삭제·여행 삭제 직후 반영.
+- 기존 `TripDraftAutoControllerTest`, `TripDraftAutoQueryCountTest`, `PlaceRelocateServiceTest`, `PlaceRelocateServiceIntegrationTest` 집중 실행 통과. #151의 자동/대체 초안 표시와 승인·닫힘·실패·타 사용자 제외를 포함한다.
+- 첫 전체 실행: 1,235개 중 5개 실패·6개 건너뜀. 동등성 비교 3개는 JSON 내용은 같지만 Java Long 노드와 HTTP 파싱 Integer 노드를 직접 비교한 테스트 오류였다. 양쪽 모두 JSON 직렬화 후 파싱해 비교하도록 수정했다. 나머지 2개는 기존 ApiSessionCreationIntegrationTest의 H2 USERS 테이블 없음으로, 새 컨텍스트가 캐시에서 기존 컨텍스트를 밀어내며 공유 testdb의 create-drop 수명과 간섭했다. 새 테스트를 P2의 독립 H2/동일 Spring 컨텍스트에 합쳐 추가 컨텍스트를 만들지 않게 했다(운영 설정·다른 테스트 변경 없음).
+- 전체 결과: 1,235개 중 1,229개 통과·기존 조건부 건너뜀 6개·실패/오류 0개(JUnit XML 합산), 새 테스트 4개 모두 통과; `BUILD SUCCESSFUL in 4m 5s`, `8 actionable tasks: 6 executed, 2 up-to-date`
+- P1·P2와 같은 WSL JDK 21.0.13+9와 Gradle 캐시로 Wrapper main의 `test build --offline`을 실행했다. 임시 init script는 산출물 위치만 `/tmp/trova-perf-p3-runtime/build`로 지정했다. CRLF `gradlew` 수정, 테스트 제외, 의존성·전역 설정 변경은 없다. 명령: `java -classpath gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain test build --init-script build/p3-wsl.init.gradle --console=plain --offline`.
+- 루트 `.env`·운영 DB/서버·개발 DB 계정·로컬 8080·Gemini는 사용하지 않았다. 머지·배포하지 않는다.
+- SQL 수는 고정돼도 읽는 행 수는 사용자 이력에 비례하고 후보 초안의 JSON도 전부 전송된다. 추후 필요하면 페이지/최신 영상 키 저장을 별도로 검토한다. 이번 H2 수치를 운영 p95 감소나 PostgreSQL 실행 계획 개선으로 환산하지 않는다.

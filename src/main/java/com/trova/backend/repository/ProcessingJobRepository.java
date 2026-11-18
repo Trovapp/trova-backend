@@ -22,6 +22,10 @@ public interface ProcessingJobRepository extends JpaRepository<ProcessingJob, Lo
     // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
     List<ProcessingJob> findByUserIdAndStatusIn(Long userId, List<JobStatus> statuses);
     List<ProcessingJob> findByUserIdOrderByCreatedAtDescIdDesc(Long userId);
+
+    @Query("select new com.trova.backend.repository.AutoDraftJobRow(j.id, j.sourceUrl, j.title, j.status) "
+            + "from ProcessingJob j where j.user.id = :userId")
+    List<AutoDraftJobRow> findAutoDraftJobsByUserId(@Param("userId") Long userId);
     List<ProcessingJob> findByUserAndSourceUrlAndStatusIn(User user, String sourceUrl, List<JobStatus> statuses);
     boolean existsByUserAndSourceUrlAndIdGreaterThan(User user, String sourceUrl, Long id);
     Optional<ProcessingJob> findByIdAndUser(Long id, User user);

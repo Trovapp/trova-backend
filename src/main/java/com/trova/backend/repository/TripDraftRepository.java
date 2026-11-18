@@ -48,6 +48,11 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
             + "and d.dismissedAt is null and d.status in :statuses order by d.createdAt desc")
     List<TripDraft> findListedByUserId(@Param("userId") Long userId, @Param("statuses") List<TripDraftStatus> statuses);
 
+    @Query("select new com.trova.backend.repository.AutoDraftRow(d.id, d.status, d.jobIds, d.days, d.createdAt, d.draftJson) "
+            + "from TripDraft d where d.user.id = :userId and (d.autoCreated = true or d.replacesDraftId is not null) "
+            + "and d.dismissedAt is null and d.status in :statuses order by d.createdAt desc")
+    List<AutoDraftRow> findListedRowsByUserId(@Param("userId") Long userId, @Param("statuses") List<TripDraftStatus> statuses);
+
     // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
     List<TripDraft> findByUserIdAndAutoCreatedTrueAndDismissedAtIsNullAndStatusInOrderByCreatedAtDesc(
             Long userId, List<TripDraftStatus> statuses);
