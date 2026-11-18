@@ -1,6 +1,5 @@
 package com.trova.backend.replan;
 
-import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.TransportMode;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripPlace;
@@ -8,7 +7,6 @@ import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.AlternativeCandidate;
 import com.trova.backend.recommendation.AlternativeFilter;
 import com.trova.backend.recommendation.AlternativeFinderService;
-import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.service.ApiCallLogService;
 import org.bsc.langgraph4j.CompileConfig;
@@ -72,7 +70,6 @@ public class TripReplanGraph {
             2 * MAX_TARGETS + 5 + MAX_TARGETS * MAX_CANDIDATE_TRIES + 15; // = 70 (MAX_TARGETS=10, MAX_CANDIDATE_TRIES=3 기준)
 
     private final AlternativeFinderService alternativeFinderService;
-    private final ItineraryRepository itineraryRepository;
     private final TripPlaceRepository tripPlaceRepository;
     private final ApiCallLogService apiCallLogService;
     private final CompiledGraph<TripReplanState> compiledGraph;
@@ -92,12 +89,10 @@ public class TripReplanGraph {
 
     public TripReplanGraph(
             AlternativeFinderService alternativeFinderService,
-            ItineraryRepository itineraryRepository,
             TripPlaceRepository tripPlaceRepository,
             ApiCallLogService apiCallLogService
     ) {
         this.alternativeFinderService = alternativeFinderService;
-        this.itineraryRepository = itineraryRepository;
         this.tripPlaceRepository = tripPlaceRepository;
         this.apiCallLogService = apiCallLogService;
         try {

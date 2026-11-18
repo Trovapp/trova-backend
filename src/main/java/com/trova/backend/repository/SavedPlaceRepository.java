@@ -31,4 +31,8 @@ public interface SavedPlaceRepository extends JpaRepository<SavedPlace, Long> {
     List<SavedPlace> findByProcessingJob(ProcessingJob processingJob);
     List<SavedPlace> findByProcessingJobAndDayNumberOrderByOrderInDayAsc(ProcessingJob processingJob, Integer dayNumber);
     void deleteByUser(User user);
+
+    // 작업별 EAGER 추가 조회 없이 같은 영상의 재분석 결과를 한 번에 읽는다.
+    @EntityGraph(attributePaths = {"processingJob", "processingJob.user", "user"})
+    List<SavedPlace> findByProcessingJobIn(List<ProcessingJob> processingJobs);
 }

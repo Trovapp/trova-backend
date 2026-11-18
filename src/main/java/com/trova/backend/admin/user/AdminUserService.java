@@ -20,10 +20,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -98,12 +100,18 @@ public class AdminUserService {
         if (user == null) {
             throw AdminActionException.notFound();
         }
+        // 같은 사용자의 ID 내림차순 상위 목록이므로, 더 큰 ID의 같은 링크는 반드시 앞에 있다.
+        // 상태로 거르지 않아 성공·처리 중인 새 작업도 이전 실패의 재시도를 막는다.
+        Set<String> seenUrls = new HashSet<>();
         List<JobItem> recentJobs = entityManager.createQuery(
                         "select j from ProcessingJob j where j.user = :u order by j.id desc", ProcessingJob.class)
                 .setParameter("u", user).setMaxResults(RECENT_JOBS).getResultList().stream()
-                .map(j -> new JobItem(j.getId(), j.getStatus(),
-                        j.getStatus() == JobStatus.FAILED ? FailureReason.classify(j.getErrorMessage()) : null,
-                        j.getCreatedAt(), retryJobAction.isRetryable(j)))
+                .map(j -> {
+                    boolean latest = seenUrls.add(j.getSourceUrl());
+                    return new JobItem(j.getId(), j.getStatus(),
+                            j.getStatus() == JobStatus.FAILED ? FailureReason.classify(j.getErrorMessage()) : null,
+                            j.getCreatedAt(), retryJobAction.isRetryable(j, latest));
+                })
                 .toList();
         List<TripItem> trips = entityManager.createQuery(
                         "select t from Trip t where t.user = :u order by t.id desc", Trip.class)

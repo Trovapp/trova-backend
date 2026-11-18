@@ -42,6 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -151,7 +152,7 @@ class TripShareLinkControllerTest {
         Trip trip = trip(owner(), 1);
         mockMvc.perform(get("/api/trips/{id}/share-link", trip.getId())
                         .with(loginAs("trip-share-owner", "소유자")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk()).andExpect(content().string("null"));
 
         String token = createLink(trip);
 
@@ -251,7 +252,7 @@ class TripShareLinkControllerTest {
                 .andExpect(status().isNotFound());
         mockMvc.perform(get("/api/trips/{id}/share-link", trip.getId())
                         .with(loginAs("trip-share-owner", "소유자")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk()).andExpect(content().string("null"));
         mockMvc.perform(delete("/api/trips/{id}/share-link", trip.getId())
                         .with(loginAs("trip-share-owner", "소유자")))
                 .andExpect(status().isNotFound());

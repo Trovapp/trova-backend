@@ -2,6 +2,7 @@ package com.trova.backend.controller;
 
 import com.trova.backend.admin.RequestRateLimiter;
 import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.TripShareLink;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.ItineraryRepository;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +29,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class TripShareLinkController {
@@ -77,10 +81,12 @@ public class TripShareLinkController {
     }
 
     @GetMapping("/api/trips/{id}/share-link")
-    public ResponseEntity<ShareLinkResponse> getShareLink(Authentication authentication, @PathVariable Long id) {
+    public ResponseEntity<?> getShareLink(Authentication authentication, @PathVariable Long id) {
         return ownedTrip(authentication, id)
-                .flatMap(shareLinkService::getActive)
-                .map(link -> ResponseEntity.ok(toResponse(link)))
+                .<ResponseEntity<?>>map(trip -> shareLinkService.getActive(trip)
+                        .<ResponseEntity<?>>map(link -> ResponseEntity.ok(toResponse(link)))
+                        // 앱은 성공 응답을 res.json()으로 읽으므로 빈 본문 대신 JSON null을 보낸다.
+                        .orElseGet(() -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("null")))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -151,9 +157,11 @@ public class TripShareLinkController {
     }
 
     private PublicTripResponse toPublicResponse(Trip trip) {
+        Map<Long, List<TripPlace>> placesByDay = tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip).stream()
+                .collect(Collectors.groupingBy(place -> place.getItinerary().getId()));
         List<PublicDay> days = itineraryRepository.findByTripOrderByDay(trip).stream()
                 .map(itinerary -> new PublicDay(itinerary.getDay(), itinerary.getDate(),
-                        tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary).stream()
+                        placesByDay.getOrDefault(itinerary.getId(), List.of()).stream()
                                 .map(place -> new PublicPlace(
                                         place.getPlaceName(), place.getRegion(), place.getCategory(),
                                         place.getLatitude(), place.getLongitude(), place.getAddress(), place.getPhone(),

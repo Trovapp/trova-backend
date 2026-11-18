@@ -1,9 +1,17 @@
 package com.trova.backend.controller;
 
 import com.trova.backend.service.DailyQuotaService;
-import com.trova.backend.entity.*;
+import com.trova.backend.entity.Itinerary;
+import com.trova.backend.entity.Place;
+import com.trova.backend.entity.SavedPlace;
+import com.trova.backend.entity.TransportMode;
+import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.TripPlace;
+import com.trova.backend.entity.User;
 import com.trova.backend.pipeline.ReviewSummary;
 import com.trova.backend.recommendation.AlternativeFinderService;
+import com.trova.backend.recommendation.AlternativeCandidate;
+import com.trova.backend.recommendation.AlternativeFilter;
 import com.trova.backend.recommendation.GapRecommendationService;
 import com.trova.backend.recommendation.PlaceReviewService;
 import com.trova.backend.repository.ItineraryRepository;
@@ -15,15 +23,25 @@ import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.TripService;
 import com.trova.backend.service.WeatherRecoveryService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 public class TripController {
@@ -116,8 +134,8 @@ public class TripController {
             // 많이 나온 지역 순, 같으면 먼저 나온 지역(일차·방문 순서) — 최대 2개("제주", "김해·부산").
             Map<String, Long> counts = placeRegions.stream()
                     .filter(r -> r != null && !r.isBlank())
-                    .collect(java.util.stream.Collectors.groupingBy(r -> r, java.util.LinkedHashMap::new,
-                            java.util.stream.Collectors.counting()));
+                    .collect(Collectors.groupingBy(r -> r, LinkedHashMap::new,
+                            Collectors.counting()));
             List<String> regions = counts.entrySet().stream()
                     .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                     .limit(2)
@@ -151,7 +169,7 @@ public class TripController {
             Double distanceToNextKm, Integer estimatedTravelMinutes,
             Boolean isCongestionAvailable, String congestionLevel, String recommendationReason
     ) {
-        static AlternativeCandidateResponse from(com.trova.backend.recommendation.AlternativeCandidate c) {
+        static AlternativeCandidateResponse from(AlternativeCandidate c) {
             return new AlternativeCandidateResponse(
                     c.placeId(), c.googlePlaceId(), c.name(), c.category(), c.rating(), c.userRatingCount(),
                     c.latitude(), c.longitude(), c.address(), c.distanceToNextKm(), c.estimatedTravelMinutes(),
@@ -271,7 +289,7 @@ public class TripController {
 
     private TripDetailResponse toDetail(Trip trip) {
         Map<Long, List<TripPlace>> placesByDay = tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip).stream()
-                .collect(java.util.stream.Collectors.groupingBy(place -> place.getItinerary().getId()));
+                .collect(Collectors.groupingBy(place -> place.getItinerary().getId()));
         List<ItineraryResponse> days = itineraryRepository.findByTripOrderByDay(trip).stream()
                 .map(itinerary -> new ItineraryResponse(
                         itinerary.getId(), itinerary.getDay(), itinerary.getDate(),
@@ -422,14 +440,16 @@ public class TripController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /** 이 영상으로 이미 만든 여행 — 앱이 "여행으로 만들기" 대신 "만든 여행 보기"를 보여줄 때 쓴다. 없으면 404. */
+    /** 이 영상으로 이미 만든 여행. 소유한 영상에 아직 여행이 없으면 JSON null, 없는 영상·타인은 404. */
     @GetMapping("/api/places/videos/{jobId}/trip")
-    public ResponseEntity<TripResponse> getVideoTrip(Authentication authentication, @PathVariable Long jobId) {
+    public ResponseEntity<?> getVideoTrip(Authentication authentication, @PathVariable Long jobId) {
         User user = currentUserService.resolve(authentication);
         return processingJobRepository.findById(jobId)
                 .filter(job -> job.getUser().getId().equals(user.getId()))
-                .flatMap(job -> tripService.findExistingTripForVideo(user, job))
-                .map(trip -> ResponseEntity.ok(TripResponse.from(trip)))
+                .<ResponseEntity<?>>map(job -> tripService.findExistingTripForVideo(user, job)
+                        .<ResponseEntity<?>>map(trip -> ResponseEntity.ok(TripResponse.from(trip)))
+                        // 빈 본문은 출시 앱의 res.json()에서 파싱 오류가 된다.
+                        .orElseGet(() -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("null")))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -518,7 +538,7 @@ public class TripController {
                 return ResponseEntity.badRequest().build();
             }
         }
-        var filter = new com.trova.backend.recommendation.AlternativeFilter(
+        AlternativeFilter filter = new AlternativeFilter(
                 category, indoor, maxDistanceKm, maxTravelMinutes, mode);
         return alternativeFinderService.findAlternatives(user, id, filter)
                 .map(candidates -> ResponseEntity.ok(candidates.stream().map(AlternativeCandidateResponse::from).toList()))

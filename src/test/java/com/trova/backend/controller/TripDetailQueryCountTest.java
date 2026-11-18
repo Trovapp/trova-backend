@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,7 +80,7 @@ class TripDetailQueryCountTest {
         List<Long> impactCounts = new ArrayList<>();
         for (int days : new int[] {1, 3, 5, 7}) {
             int[] counts = new int[days];
-            java.util.Arrays.fill(counts, 2);
+            Arrays.fill(counts, 2);
             Trip trip = fixture(counts);
             detailCounts.add(detailStatements(trip, days));
             deleteTrip.preview(trip.getId(), 999L);
@@ -98,7 +99,7 @@ class TripDetailQueryCountTest {
         fixture(3, 3);
         for (int days : new int[] {1, 3, 5, 7}) {
             int[] counts = new int[days];
-            java.util.Arrays.fill(counts, 2);
+            Arrays.fill(counts, 2);
             Trip trip = fixture(counts);
             List<String> expected = new ArrayList<>();
             for (int day = 1; day <= days; day++) {
