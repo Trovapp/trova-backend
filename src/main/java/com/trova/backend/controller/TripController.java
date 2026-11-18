@@ -270,10 +270,12 @@ public class TripController {
     }
 
     private TripDetailResponse toDetail(Trip trip) {
+        Map<Long, List<TripPlace>> placesByDay = tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip).stream()
+                .collect(java.util.stream.Collectors.groupingBy(place -> place.getItinerary().getId()));
         List<ItineraryResponse> days = itineraryRepository.findByTripOrderByDay(trip).stream()
                 .map(itinerary -> new ItineraryResponse(
                         itinerary.getId(), itinerary.getDay(), itinerary.getDate(),
-                        tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary).stream()
+                        placesByDay.getOrDefault(itinerary.getId(), List.of()).stream()
                                 .map(TripPlaceResponse::from)
                                 .toList()))
                 .toList();
