@@ -113,6 +113,23 @@ java -classpath gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapp
   test build --init-script build/p2-wsl.init.gradle --console=plain
 ```
 
+## 배포
+
+P1(#463)·P2(#465)·P3(#467)를 한 번에 운영에 반영했다. 직전 운영 배포는 2d52505(2026-11-17).
+
+| 항목 | 값 |
+|---|---|
+| 배포 시각 (KST) | 2026-11-18 21:36:06 시작 → 21:36:51 재시작 → 21:39:05 UP 확인 (전체 180초) |
+| 커밋 | `523308a` (origin/main과 같음, 깨끗한 작업 폴더) |
+| 방법 | devflow `deploy.sh` (빌드 → 사전 확인 → 전송·해시 비교 → 백업 → 교체·재시작 → UP 대기 → 확인) |
+| 사전 확인 | 운영 진행 중 작업(영상 분석·일정 초안 PENDING/PROCESSING) 0건 |
+| 해시 | 로컬·서버 일치 (`178d83ed4f99a29e`) |
+| UP까지 | 재시작 후 134초 |
+| 백업 | `/opt/trova-backend/app.jar.bak-20261118-213606` |
+| 배포 후 확인 | devflow 3개 통과(인증 없는 공유 요청 401, 세션 쿠키 0개, 자동 초안 목록 401). 추가로 `/actuator/health` UP, 인증 없는 `GET /api/trips/1`·`/api/places/videos/1/trip`·`/api/trips/1/share-link`·`/api/trip-drafts/auto` 모두 401 |
+| 직후 메모리 | 이번 작업에서 서버 접속 측정은 하지 않음 — Grafana 패널 29에서 따로 확인 |
+| 되돌리기 | 하지 않음 |
+
 ## 배포 전/후 비교 (배포 뒤 작성)
 
 같은 길이의 관찰 구간, 요청 수·상태 분포·서버 부하를 함께 기록한다. 이번 PR에서는 배포하거나 운영 API에 테스트 요청을 보내지 않았다.
