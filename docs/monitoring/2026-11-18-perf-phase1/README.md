@@ -133,6 +133,8 @@ java -classpath gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapp
 
 ## P3 자동 초안 목록 조회 (#466)
 
+PR: [#467](https://github.com/Trovapp/trova-backend/pull/467).
+
 ### 분석과 기준선
 
 대상은 홈·내 여행·영상 기록에서 호출하는 `GET /api/trip-drafts/auto`다. 요청에서 전달된 운영 p95 약 351ms는 이번 작업에서 재측정하지 않았다. 화면 조작 도구가 제공되지 않아 허용된 예외에 따라 Chrome/Grafana 캡처는 건너뛰었다. 새 캡처 파일·운영 API 호출·운영 DB/서버 접근은 없다.
