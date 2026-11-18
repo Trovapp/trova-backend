@@ -47,6 +47,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -695,12 +696,13 @@ class TripControllerTest {
     }
 
     @Test
-    void 영상으로_만든_여행_조회_없으면_404() throws Exception {
+    void 영상으로_만든_여행_조회_없으면_200_JSON_null() throws Exception {
         User me = userRepository.save(new User("google", "video-trip-2", "영상유저2", null));
         ProcessingJob job = videoJob(me, "https://youtu.be/CtrlNone02");
 
         mockMvc.perform(get("/api/places/videos/" + job.getId() + "/trip").with(loginAs("video-trip-2", "영상유저2")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk())
+                .andExpect(content().string("null"));
     }
 
     @Test

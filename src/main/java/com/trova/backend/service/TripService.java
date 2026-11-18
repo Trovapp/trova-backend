@@ -689,10 +689,11 @@ public class TripService {
      */
     public Optional<Trip> findExistingTripForVideo(User user, ProcessingJob job) {
         String key = VideoKey.of(job.getSourceUrl());
-        List<SavedPlace> places = processingJobRepository.findByUserOrderByCreatedAtDescIdDesc(user).stream()
+        List<ProcessingJob> matchingJobs = processingJobRepository.findByUserOrderByCreatedAtDescIdDesc(user).stream()
                 .filter(candidate -> VideoKey.of(candidate.getSourceUrl()).equals(key))
-                .flatMap(candidate -> savedPlaceRepository.findByProcessingJob(candidate).stream())
                 .toList();
+        List<SavedPlace> places = matchingJobs.isEmpty() ? List.of()
+                : savedPlaceRepository.findByProcessingJobIn(matchingJobs);
         return findExistingTripForSavedPlaces(places)
                 .filter(trip -> trip.getUser().getId().equals(user.getId()));
     }

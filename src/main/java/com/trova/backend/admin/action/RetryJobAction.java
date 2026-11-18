@@ -88,6 +88,11 @@ public class RetryJobAction implements AdminActionHandler {
         return isRetryableFailure(job) && isLatest(job);
     }
 
+    /** 같은 사용자·링크의 최신 여부를 이미 확인한 목록 조회용. 실행에서는 DB를 다시 확인한다. */
+    public boolean isRetryable(ProcessingJob job, boolean latest) {
+        return isRetryableFailure(job) && latest;
+    }
+
     private static boolean isRetryableFailure(ProcessingJob job) {
         return job.getStatus() == JobStatus.FAILED && RETRYABLE.contains(FailureReason.classify(job.getErrorMessage()));
     }

@@ -9,7 +9,6 @@ import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.AlternativeCandidate;
 import com.trova.backend.recommendation.AlternativeFilter;
 import com.trova.backend.recommendation.AlternativeFinderService;
-import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +32,6 @@ import static org.mockito.Mockito.*;
 class TripReplanGraphTest {
 
     @Mock private AlternativeFinderService alternativeFinderService;
-    @Mock private ItineraryRepository itineraryRepository;
     @Mock private TripPlaceRepository tripPlaceRepository;
     @Mock private ApiCallLogService apiCallLogService;
 
@@ -43,7 +41,7 @@ class TripReplanGraphTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        graph = new TripReplanGraph(alternativeFinderService, itineraryRepository, tripPlaceRepository, apiCallLogService);
+        graph = new TripReplanGraph(alternativeFinderService, tripPlaceRepository, apiCallLogService);
         user = new User("google", "u1", "테스트유저", null);
         setId(user, 1L);
         trip = new Trip(user, "테스트 여행", LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 1));
