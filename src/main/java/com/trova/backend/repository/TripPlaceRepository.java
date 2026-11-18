@@ -15,6 +15,13 @@ import java.util.Optional;
 public interface TripPlaceRepository extends JpaRepository<TripPlace, Long> {
     List<TripPlace> findByItineraryOrderByVisitOrder(Itinerary itinerary);
 
+    // 기본 EAGER 연관까지 함께 읽어 트랜잭션 밖에서도 일차별 추가 SELECT를 막는다.
+    @Query("select tp from TripPlace tp join fetch tp.itinerary i join fetch i.trip t join fetch t.user "
+            + "where t = :trip order by i.day, tp.visitOrder")
+    List<TripPlace> findByTripOrderByDayAndVisitOrder(@Param("trip") Trip trip);
+
+    long countByItinerary_Trip(Trip trip);
+
     // 여행 전체(모든 일차)의 장소 — 대안 후보에서 이미 여행에 있는 곳을 빼는 데 쓴다(#177).
     List<TripPlace> findByItinerary_Trip(Trip trip);
 

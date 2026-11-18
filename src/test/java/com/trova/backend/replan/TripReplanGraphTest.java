@@ -81,8 +81,7 @@ class TripReplanGraphTest {
         // 타겟 하나뿐이라 이웃은 장소1(이전)만 있고 다음은 없음.
         TripPlace neighbor = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
         TripPlace target = tripPlace(day1, 2L, 37.50, 127.00, "OUTDOOR", 2);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(neighbor, target));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(neighbor, target));
 
         // 1등 후보는 이웃과 40분 거리(도보 4km/h 기준 약 2.67km, 위도 1도≈111km로
         // 환산해 위도차 0.024도로 역산) — 충돌(30분 초과).
@@ -108,8 +107,7 @@ class TripReplanGraphTest {
         Itinerary day1 = itinerary(1);
         TripPlace neighbor = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
         TripPlace target = tripPlace(day1, 2L, 37.50, 127.00, "OUTDOOR", 2);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(neighbor, target));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(neighbor, target));
 
         // 3개 후보 전부 이웃과 40분 이상 거리.
         List<AlternativeCandidate> allFar = List.of(
@@ -131,8 +129,7 @@ class TripReplanGraphTest {
         Itinerary day1 = itinerary(1);
         TripPlace target1 = tripPlace(day1, 2L, 37.50, 127.00, "OUTDOOR", 1);
         TripPlace target2 = tripPlace(day1, 3L, 37.60, 127.10, "OUTDOOR", 2);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(target1, target2));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(target1, target2));
 
         when(alternativeFinderService.findAlternatives(eq(user), eq(2L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(List.of())); // target1: 후보 자체가 없음(즉시 실패, 좌표는 원래 그대로 남음)
@@ -152,8 +149,7 @@ class TripReplanGraphTest {
     void 실내인_장소는_indoorOnly_요청에서_타겟이_되지_않는다() throws Exception {
         Itinerary day1 = itinerary(1);
         TripPlace indoorPlace = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(indoorPlace));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(indoorPlace));
 
         TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
@@ -166,8 +162,7 @@ class TripReplanGraphTest {
     void space가_null인_장소는_보수적으로_제외된다() throws Exception {
         Itinerary day1 = itinerary(1);
         TripPlace untagged = tripPlace(day1, 1L, 37.50, 127.00, null, 1);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(untagged));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(untagged));
 
         TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 
@@ -183,8 +178,7 @@ class TripReplanGraphTest {
         for (int i = 1; i <= 15; i++) {
             places.add(tripPlace(day1, (long) i, 37.50 + i * 0.001, 127.00, "OUTDOOR", i));
         }
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(places);
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(places);
         when(alternativeFinderService.findAlternatives(any(), any(), any()))
                 .thenReturn(Optional.of(List.of()));
 
@@ -218,8 +212,7 @@ class TripReplanGraphTest {
             places.add(tripPlace(day1, i, 37.50, 127.00, "OUTDOOR", visitOrder++));
             places.add(tripPlace(day1, 100L + i, 37.50, 127.00, "INDOOR", visitOrder++));
         }
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(places);
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(places);
 
         AlternativeCandidate farCandidate = candidate(200L, 37.5240, 127.00);
         AlternativeCandidate nearCandidate = candidate(201L, 37.5060, 127.00);
@@ -256,9 +249,7 @@ class TripReplanGraphTest {
         // 2일차 첫 장소 — 타겟의 유일한 후보와 위도차 0.094도(약 156분)로 멀다.
         // 날짜 경계를 무시하면(버그) 이게 "다음 이웃"으로 취급돼 충돌 처리된다.
         TripPlace nextDayAnchor = tripPlace(day2, 3L, 37.60, 127.00, "INDOOR", 1);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1, day2));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(anchor1, target));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day2)).thenReturn(List.of(nextDayAnchor));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(anchor1, target, nextDayAnchor));
 
         // 후보를 1개만 준다 — 1일차 이전 장소(anchor1)와는 약 10분(충돌 없음).
         // 만약 2일차 첫 장소와의 크로스데이 비교가 남아있다면 이 유일한 후보가
@@ -285,8 +276,7 @@ class TripReplanGraphTest {
         // 왕복 보존을 검증한다.
         Itinerary day1 = itinerary(1);
         TripPlace target = tripPlace(day1, 1L, 37.50, 127.00, "OUTDOOR", 1);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(target));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(target));
 
         AlternativeCandidate fullCandidate = new AlternativeCandidate(
                 42L, "google-place-xyz", "테스트 카페", "cafe", 4.7, 321,
@@ -308,8 +298,7 @@ class TripReplanGraphTest {
         // ConversationToolExecutor와 같은 패턴(provider="internal")으로 기록하는지 검증한다.
         Itinerary day1 = itinerary(1);
         TripPlace indoorPlace = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(indoorPlace));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(indoorPlace));
 
         graph.run(user, trip, true, null);
 
@@ -325,8 +314,7 @@ class TripReplanGraphTest {
         // 그대로 쓰고 WALK를 전달하도록 고쳤는지 실제로 전달된 필터 값을 캡처해 검증한다.
         Itinerary day1 = itinerary(1);
         TripPlace target = tripPlace(day1, 1L, 37.50, 127.00, "OUTDOOR", 1);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(target));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(target));
 
         AlternativeCandidate onlyCandidate = candidate(21L, 37.501, 127.001);
         when(alternativeFinderService.findAlternatives(eq(user), eq(1L), any(AlternativeFilter.class)))
@@ -351,8 +339,7 @@ class TripReplanGraphTest {
         Itinerary day1 = itinerary(1);
         TripPlace neighbor = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
         TripPlace target = tripPlace(day1, 2L, 37.50, 127.00, "OUTDOOR", 2);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(neighbor, target));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(neighbor, target));
 
         AlternativeCandidate nullCoordCandidate = new AlternativeCandidate(
                 21L, "g-21", "대안21", "cafe", 4.5, 100, null, null, "서울", null, null, false, null, null);
@@ -371,8 +358,7 @@ class TripReplanGraphTest {
         Itinerary day1 = itinerary(1);
         TripPlace target1 = tripPlace(day1, 1L, 37.50, 127.00, "OUTDOOR", 1);
         TripPlace target2 = tripPlace(day1, 2L, 37.60, 127.10, "OUTDOOR", 2);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(target1, target2));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(target1, target2));
         when(alternativeFinderService.findAlternatives(any(), any(), any()))
                 .thenReturn(Optional.of(List.of()));
 
@@ -396,8 +382,7 @@ class TripReplanGraphTest {
         // 카테고리 매칭 기반 전체 재추천이라 실내/실외 구분 없이 좌표만 있으면 타겟이다.
         Itinerary day1 = itinerary(1);
         TripPlace indoorPlace = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(indoorPlace));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(indoorPlace));
         when(alternativeFinderService.findAlternatives(eq(user), eq(1L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(List.of(candidate(21L, 37.501, 127.001))));
 
@@ -411,8 +396,7 @@ class TripReplanGraphTest {
     void allPlaces_요청에서는_space가_null인_장소도_좌표만_있으면_타겟이_된다() throws Exception {
         Itinerary day1 = itinerary(1);
         TripPlace untagged = tripPlace(day1, 1L, 37.50, 127.00, null, 1);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(untagged));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(untagged));
         when(alternativeFinderService.findAlternatives(eq(user), eq(1L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(List.of(candidate(21L, 37.501, 127.001))));
 
@@ -426,8 +410,7 @@ class TripReplanGraphTest {
         Itinerary day1 = itinerary(1);
         // tripPlace 헬퍼는 category="cafe"로 장소를 만든다.
         TripPlace target = tripPlace(day1, 1L, 37.50, 127.00, "OUTDOOR", 1);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(target));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(target));
         when(alternativeFinderService.findAlternatives(eq(user), eq(1L), any(AlternativeFilter.class)))
                 .thenReturn(Optional.of(List.of(candidate(21L, 37.501, 127.001))));
 
@@ -442,8 +425,7 @@ class TripReplanGraphTest {
     void onProgress가_null이어도_예외없이_동작한다() throws Exception {
         Itinerary day1 = itinerary(1);
         TripPlace indoorPlace = tripPlace(day1, 1L, 37.50, 127.00, "INDOOR", 1);
-        when(itineraryRepository.findByTripOrderByDay(trip)).thenReturn(List.of(day1));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(day1)).thenReturn(List.of(indoorPlace));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(indoorPlace));
 
         TripReplanGraph.ReplanOutcome outcome = graph.run(user, trip, true, null);
 

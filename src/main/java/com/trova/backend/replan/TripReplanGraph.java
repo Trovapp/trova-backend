@@ -126,11 +126,7 @@ public class TripReplanGraph {
     // 있는 독립적인 필터다.
     public ReplanOutcome run(User user, Trip trip, boolean indoorOnly, boolean allPlaces, TripReplanProgressListener onProgress) {
         long start = System.currentTimeMillis();
-        List<Itinerary> itineraries = itineraryRepository.findByTripOrderByDay(trip);
-        List<TripPlace> orderedPlaces = new ArrayList<>();
-        for (Itinerary itinerary : itineraries) {
-            orderedPlaces.addAll(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary));
-        }
+        List<TripPlace> orderedPlaces = tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip);
 
         // dayId(원본 Itinerary id)를 스냅샷에 함께 담아, 여러 날짜를 한 리스트로
         // 펼친 뒤에도 이웃 충돌 판정이 날짜 경계를 넘지 않도록 한다(예: 1일차

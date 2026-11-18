@@ -51,7 +51,7 @@ public class DeleteTripAction implements AdminActionHandler {
 
     private String impact(Trip trip) {
         List<Itinerary> days = itineraryRepository.findByTripOrderByDay(trip);
-        int places = days.stream().mapToInt(d -> tripPlaceRepository.findByItineraryOrderByVisitOrder(d).size()).sum();
+        long places = tripPlaceRepository.countByItinerary_Trip(trip);
         return "여행 1·일차 " + days.size() + "·장소 " + places;
     }
 }
