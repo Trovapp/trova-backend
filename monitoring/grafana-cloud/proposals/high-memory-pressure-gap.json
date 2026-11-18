@@ -3,13 +3,13 @@
   "groups": [
     {
       "orgId": 1,
-      "name": "trova-host",
+      "name": "trova-host-candidate",
       "folder": "",
       "interval": "1m",
       "rules": [
         {
-          "uid": "bg3yd8j9d5fr4a",
-          "title": "HighMemoryPressure",
+          "uid": "candidate-memory-pressure-gap",
+          "title": "[Candidate] HighMemoryPressure gap continuity",
           "condition": "C",
           "data": [
             {
@@ -94,7 +94,7 @@
             "service": "trova-backend",
             "severity": "warning"
           },
-          "isPaused": false
+          "isPaused": true
         }
       ]
     }

@@ -1,11 +1,13 @@
-# 0046. 메모리 압박 경보의 짧은 계산 공백을 마지막 유효값으로 잇는다
+# 0050. 메모리 압박 경보의 짧은 계산 공백을 마지막 유효값으로 잇는다
 
 - 상태: 대기 · 날짜: 2026-11-18 · 근거: #428, PR #433, [r28 검토](../monitoring/2026-11-18-memory-pressure-alert-review.md), 경보 개선 작업 요청
 - 사용자 승인·Cloud 반영 대기 중인 결정안이다. 현재 Cloud 정책(ADR 0041)을 변경하지 않았다.
 
 ## 결정
 
-후보는 `alerting/candidates/high-memory-pressure-gap.json`에만 두고 현재 Cloud 저장본 `rules-trova-host.json`은 유지한다. 후보 `HighMemoryPressure`의 PSI instant 계산값이 없을 때만 `last_over_time((원래 PSI 계산식)[5m:1m])`으로 보완한다. 유효한 현재 rate 값이 생기면 그것을 택한다. 20%·2분·평가 1분, NoData→OK·오류 KeepLast는 유지하고 후보에서 스왑 보조 B를 제거한다. 수집·앱 코드·유료 서비스는 추가하지 않는다.
+후보는 복구 경로 `alerting/` 밖의 `proposals/high-memory-pressure-gap.json`에만 두고 현재 Cloud 저장본 `rules-trova-host.json`은 유지한다. 후보 전용 UID `candidate-memory-pressure-gap`, 이름 `[Candidate] HighMemoryPressure gap continuity`와 `isPaused: true`를 사용한다. 운영 UID `bg3yd8j9d5fr4a`와 이름 `HighMemoryPressure`는 기존 규칙에만 남긴다. 후보 전용 그룹 `trova-host-candidate`도 운영 그룹과 구분한다. 자동 Cloud provisioning/import는 레포에 없지만, 수동 복구 때 폴더 전체를 읽는 실수를 막기 위해 경로와 식별자를 함께 분리한다. validator는 두 영역의 충돌·후보 재유입을 거부한다.
+
+후보의 PSI instant 계산값이 없을 때만 `last_over_time((원래 PSI 계산식)[5m:1m])`으로 보완한다. 유효한 현재 rate 값이 생기면 그것을 택한다. 20%·2분·평가 1분, NoData→OK·오류 KeepLast는 유지하고 후보에서 스왑 보조 B를 제거한다. 수집·앱 코드·유료 서비스는 추가하지 않는다. 승인 후 기존 규칙을 수정하고 export 갱신·후보 삭제·롤백하는 단계는 [runbook 7절](../runbooks/memory-pressure.md#7-승인-대기-변경-cloud-미반영)에 따른다. 후보의 UID·이름·그룹·일시중지 상태는 운영에 복사하지 않는다.
 
 승인 후 반영할 때의 배포·부하 측정 사일런스는 [runbook 승인 대기 절](../runbooks/memory-pressure.md#후보-승인반영-시-필요한-사일런스)을 따른다. ADR 0041의 다른 경보 정책과 ADR 0042의 수집 방식은 유지한다.
 

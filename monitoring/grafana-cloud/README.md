@@ -40,11 +40,15 @@ Grafana에 로그인한 브라우저에서 아래를 GET으로 받는다(조회�
 
 ## 승인 대기 후보
 
-`alerting/candidates/high-memory-pressure-gap.json`은 PSI 공백 보완 **미승인 후보**이며 Cloud 저장본·복구 입력이 아니다. 현재 규칙은 `alerting/rules-trova-host.json`에 그대로 보관한다. [검토·승인할 변경](../../docs/monitoring/2026-11-18-memory-pressure-alert-review.md) 승인 뒤 매니저가 지정 규칙 하나만 수정하고 실제 Cloud export로 현재 저장본을 갱신한다. 후보 파일은 자동 적용하지 않는다.
+`proposals/high-memory-pressure-gap.json`은 PSI 공백 보완 **미승인 후보**이며 Cloud 저장본·복구 입력이 아니다. 현재 규칙은 `alerting/rules-trova-host.json`에 그대로 보관한다. 후보는 복구 경로 `alerting/` 밖에 두어 폴더 전체를 재귀 수집해도 섞이지 않게 한다. 후보 전용 UID `candidate-memory-pressure-gap`, 이름 `[Candidate] HighMemoryPressure gap continuity`, 그룹 `trova-host-candidate`, `isPaused: true`를 사용하므로 더 넓은 경로를 실수로 import해도 운영 UID·그룹을 덮어쓰거나 같은 이름의 활성 경보를 만들지 않는다. 후보를 복구 폴더에 복사하거나 후보 전용 식별자로 Cloud 경보를 생성하지 않는다.
+
+[검토·승인할 변경](../../docs/monitoring/2026-11-18-memory-pressure-alert-review.md) 승인 뒤 매니저가 **기존 UID `bg3yd8j9d5fr4a`를 유지한 채** 수정한다. 식별자·일시중지 값을 통째 복사하지 않는 순서, export 갱신·후보 삭제와 롤백은 [runbook 7절](../../docs/runbooks/memory-pressure.md#7-승인-대기-변경-cloud-미반영)에 따른다.
+
+적용 경로 조사: 레포에는 Cloud `alerting/`을 자동 provisioning/import하는 CI·스크립트·마운트가 없다. `docker-compose.monitoring.yml`은 별도 로컬 경로 `monitoring/grafana/provisioning/`만 마운트하고 그곳의 provider는 대시보드만 읽는다. Cloud는 아래 수동 복구 절차를 사용한다. 따라서 문구로 하위 폴더를 제외하던 방식 대신 경로 자체를 분리하고 식별자도 나눴다.
 
 ## 되돌리기·복구
 
-**`alerting/candidates/` 아래 파일은 복구 대상에서 제외하며 PUT·Import하지 않는다.** 아래 경보 복구는 `alerting/rules-*.json`의 현재 저장본만 대상으로 한다. 재귀 glob으로 후보까지 수집하지 않는다.
+**`proposals/` 아래 파일은 복구 대상에서 제외하며 PUT·Import하지 않는다.** 아래 경보 복구는 `alerting/rules-*.json`의 현재 저장본만 대상으로 한다. `alerting/` 전체를 수집해도 후보가 없어야 하며 검증 스크립트는 후보의 재유입과 UID/title 중복을 거부한다.
 
 - 대시보드: Grafana → Dashboards → New → Import에 JSON을 넣는다(uid가 같으면 덮어쓴다).
 - 경보·정책·템플릿: Grafana provisioning API(`PUT /api/v1/provisioning/alert-rules/{uid}`, `PUT /api/v1/provisioning/policies`,
@@ -53,6 +57,6 @@ Grafana에 로그인한 브라우저에서 아래를 GET으로 받는다(조회�
 
 ## 로컬 경보 검증
 
-`python3 monitoring/grafana-cloud/validate_host_alert.py` — JSON 참조·조건 검사와 설치된 `promtool`을 이용한 공백/복귀/빈 시계열 합성 검증. 로컬 `alerts.yml`은 별도이며 `promtool test rules monitoring/alerts.test.yml`로 검사한다. 실제 Cloud 전이·r28 원시 시계열 재생은 아니다.
+`python3 monitoring/grafana-cloud/validate_host_alert.py` — 저장본 UID/title 유일성, 후보 경로·별도 식별자·일시중지, JSON 참조·조건 검사와 설치된 `promtool`을 이용한 공백/복귀/빈 시계열 합성 검증. `python3 -m unittest discover -s monitoring/grafana-cloud -p 'test_validate_host_alert.py' -v`는 후보와 저장본 충돌·복구 경로 재유입 회귀를 검사한다. 로컬 `alerts.yml`은 별도이며 `promtool test rules monitoring/alerts.test.yml`로 검사한다. 실제 Cloud 전이·r28 원시 시계열 재생은 아니다.
 
 실패 대조군: `python3 monitoring/grafana-cloud/validate_host_alert.py --variant original`, `--variant max`는 각각 종료 코드 1이어야 한다. `python3 -O monitoring/grafana-cloud/validate_host_alert.py`도 같은 검사를 수행한다.

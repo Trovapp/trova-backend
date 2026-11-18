@@ -81,7 +81,7 @@ r28(2026-11-13): 외부 경보 15:40:50 → PSI Pending 15:49:10 → 15:51:10·1
 
 ## 7. 승인 대기 변경 (Cloud 미반영)
 
-위 1~6절은 현재 Cloud 규칙 기준이다. 별도 [후보 JSON](../../monitoring/grafana-cloud/alerting/candidates/high-memory-pressure-gap.json)은 현재 계산값이 없을 때만 최근 5분 안의 마지막 유효 PSI 계산값을 보완한다. 20%·2분 조건은 유지한다. 후보를 현재 규칙으로 복구하거나 승인 전에 PUT하지 않는다.
+위 1~6절은 현재 Cloud 규칙 기준이다. 별도 [후보 JSON](../../monitoring/grafana-cloud/proposals/high-memory-pressure-gap.json)은 현재 계산값이 없을 때만 최근 5분 안의 마지막 유효 PSI 계산값을 보완한다. 20%·2분 조건은 유지한다. 후보를 현재 규칙으로 복구하거나 승인 전에 PUT하지 않는다.
 
 ```promql
 (100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod", resource="memory", type="full"}[5m])))
@@ -98,5 +98,17 @@ last_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod
 - 부하 측정 사일런스는 기존 p95·Synthetic에 **HighMemoryPressure도 포함**한다. 무기한 사일런스는 금지한다. 이 변경 작업에서 실제 사일런스 생성이나 측정은 하지 않는다.
 - 알림의 값은 마지막 계산값일 수 있다. 원본 PSI가 비었는데 보완값이 높으면 회복으로 단정하지 않는다. 원시 rate 창 5분+보완 5분으로 오래된 압박이 약 10분 남을 수 있다. 유효한 낮은 rate 계산값이 생기면 우선한다. 4분 넘는 공백 뒤 첫 표본만으로는 rate가 없어, 다음 표본까지 약 1분은 오래된 보완값이 쓰일 수 있다.
 
+### 사용자 승인 뒤 기존 운영 규칙을 수정하는 순서
 
-정확한 Cloud 변경·롤백과 남은 위험은 [검토 보고서](../monitoring/2026-11-18-memory-pressure-alert-review.md), 결정안은 [ADR 0046](../adr/0046-memory-pressure-alert-gap-continuity.md)에 있다. 이 절의 수동 절차를 devflow·CLAUDE.md에 반영할지는 승인 뒤 후속 과제다.
+1. 사용자 승인 범위와 시간을 기록하고 위 사일런스를 설정한다. Cloud의 `trova-host` 그룹에서 UID **`bg3yd8j9d5fr4a`**, 이름 **`HighMemoryPressure`**인 규칙이 하나인지 확인한다. 다르면 작업을 중단하고 차이를 확인한다. 현재 규칙·그룹을 export해 변경 전 백업으로 보관하고 레포의 `alerting/rules-trova-host.json`과 비교한다. 차이가 있으면 Cloud 변경부터 확인하며 저장본으로 덮어쓰지 않는다.
+2. 로컬 검증·단위 테스트를 통과시킨다. 후보는 `proposals/`의 검토 자료다. 후보 전용 UID `candidate-memory-pressure-gap`와 이름 `[Candidate] HighMemoryPressure gap continuity`, `isPaused: true`는 오반영 방어용이므로 **운영 규칙으로 복사하지 않는다**. 후보 파일 전체·그룹 전체를 import하거나 새 경보를 만들지 않는다.
+3. Grafana Alerting에서 **기존 UID의 Edit**를 열어 후보의 `data`(A/C만 남기고 B 삭제), `condition`, `annotations`만 옮긴다. 운영 UID·이름·폴더·그룹·orgId·datasource UID·라벨·활성 상태를 유지한다. 20%·2분·평가 1분, NoData→OK·오류 KeepLast도 유지되는지 미리보기로 확인하고 저장한다. 이 절차는 UI 편집을 기준으로 하며 export JSON을 provisioning API의 개별 규칙 PUT body로 그대로 보내지 않는다(두 형식은 다르다).
+4. 저장 후 다시 조회해 UID `bg3yd8j9d5fr4a`의 A/C·PromQL·주석과 유지 항목을 대조한다. `HighMemoryPressure`가 하나이고 후보 전용 UID/이름의 경보가 없음을 확인한다. 평가 오류가 없고 새 원본 PSI 계산값 ≤20%, Normal 상태를 확인한다. Cloud의 공백/복귀 전이와 알림 전달은 승인된 확인 범위에서 별도 검증하고 결과를 남긴다. 보완 만료만으로 Normal이 된 것은 회복 확인이 아니다. 사일런스는 위 종료 조건에 따라 해제한다.
+5. 실제 Cloud 그룹을 `GET /api/v1/provisioning/folder/<실제 폴더 UID>/rule-groups/trova-host/export?format=json`으로 다시 받아 `alerting/rules-trova-host.json`을 갱신한다. 시크릿이 없는지 확인하고 반영 시각·승인·확인 결과를 기록한다. **반영과 확인이 끝난 뒤** `proposals/high-memory-pressure-gap.json`을 삭제하고, 후보가 존재함을 전제로 한 validator·테스트·문서도 실제 저장본 A/C 기준으로 함께 바꾼다. 후보를 단순 삭제해 깨진 검증을 남기지 않는다. 이 runbook 1~6절과 ADR 0050의 대기 상태도 실제 반영 내용에 맞춘다.
+
+### 되돌리기
+
+1. 오탐·평가 오류·예상 밖 전이가 생기면 종료 시각 있는 사일런스를 유지하고 사용자에게 보고한다. 1단계에서 받은 **변경 전 백업**을 기준으로 같은 UID `bg3yd8j9d5fr4a`를 Edit한다. A를 원래 PSI `rate(...[5m])` 식으로 되돌리고 B(스왑 쿼리)와 변경 전 주석을 복원한다. 운영 이름·폴더·그룹·라벨·활성 상태와 조건·정책을 확인한다. 새 경보를 만들거나 후보 UID를 운영 UID로 바꾸지 않는다.
+2. 같은 운영 규칙 하나만 존재하는지, A/B/C와 평가 오류 없음·최신 PSI·Normal 상태를 확인한다. Cloud를 다시 export해 저장본과 문서·validator·테스트를 되돌린 실제 상태에 맞춘다. 후보를 다시 검토한다면 `proposals/`에서만 별도 식별자·일시중지 상태로 복원한다. 결과를 기록하고 사일런스 종료 조건을 확인한다.
+
+정확한 Cloud 변경·롤백과 남은 위험은 [검토 보고서](../monitoring/2026-11-18-memory-pressure-alert-review.md), 결정안은 [ADR 0050](../adr/0050-memory-pressure-alert-gap-continuity.md)에 있다. 이 절의 수동 절차를 devflow·CLAUDE.md에 반영할지는 승인 뒤 후속 과제다.

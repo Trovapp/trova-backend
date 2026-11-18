@@ -4,6 +4,6 @@ Checking rules.yml
 
   SUCCESS
 
-candidate: JSON 참조 및 합성 PromQL 6개 시나리오 통과 (Cloud 엔진 검증 아님)
+candidate: 식별자·경로·JSON 참조 및 합성 PromQL 6개 시나리오 통과 (Cloud 엔진 검증 아님)
 
 exit_code=0

@@ -41,7 +41,7 @@ PSI **평가 결과** 공백은 15:51:10·15:54:10·15:59:10 전이에서 확인
 
 ## 추천 구현과 승인할 정확한 Cloud 변경
 
-`trova-host` 그룹, UID **bg3yd8j9d5fr4a**, `HighMemoryPressure`만 변경한다. **현재 Cloud 저장본 `alerting/rules-trova-host.json`은 원복·유지하고, 아직 반영하지 않은 후보는 `alerting/candidates/high-memory-pressure-gap.json`에 별도로 보관한다.** 후보는 복구 입력이 아니며 승인 전 PUT하지 않는다. 승인 후 매니저가 기존 Cloud 규칙과 차이를 확인하고 그 규칙 하나만 수정한다(폴더 UID가 비어 있는 export 파일 전체를 그대로 업로드하지 않는다).
+`trova-host` 그룹, UID **bg3yd8j9d5fr4a**, `HighMemoryPressure`만 변경한다. **현재 Cloud 저장본 `alerting/rules-trova-host.json`은 원복·유지하고, 아직 반영하지 않은 후보는 `proposals/high-memory-pressure-gap.json`에 별도로 보관한다.** 후보는 복구 경로 밖에 있고 전용 UID `candidate-memory-pressure-gap`·이름 `[Candidate] HighMemoryPressure gap continuity`·그룹 `trova-host-candidate`·일시중지 상태를 사용한다. 복구 입력이 아니며 PUT하지 않는다. 단계별 반영·export 갱신·후보 삭제·롤백은 [runbook 7절](../runbooks/memory-pressure.md#7-승인-대기-변경-cloud-미반영)에 기록했다. 승인 후 매니저가 기존 Cloud 규칙과 차이를 확인하고 그 규칙 하나만 수정한다(폴더 UID가 비어 있는 export 파일 전체를 그대로 업로드하지 않는다).
 
 1. A의 instant PromQL을 아래로 교체한다.
 
@@ -71,14 +71,15 @@ last_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod
 
 ## 로컬 검증 결과 (리뷰 반영 후)
 
-- `python3 monitoring/grafana-cloud/validate_host_alert.py`: 현재 저장본/후보 JSON 파싱, 쿼리 참조·`$values.<refId>` 및 `index $values "refId"` 주석 참조, 임계값·UID·라벨·정책 검사와 promtool 합성 **6개** 시나리오 통과. 검사는 `assert` 대신 명시적 조건 검사와 비정상 종료를 사용한다.
+- `python3 monitoring/grafana-cloud/validate_host_alert.py`: 현재 저장본/후보 JSON 파싱, 쿼리 참조·`$values.<refId>` 및 `index $values "refId"` 주석 참조, 저장본 UID/title 유일성·후보와의 충돌 방지·후보 전용 식별자/그룹·복구 경로 밖 위치·일시중지·임계값·라벨·정책 검사와 promtool 합성 **6개** 시나리오 통과. 검사는 `assert` 대신 명시적 조건 검사와 비정상 종료를 사용한다.
 - 높은 PSI→공백에서 원래 rate는 5분 시점에 값이 없지만 후보는 45%를 유지하고 경보 조건도 이어진다. 높은 값→낮은 값→공백에서는 6분 시점에 마지막 값 0%를 유지해야 한다. 원시 rate와 후보의 **실제 숫자**를 비교하며, 0/1만 비교하던 한계를 고쳤다.
 - 보완 창 경계 직전 8m59s에는 45%, 9m 경계 및 9m1s에는 표본 없음; 정상값 보완도 9m59s에는 0%, 10m 및 10m1s에는 표본 없음으로 단언한다. 빈 입력은 0m/10m 모두 결과 벡터가 비어야 한다(0값 한 개도 실패).
 - 높은 PSI 직후 133·146초 공백과 복귀 카운터 리셋을 구성했다. 두 경우 모두 공백 중 7분 평가에서는 경보가 유지된다. 이 정도 짧은 공백은 기존 rate 창에도 남으므로, 이 시나리오는 보완 연산 판별용이 아니라 사일런스 필요성을 확인한다. 높은 PSI 뒤 긴 공백을 사용하는 별도 시나리오가 보완 없는 식을 판별한다.
 - 4분 넘는 공백 뒤 6분 첫 복귀 표본에서 원시 rate 없음/후보 45%, 7분 두 번째 표본 뒤 후보 0%를 검사해 첫 표본 복귀와 유효 rate 복귀를 구분한다.
+- `python3 -m unittest discover -s monitoring/grafana-cloud -p 'test_validate_host_alert.py' -v`: **10개 테스트 통과**. 운영 및 다른 저장본과 후보의 UID/title 충돌, 저장본 간 중복, 후보 재유입·심볼릭 링크 우회, 후보 식별자·그룹·일시중지와 운영 식별자 보존을 검사한다.
 - `python3 -O monitoring/grafana-cloud/validate_host_alert.py`: 최적화 모드에서도 동일 검사 통과.
 - `promtool test rules monitoring/alerts.test.yml`: 기존 로컬 경보 테스트 통과(Cloud와 별개).
-- 이전 작업의 `./gradlew build -x test`는 **Java 테스트를 제외한 빌드만** 성공한 결과였다. 이는 `./gradlew build` 전체 검증 성공이 아니며 커밋 전 전체 빌드를 요구하는 CLAUDE.md를 충족하지 못했다. 이번 리뷰 수정에서는 **`./gradlew build`를 실제 실행해 테스트 포함 성공**했다(1분 55초). 운영 환경 파일을 사용하지 않았다.
+- 이전 작업의 `./gradlew build -x test`는 **Java 테스트를 제외한 빌드만** 성공한 결과였다. 이는 `./gradlew build` 전체 검증 성공이 아니며 커밋 전 전체 빌드를 요구하는 CLAUDE.md를 충족하지 못했다. 앞선 커밋 5f13c87의 리뷰 수정에서는 **`./gradlew build`를 실제 실행해 테스트 포함 성공**했다(1분 55초)는 기존 기록이다. 이번 식별자 충돌 정리·main rebase 작업에서는 Java 변경과 Gradle 실행을 하지 않았다. 운영 환경 파일을 사용하지 않았다.
 - `git diff --check`: 통과. 운영 접근·측정·Cloud API/UI 변경·push·PR 생성 없음.
 
 ### 실패 대조군 실행 출력
@@ -87,7 +88,7 @@ last_over_time((100 * sum(rate(host_pressure_stall_seconds_total{job="trova-prod
 
 ```text
 $ python3 monitoring/grafana-cloud/validate_host_alert.py --variant candidate
-candidate: JSON 참조 및 합성 PromQL 6개 시나리오 통과 (Cloud 엔진 검증 아님)
+candidate: 식별자·경로·JSON 참조 및 합성 PromQL 6개 시나리오 통과 (Cloud 엔진 검증 아님)
 exit_code=0
 
 $ python3 monitoring/grafana-cloud/validate_host_alert.py --variant original
@@ -105,6 +106,8 @@ max 변형은 정상 관측 0% 뒤 공백에서 과거 높은 60%를 선택해 �
 
 ### 변경 파일과 후속 과제
 
-현재 저장본 `monitoring/grafana-cloud/alerting/rules-trova-host.json`은 변경 전으로 원복했다. 후보는 `monitoring/grafana-cloud/alerting/candidates/high-memory-pressure-gap.json`에 두고 README 복구 절에서 후보 PUT·Import를 제외했다. `validate_host_alert.py`, runbook(현재 Cloud 본문과 승인 대기 절 분리), ADR 0046·목록(대기 상태·표준 절), 본 보고서와 대조군 출력 3개를 갱신했다.
+현재 저장본 `monitoring/grafana-cloud/alerting/rules-trova-host.json`은 변경 전으로 원복했다. 후보는 `monitoring/grafana-cloud/proposals/high-memory-pressure-gap.json`에 두고 README 복구 절에서 후보 PUT·Import를 제외했다. `validate_host_alert.py`, runbook(현재 Cloud 본문과 승인 대기 절 분리), ADR 0050·목록(대기 상태·표준 절), 본 보고서와 대조군 출력 3개를 갱신했다.
 
 사일런스 실행 단계는 runbook에만 두었다. **devflow 배포 절차·CLAUDE.md 반영은 승인 후 별도 후속 과제**이며 이번에는 수정하지 않았다. Cloud 반영·복구·사일런스 생성도 하지 않았다.
+
+main 최신화: `origin/main` e9ef8e8 위로 두 커밋을 rebase했다. ADR 목록 충돌 두 건은 main의 0046~0049와 메모리 경보 항목을 모두 보존해 해결했다. main이 이미 0046을 쓰므로 이 초안은 ADR 0050으로 옮기고 참조를 갱신했다. 운영 저장본은 수정하지 않았다.

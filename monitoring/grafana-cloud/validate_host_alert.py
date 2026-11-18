@@ -9,6 +9,13 @@ import subprocess
 import tempfile
 
 
+PRODUCTION_UID = 'bg3yd8j9d5fr4a'
+PRODUCTION_TITLE = 'HighMemoryPressure'
+CANDIDATE_UID = 'candidate-memory-pressure-gap'
+CANDIDATE_TITLE = '[Candidate] HighMemoryPressure gap continuity'
+CANDIDATE_PATH = Path('proposals/high-memory-pressure-gap.json')
+
+
 def require(condition, message):
     if not condition:
         raise ValueError(message)
@@ -25,19 +32,50 @@ def validate_references(rule):
     return queries
 
 
+def validate_identity_layout(root):
+    """복구 경로에는 현재 저장본만, 경로 밖 후보에는 별도 식별자만 허용한다."""
+    alerting = (root / 'alerting').resolve()
+    candidate_path = root / CANDIDATE_PATH
+    require(not candidate_path.resolve().is_relative_to(alerting), '후보는 alerting 밖에 있어야 합니다')
+    identities = {'uid': set(), 'title': set()}
+    for path in sorted(alerting.rglob('*.json')):
+        document = json.loads(path.read_text())
+        if not isinstance(document, dict):
+            continue  # templates.json은 규칙 그룹이 아닌 템플릿 배열이다.
+        for group in document.get('groups', []):
+            for rule in group.get('rules', []):
+                for field, seen in identities.items():
+                    value = rule[field]
+                    require(value not in seen, f'저장본 {field} 충돌: {value}')
+                    seen.add(value)
+                require(rule['uid'] != CANDIDATE_UID and rule['title'] != CANDIDATE_TITLE,
+                        '후보를 alerting 복구 경로에 두면 안 됩니다')
+    snapshot = json.loads((alerting / 'rules-trova-host.json').read_text())
+    current = snapshot['groups'][0]['rules'][0]
+    require(current['uid'] == PRODUCTION_UID and current['title'] == PRODUCTION_TITLE,
+            '운영 UID/title이 바뀌었습니다')
+    document = json.loads(candidate_path.read_text())
+    require(len(document['groups']) == 1 and len(document['groups'][0]['rules']) == 1,
+            '후보는 그룹 하나와 규칙 하나만 허용합니다')
+    group = document['groups'][0]
+    require(group['name'] == 'trova-host-candidate', '후보 전용 그룹이 필요합니다')
+    rule = group['rules'][0]
+    for field, seen in identities.items():
+        require(rule[field] not in seen, f'후보/저장본 {field} 충돌: {rule[field]}')
+    require(rule['uid'] == CANDIDATE_UID and rule['title'] == CANDIDATE_TITLE,
+            '후보 전용 UID/title이 필요합니다')
+    require(rule['isPaused'] is True, '후보는 일시중지 상태여야 합니다')
+    return current, group
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--variant', choices=['candidate', 'original', 'max'], default='candidate')
     args = parser.parse_args()
     root = Path(__file__).resolve().parent
-    for path in (root / 'alerting').rglob('*.json'):
-        json.loads(path.read_text())
-    snapshot = json.loads((root / 'alerting/rules-trova-host.json').read_text())
-    current = snapshot['groups'][0]['rules'][0]
+    current, group = validate_identity_layout(root)
     require(set(validate_references(current)) == {'A', 'B', 'C'}, '현재 Cloud 저장본 A/B/C가 바뀌었습니다')
     original = current['data'][0]['model']['expr']
-    document = json.loads((root / 'alerting/candidates/high-memory-pressure-gap.json').read_text())
-    group = document['groups'][0]
     rule = group['rules'][0]
     queries = validate_references(rule)
     require(set(queries) == {'A', 'C'}, '후보는 A/C 쿼리만 사용합니다')
@@ -45,7 +83,6 @@ def main():
     require(queries['C']['model']['conditions'][0]['evaluator'] == {'params': [20], 'type': 'gt'}, '임계값 불일치')
     require(rule['for'] == '2m' and group['interval'] == '1m', '지속/평가 주기 불일치')
     require(rule['noDataState'] == 'OK' and rule['execErrState'] == 'KeepLast', 'NoData/오류 정책 불일치')
-    require(rule['uid'] == current['uid'] == 'bg3yd8j9d5fr4a', 'UID 불일치')
     require(rule['labels'] == current['labels'], '라벨 불일치')
     require(queries['A']['model']['instant'] is True, 'A는 instant 쿼리여야 합니다')
     expression = queries['A']['model']['expr']
@@ -107,7 +144,7 @@ def main():
             'rule_files': ['rules.yml'], 'evaluation_interval': '1m', 'fuzzy_compare': True, 'tests': tests}))
         subprocess.run([promtool, 'check', 'rules', 'rules.yml'], cwd=folder, check=True)
         subprocess.run([promtool, 'test', 'rules', 'tests.yml'], cwd=folder, check=True)
-    print(f'{args.variant}: JSON 참조 및 합성 PromQL {len(tests)}개 시나리오 통과 (Cloud 엔진 검증 아님)')
+    print(f'{args.variant}: 식별자·경로·JSON 참조 및 합성 PromQL {len(tests)}개 시나리오 통과 (Cloud 엔진 검증 아님)')
 
 
 if __name__ == '__main__':
