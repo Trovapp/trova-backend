@@ -1,6 +1,6 @@
 # 1단계 성능 작업 기록 — 여행·영상·관리자 조회
 
-기록일: 2026-11-18. P1: [PR #463](https://github.com/Trovapp/trova-backend/pull/463), P2: [이슈 #464](https://github.com/Trovapp/trova-backend/issues/464).
+기록일: 2026-11-18. P1: [PR #463](https://github.com/Trovapp/trova-backend/pull/463), P2: [PR #465](https://github.com/Trovapp/trova-backend/pull/465), [이슈 #464](https://github.com/Trovapp/trova-backend/issues/464).
 아래 SQL 수는 **이 PC의 로컬 H2 실측**이고, Grafana 캡처는 **배포 전 운영 기준선**이다. SQL 감소를 운영 응답 시간 개선으로 환산하지 않는다.
 캡처는 P2 배포 전 스냅샷이며, 당시 운영 배포 SHA와 P1의 운영 반영 여부는 확인하지 않았다.
 
