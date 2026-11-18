@@ -1,17 +1,14 @@
 package com.trova.backend.controller;
 
-import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.TripDraft;
 import com.trova.backend.entity.TripDraftStatus;
 import com.trova.backend.entity.User;
-import com.trova.backend.planner.DraftGenerator;
 import com.trova.backend.queue.DraftJobQueue;
-import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.TripDraftRepository;
+import com.trova.backend.service.AutoDraftQueryService;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.TripDraftApprovalService;
 import com.trova.backend.service.TripPlannerService;
-import com.trova.backend.service.TripService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -35,21 +32,19 @@ public class TripDraftController {
     private final TripPlannerService tripPlannerService;
     private final TripDraftRepository tripDraftRepository;
     private final TripDraftApprovalService tripDraftApprovalService;
-    private final ProcessingJobRepository processingJobRepository;
-    private final TripService tripService;
+    private final AutoDraftQueryService autoDraftQueryService;
     // 초안 만들기는 대기열로(#396) — 운영은 Kafka라 만드는 중에 서버가 재시작돼도 다시 받아 끝까지 한다.
     private final DraftJobQueue draftJobQueue;
 
     public TripDraftController(CurrentUserService currentUserService, TripPlannerService tripPlannerService,
                                TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService,
-                               ProcessingJobRepository processingJobRepository, TripService tripService,
+                               AutoDraftQueryService autoDraftQueryService,
                                DraftJobQueue draftJobQueue) {
         this.currentUserService = currentUserService;
         this.tripPlannerService = tripPlannerService;
         this.tripDraftRepository = tripDraftRepository;
         this.tripDraftApprovalService = tripDraftApprovalService;
-        this.processingJobRepository = processingJobRepository;
-        this.tripService = tripService;
+        this.autoDraftQueryService = autoDraftQueryService;
         this.draftJobQueue = draftJobQueue;
     }
 
@@ -148,50 +143,9 @@ public class TripDraftController {
                                     String createdAt, Integer placeCount) {
     }
 
-    private static Integer placeCount(TripDraft draft) {
-        if (draft.getStatus() != TripDraftStatus.READY || draft.getDraftJson() == null) {
-            return null;
-        }
-        try {
-            return DraftGenerator.fromJson(draft.getDraftJson()).days().stream().mapToInt(d -> d.items().size()).sum();
-        } catch (RuntimeException e) {
-            return null;
-        }
-    }
-
-    private static final List<TripDraftStatus> AUTO_VISIBLE =
-            List.of(TripDraftStatus.PENDING, TripDraftStatus.PROCESSING, TripDraftStatus.READY);
-
-    private record DraftWithJob(TripDraft draft, ProcessingJob job) {
-    }
-
     @GetMapping("/api/trip-drafts/auto")
     public List<AutoDraftResponse> autoDrafts(Authentication authentication) {
-        Long userId = currentUserService.resolveUserId(authentication);
-        List<TripDraft> drafts = tripDraftRepository.findListedByUserId(userId, AUTO_VISIBLE);
-        if (drafts.isEmpty()) {
-            return List.of();
-        }
-        // 영상과 "이미 여행이 된 영상"을 한 번에 읽는다 — 초안마다 조회하면 홈을 열 때마다 초안 수만큼 영상 전체를 다시 읽었다(#139).
-        // 같은 영상을 다시 분석했으면 카드는 최신 분석 번호를 가리킨다 — 예전 번호로는 앱이 영상을 못 찾아 장소 수와
-        // 썸네일이 빠졌다(4차 수정 확인 QA, #424).
-        TripPlannerService.Analyses analyses = tripPlannerService.analysesOf(userId);
-        java.util.Map<Long, ProcessingJob> jobs = analyses.byId();
-        java.util.Set<Long> tripped = tripService.jobIdsWithExistingTrip(userId,
-                drafts.stream().map(d -> jobs.get(d.getJobIds().get(0))).filter(java.util.Objects::nonNull).distinct().toList());
-        return drafts.stream()
-                .map(d -> new DraftWithJob(d, jobs.get(d.getJobIds().get(0))))
-                // 같은 영상으로 이미 여행이 만들어졌으면(다른 초안을 승인하는 등) 카드가 중복으로 남는다 — 빼고 보여준다.
-                .filter(dj -> dj.job() == null || !tripped.contains(dj.job().getId()))
-                .limit(10)
-                .map(dj -> {
-                    ProcessingJob shown = dj.job() == null ? null : analyses.latest(dj.job());
-                    return new AutoDraftResponse(dj.draft().getId(), dj.draft().getStatus().name(),
-                            shown == null ? dj.draft().getJobIds().get(0) : shown.getId(),
-                            shown == null ? null : shown.getTitle(), dj.draft().getDays(), dj.draft().getCreatedAt().toString(),
-                            placeCount(dj.draft()));
-                })
-                .toList();
+        return autoDraftQueryService.list(currentUserService.resolveUserId(authentication));
     }
 
     @PostMapping("/api/trip-drafts/{id}/dismiss")
