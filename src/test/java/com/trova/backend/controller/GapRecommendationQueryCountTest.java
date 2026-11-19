@@ -386,6 +386,24 @@ class GapRecommendationQueryCountTest {
     }
 
     @Test
+    void types가_없는_Google_후보도_분류_null로_유지하고_200을_반환한다() throws Exception {
+        User owner = user();
+        Trip trip = trip(owner, 1);
+        place(day(trip, 1), 1, "09:00", "10:00", 37.5, 127.0, null);
+        String prefix = "missing-types-" + UUID.randomUUID();
+        rawByType.put("restaurant", List.of(raw(prefix, null, 4.0, 10),
+                raw(prefix + "-normal", "restaurant", 3.0, 10),
+                raw(prefix + "-hotel", "lodging", 5.0, 100)));
+
+        com.fasterxml.jackson.databind.JsonNode recommendations = mapper.readTree(
+                request(bearer(owner), trip.getId(), 1)).get(0).get("recommendations");
+        assertThat(recommendations).hasSize(2);
+        assertThat(recommendations.get(0).get("googlePlaceId").asText()).isEqualTo(prefix);
+        assertThat(recommendations.get(0).get("category").isNull()).isTrue();
+        assertThat(recommendations.get(1).get("googlePlaceId").asText()).isEqualTo(prefix + "-normal");
+    }
+
+    @Test
     void 남의_여행_없는_여행_없는_일차는_404이고_인증이_없으면_401이다() throws Exception {
         User owner = user();
         User stranger = user();

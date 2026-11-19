@@ -519,6 +519,55 @@ class AlternativeFinderServiceTest {
         assertThat(result.get().get(0).name()).isEqualTo("높은 후보");
     }
 
+    @Test
+    void NaN_대안은_유한_점수_뒤로_가고_유한_점수와_동점_순서는_유지된다() {
+        User owner = prepareTarget();
+        List<GooglePlacesNearbySearchResponse.Place> raw = List.of(rawPlace("nan", "cafe"),
+                rawPlace("low", "cafe"), rawPlace("high", "cafe"), rawPlace("tie", "cafe"));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "cafe"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+        prepareCandidates(raw);
+        when(personalizationService.retrieveAndScore(any(), any())).thenAnswer(invocation -> {
+            Place candidate = invocation.getArgument(1);
+            double score = switch (candidate.getGooglePlaceId()) {
+                case "nan" -> Double.NaN;
+                case "high" -> 0.8;
+                default -> -0.5;
+            };
+            return new PersonalizationService.PersonalizationResult(score, List.of());
+        });
+
+        assertThat(alternativeFinderService.findAlternatives(owner, 1L,
+                new AlternativeFilter(null, null, null, null, null)).orElseThrow())
+                .extracting(AlternativeCandidate::googlePlaceId).containsExactly("high", "low", "tie", "nan");
+    }
+
+    @Test
+    void NaN인_기본_검색_후보보다_유한한_보충_후보가_앞선다() {
+        User owner = prepareTarget();
+        GooglePlacesNearbySearchResponse.Place nan = rawPlace("nan", "cafe");
+        GooglePlacesNearbySearchResponse.Place primary = rawPlace("primary", "cafe");
+        GooglePlacesNearbySearchResponse.Place supplement = rawPlace("supplement", "park");
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "cafe"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(nan, primary)));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(supplement)));
+        prepareCandidates(List.of(nan, primary, supplement));
+        when(personalizationService.retrieveAndScore(any(), any())).thenAnswer(invocation -> {
+            Place candidate = invocation.getArgument(1);
+            double score = switch (candidate.getGooglePlaceId()) {
+                case "nan" -> Double.NaN;
+                case "primary" -> -0.5;
+                default -> 0.8;
+            };
+            return new PersonalizationService.PersonalizationResult(score, List.of());
+        });
+
+        assertThat(alternativeFinderService.findAlternatives(owner, 1L,
+                new AlternativeFilter(null, null, null, null, null)).orElseThrow())
+                .extracting(AlternativeCandidate::googlePlaceId).containsExactly("primary", "supplement", "nan");
+    }
+
     private GooglePlacesNearbySearchResponse.Place rawPlace(String id, String category) {
         return new GooglePlacesNearbySearchResponse.Place(
                 id, new GooglePlacesNearbySearchResponse.Place.DisplayName(id), List.of(category),

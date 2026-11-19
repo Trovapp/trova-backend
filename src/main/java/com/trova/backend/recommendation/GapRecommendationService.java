@@ -157,7 +157,7 @@ public class GapRecommendationService {
         // 숙소·역·학교는 빈 시간에 들를 곳이 아니라 뺀다(#414).
         List<Place> filteredCandidates = candidates.stream()
                 .filter(c -> neighbors.stream().noneMatch(n -> isSameGooglePlace(c, n)))
-                .filter(c -> !NOT_A_STOP.contains(c.getCategory()))
+                .filter(c -> c.getCategory() == null || !NOT_A_STOP.contains(c.getCategory()))
                 .toList();
         // Comparator 안에서 점수를 계산하면 정렬 비교마다(O(n log n)회) 매번 다시 계산된다 — 후보당 한 번만
         // 계산해 맵에 담아두고 정렬은 맵 조회만 한다. 개인화 점수는 후보마다 pgvector를 2번씩 조회하던 것을
@@ -170,7 +170,9 @@ public class GapRecommendationService {
             scoreByPlaceId.put(c.getId(), score);
         }
         return filteredCandidates.stream()
-                .sorted(Comparator.comparingDouble((Place c) -> scoreByPlaceId.get(c.getId())).reversed())
+                // 역순 comparingDouble은 NaN을 맨 앞에 둔다. 무효 점수는 별도로 뒤에 둔다(#487).
+                .sorted(Comparator.comparingInt((Place c) -> Double.isFinite(scoreByPlaceId.get(c.getId())) ? 0 : 1)
+                        .thenComparing(Comparator.comparingDouble((Place c) -> scoreByPlaceId.get(c.getId())).reversed()))
                 .map(c -> new AlternativeCandidate(
                         c.getId(), c.getGooglePlaceId(), c.getName(), c.getCategory(), c.getRating(),
                         c.getUserRatingCount(), c.getLatitude(), c.getLongitude(), c.getAddress(),

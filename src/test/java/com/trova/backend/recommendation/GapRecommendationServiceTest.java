@@ -163,6 +163,23 @@ class GapRecommendationServiceTest {
     }
 
     @Test
+    void NaN_후보는_유한_점수_뒤로_가고_유한_점수와_동점_순서는_유지된다() {
+        when(tripPlaceRepository.findGapPlaceRows(1L, USER_ID, 1)).thenReturn(List.of(
+                row(10L, "08:00", "09:00", 37.5, 127.0, null)));
+        when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any()))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(raw("nan"), raw("low"), raw("high"), raw("tie"))));
+        List<Place> candidates = List.of(place(1L, "nan", "cafe", null, null),
+                place(2L, "low", "cafe", null, null), place(3L, "high", "cafe", null, null),
+                place(4L, "tie", "cafe", null, null));
+        when(placeCatalogService.upsertAll(anyList())).thenReturn(candidates);
+        when(personalizationService.personalizationScores(USER_ID, candidates))
+                .thenReturn(Map.of(1L, Double.NaN, 2L, -0.5, 3L, 0.8, 4L, -0.5));
+
+        assertThat(gapRecommendationService.findGaps(USER_ID, 1L, 1).orElseThrow().get(0).recommendations())
+                .extracting(AlternativeCandidate::googlePlaceId).containsExactly("high", "low", "tie", "nan");
+    }
+
+    @Test
     void 남의_여행_없는_여행_없는_일차는_조회_결과가_없어_빈값이다() {
         when(tripPlaceRepository.findGapPlaceRows(1L, USER_ID, 1)).thenReturn(List.of());
 
