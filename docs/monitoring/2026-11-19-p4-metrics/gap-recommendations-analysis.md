@@ -277,3 +277,16 @@ devflow `deploy.sh`(0.5.3)로 운영 서버(Oracle E2.1.Micro, systemd `trova-ba
 최종 전체 실행에서는 자동 초안 4건 모두 통과했다. 최종 실패 목록을 기준 코드 전체 실행의 실패 목록과 대조해 추가 실패가 없음을 확인했다. 테스트·빌드가 전부 초록이라고 보고하지 않는다. 저장소에 `scripts/check_docs.py`, `check_context.py`, `check_log.py`와 `.githooks`는 없으며 `git diff --check`는 통과했다.
 
 **맥에서 Docker로 실행 필요**: 이 Windows 실행에서는 `PersonalizationPgvectorEquivalenceTest` 2건이 건너뛰어졌다. 코디네이터가 별도로 실행하기로 했다. 0 벡터 기대값은 0점으로 갱신했지만 실제 pgvector 실행 성공을 주장하지 않는다.
+
+## 운영 배포 (#488·#490, 운영 서버)
+
+사용자 승인(2026-11-19) 뒤 devflow `deploy.sh`로 배포했다. 배포 전 운영 진행 중 작업 0건, 전송 JAR 해시 일치(`958df30c0268bf01`).
+
+| 항목 | 값 |
+|---|---|
+| 시각 | 2026-11-19 23:07:07 KST 시작 → 23:10:14 끝(전체 186초) |
+| 커밋 | `6dbfea3` (origin/main, #488·#490 포함) |
+| UP 걸린 시간 | 재시작 후 139초 |
+| 확인 결과(스크립트) | 인증 없는 공유 요청 401, 세션 쿠키 0개, 자동 초안 목록 인증 없이 401 |
+| 확인 결과(curl) | `/actuator/health` 200, `/api/trips/1` 401, `/api/trips/1/days/1/gap-recommendations` 401 |
+| 백업 경로 | `/opt/trova-backend/app.jar.bak-20261119-230707` |
