@@ -85,11 +85,16 @@ public class DailyQuotaService {
 
     /** 장소 API 호출 1회를 쓴다 — 한도를 넘으면 예외(이번 호출은 세지 않는다). */
     public void consumePlaceCall(User user) {
+        consumePlaceCall(user.getId());
+    }
+
+    /** 사용자 ID만으로 쓰는 조회 API용(ADR 0036) — 같은 카운터를 쓴다. */
+    public void consumePlaceCall(Long userId) {
         LocalDate today = LocalDate.now(clock.withZone(KOREA));
         String todayPrefix = today + ":";
         // 지난 날짜 키는 버린다(메모리가 계속 늘지 않게).
         placeCallCounts.keySet().removeIf(key -> !key.startsWith(todayPrefix));
-        AtomicInteger count = placeCallCounts.computeIfAbsent(todayPrefix + user.getId(), key -> new AtomicInteger());
+        AtomicInteger count = placeCallCounts.computeIfAbsent(todayPrefix + userId, key -> new AtomicInteger());
         if (count.incrementAndGet() > placeCallsPerDay) {
             count.decrementAndGet();
             throw new QuotaExceededException("오늘 장소 검색·추천을 모두 사용했어요. 내일 다시 시도해주세요.");
