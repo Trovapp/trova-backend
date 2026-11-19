@@ -1,6 +1,6 @@
 # P4: 요청당 SQL 수와 JVM 힙 밖 메모리 관측
 
-2026-11-19. 코드·로컬 패널 검토안이며 **미배포·테스트 실행 대기**다. 운영 서버·DB·Grafana·Slack에 접근하지 않았고 JVM 옵션·systemd·경보·Cloud 저장본을 바꾸지 않았다. [P1~P3 기록](../2026-11-18-perf-phase1/README.md), ADR 0005·0037·0039~0042·0050과 r26·r27·r28 기록을 따른다.
+2026-11-19. [이슈 #475](https://github.com/Trovapp/trova-backend/issues/475), [PR #474](https://github.com/Trovapp/trova-backend/pull/474). 구현·로컬 검증을 마쳤으며 **미머지·미배포**다. 운영 서버·DB·Grafana·Slack에 접근하지 않았고 JVM 옵션·systemd·경보·Cloud 저장본을 바꾸지 않았다. [P1~P3 기록](../2026-11-18-perf-phase1/README.md), ADR 0005·0037·0039~0042·0050과 r26·r27·r28 기록을 따른다.
 
 ## 선택과 측정 범위
 
@@ -91,6 +91,10 @@ max by (job, instance) (host_process_memory_rss_bytes{job="trova-prod"})
 
 ## 테스트와 매니저 인계
 
+최종 결과는 PR #474와 커밋 `0011f6e`의 매니저 검증 기록에 근거한다. **대상 테스트 18개 통과**(RequestDbQueryMetricsTest 9·TripDetailQueryCountTest 5·OtlpMetricsExportTest 4). **전체 1,247개 중 1,239개 통과·기존 실패 2개·건너뜀 6개, 새 실패 0개**다. 실패는 `ApiSessionCreationIntegrationTest`의 H2 `USERS` 테이블 없음이며 아래 기준 브랜치 대조에서 확인한 기존 실패와 같다. Codex 검증(낮음 3건 반영)과 Claude 리뷰(낮음만)를 교차로 통과했다. 리뷰 뒤 마지막 빈 `destroy()`의 꺼짐 분기를 직접 검증하도록 테스트를 고치고 대상 18개를 다시 실행해 통과했다.
+
+후속 수정에서 비활성 계측의 직접 JDBC 훅은 ThreadLocal 조회 전에 반환하도록 했다. 빈 수에 따른 활성 플래그와 중복 `destroy()` 방어를 추가했고, 관련 테스트 2개 및 조기 반환 제거 변형의 실패를 확인했다. MockMvc 경계 테스트 1개로 컨트롤러 오류의 단일 표본, 매핑 없는 404 제외, 다음 정상 요청의 독립적인 5 SQL과 uri 템플릿 유지도 확인했다. Servlet async 재디스패치는 미검증이며 현재 해당 async 반환 컨트롤러가 없다.
+
 먼저 `TripDetailQueryCountTest`에 실제 JWT MockMvc 여행 상세의 5 SQL·요청 count/total 증가·서로 다른 ID의 템플릿 통합 테스트를 추가했다. 그 뒤 구현했다. 새 단위 테스트 6개는 요청/자식 스레드 격리, JDBC batch 두 경로, 100개 원시 ID의 태그 수 고정, 6개 경계, 예외 후 0 SQL 요청, 매핑 없는 요청/비API/미지원 method/Servlet async 제외, 설정 비활성화를 검사한다. OTLP 테스트 1개는 동일 summary와 기존 JVM binder 지표가 OTLP 레지스트리에 등록되는지 검사하며 실제 네트워크 전송 테스트는 아니다.
 
 **매니저(Claude) 실행 결과(2026-11-19, 로컬 맥, `./gradlew test --offline`)**: 처음 실행 때 테스트 컴파일 오류 6건(이 Micrometer 버전의 `SimpleMeterRegistry`·`PrometheusMeterRegistry`·`JvmMemoryMetrics`는 `AutoCloseable`이 아님)이 나서 `finally close()`/지역 변수로 고쳤다. `application.yml`의 켜기 값이 `management.metrics.db-queries`에 있어 `@ConditionalOnProperty(app.metrics.db-queries.enabled)`와 어긋났으므로 `app.metrics` 아래로 옮기고, 운영 `application.yml`을 직접 읽는 켜짐/꺼짐 테스트를 추가했다. OTLP 스냅샷은 `+Inf`까지 7개 버킷이라 OTLP 테스트 기대값을 경계 7개로 고정했다. 그 뒤 대상 테스트 15개(RequestDbQueryMetricsTest 7·TripDetailQueryCountTest 4·OtlpMetricsExportTest 4) 통과. 변형 1(비활성화)은 `MeterNotFoundException`, 변형 2(`recordJdbcStatements(2)`)는 `expected: 5.0 but was: 10.0`으로 실패한 뒤 원복했다. 전체 테스트는 1244개 중 2개 실패·6개 건너뜀이며, 실패 2개(`ApiSessionCreationIntegrationTest`, H2 `USERS` 테이블 없음)는 origin/main(0b03dc5)에서도 1235개 중 같은 2개가 실패해 기존 실패다. 새 실패 0개.
@@ -106,7 +110,7 @@ max by (job, instance) (host_process_memory_rss_bytes{job="trova-prod"})
 
 정적 확인은 `git diff --check` 통과, Python JSON 파싱으로 6개 패널의 고유 ID·형식을 확인했다. Gradle 실패로 생긴 빈 zip 임시 파일 두 개는 제거했으며 작업 폴더의 별도 Gradle 캐시는 커밋 대상에 없다.
 
-변형 검사는 아직 실행하지 못했다. 다음 두 대조군은 **동일한 기대값으로 실패해야 한다**. 매번 변형 후 원복하고 마지막 전체 빌드는 정상 구현으로 실행한다.
+다음 두 변형은 매니저가 실행해 **동일한 기대값에서 실패함을 확인하고 원복했다**. 아래는 재현 절차다.
 
 1. `TripDetailQueryCountTest`의 `@TestPropertySource`에 `app.metrics.db-queries.enabled=false`를 잠시 추가하고 위 여행 상세 테스트를 실행한다. meter 부재로 실패해야 한다. 어노테이션에 직접 넣어야 하며 Gradle CLI의 임의 `-D`는 테스트 JVM 전달을 보장하지 않는다.
 2. `inspect()`의 `recordJdbcStatements(1)`을 `recordJdbcStatements(2)`로 바꿔 여행 상세 테스트를 실행한다. 실제 Hibernate statistics는 5, summary 증가량은 10이 되어 실패해야 한다. JDBC 훅 하나를 제거하면 직접 JDBC 단위 테스트도 실패해야 한다.
@@ -117,9 +121,9 @@ max by (job, instance) (host_process_memory_rss_bytes{job="trova-prod"})
 ./gradlew test --tests '*TripDetailQueryCountTest.여행_상세의_예열_후_SQL_다섯_회를_요청_지표로_기록하고_ID는_태그에_넣지_않는다' --console=plain
 ```
 
-Windows의 기존 Python/nice 31개·H2 세션 2개 실패는 요청에 알려진 기존 사례이며 **이번 실행에서 확인한 실패가 아니다**. 전체 결과 XML과 원인/기준 브랜치 비교 없이 기존 실패로 단정하지 않는다. 새 통합 테스트는 고유 H2 DB를 사용해 create-drop 공유 간섭을 피한다.
+Windows의 Python/nice 31개 실패는 이전 환경의 사례로, 이번 맥 전체 결과에 포함하지 않는다. H2 세션 2개 실패는 이번 맥 실행과 기준 브랜치 대조에서도 확인됐다. 새 통합 테스트는 고유 H2 DB를 사용해 create-drop 공유 간섭을 피한다.
 
-## PR 초안 (커밋·push·PR 생성은 매니저 담당)
+## PR과 변경 파일
 
 변경 파일 11개:
 
@@ -137,10 +141,12 @@ Windows의 기존 Python/nice 31개·H2 세션 2개 실패는 요청에 알려�
 
 제목: `feat: 요청당 SQL 분포와 힙 밖 메모리 관측 추가`
 
-배경: P1~P3의 로컬 SQL 감소를 운영 수치로 확인하고, 144MiB 힙 제한에서 RSS의 나머지를 기존 JVM 지표와 비교할 근거가 필요하다. 이슈 번호는 배정되지 않았으며 임의의 `Closes` 번호를 쓰지 않는다.
+배경: P1~P3의 로컬 SQL 감소를 운영 수치로 확인하고, 144MiB 힙 제한에서 RSS의 나머지를 기존 JVM 지표와 비교할 근거가 필요하다. PR #474는 `Closes #475`를 포함한다. 브랜치 `feat/p4-db-query-metrics`의 이슈 번호 생략은 매니저 승인 예외로 PR에 기록했다.
 
 변경: StatementInspector + 요청 ThreadLocal과 직접 JDBC 두 batch 훅으로 동기 API의 SQL 제출 수를 기록한다. session statistics는 요청 단위가 다르고 전역 통계는 비동기 SQL을 섞으므로 배제했으며, datasource-proxy는 추가 의존성/프록시 비용 때문에 보류했다. uri 템플릿/method만 태그로 쓰고 버킷은 6개다. 메모리 패널은 기존 JVM 지표를 재사용하고 스택/기타 잔차를 가정값으로 분리한다. 운영 export·경보·JVM 옵션·systemd 변경은 없다.
 
-검증: **매니저 실행 후 실제 전체 테스트 수·실패 수·기존 실패와의 구분·두 변형 결과를 채워야 한다.** 이 작업 세션의 Gradle 실행은 캐시 권한/DNS 가드로 테스트 시작 전에 차단됐다. 커밋·PR은 생성하지 않았고 머지도 하지 않았다.
+검증: 대상 18개 통과, 전체 1,247개 중 기존 실패 2개·건너뜀 6개·새 실패 0개다. 비활성화·두 배 카운트·JDBC 비활성 조기 반환 제거 변형의 실패를 확인했다. 초기 작업 세션의 캐시 권한/DNS 차단 이후 매니저가 검증·커밋·push·PR 생성을 마쳤다. 머지는 하지 않았다.
 
-남은 것: 매니저의 정상/변형/전체 테스트와 커밋·PR, 배포 후 실제 OTLP 이름·태그·버킷·표본 수·비용 확인, Cloud 패널 반영 여부 결정. 운영 배포 자체는 이번 범위 밖이다.
+후속(낮음, 이번 PR 밖): OTLP 자동 구성에서 이 summary가 실제 운영 레지스트리 조합으로 등록되는지 보는 회귀 테스트, 요청당 SQL 측정 정책(무엇을 세고 무엇을 세지 않는지·새 JDBC 경로 연결 규칙) ADR.
+
+남은 것: 배포 후 실제 OTLP 이름·태그·버킷·표본 수·비용 확인, Cloud 패널 반영 여부 결정. 머지·운영 배포 자체는 이번 범위 밖이다.
