@@ -57,7 +57,10 @@ import static org.mockito.Mockito.when;
  */
 @Testcontainers(disabledWithoutDocker = true)
 // 컨테이너가 JVM 종료 전에 먼저 내려가므로 종료 때 표 지우기(create-drop)는 하지 않는다 — 컨테이너째 버린다.
-@SpringBootTest(properties = "spring.jpa.hibernate.ddl-auto=create")
+@SpringBootTest(properties = {"spring.jpa.hibernate.ddl-auto=create",
+        "spring.jpa.properties.hibernate.generate_statistics=true",
+        "logging.level.org.hibernate.engine.internal.StatisticalLoggingSessionEventListener=OFF"})
+@org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 // 컨테이너는 이 클래스가 끝나면 내려가므로 컨텍스트도 바로 닫는다 — 캐시에 남으면 테스트 JVM 힙(기본 512MiB)을
 // 계속 차지해 뒤에 오는 내장 Kafka 테스트가 OutOfMemoryError로 시작하지 못했다(전체 실행에서 확인).
 @DirtiesContext
@@ -81,6 +84,9 @@ class PersonalizationPgvectorEquivalenceTest {
     @MockitoBean private GeminiEmbeddingClient geminiEmbeddingClient;
     @MockitoBean private GeminiTextClient geminiTextClient;
 
+    @Autowired private org.springframework.test.web.servlet.MockMvc mvc;
+    @Autowired private com.trova.backend.security.JwtService jwt;
+    @Autowired private jakarta.persistence.EntityManagerFactory emf;
     @Autowired private JdbcTemplate jdbc;
     @Autowired private UserRepository users;
     @Autowired private PlaceRepository places;
@@ -90,6 +96,7 @@ class PersonalizationPgvectorEquivalenceTest {
     @Autowired private TripPlaceRepository tripPlaces;
     @Autowired private PersonalizationService personalizationService;
     @Autowired private GapRecommendationService gapRecommendationService;
+    @Autowired private AlternativeFinderService alternativeFinderService;
 
     private final Random random = new Random(482);
 
@@ -290,6 +297,76 @@ class PersonalizationPgvectorEquivalenceTest {
                     .getOrDefault(zero.getId(), 0.0)).isZero();
         }
         assertThat(personalizationService.personalizationScores(usersByName.get("A").getId(), List.of())).isEmpty();
+    }
+
+    @Test
+    void 대안_API는_유효_신호가_있어도_Gemini_이유_0회이고_SQL이_후보수와_무관하다() throws Exception {
+        fixture();
+        User user = usersByName.get("A");
+        Trip trip = trips.save(new Trip(user, "API 확인", null, null));
+        Itinerary day = itineraries.save(new Itinerary(trip, 1, null));
+        TripPlace target = tripPlaces.save(new TripPlace(day, "원본", "서울", "restaurant",
+                37.5, 127.0, null, null, 1, PlaceSource.NORMAL, null));
+        String token = "Bearer " + jwt.issue(user);
+        List<Long> counts = new ArrayList<>();
+        for (int count : new int[] {1, 5, 12}) {
+            List<GooglePlacesNearbySearchResponse.Place> raw = candidates.subList(0, count).stream()
+                    .map(c -> new GooglePlacesNearbySearchResponse.Place(c.getGooglePlaceId(),
+                            new GooglePlacesNearbySearchResponse.Place.DisplayName(c.getName()), List.of("restaurant"),
+                            c.getRating(), c.getUserRatingCount(), null,
+                            new GooglePlacesNearbySearchResponse.Place.Location(37.5, 127.0), c.getAddress())).toList();
+            when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any()))
+                    .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+            org.hibernate.stat.Statistics stats = emf.unwrap(org.hibernate.SessionFactory.class).getStatistics();
+            long before = stats.getPrepareStatementCount();
+            String body = mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                            .get("/api/trip-places/" + target.getId() + "/alternatives")
+                            .param("category", "음식점").header("Authorization", token))
+                    .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                    .andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
+            counts.add(stats.getPrepareStatementCount() - before);
+            com.fasterxml.jackson.databind.JsonNode response = new com.fasterxml.jackson.databind.ObjectMapper().readTree(body);
+            assertThat(response).hasSize(count);
+            assertThat(response.get(0).get("recommendationReason").asText()).contains("취향과 비슷해요");
+        }
+        assertThat(counts).containsExactly(9L, 9L, 9L);
+        org.mockito.Mockito.verifyNoInteractions(geminiTextClient, geminiEmbeddingClient);
+        org.mockito.Mockito.verify(googlePlacesApiClient, org.mockito.Mockito.times(3))
+                .searchNearby(anyDouble(), anyDouble(), anyDouble(), any());
+        System.out.println("P8 pgvector API candidates=1,5,12 SQL=" + counts);
+    }
+
+    @Test
+    void 대안_응답은_이유_외_필드와_순서가_같고_기본은_Gemini를_부르지_않는다() {
+        fixture();
+        List<GooglePlacesNearbySearchResponse.Place> raw = candidates.stream()
+                .map(c -> new GooglePlacesNearbySearchResponse.Place(c.getGooglePlaceId(),
+                        new GooglePlacesNearbySearchResponse.Place.DisplayName(c.getName()), List.of("restaurant"),
+                        c.getRating(), c.getUserRatingCount(), null,
+                        new GooglePlacesNearbySearchResponse.Place.Location(37.5, 127.0), c.getAddress())).toList();
+        when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any()))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+        when(geminiTextClient.generate(any())).thenReturn(Optional.of("기존 이유"));
+        try {
+            for (User user : usersByName.values()) {
+                Trip trip = trips.save(new Trip(user, "대안 비교", null, null));
+                Itinerary day = itineraries.save(new Itinerary(trip, 1, null));
+                TripPlace target = tripPlaces.save(new TripPlace(day, "원본", "서울", "restaurant",
+                        37.5, 127.0, null, null, 1, PlaceSource.NORMAL, null));
+                AlternativeFilter filter = new AlternativeFilter(null, null, null, null, null);
+                org.springframework.test.util.ReflectionTestUtils.setField(alternativeFinderService, "geminiExplanationEnabled", true);
+                List<AlternativeCandidate> legacy = alternativeFinderService.findAlternatives(user, target.getId(), filter).orElseThrow();
+                org.mockito.Mockito.clearInvocations(geminiTextClient, googlePlacesApiClient, geminiEmbeddingClient);
+                org.springframework.test.util.ReflectionTestUtils.setField(alternativeFinderService, "geminiExplanationEnabled", false);
+                List<AlternativeCandidate> actual = alternativeFinderService.findAlternatives(user, target.getId(), filter).orElseThrow();
+                assertThat(actual).usingRecursiveComparison().ignoringFields("recommendationReason").isEqualTo(legacy);
+                org.mockito.Mockito.verifyNoInteractions(geminiTextClient);
+                org.mockito.Mockito.verify(googlePlacesApiClient).searchNearby(anyDouble(), anyDouble(), anyDouble(), any());
+                org.mockito.Mockito.verify(geminiEmbeddingClient).embedBatch(any()); // embedding 없는 후보 1개, 양쪽 동일
+            }
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(alternativeFinderService, "geminiExplanationEnabled", false);
+        }
     }
 
     @Test

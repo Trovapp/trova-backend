@@ -48,7 +48,11 @@ class AlternativeFinderServiceTest {
     @InjectMocks private AlternativeFinderService alternativeFinderService;
 
     @BeforeEach
-    void 보충_검색의_기본_응답은_빈_목록이다() {
+    void 보충_검색의_기본_응답은_빈_목록이다(org.junit.jupiter.api.TestInfo info) {
+        // 기존 후보별 점수/설명 스텁은 복구 경로 회귀 검증으로 유지한다.
+        if (!info.getTestMethod().orElseThrow().getName().startsWith("기본_모드")) {
+            org.springframework.test.util.ReflectionTestUtils.setField(alternativeFinderService, "geminiExplanationEnabled", true);
+        }
         lenient().when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
                 .thenReturn(new GooglePlacesNearbySearchResponse(List.of()));
     }
@@ -76,6 +80,32 @@ class AlternativeFinderServiceTest {
                 itinerary, "원래 장소", null, "cafe", lat, lng, null, null, 1, PlaceSource.NORMAL, null);
         setId(place, id);
         return place;
+    }
+
+    @Test
+    void 기본_모드는_묶음_점수로_정렬하고_Gemini를_부르지_않는다() {
+        User owner = prepareTarget();
+        List<GooglePlacesNearbySearchResponse.Place> raw = List.of(rawPlace("low", "cafe"),
+                rawPlace("high", "cafe"), rawPlace("tie", "cafe"));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "cafe"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+        List<Place> candidates = raw.stream().map(p -> {
+            Place c = new Place(p.id(), p.displayName().text(), "cafe", 4.0, 10, null, 37.501, 127.001, "주소");
+            setId(c, (long) raw.indexOf(p) + 10);
+            return c;
+        }).toList();
+        when(placeCatalogService.upsertAll(raw)).thenReturn(candidates);
+        lenient().when(personalizationService.retrieveAndScore(any(), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
+        lenient().when(personalizationService.personalizationScores(owner.getId(), candidates))
+                .thenReturn(java.util.Map.of(10L, 0.0, 11L, 0.8, 12L, 0.0));
+        List<AlternativeCandidate> actual = alternativeFinderService.findAlternatives(owner, 1L,
+                new AlternativeFilter(null, null, null, null, null)).orElseThrow();
+        assertThat(actual).extracting(AlternativeCandidate::googlePlaceId).containsExactly("high", "low", "tie");
+        assertThat(actual.get(0).recommendationReason()).contains("취향과 비슷해요");
+        assertThat(actual.get(2).recommendationReason()).isNull();
+        verify(personalizationService, never()).retrieveAndScore(any(), any());
+        verify(personalizationService, never()).explainFromSignals(any(), any());
     }
 
     @Test
