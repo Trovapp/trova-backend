@@ -276,7 +276,9 @@ public class AlternativeFinderService {
         }
 
         result = result.stream()
-                .sorted(Comparator.comparingInt((AlternativeCandidate c) -> primaryIds.contains(c.googlePlaceId()) ? 0 : 1)
+                // 유한 후보 사이의 기본 검색 우선순위는 유지하되, 무효 기본 후보도 유효 보충 후보 뒤로 둔다(#487).
+                .sorted(Comparator.comparingInt((AlternativeCandidate c) -> Double.isFinite(scoreByPlaceId.get(c.placeId())) ? 0 : 1)
+                        .thenComparingInt(c -> primaryIds.contains(c.googlePlaceId()) ? 0 : 1)
                         .thenComparing(Comparator.comparingDouble(
                                 (AlternativeCandidate c) -> scoreByPlaceId.get(c.placeId())).reversed()))
                 .toList();

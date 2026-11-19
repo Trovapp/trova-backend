@@ -90,3 +90,4 @@
 | [0048](0048-supabase-rls-lockdown.md) | Supabase public 테이블 RLS 활성화와 API 역할 권한 회수, 새 테이블 자동 보호 | 확정 | 2026-11-17 |
 | [0049](0049-user-consent-records.md) | 명시 동의·약관과 방침 버전·만 14세 확인 기록, 서버는 다른 API를 차단하지 않음 | 확정 | 2026-11-17 |
 | [0050](0050-memory-pressure-alert-gap-continuity.md) | 메모리 압박 경보의 짧은 계산 공백을 마지막 유효값으로 잇는다 | 승인·반영 완료 | 2026-11-18 |
+| [0051](0051-personalization-finite-scores.md) | 개인화는 유한한 유사도만 평균하고 무효 최종 점수는 뒤로 정렬한다 | 확정 | 2026-11-19 |

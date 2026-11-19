@@ -246,6 +246,34 @@ class PersonalizationServiceTest {
     }
 
     @Test
+    void 유한하지_않은_유사도는_평균과_추천_근거에서_제외하고_남은_신호가_없으면_0점이다() {
+        User owner = user(1L);
+        Place mixed = place(10L);
+        Place invalid = place(11L);
+        UserPreferenceSignalRepository.SimilarSignal valid = similarSignal("유효", "cafe", null, -0.4);
+        UserPreferenceSignalRepository.SimilarSignal nan = similarSignal("무효", "cafe", null, Double.NaN);
+        when(placeRepository.findEmbeddingText(10L)).thenReturn(Optional.of("[1,0]"));
+        when(placeRepository.findEmbeddingText(11L)).thenReturn(Optional.of("[0,0]"));
+        when(userPreferenceSignalRepository.findTopSimilarSignals(1L, "[1,0]"))
+                .thenReturn(List.of(valid, nan));
+        when(userPreferenceSignalRepository.findTopSimilarSignals(1L, "[0,0]"))
+                .thenReturn(List.of(nan));
+        when(userPreferenceSignalRepository.findCandidateSimilarities(1L, List.of(10L, 11L)))
+                .thenReturn(List.of(similarity(10L, -0.4), similarity(10L, Double.NaN),
+                        similarity(11L, Double.NaN), similarity(11L, Double.POSITIVE_INFINITY)));
+
+        PersonalizationService.PersonalizationResult result = personalizationService.retrieveAndScore(owner, mixed);
+        assertThat(result.score()).isEqualTo(-0.4);
+        assertThat(result.similarSignals()).containsExactly(valid);
+        assertThat(personalizationService.retrieveAndScore(owner, invalid).score()).isZero();
+        assertThat(personalizationService.retrieveAndScore(owner, invalid).similarSignals()).isEmpty();
+        assertThat(personalizationService.personalizationScores(1L, List.of(mixed, invalid)))
+                .containsEntry(10L, -0.4).containsEntry(11L, 0.0);
+        assertThat(personalizationService.explainRecommendation(owner, invalid)).isEmpty();
+        verifyNoInteractions(geminiTextClient);
+    }
+
+    @Test
     void 묶음_조회가_실패하면_모두_0점으로_폴백한다() {
         when(userPreferenceSignalRepository.findCandidateSimilarities(anyLong(), anyList()))
                 .thenThrow(new IllegalStateException("vector 타입 없음"));

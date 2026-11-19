@@ -263,9 +263,12 @@ class PersonalizationPgvectorEquivalenceTest {
                 assertThat(bits(batched.getOrDefault(candidate.getId(), List.of())))
                         .as("%s / %s top-5", entry.getKey(), candidate.getName())
                         .isEqualTo(bits(legacyTopSimilarities(user, candidate)));
-                // 2) 점수: 기존 personalizationScore와 비트 단위로 같다(NaN 포함).
+                // 2) 점수: 후보별 경로와 묶음 경로 모두 유한한 top-5 신호만 평균한다.
                 double legacy = personalizationService.personalizationScore(user, candidate);
                 double current = scores.getOrDefault(candidate.getId(), 0.0);
+                double expected = legacyTopSimilarities(user, candidate).stream()
+                        .mapToDouble(Double::doubleValue).filter(Double::isFinite).average().orElse(0.0);
+                assertThat(Double.doubleToLongBits(current)).isEqualTo(Double.doubleToLongBits(expected));
                 assertThat(Double.doubleToLongBits(current))
                         .as("%s / %s 점수 %s vs %s", entry.getKey(), candidate.getName(), current, legacy)
                         .isEqualTo(Double.doubleToLongBits(legacy));
@@ -280,6 +283,12 @@ class PersonalizationPgvectorEquivalenceTest {
         System.out.println("P7 pgvector equivalence pairs=" + pairs + " nonZero=" + nonZero + " nan=" + nan);
         // 비교가 0점끼리만 맞춘 것이 아님을 확인한다: A·B의 임베딩 있는 후보(무작위·같은 벡터·-W 12개)는 0이 아닌 점수다.
         assertThat(nonZero).isGreaterThanOrEqualTo(24);
+        assertThat(nan).isZero();
+        Place zero = candidates.get(12);
+        for (User user : usersByName.values()) {
+            assertThat(personalizationService.personalizationScores(user.getId(), List.of(zero))
+                    .getOrDefault(zero.getId(), 0.0)).isZero();
+        }
         assertThat(personalizationService.personalizationScores(usersByName.get("A").getId(), List.of())).isEmpty();
     }
 
@@ -326,7 +335,7 @@ class PersonalizationPgvectorEquivalenceTest {
         }
         System.out.println("P7 pgvector order users=" + usersByName.size() + " reorderedByPersonalization=" + reordered);
         // 기본 점수가 모두 같아 순서는 개인화로만 갈린다 — 유효한 신호가 있는 A·B는 Google 순서와 달라야 비교가 의미 있다.
-        // (C는 0 벡터 신호 때문에 점수가 NaN으로 모두 같고, D·E는 모두 0점이라 Google 순서 그대로다.)
-        assertThat(reordered).isGreaterThanOrEqualTo(2);
+        // C도 0 벡터 신호를 제외한 유한한 신호로 재정렬되고, D·E는 모두 0점이라 Google 순서 그대로다.
+        assertThat(reordered).isGreaterThanOrEqualTo(3);
     }
 }

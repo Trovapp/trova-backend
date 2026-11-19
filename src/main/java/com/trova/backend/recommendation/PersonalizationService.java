@@ -75,7 +75,7 @@ public class PersonalizationService {
 
     /**
      * 후보 여러 개의 personalizationScore를 SQL 한 번으로 계산한다(#482). 후보마다 부르면 후보 수 × 2번
-     * (임베딩 읽기 + 유사 신호 찾기) DB를 오갔다. 점수는 후보별로 같은 top-5 유사도를 같은 순서로 평균한 값이다.
+     * (임베딩 읽기 + 유사 신호 찾기) DB를 오갔다. 점수는 후보별 top-5 중 유한한 유사도를 같은 순서로 평균한 값이다.
      * 맵에 없는 후보는 0점(임베딩 없음·신호 없음). 조회가 실패하면 personalizationScore처럼 모두 0점으로 폴백한다.
      */
     public Map<Long, Double> personalizationScores(Long userId, List<Place> candidates) {
@@ -97,7 +97,8 @@ public class PersonalizationService {
         Map<Long, Double> scores = new HashMap<>();
         // retrieveAndScore와 같은 계산(같은 순서의 DoubleStream 평균)이라 점수가 비트 단위로 같다.
         similaritiesById.forEach((id, similarities) -> scores.put(id,
-                similarities.stream().mapToDouble(Double::doubleValue).average().orElse(0.0)));
+                similarities.stream().mapToDouble(Double::doubleValue)
+                        .filter(Double::isFinite).average().orElse(0.0)));
         return scores;
     }
 
@@ -191,7 +192,10 @@ public class PersonalizationService {
             if (embeddingText.isEmpty()) {
                 return List.of();
             }
-            return userPreferenceSignalRepository.findTopSimilarSignals(user.getId(), embeddingText.get());
+            // 0 벡터 cosine의 NaN은 선호 근거가 아니다. 평균과 이유 생성 모두에서 제외한다(#487).
+            return userPreferenceSignalRepository.findTopSimilarSignals(user.getId(), embeddingText.get()).stream()
+                    .filter(signal -> Double.isFinite(signal.getSimilarity()))
+                    .toList();
         } catch (Exception e) {
             log.warn("개인화 유사 신호 조회 실패, 0점으로 폴백합니다", e);
             return List.of();
