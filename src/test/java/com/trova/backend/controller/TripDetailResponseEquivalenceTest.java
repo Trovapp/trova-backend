@@ -14,6 +14,7 @@ import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
+import com.trova.backend.service.UserAccountService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -56,6 +57,7 @@ class TripDetailResponseEquivalenceTest {
     @Autowired private ItineraryRepository itineraryRepository;
     @Autowired private TripPlaceRepository tripPlaceRepository;
     @Autowired private RequestMappingHandlerAdapter handlerAdapter;
+    @Autowired private UserAccountService userAccountService;
 
     @Test
     void 빈_일차와_선택_필드와_역순_저장이_섞여도_이전_응답과_바이트가_같다() throws Exception {
@@ -147,6 +149,26 @@ class TripDetailResponseEquivalenceTest {
         String deletedBearer = "Bearer " + jwtService.issue(deleted);
         userRepository.delete(deleted);
         mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", deletedBearer))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void 상세를_예열한_사용자가_실제로_탈퇴하면_같은_토큰의_상세_요청은_401이다() throws Exception {
+        User owner = newUser();
+        Trip trip = tripRepository.save(new Trip(owner, "탈퇴 전 여행", null, null));
+        Itinerary day1 = itineraryRepository.save(new Itinerary(trip, 1, null));
+        place(day1, "탈퇴-1", 1, PlaceSource.NORMAL, null, null);
+        String bearer = "Bearer " + jwtService.issue(owner);
+        // 두 번 불러 사용자 ID가 메모리(KnownUsers)에 기억된 상태로 만든다.
+        for (int i = 0; i < 2; i++) {
+            mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
+                    .andExpect(status().isOk());
+        }
+
+        // 테스트 트랜잭션이 없으므로 탈퇴가 커밋되고, 커밋 뒤 기억에서 빠진다(ADR 0036).
+        userAccountService.withdraw(userRepository.findById(owner.getId()).orElseThrow());
+
+        mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
                 .andExpect(status().isUnauthorized());
     }
 
