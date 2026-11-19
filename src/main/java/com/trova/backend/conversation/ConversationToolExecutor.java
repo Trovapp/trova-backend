@@ -150,7 +150,11 @@ public class ConversationToolExecutor {
             rankScoreById.put(placeId, (1 - QUERY_BLEND_WEIGHT) * rankPercentile + QUERY_BLEND_WEIGHT * querySimilarity);
         }
         return candidates.stream()
-                .sorted(Comparator.comparingDouble((AlternativeCandidate c) -> rankScoreById.get(c.placeId())).reversed())
+                // ADR 0051: 비유한 점수는 뒤로 보내고, 무효 후보끼리는 원래 순서를 유지한다.
+                .sorted(Comparator.comparingDouble((AlternativeCandidate c) -> {
+                    double score = rankScoreById.get(c.placeId());
+                    return Double.isFinite(score) ? score : Double.NEGATIVE_INFINITY;
+                }).reversed())
                 .toList();
     }
 
