@@ -1,0 +1,26 @@
+com.trova.backend.recommendation.PersonalizationPgvectorEquivalenceTest: tests=3 failures=0 skipped=0
+com.trova.backend.recommendation.AlternativeReasonTest: tests=3 failures=0 skipped=0
+com.trova.backend.recommendation.AlternativeFinderServiceTest: tests=28 failures=0 skipped=0
+com.trova.backend.controller.AlternativeLatencyMeasurementTest: tests=1 failures=0 skipped=0
+P8 mode=missing-column candidates=0 coldSql=5 coldHibernate=5 warmSql=5.0 hibernateSql=5.0 medianMs=1.604 minMs=1.313 maxMs=2.113
+P8 mode=missing-column candidates=1 coldSql=11 coldHibernate=11 warmSql=9.0 hibernateSql=9.0 medianMs=2.969 minMs=2.613 maxMs=4.342
+P8 mode=missing-column candidates=5 coldSql=15 coldHibernate=15 warmSql=9.0 hibernateSql=9.0 medianMs=3.047 minMs=2.154 maxMs=6.142
+P8 mode=missing-column candidates=20 coldSql=30 coldHibernate=30 warmSql=9.0 hibernateSql=9.0 medianMs=2.296 minMs=2.008 maxMs=2.760
+P8 mode=stored-vector candidates=0 coldSql=5 coldHibernate=5 warmSql=5.0 hibernateSql=5.0 medianMs=0.837 minMs=0.772 maxMs=1.524
+P8 mode=stored-vector candidates=1 coldSql=9 coldHibernate=9 warmSql=9.0 hibernateSql=9.0 medianMs=1.627 minMs=1.453 maxMs=4.497
+P8 mode=stored-vector candidates=5 coldSql=9 coldHibernate=9 warmSql=9.0 hibernateSql=9.0 medianMs=1.558 minMs=1.360 maxMs=2.158
+P8 mode=stored-vector candidates=20 coldSql=9 coldHibernate=9 warmSql=9.0 hibernateSql=9.0 medianMs=1.965 minMs=1.499 maxMs=5.293
+P8 mode=new-vector candidates=0 coldSql=5 coldHibernate=5 warmSql=5.0 hibernateSql=5.0 medianMs=0.632 minMs=0.598 maxMs=0.774
+P8 mode=new-vector candidates=1 coldSql=13 coldHibernate=11 warmSql=9.0 hibernateSql=9.0 medianMs=1.473 minMs=1.090 maxMs=6.616
+P8 mode=new-vector candidates=5 coldSql=25 coldHibernate=15 warmSql=9.0 hibernateSql=9.0 medianMs=1.429 minMs=1.205 maxMs=2.709
+P8 mode=new-vector candidates=20 coldSql=70 coldHibernate=30 warmSql=9.0 hibernateSql=9.0 medianMs=1.595 minMs=1.326 maxMs=2.570
+
+Additional targeted PostgreSQL run: PersonalizationPgvectorEquivalenceTest tests=4 failures=0 skipped=0
+P8 pgvector API candidates=1,5,12 SQL=[9, 9, 9]
+
+Red phase: rule stub 3 failures; fixed SQL 1 failure; default service ordering 1 failure; pgvector comparison missing flag 1 failure.
+Mutations (each restored): score >=0 -> 3 rule failures; default Gemini=true -> 1 service failure; batch replaced with per-candidate retrieval -> 1 SQL failure.
+
+Final full suite: ./gradlew test --offline --console=plain
+{'tests': 1296, 'failures': 0, 'errors': 0, 'skipped': 6}
+com.trova.backend.recommendation.PersonalizationPgvectorEquivalenceTest {'tests': '4', 'failures': '0', 'errors': '0', 'skipped': '0'}

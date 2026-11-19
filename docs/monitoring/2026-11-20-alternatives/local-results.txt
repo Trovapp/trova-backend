@@ -1,0 +1,18 @@
+Command: ./gradlew test --offline --console=plain --tests '*AlternativeLatencyMeasurementTest'
+Result: BUILD SUCCESSFUL; tests=1 failures=0 errors=0 skipped=0
+Test timestamp UTC: 2026-11-19T15:04:32.460Z
+12 scenarios; each 1 first request + 10 warmups + 30 measured HTTP requests
+External API implementations replaced by Mockito beans; H2 only
+
+P8 mode=missing-column candidates=0 coldSql=5 coldHibernate=5 warmSql=5.0 hibernateSql=5.0 medianMs=2.205 minMs=1.882 maxMs=2.622
+P8 mode=missing-column candidates=1 coldSql=12 coldHibernate=12 warmSql=10.0 hibernateSql=10.0 medianMs=3.149 minMs=2.766 maxMs=3.858
+P8 mode=missing-column candidates=5 coldSql=20 coldHibernate=20 warmSql=14.0 hibernateSql=14.0 medianMs=3.222 minMs=2.590 maxMs=6.596
+P8 mode=missing-column candidates=20 coldSql=50 coldHibernate=50 warmSql=29.0 hibernateSql=29.0 medianMs=4.252 minMs=3.793 maxMs=6.107
+P8 mode=stored-vector candidates=0 coldSql=5 coldHibernate=5 warmSql=5.0 hibernateSql=5.0 medianMs=1.045 minMs=0.972 maxMs=1.204
+P8 mode=stored-vector candidates=1 coldSql=11 coldHibernate=11 warmSql=11.0 hibernateSql=11.0 medianMs=2.278 minMs=1.963 maxMs=2.733
+P8 mode=stored-vector candidates=5 coldSql=19 coldHibernate=19 warmSql=19.0 hibernateSql=19.0 medianMs=2.913 minMs=2.486 maxMs=8.690
+P8 mode=stored-vector candidates=20 coldSql=49 coldHibernate=49 warmSql=49.0 hibernateSql=49.0 medianMs=5.205 minMs=4.676 maxMs=5.982
+P8 mode=new-vector candidates=0 coldSql=5 coldHibernate=5 warmSql=5.0 hibernateSql=5.0 medianMs=0.681 minMs=0.628 maxMs=0.855
+P8 mode=new-vector candidates=1 coldSql=15 coldHibernate=13 warmSql=11.0 hibernateSql=11.0 medianMs=1.577 minMs=1.334 maxMs=1.918
+P8 mode=new-vector candidates=5 coldSql=35 coldHibernate=25 warmSql=19.0 hibernateSql=19.0 medianMs=2.490 minMs=2.008 maxMs=8.259
+P8 mode=new-vector candidates=20 coldSql=110 coldHibernate=70 warmSql=49.0 hibernateSql=49.0 medianMs=4.499 minMs=4.179 maxMs=6.135
