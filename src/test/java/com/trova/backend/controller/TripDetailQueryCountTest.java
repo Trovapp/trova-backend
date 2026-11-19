@@ -11,6 +11,8 @@ import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
@@ -36,7 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // 요청마다 독립 영속성 컨텍스트를 사용하도록 테스트 트랜잭션을 두지 않는다.
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(properties = "spring.jpa.properties.hibernate.generate_statistics=true")
+@TestPropertySource(properties = {
+        "spring.jpa.properties.hibernate.generate_statistics=true",
+        "spring.datasource.url=jdbc:h2:mem:trip-detail-query-count;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"
+})
 class TripDetailQueryCountTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private JwtService jwtService;
@@ -46,6 +51,79 @@ class TripDetailQueryCountTest {
     @Autowired private ItineraryRepository itineraryRepository;
     @Autowired private TripPlaceRepository tripPlaceRepository;
     @Autowired private DeleteTripAction deleteTrip;
+    @Autowired private MeterRegistry meterRegistry;
+
+    @Test
+    void 여행_상세의_예열_후_SQL_다섯_회를_요청_지표로_기록하고_ID는_태그에_넣지_않는다() throws Exception {
+        for (int days : new int[] {1, 3}) {
+            int[] counts = new int[days];
+            Arrays.fill(counts, 2);
+            Trip trip = fixture(counts);
+            String bearer = "Bearer " + jwtService.issue(trip.getUser());
+            mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
+                    .andExpect(status().isOk());
+            DistributionSummary summary = meterRegistry.get("trova.db.queries.per.request")
+                    .tags("uri", "/api/trips/{id}", "method", "GET").summary();
+            long beforeCount = summary.count();
+            double beforeTotal = summary.totalAmount();
+            statistics().clear();
+            mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
+                    .andExpect(status().isOk());
+            assertThat(statistics().getPrepareStatementCount()).isEqualTo(5);
+            assertThat(summary.count()).isEqualTo(beforeCount + 1);
+            assertThat(summary.totalAmount() - beforeTotal).isEqualTo(5);
+        }
+        assertThat(meterRegistry.find("trova.db.queries.per.request").meters())
+                .filteredOn(meter -> meter.getId().getTag("uri").startsWith("/api/trips/"))
+                .hasSize(1);
+    }
+
+    @Test
+    void 컨트롤러_예외와_없는_경로_뒤에도_다음_요청은_영부터_세고_원시_경로를_태그로_만들지_않는다() throws Exception {
+        Trip trip = fixture(2);
+        String bearer = "Bearer " + jwtService.issue(trip.getUser());
+        mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
+                .andExpect(status().isOk());
+        DistributionSummary summary = meterRegistry.get("trova.db.queries.per.request")
+                .tags("uri", "/api/trips/{id}", "method", "GET").summary();
+
+        // 1) 컨트롤러 예외(없는 여행): 같은 템플릿에 표본 하나만 남는다.
+        long missingId = 987654321L;
+        long beforeError = summary.count();
+        mockMvc.perform(get("/api/trips/" + missingId).header("Authorization", bearer))
+                .andExpect(status().is4xxClientError());
+        assertThat(summary.count()).isEqualTo(beforeError + 1);
+        assertNextDetailCountsFromZero(trip, bearer, summary);
+
+        // 2) 매핑 없는 /api 경로 404: 어떤 표본도 늘지 않고 원시 경로 태그도 생기지 않는다.
+        long allBefore = totalSamples();
+        mockMvc.perform(get("/api/no-such-path/" + missingId).header("Authorization", bearer))
+                .andExpect(status().isNotFound());
+        assertThat(totalSamples()).isEqualTo(allBefore);
+        assertNextDetailCountsFromZero(trip, bearer, summary);
+
+        assertThat(meterRegistry.find("trova.db.queries.per.request").meters())
+                .allSatisfy(meter -> {
+                    assertThat(meter.getId().getTag("uri")).doesNotContain("no-such-path")
+                            .doesNotContain(String.valueOf(missingId))
+                            .doesNotContain(String.valueOf(trip.getId()));
+                });
+    }
+
+    private void assertNextDetailCountsFromZero(Trip trip, String bearer, DistributionSummary summary) throws Exception {
+        long count = summary.count();
+        double total = summary.totalAmount();
+        statistics().clear();
+        mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
+                .andExpect(status().isOk());
+        assertThat(summary.count()).isEqualTo(count + 1);
+        assertThat(summary.totalAmount() - total).isEqualTo(statistics().getPrepareStatementCount()).isEqualTo(5);
+    }
+
+    private long totalSamples() {
+        return meterRegistry.find("trova.db.queries.per.request").summaries().stream()
+                .mapToLong(DistributionSummary::count).sum();
+    }
 
     private Trip fixture(int... counts) {
         User owner = userRepository.save(new User("google", "detail-count-" + UUID.randomUUID(), "주인", null));

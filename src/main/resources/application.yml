@@ -103,6 +103,9 @@ app:
     terms-version: ${APP_CONSENT_TERMS_VERSION:2026-10-14}
     privacy-version: ${APP_CONSENT_PRIVACY_VERSION:2026-10-14}
   metrics:
+    # P4(RequestDbQueryMetrics): 동기 API 요청의 SQL 제출 횟수(Hibernate + 직접 JDBC batch). SQL·원시 URL은 보관하지 않는다.
+    db-queries:
+      enabled: ${APP_METRICS_DB_QUERIES_ENABLED:true}
     # 운영 지표를 서버가 직접 Grafana Cloud(OTLP)로 보낸다(#358, ADR 0039, OtlpMetricsConfig). 운영 환경 파일에서만 켠다.
     # url은 Grafana Cloud OTLP 주소(…/otlp/v1/metrics), authorization은 "Basic base64(인스턴스ID:토큰)" — 레포에 넣지 않는다.
     otlp:
