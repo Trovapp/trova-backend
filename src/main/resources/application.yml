@@ -98,6 +98,8 @@ management:
         http.server.requests: true
 
 app:
+  alternatives:
+    gemini-explanation-enabled: ${ALTERNATIVES_GEMINI_EXPLANATION_ENABLED:false}
   consent:
     # 개인정보처리방침·약관 개정일과 맞출 것
     terms-version: ${APP_CONSENT_TERMS_VERSION:2026-10-14}

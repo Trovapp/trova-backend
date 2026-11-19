@@ -5,6 +5,7 @@ import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -33,6 +34,7 @@ public interface TripPlaceRepository extends JpaRepository<TripPlace, Long> {
     long countByItinerary_Trip(Trip trip);
 
     // 여행 전체(모든 일차)의 장소 — 대안 후보에서 이미 여행에 있는 곳을 빼는 데 쓴다(#177).
+    @EntityGraph(attributePaths = {"itinerary", "itinerary.trip", "itinerary.trip.user"})
     List<TripPlace> findByItinerary_Trip(Trip trip);
 
     // 여행 목록 요약(#123, #153) — 엔티티 대신 (여행 id, 지역)만 읽는다. TripPlace를 엔티티로 읽으면 기본 EAGER
