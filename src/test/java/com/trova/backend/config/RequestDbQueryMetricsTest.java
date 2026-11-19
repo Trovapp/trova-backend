@@ -177,18 +177,28 @@ class RequestDbQueryMetricsTest {
     }
 
     @Test
-    void 빈이_만들어지면_훅이_켜지고_destroy가_두_번_불려도_한_번만_뺀다() {
-        int before = RequestDbQueryMetrics.liveInstances();
+    void 빈이_만들어지면_훅이_켜지고_마지막_빈이_destroy되면_꺼지며_두_번_불려도_한_번만_뺀다() {
+        // 같은 JVM에 캐시된 다른 테스트 컨텍스트의 빈을 0개로 간주하고, 끝나면 원래 값으로 돌린다.
+        int saved = RequestDbQueryMetrics.replaceLiveInstancesForTest(0);
         SimpleMeterRegistry registry = new SimpleMeterRegistry();
-        RequestDbQueryMetrics metrics = new RequestDbQueryMetrics(registry);
         try {
-            assertThat(RequestDbQueryMetrics.liveInstances()).isEqualTo(before + 1);
+            assertThat(RequestDbQueryMetrics.jdbcHookEnabled).isFalse();
+            RequestDbQueryMetrics first = new RequestDbQueryMetrics(registry);
+            RequestDbQueryMetrics second = new RequestDbQueryMetrics(registry);
+            assertThat(RequestDbQueryMetrics.liveInstances()).isEqualTo(2);
             assertThat(RequestDbQueryMetrics.jdbcHookEnabled).isTrue();
-            metrics.destroy();
-            metrics.destroy();
-            assertThat(RequestDbQueryMetrics.liveInstances()).isEqualTo(before);
-            assertThat(RequestDbQueryMetrics.jdbcHookEnabled).isEqualTo(before > 0);
+
+            first.destroy();
+            first.destroy();
+            assertThat(RequestDbQueryMetrics.liveInstances()).isEqualTo(1);
+            assertThat(RequestDbQueryMetrics.jdbcHookEnabled).isTrue();
+
+            second.destroy();
+            second.destroy();
+            assertThat(RequestDbQueryMetrics.liveInstances()).isZero();
+            assertThat(RequestDbQueryMetrics.jdbcHookEnabled).isFalse();
         } finally {
+            RequestDbQueryMetrics.replaceLiveInstancesForTest(saved);
             registry.close();
         }
     }

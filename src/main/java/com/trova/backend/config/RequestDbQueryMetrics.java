@@ -60,6 +60,13 @@ public class RequestDbQueryMetrics extends OncePerRequestFilter
         return LIVE_INSTANCES.get();
     }
 
+    /** 테스트 전용: 같은 JVM의 다른 컨텍스트 빈과 무관하게 살아 있는 빈 수를 정하고 이전 값을 돌려준다. */
+    static int replaceLiveInstancesForTest(int value) {
+        int previous = LIVE_INSTANCES.getAndSet(value);
+        jdbcHookEnabled = value > 0;
+        return previous;
+    }
+
     @Override
     public void customize(Map<String, Object> hibernateProperties) {
         hibernateProperties.put(AvailableSettings.STATEMENT_INSPECTOR, this);
