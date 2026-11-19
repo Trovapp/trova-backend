@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-11-19 P4 요청당 SQL 분포·힙 밖 메모리 관측 (#475, PR #474)
+
+- 한 것: Hibernate StatementInspector와 요청 ThreadLocal 카운터, 직접 JDBC 두 batch의 항목 수 훅을 추가했다. 요청 완료 시 MVC uri 템플릿·method만 태그로 쓰고 고정 경계 1/3/5/7/10/20으로 DistributionSummary를 기록한다. 비동기 스레드에 카운터를 전달하지 않으며 예외에서도 제거한다. SQL·원시 URL을 저장하지 않고 의존성을 추가하지 않았다.
+- 선택 이유: session statistics는 요청 전체를 포괄하지 못하고 전역 차분은 동시/비동기 SQL을 섞는다. datasource-proxy 대신 기존 inspector와 두 JDBC 훅을 골라 객체/호출 비용을 줄였다. 지표는 제출 시도 수이며 DB 성공 행 수·드라이버 내부 왕복 수는 아니다.
+- 한 것: 기존 JVM nonheap/buffer/thread 지표·HostProcMetrics RSS의 조회식과 별도 패널 검토안을 docs/monitoring에 작성했다. 스레드 스택은 1MiB 가정, 기타는 음수 가능한 진단 잔차로 표시하며 정확한 RSS 분해가 아님을 명시했다. Cloud export·운영 경보·JVM 옵션·systemd는 변경하지 않았다.
+- 검증 상태: 초기 작업 세션은 Gradle 캐시 권한과 별도 캐시 재시도의 DNS 가드로 테스트 시작 전에 차단됐다. 이후 매니저가 컴파일·설정 경로·OTLP 버킷 기대값을 수정하고 비활성 JDBC 훅·컨트롤러 오류/404 경계 테스트를 보강했다. PR #474의 최종 기록 기준 대상 18개 통과, 전체 1,247개 중 1,239개 통과·기존 H2 세션 실패 2개·건너뜀 6개·새 실패 0개다. 실패 2개는 기준 브랜치에서도 재현했다. 비활성화·두 배 카운트·비활성 JDBC 조기 반환 제거 변형은 예상대로 실패하고 원복했다. Codex 검증(낮음 3건 반영)과 Claude 리뷰(낮음만)를 교차로 통과했다. 리뷰 뒤 마지막 빈 `destroy()`에서 훅이 꺼지는 분기를 살아 있는 빈 수를 테스트 안에서 0으로 두고 직접 검증하도록 고쳤으며, 대상 18개를 다시 실행해 통과했다. Windows Python/nice 31개 실패는 이번 맥 결과에 포함하지 않는다.
+- 인계: 매니저가 커밋·push·[PR #474](https://github.com/Trovapp/trova-backend/pull/474) 생성을 마쳤다. 문서의 검증 대기 표현은 최신 결과로 정리했다. [P4 기록](monitoring/2026-11-19-p4-metrics/README.md)에 재현 명령·변형 절차·배포 후 조회식을 남겼다. 운영 배포·DB 접속·루트 .env 복사·머지는 하지 않았다.
+
 ## 2026-11-18 배포 후 에뮬레이터 표본 비교 (#464)
 
 - 한 것: Windows Trova의 기존 화면을 23:14:36~23:24:50 KST(10분 14초) 조회하고 앱 캡처 7장을 남겼다. Windows Chrome 도구는 `ScriptContainedMaliciousContent`로 차단되어 우회하지 않고, 매니저의 23:27 KST 맥 Grafana 조회 전달값(GET·200)을 기록했다.
@@ -3048,3 +3056,11 @@
 - 로컬 H2 기존 테스트3개 통과; 저장소 밖 임시 probe로 여행1/3/5/7/30일 SQL5회, 응답660~81,666바이트를 확인했다. 3일·6장소 DTO/JSON 중앙값0.008/0.060ms, 초안 저장 장소1→100개에서 SQL5회 유지·로딩 엔티티6→204개였다. 운영 시간으로 환산하지 않는다.
 - 추천 후보는 여행 조회 DTO(예열5→2회), 다음 초안 최신job 메타 projection이다. 기존 RTT31.5ms로 SELECT만 5→2일 때94.5ms 절감 후보를 계산하고 P4 확인 조건을 적었다. 운영 DB·서버·API·Grafana·실제 렌더링·현재 RTT는 미측정, 코드와 T16 계측 변경 없음.
 - 필수 전체 build는 1,235개 중 1,227통과·기존 `ApiSessionCreationIntegrationTest` 2실패·6skipped로 실패했다(1m39s). 두 실패 모두 H2 USERS 테이블 없음이며 해당 클래스 단독 재실행은 2개 통과(4s), 대상 여행 테스트3개·임시 probe1개도 통과했다. 기존 공유 H2 간섭과 같은 증상이며 코드는 수정하지 않았다.
+
+## 2026-11-19 여행 상세 SQL 5→2회 P5 (#476)
+
+- 범위: `GET /api/trips/{id}`만. 응답 JSON 바이트 동일·권한 코드 유지·엔티티 매핑 변경 없음이 조건(코디네이터 지시 T18).
+- 비교: A안(`resolveUserId`만, 5→4)은 작지만 EAGER 재조회가 남는다. 5→3(장소·일차 분리)은 쿼리 하나가 더 남는다. B안(머리+소유자 1회, 일차 left join 장소 scalar DTO 1회)을 골랐다 — 일차 수와 무관하게 2회, 엔티티 로딩 0, 매핑은 그대로.
+- 테스트 먼저: `TripDetailResponseEquivalenceTest`(이전 toDetail 참조 조립과 바이트 비교 4건 + 권한 1건)는 구현 전 통과, `TripDetailQueryCountTest` 기대값 2회(1/3/5/7/30일)는 구현 전 3건 실패를 확인했다. 변형(방문 역순·inner join)은 각각 2건·4건 실패, 원복 후 통과.
+- 확인(로컬 H2): 전체 1,252개 중 실패 2개(`ApiSessionCreationIntegrationTest`, H2 USERS 없음)·6 skipped. origin/main(1d50d9c)도 1,247개 중 같은 2개 실패, 단독 실행은 통과라 새 실패 0. MockMvc 중앙값 1일 0.784→0.656ms, 30일·300장소 1.927→1.283ms(전후 각 1회 실행).
+- 남은 것: 운영 효과(배포 뒤 표본), 날짜·이름 변경 응답의 `toDetail(Trip)`도 같은 조회로 바꿀지, 초안 상세 C안. 운영 DB·서버·루트 .env·배포는 쓰지 않았다.

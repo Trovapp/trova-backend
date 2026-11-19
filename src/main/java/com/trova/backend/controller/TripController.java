@@ -17,6 +17,8 @@ import com.trova.backend.recommendation.PlaceReviewService;
 import com.trova.backend.repository.ItineraryRepository;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
+import com.trova.backend.repository.TripDetailHeader;
+import com.trova.backend.repository.TripDetailRow;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.service.CurrentUserService;
@@ -37,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -161,6 +164,16 @@ public class TripController {
                     p.getArrivalTransportMode() != null ? p.getArrivalTransportMode().name() : null,
                     p.getMemo());
         }
+
+        static TripPlaceResponse from(TripDetailRow r) {
+            return new TripPlaceResponse(
+                    r.placeId(), r.placeName(), r.region(), r.category(),
+                    r.latitude(), r.longitude(), r.phone(), r.address(),
+                    r.visitOrder(), r.source().name(), r.googlePlaceId(),
+                    r.visitStartTime(), r.visitEndTime(),
+                    r.arrivalTransportMode() != null ? r.arrivalTransportMode().name() : null,
+                    r.memo());
+        }
     }
 
     public record AlternativeCandidateResponse(
@@ -246,11 +259,31 @@ public class TripController {
     public ResponseEntity<TripDetailResponse> getTrip(
             Authentication authentication, @PathVariable Long id
     ) {
-        User user = currentUserService.resolve(authentication);
-        return tripRepository.findById(id)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()))
-                .map(trip -> ResponseEntity.ok(toDetail(trip)))
+        // 예열 뒤 SQL 2회(#476): 사용자 확인은 메모리(ADR 0036), 머리+소유자 1회, 일차 left join 장소 1회.
+        // 남의 여행과 없는 여행은 머리가 비어 똑같이 404다.
+        Long userId = currentUserService.resolveUserId(authentication);
+        return tripRepository.findDetailHeader(id, userId)
+                .map(header -> ResponseEntity.ok(toDetail(header, tripRepository.findDetailRows(header.id()))))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /** 일차·방문 순서로 정렬된 줄을 한 번 훑어 일차별로 묶는다. 장소 칸이 빈 줄은 빈 일차다. */
+    static TripDetailResponse toDetail(TripDetailHeader header, List<TripDetailRow> rows) {
+        List<ItineraryResponse> days = new ArrayList<>();
+        int i = 0;
+        while (i < rows.size()) {
+            TripDetailRow first = rows.get(i);
+            List<TripPlaceResponse> places = new ArrayList<>();
+            while (i < rows.size() && rows.get(i).itineraryId().equals(first.itineraryId())) {
+                TripDetailRow row = rows.get(i);
+                if (row.placeId() != null) {
+                    places.add(TripPlaceResponse.from(row));
+                }
+                i++;
+            }
+            days.add(new ItineraryResponse(first.itineraryId(), first.day(), first.date(), places));
+        }
+        return new TripDetailResponse(header.id(), header.title(), header.startDate(), header.endDate(), days);
     }
 
     public record SetTripDatesRequest(LocalDate startDate) {
