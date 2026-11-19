@@ -1,7 +1,10 @@
 package com.trova.backend.config;
 
+import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
@@ -11,6 +14,9 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterR
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.prometheus.PrometheusMetricsExportAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.servlet.HandlerMapping;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +32,7 @@ class OtlpMetricsExportTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
                     CompositeMeterRegistryAutoConfiguration.class, PrometheusMetricsExportAutoConfiguration.class))
-            .withUserConfiguration(OtlpMetricsConfig.class)
+            .withUserConfiguration(OtlpMetricsConfig.class, RequestDbQueryMetrics.class)
             .withPropertyValues(
                     "app.metrics.otlp.url=https://example.invalid/otlp/v1/metrics",
                     "app.metrics.otlp.authorization=Basic test",
@@ -45,6 +51,38 @@ class OtlpMetricsExportTest {
             Timer sent = otlp.get("http.server.requests").timer();
             assertThat(sent.getId().getTag("application")).isEqualTo("trova-backend");
             assertThat(sent.takeSnapshot().histogramCounts()).as("p95 계산용 구간별 개수").isNotEmpty();
+        });
+    }
+
+    @Test
+    void 요청_SQL_분포와_기존_JVM_구성_지표가_OTLP_레지스트리에도_등록된다() {
+        runner.withPropertyValues("app.metrics.otlp.enabled=true").run(context -> {
+            MeterRegistry composite = context.getBean(MeterRegistry.class);
+            RequestDbQueryMetrics metrics = context.getBean(RequestDbQueryMetrics.class);
+            MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/trips/123");
+            request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/api/trips/{id}");
+            metrics.doFilter(request, new MockHttpServletResponse(), (req, res) -> {
+                for (int i = 0; i < 5; i++) {
+                    metrics.inspect("select 1");
+                }
+            });
+            OtlpMeterRegistry otlp = context.getBean(OtlpMeterRegistry.class);
+            DistributionSummary summary = otlp.get(RequestDbQueryMetrics.METRIC).summary();
+            assertThat(summary.count()).isEqualTo(1);
+            assertThat(summary.totalAmount()).isEqualTo(5);
+            assertThat(summary.getId().getTag("uri")).isEqualTo("/api/trips/{id}");
+            assertThat(summary.getId().getTag("application")).isEqualTo("trova-backend");
+            // OTLP 스냅샷은 고정 경계 6개 뒤에 +Inf 버킷을 하나 더 낸다.
+            assertThat(summary.takeSnapshot().histogramCounts()).extracting(bucket -> bucket.bucket())
+                    .containsExactly(1.0, 3.0, 5.0, 7.0, 10.0, 20.0, Double.POSITIVE_INFINITY);
+
+            // 운영은 Boot의 기존 binder를 재사용한다. 이 작은 컨텍스트에서만 직접 붙인다.
+            new JvmMemoryMetrics().bindTo(composite);
+            new JvmThreadMetrics().bindTo(composite);
+            assertThat(otlp.find("jvm.memory.used").tag("area", "nonheap").gauges()).isNotEmpty();
+            assertThat(otlp.get("jvm.buffer.memory.used").tag("id", "direct").gauge().value()).isGreaterThanOrEqualTo(0);
+            assertThat(otlp.get("jvm.buffer.memory.used").tag("id", "mapped").gauge().value()).isGreaterThanOrEqualTo(0);
+            assertThat(otlp.get("jvm.threads.live").gauge().value()).isPositive();
         });
     }
 

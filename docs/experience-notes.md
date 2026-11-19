@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-11-19 P4 요청당 SQL 분포·힙 밖 메모리 관측 (검증·커밋 대기)
+
+- 한 것: Hibernate StatementInspector와 요청 ThreadLocal 카운터, 직접 JDBC 두 batch의 항목 수 훅을 추가했다. 요청 완료 시 MVC uri 템플릿·method만 태그로 쓰고 고정 경계 1/3/5/7/10/20으로 DistributionSummary를 기록한다. 비동기 스레드에 카운터를 전달하지 않으며 예외에서도 제거한다. SQL·원시 URL을 저장하지 않고 의존성을 추가하지 않았다.
+- 선택 이유: session statistics는 요청 전체를 포괄하지 못하고 전역 차분은 동시/비동기 SQL을 섞는다. datasource-proxy 대신 기존 inspector와 두 JDBC 훅을 골라 객체/호출 비용을 줄였다. 지표는 제출 시도 수이며 DB 성공 행 수·드라이버 내부 왕복 수는 아니다.
+- 한 것: 기존 JVM nonheap/buffer/thread 지표·HostProcMetrics RSS의 조회식과 별도 패널 검토안을 docs/monitoring에 작성했다. 스레드 스택은 1MiB 가정, 기타는 음수 가능한 진단 잔차로 표시하며 정확한 RSS 분해가 아님을 명시했다. Cloud export·운영 경보·JVM 옵션·systemd는 변경하지 않았다.
+- 검증 상태: 여행 상세 실제 5 SQL 통합 테스트를 먼저 작성했고 단위 테스트 6개와 OTLP/JVM 등록 테스트 1개를 추가했다. Gradle은 사용자 캐시 zip lock 쓰기 가드, 조정자가 허용한 별도 캐시 재시도는 services.gradle.org DNS 차단으로 테스트 시작 전에 실패했다. 테스트 0개 실행으로 전체 통과/실패·변형 검사는 미확인이다. 기존 Windows Python/nice 31개·H2 세션 2개 실패를 이번 결과로 보고하지 않는다.
+- 인계: [P4 기록](monitoring/2026-11-19-p4-metrics/README.md)에 매니저의 대상/전체 빌드 명령, 비활성화/잘못된 카운트 변형 절차, PR 제목·본문 초안과 배포 후 조회식을 남겼다. Git fetch도 메타데이터 쓰기 가드에 막혔으며 조정자가 최신 기준임을 확인해 현재 브랜치를 유지하도록 지시했다. 커밋·push·PR은 매니저 담당으로 변경됐고 운영 배포·DB 접속·루트 .env 복사·머지는 하지 않았다.
+
 ## 2026-11-18 배포 후 에뮬레이터 표본 비교 (#464)
 
 - 한 것: Windows Trova의 기존 화면을 23:14:36~23:24:50 KST(10분 14초) 조회하고 앱 캡처 7장을 남겼다. Windows Chrome 도구는 `ScriptContainedMaliciousContent`로 차단되어 우회하지 않고, 매니저의 23:27 KST 맥 Grafana 조회 전달값(GET·200)을 기록했다.

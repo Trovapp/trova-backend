@@ -11,6 +11,8 @@ import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
@@ -36,7 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // 요청마다 독립 영속성 컨텍스트를 사용하도록 테스트 트랜잭션을 두지 않는다.
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(properties = "spring.jpa.properties.hibernate.generate_statistics=true")
+@TestPropertySource(properties = {
+        "spring.jpa.properties.hibernate.generate_statistics=true",
+        "spring.datasource.url=jdbc:h2:mem:trip-detail-query-count;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"
+})
 class TripDetailQueryCountTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private JwtService jwtService;
@@ -46,6 +51,32 @@ class TripDetailQueryCountTest {
     @Autowired private ItineraryRepository itineraryRepository;
     @Autowired private TripPlaceRepository tripPlaceRepository;
     @Autowired private DeleteTripAction deleteTrip;
+    @Autowired private MeterRegistry meterRegistry;
+
+    @Test
+    void 여행_상세의_예열_후_SQL_다섯_회를_요청_지표로_기록하고_ID는_태그에_넣지_않는다() throws Exception {
+        for (int days : new int[] {1, 3}) {
+            int[] counts = new int[days];
+            Arrays.fill(counts, 2);
+            Trip trip = fixture(counts);
+            String bearer = "Bearer " + jwtService.issue(trip.getUser());
+            mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
+                    .andExpect(status().isOk());
+            DistributionSummary summary = meterRegistry.get("trova.db.queries.per.request")
+                    .tags("uri", "/api/trips/{id}", "method", "GET").summary();
+            long beforeCount = summary.count();
+            double beforeTotal = summary.totalAmount();
+            statistics().clear();
+            mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
+                    .andExpect(status().isOk());
+            assertThat(statistics().getPrepareStatementCount()).isEqualTo(5);
+            assertThat(summary.count()).isEqualTo(beforeCount + 1);
+            assertThat(summary.totalAmount() - beforeTotal).isEqualTo(5);
+        }
+        assertThat(meterRegistry.find("trova.db.queries.per.request").meters())
+                .filteredOn(meter -> meter.getId().getTag("uri").startsWith("/api/trips/"))
+                .hasSize(1);
+    }
 
     private Trip fixture(int... counts) {
         User owner = userRepository.save(new User("google", "detail-count-" + UUID.randomUUID(), "주인", null));

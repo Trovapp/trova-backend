@@ -1,5 +1,6 @@
 package com.trova.backend.repository;
 
+import com.trova.backend.config.RequestDbQueryMetrics;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -30,6 +31,7 @@ public class PlaceEmbeddingJdbcRepository {
         List<Object[]> args = embeddingLiteralsByPlaceId.entrySet().stream()
                 .map(e -> new Object[]{e.getValue(), e.getKey()})
                 .toList();
+        RequestDbQueryMetrics.recordJdbcStatements(args.size());
         jdbcTemplate.batchUpdate(UPDATE_SQL, args);
     }
 }

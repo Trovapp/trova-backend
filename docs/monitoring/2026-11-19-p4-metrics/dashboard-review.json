@@ -1,0 +1,81 @@
+{
+  "uid": "trova-p4-review",
+  "title": "Trova P4 검토안 — SQL·힙 밖 메모리 (미반영)",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["trova", "review-only"],
+  "time": {"from": "now-6h", "to": "now"},
+  "refresh": "1m",
+  "templating": {"list": [{"name": "datasource", "type": "datasource", "query": "prometheus"}]},
+  "panels": [
+    {
+      "id": 1,
+      "title": "요청당 SQL 평균 — uri·method",
+      "description": "동기 매핑 API의 SQL 제출 시도 수. 실패 SQL 포함, 요청 밖 작업 제외. 요청 없는 구간은 빈 값.",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
+      "targets": [{"refId": "A", "expr": "sum by (uri, method) (rate(trova_db_queries_per_request_sum{job=\"trova-prod\"}[5m])) / sum by (uri, method) (rate(trova_db_queries_per_request_count{job=\"trova-prod\"}[5m]))", "legendFormat": "{{method}} {{uri}}"}]
+    },
+    {
+      "id": 2,
+      "title": "요청당 SQL p95 — 6개 경계의 보간 추정",
+      "description": "경계 1/3/5/7/10/20. 정수 SQL 수의 정확한 p95가 아니며 20 초과를 구분하지 못함. 표본 수를 함께 확인.",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
+      "targets": [{"refId": "A", "expr": "histogram_quantile(0.95, sum by (le, uri, method) (rate(trova_db_queries_per_request_bucket{job=\"trova-prod\"}[5m])))", "legendFormat": "{{method}} {{uri}}"}]
+    },
+    {
+      "id": 3,
+      "title": "힙 밖 JVM 사용량·buffer — RSS 조각이 아닌 비교선",
+      "description": "Metaspace/Compressed Class Space/CodeHeap은 JVM used. buffer는 할당·매핑 크기. RSS와 정확히 합산할 수 없어 누적하지 않음. 실제 id 라벨을 먼저 확인.",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 8},
+      "fieldConfig": {"defaults": {"unit": "bytes", "custom": {"stacking": {"mode": "none", "group": "A"}}}, "overrides": []},
+      "targets": [
+        {"refId": "A", "expr": "sum by (job, instance, id) (jvm_memory_used_bytes{job=\"trova-prod\",area=\"nonheap\"})", "legendFormat": "{{instance}} {{id}} used"},
+        {"refId": "B", "expr": "sum by (job, instance, id) (jvm_buffer_memory_used_bytes{job=\"trova-prod\"})", "legendFormat": "{{instance}} {{id}} buffer"}
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Java RSS·heap used·heap committed",
+      "description": "RSS는 상주량, heap used/committed는 JVM 회계. 서로 다른 개념이므로 누적하지 않음.",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 8},
+      "fieldConfig": {"defaults": {"unit": "bytes", "custom": {"stacking": {"mode": "none", "group": "A"}}}, "overrides": []},
+      "targets": [
+        {"refId": "A", "expr": "max by (job, instance) (host_process_memory_rss_bytes{job=\"trova-prod\"})", "legendFormat": "{{instance}} RSS"},
+        {"refId": "B", "expr": "sum by (job, instance) (jvm_memory_used_bytes{job=\"trova-prod\",area=\"heap\"})", "legendFormat": "{{instance}} heap used"},
+        {"refId": "C", "expr": "sum by (job, instance) (jvm_memory_committed_bytes{job=\"trova-prod\",area=\"heap\"})", "legendFormat": "{{instance}} heap committed"}
+      ]
+    },
+    {
+      "id": 5,
+      "title": "스레드 스택 가정값·기타 진단 잔차 — 실측 RSS 분해 아님",
+      "description": "스택은 Java live threads × 1MiB 가정이며 운영 Xss 확인값이 아님. JVM native threads/상주량과 다름. 잔차=RSS-JVM used-buffer-가정 스택으로 음수 가능. GC/libc/JNI/heap 여유/회계 차이가 섞여 기타 RSS로 해석하면 안 됨.",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 17},
+      "fieldConfig": {"defaults": {"unit": "bytes", "custom": {"stacking": {"mode": "none", "group": "A"}}}, "overrides": []},
+      "targets": [
+        {"refId": "A", "expr": "max by (job, instance) (jvm_threads_live{job=\"trova-prod\"}) * 1048576", "legendFormat": "{{instance}} 스택 (1MiB 가정)"},
+        {"refId": "B", "expr": "max by (job, instance) (host_process_memory_rss_bytes{job=\"trova-prod\"}) - sum by (job, instance) (jvm_memory_used_bytes{job=\"trova-prod\"}) - sum by (job, instance) (jvm_buffer_memory_used_bytes{job=\"trova-prod\"}) - max by (job, instance) (jvm_threads_live{job=\"trova-prod\"}) * 1048576", "legendFormat": "{{instance}} 기타 진단 잔차 (실측 아님)"}
+      ]
+    },
+    {
+      "id": 6,
+      "title": "SQL 지표 표본 수 — 최근 1시간",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 17},
+      "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
+      "targets": [{"refId": "A", "expr": "sum by (uri, method) (increase(trova_db_queries_per_request_count{job=\"trova-prod\"}[1h]))", "legendFormat": "{{method}} {{uri}}"}]
+    }
+  ]
+}
