@@ -6,7 +6,10 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=PostgreSQL
+    # 컨텍스트마다 다른 메모리 DB를 쓴다(#482). 이름이 같으면 컨텍스트 캐시(32개)에서 밀려 닫히는 컨텍스트의
+    # create-drop이 아직 살아 있는 다른 컨텍스트의 표까지 지워, 실행 순서에 따라 "Table USERS not found"로 깨졌다.
+    # random.uuid는 읽을 때마다 새 값이지만, 이 URL은 컨텍스트가 DataSource를 만들 때 한 번만 읽힌다.
+    url: jdbc:h2:mem:testdb-${random.uuid};MODE=PostgreSQL
     driver-class-name: org.h2.Driver
     username: sa
     password:

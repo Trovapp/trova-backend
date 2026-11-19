@@ -61,9 +61,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // 빈 시간 추천(P7, #482)의 응답·권한·SQL 수를 테스트 트랜잭션 없이 실제 HTTP 요청으로 잰다.
 // SQL 수는 운영 P4 지표(trova.db.queries.per.request)와 같은 계측기로 센다.
 // P2/P3/P6 성능 테스트의 격리 컨텍스트를 그대로 공유한다(설정이 한 글자라도 다르면 새 컨텍스트가 생긴다).
-// 새 컨텍스트를 만들면 컨텍스트 캐시(32개)가 넘쳐 기본 testdb 컨텍스트가 밀려 닫히고, create-drop으로 공유 testdb 표가
-// 지워져 다른 테스트(ApiSessionCreationIntegrationTest)가 깨졌다(@MockitoBean으로 만든 첫 버전에서 3회 연속 확인).
-// 그래서 외부 API는 @MockitoBean 대신 테스트 동안만 서비스 필드에 목을 끼우고 끝나면 되돌린다.
+// 새 컨텍스트를 만들면 컨텍스트 캐시(32개)가 넘쳐 다른 컨텍스트가 밀려 닫힌다. 예전에는 기본 testdb 이름이 모두 같아
+// create-drop이 공유 표를 지워 ApiSessionCreationIntegrationTest가 깨졌다(지금은 테스트 설정이 컨텍스트마다 다른 DB를 쓴다).
+// 컨텍스트 수를 늘리지 않도록 외부 API는 @MockitoBean 대신 테스트 동안만 서비스 필드에 목을 끼우고 끝나면 되돌린다.
 // H2에는 pgvector embedding 칸이 없어 임베딩 존재 확인·개인화 조회가 실패하고 0점으로 폴백한다(Gemini 호출 없음, 아래에서 확인).
 @SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:p2-query-count;MODE=PostgreSQL;DB_CLOSE_DELAY=-1")
 @AutoConfigureMockMvc
