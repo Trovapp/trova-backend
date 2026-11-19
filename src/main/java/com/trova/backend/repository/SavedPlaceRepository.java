@@ -27,6 +27,14 @@ public interface SavedPlaceRepository extends JpaRepository<SavedPlace, Long> {
             order by p.createdAt desc, p.id desc
             """)
     List<SavedPlaceListRow> findListRowsByUserId(Long userId);
+
+    // 초안 상세의 현재 번호 계산용(#473) — 장소가 하나라도 남은 작업의 번호·주소만, 작업마다 한 행. 상태는 보지 않는다.
+    @Query("""
+            select distinct new com.trova.backend.repository.JobSourceUrlRow(j.id, j.sourceUrl)
+            from SavedPlace p join p.processingJob j
+            where p.user.id = :userId
+            """)
+    List<JobSourceUrlRow> findJobsWithPlacesByUserId(Long userId);
     Optional<SavedPlace> findByIdAndUser(Long id, User user);
     List<SavedPlace> findByProcessingJob(ProcessingJob processingJob);
     List<SavedPlace> findByProcessingJobAndDayNumberOrderByOrderInDayAsc(ProcessingJob processingJob, Integer dayNumber);

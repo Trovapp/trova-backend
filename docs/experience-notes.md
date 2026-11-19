@@ -3064,3 +3064,11 @@
 - 테스트 먼저: `TripDetailResponseEquivalenceTest`(이전 toDetail 참조 조립과 바이트 비교 4건 + 권한 1건)는 구현 전 통과, `TripDetailQueryCountTest` 기대값 2회(1/3/5/7/30일)는 구현 전 3건 실패를 확인했다. 변형(방문 역순·inner join)은 각각 2건·4건 실패, 원복 후 통과.
 - 확인(로컬 H2): 전체 1,252개 중 실패 2개(`ApiSessionCreationIntegrationTest`, H2 USERS 없음)·6 skipped. origin/main(1d50d9c)도 1,247개 중 같은 2개 실패, 단독 실행은 통과라 새 실패 0. MockMvc 중앙값 1일 0.784→0.656ms, 30일·300장소 1.927→1.283ms(전후 각 1회 실행).
 - 남은 것: 운영 효과(배포 뒤 표본), 날짜·이름 변경 응답의 `toDetail(Trip)`도 같은 조회로 바꿀지, 초안 상세 C안. 운영 DB·서버·루트 .env·배포는 쓰지 않았다.
+
+## 2026-11-19 초안 상세 SQL 5→3회 P6 (#473)
+
+- 범위: `GET /api/trip-drafts/{id}`만. 응답 JSON 동일·`currentJobIds` 의미 유지·권한 코드 유지·엔티티 매핑 변경 없음이 조건(코디네이터 지시 T19). 이전 작업자가 남긴 구현·테스트를 이어받았다.
+- 선택: 분석 문서 C안. 사용자 확인을 `resolveUserId`로, 원래 작업과 장소가 남은 작업은 번호·주소 scalar(`JobSourceUrlRow`)로 읽는다. P3의 "최신 DONE"으로 바꾸면 장소가 남은 실패 작업을 가리키는 기존 동작이 달라져 상태 필터는 넣지 않았다. 두 조회를 커넥션 하나로 읽으려고 읽기 트랜잭션은 유지했다.
+- 테스트 먼저: `TripDraftDetailReadPerformanceTest` 5건(변경 전 경로를 옮긴 기준 JSON과 비교, 상태·저장 수·혼합 영상·권한, SQL·엔티티 수). 구현 전에는 SQL·엔티티 2건 실패·3건 통과를 확인했다. 변형(DONE 조건 추가·사용자 조건 무너뜨림)은 각각 1건 실패, 원복 후 통과.
+- 확인(로컬 H2): READY 저장 1/20/100개 SQL 5→3회, 엔티티 6/44/204→2개, MockMvc 중앙값 2.555/2.195/2.220→1.605/1.395/1.425ms. 전체 1,258개 중 실패 2개(`ApiSessionCreationIntegrationTest`, H2 USERS 없음)·6 skipped. origin/main(36ae8d8)도 1,253개 중 같은 2개 실패라 새 실패 0.
+- 남은 것: 운영 효과(배포 뒤 READY·진행 중 상태별 표본), 장소가 남은 작업 행 수는 여전히 사용자 이력에 비례(엔티티 대신 두 칸). 운영 DB·서버·루트 .env·배포는 쓰지 않았다.

@@ -127,11 +127,12 @@ public class TripDraftController {
         };
     }
 
+    // 만드는 중이면 앱이 1초마다 부른다 — 사용자 ID만 메모리에서 확인해 사용자 행 조회를 줄인다(ADR 0036, #473).
     @GetMapping("/api/trip-drafts/{id}")
     public ResponseEntity<DraftResponse> get(Authentication authentication, @PathVariable Long id) {
-        User user = currentUserService.resolve(authentication);
+        Long userId = currentUserService.resolveUserId(authentication);
         return tripDraftRepository.findById(id)
-                .filter(d -> d.getUser().getId().equals(user.getId()))
+                .filter(d -> d.getUser().getId().equals(userId))
                 .map(d -> ResponseEntity.ok(DraftResponse.from(d, tripPlannerService.currentJobIds(d))))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
