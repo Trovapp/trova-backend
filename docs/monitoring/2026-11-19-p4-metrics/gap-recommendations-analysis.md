@@ -80,19 +80,51 @@
 - 구현 전: 변경 전 코드로 새 통합 테스트를 돌려 SQL 테스트 3건 실패·동일성/권한/탈퇴 3건 통과를 확인했다.
 - 변형 검사(모두 원복 후 통과): 소유자 조건 무력화 → 1건 실패(권한), left join → inner join → 3건 실패, 방문 순서 역순 → 3건 실패, 개인화 기본값 0→1 → 단위 1건 실패.
 
+### pgvector 실제 동일성 (로컬 Mac, Docker 컨테이너, Codex 교차 검증 뒤 추가)
+
+H2에는 embedding 칸이 없어 위 테스트에서는 이전·새 경로가 모두 0점으로 폴백한다. 그래서 새 SQL이 틀려도 통과할 수 있었다. `PersonalizationPgvectorEquivalenceTest`는 Testcontainers로 `pgvector/pgvector:0.8.1-pg17`(운영 Supabase와 같은 PostgreSQL 17) 컨테이너를 띄운다. 그 위에 Hibernate가 표를 만들고, 운영처럼 `vector(768)` 칸을 붙인 뒤 두 경로를 같은 데이터로 비교한다. Docker가 없는 환경(CI 등)에서는 `@Testcontainers(disabledWithoutDocker = true)`로 건너뛴다. 운영 DB·개발 DB·`.env`는 쓰지 않았고, 컨테이너는 Testcontainers가 실행이 끝나면 지운다.
+
+- 데이터:
+  - 사용자 5명:
+    - A: 신호 11개. 무작위 7곳, 같은 벡터 두 곳(거리 동점), 같은 장소에 신호 두 번(중복), embedding 없는 곳, 0 벡터.
+    - B: 신호 6개. 후보 -W에서 5위와 6위가 동점이라 top-5 경계가 동점이다.
+    - C: 0 벡터가 top-5 안에 들어간다.
+    - D: 신호 없음.
+    - E: embedding 없는 신호만.
+  - 후보 14개: 무작위·신호 근처 10개, 신호와 같은 벡터, -W, 0 벡터, embedding 없음. 빈 후보 목록도 따로 넣었다.
+- 줄 단위: 후보마다 이전 `findEmbeddingText`→`findTopSimilarSignals`의 top-5 유사도 목록과 새 `findCandidateSimilarities`를 후보별로 모은 목록이 **순서까지 비트 단위로 같다**. 대상은 70쌍(5명 × 14개)이다.
+- 점수: `personalizationScore`(이전)와 `personalizationScores`(새)가 70쌍 모두 비트 단위로 같다.
+  - 0이 아닌 점수 24쌍, NaN 15쌍, 나머지 31쌍은 0이다.
+  - NaN은 0 벡터의 코사인 거리에서 나온다. 이전 경로도 같은 NaN이다.
+- 최종 추천 순서: 사용자 5명마다 `findGaps`(새 경로, Google 목)의 추천 순서가, 이전 정렬(후보마다 `personalizationScore` × 가중치)과 같다.
+  - 기본 점수를 모두 같게 해서 순서는 개인화로만 갈린다.
+  - A·B는 Google 순서와 다르게 재정렬됐으므로, 0점끼리만 맞춘 비교가 아니다.
+- 변형 검사(원복 후 통과): 묶음 SQL `LIMIT 5→6`은 2건 모두 실패했다. 바깥 정렬을 거리 역순으로 바꾸면 줄 단위 1건이 실패했다.
+
 ### 테스트 컨텍스트 주의
 
-처음에는 `@MockitoBean`으로 새 스프링 컨텍스트를 만들었는데, 전체 실행에서 `ApiSessionCreationIntegrationTest` 2건이 `Table "USERS" not found`로 실패했다. 기본 `testdb`를 쓰는 컨텍스트가 30개 가까이 있고, 컨텍스트 캐시(32개)에서 밀려 닫히는 컨텍스트가 create-drop으로 공유 testdb 표를 지운다(이번 실행에서는 `ProcessingJobRepositoryTest` 시작 때 HikariPool-3(testdb) 컨텍스트가 밀려 닫힘). 그래서 새 테스트는 P2/P3/P6 성능 테스트의 격리 컨텍스트(`p2-query-count`)를 그대로 공유하고, 외부 클라이언트는 테스트 동안만 서비스 필드에 목을 끼웠다 되돌린다. 컨텍스트는 늘지 않았지만 공유 컨텍스트의 접근 순서가 바뀌어 같은 2건이 여전히 난다(아래).
+처음에는 `@MockitoBean`으로 새 스프링 컨텍스트를 만들었는데, 전체 실행에서 `ApiSessionCreationIntegrationTest` 2건이 `Table "USERS" not found`로 실패했다. 기본 `testdb`를 쓰는 컨텍스트가 30개 가까이 있고, 컨텍스트 캐시(32개)에서 밀려 닫히는 컨텍스트가 create-drop으로 공유 testdb 표를 지운다(이번 실행에서는 `ProcessingJobRepositoryTest` 시작 때 HikariPool-3(testdb) 컨텍스트가 밀려 닫힘). 그래서 새 테스트는 P2/P3/P6 성능 테스트의 격리 컨텍스트(`p2-query-count`)를 그대로 공유하고, 외부 클라이언트는 테스트 동안만 서비스 필드에 목을 끼웠다 되돌린다. 컨텍스트는 늘지 않았지만 공유 컨텍스트의 접근 순서가 바뀌어 같은 2건이 여전히 났다(아래).
+
+**정리(Codex 교차 검증 뒤):**
+- 테스트 설정(`src/test/resources/application.yml`)의 기본 H2 URL을 `jdbc:h2:mem:testdb-${random.uuid}`로 바꿨다.
+  - 컨텍스트마다 다른 메모리 DB를 쓰므로, 밀려 닫히는 컨텍스트의 create-drop이 다른 컨텍스트의 표를 지우지 못한다.
+  - URL은 DataSource를 만들 때 한 번만 읽힌다.
+- 대신 캐시된 컨텍스트가 각자 데이터를 들고 있어 테스트 JVM 힙이 늘었다.
+  - Gradle 기본 512MiB에서는 뒤쪽 내장 Kafka 테스트가 `OutOfMemoryError`로 시작하지 못했다. 실행 2회에서 각각 3건, 1건이다.
+  - 그래서 `build.gradle`의 `test` 작업에 `maxHeapSize = '1g'`를 명시했다.
+- pgvector 테스트 컨텍스트는 컨테이너와 함께 쓸모가 없어지므로 `@DirtiesContext`로 바로 닫는다.
 
 ## 전체 테스트 (로컬, `./gradlew test --offline`, 단독 실행)
 
 | 대상 | 결과 |
 |---|---|
-| 이 브랜치(최종) | 1,272개 중 실패 2·건너뜀 6. 실패는 `ApiSessionCreationIntegrationTest` 2건(`Table "USERS" not found`), 단독 실행은 통과 |
-| origin/main `8dc5db5` 그대로 | 이번 1회 실행에서는 전체 통과 |
+| 이 브랜치(첫 PR) | 1,272개 중 실패 2·건너뜀 6. 실패는 `ApiSessionCreationIntegrationTest` 2건(`Table "USERS" not found`), 단독 실행은 통과 |
+| 컨텍스트별 DB + pgvector 테스트, 힙 기본값 | 1,272개 완료·실패 3(내장 Kafka 3건 `OutOfMemoryError`) → `@DirtiesContext` 뒤 1,273개 완료·실패 1(내장 Kafka 1건 같은 원인) |
+| **이 브랜치(최종, 힙 1GiB)** | **1,274개 중 실패 0·건너뜀 6**. ApiSession 3건 통과, pgvector 2건 실제 실행(건너뜀 아님) |
+| origin/main `8dc5db5` 그대로 | 이번 1회 실행에서는 전체 통과(1,272개·건너뜀 6) |
 | 변경 전 코드 + 새 통합 테스트 | 새 SQL 테스트 3건만 실패(기대), ApiSession은 통과 |
 
-ApiSession 2건은 P4·P5·P6 기록(origin/main `1d50d9c`·`36ae8d8`에서도 실패)과 같은 공유 testdb 수명 간섭이고, 이 변경의 코드 경로와 관계가 없다(단독 통과, 표가 통째로 없음). 다만 이번 브랜치에서는 실행마다 재현됐고 같은 날 origin/main에서는 통과했으므로 "기존 실패"로 넘기지 말고 테스트 구성 문제로 따로 다뤄야 한다(아래 남은 것).
+ApiSession 2건은 P4·P5·P6 기록(origin/main `1d50d9c`·`36ae8d8`에서도 실패)과 같은 공유 testdb 수명 간섭이었다. 위 정리로 테스트 구성에서 원인을 없앴다. 건너뜀 6건은 main과 같다(Docker가 없으면 pgvector 2건이 더해져 8건).
 
 ## 로컬 전후 (H2, MockMvc, 10회 예열 뒤 30회 중앙값, 전후 각 1회 실행)
 
@@ -117,5 +149,6 @@ H2는 네트워크가 없고 개인화 SQL이 즉시 실패하므로 운영 시�
 ## 남은 것
 
 - 운영 배포 뒤 표본으로 SQL/요청과 시간 확인.
-- `findCandidateSimilarities`는 H2에서 실행할 수 없어 SQL 자체는 운영 Postgres 문법으로만 작성·검토했다. 배포 전에 개발 DB(Postgres+pgvector)에서 결과 동일성(후보별 이전 두 쿼리와 비교)을 한 번 확인하는 것을 권한다.
-- 공유 testdb create-drop + 컨텍스트 캐시 32개 문제(ApiSession 2건) 정리: 기본 컨텍스트 수를 줄이거나 testdb를 `create`로 바꾸거나 캐시 크기를 늘리는 안을 별도 작업으로.
+- pgvector 동일성은 로컬 컨테이너(합성 데이터 70쌍)로 확인했다. 운영 데이터 분포에서의 묶음 SQL DB 안 시간은 재지 않았다. 배포 뒤 SQL/요청과 시간 표본으로 확인한다.
+- Docker가 없는 CI에서는 pgvector 비교 2건이 건너뛰어진다. 이 SQL을 고치면 Docker가 있는 곳에서 그 테스트를 한 번 돌려야 한다.
+- 기본 H2를 컨텍스트별로 나눈 뒤 테스트 힙을 1GiB로 올렸다. 테스트 컨텍스트 수를 줄이는 정리는 별도 작업 후보다.
