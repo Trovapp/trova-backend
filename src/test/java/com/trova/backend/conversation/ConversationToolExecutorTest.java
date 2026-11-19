@@ -1,6 +1,8 @@
 package com.trova.backend.conversation;
 
 import com.trova.backend.entity.Place;
+import com.trova.backend.embedding.GeminiEmbeddingClient;
+import com.trova.backend.embedding.GeminiTextClient;
 import com.trova.backend.entity.SignalType;
 import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.AlternativeCandidate;
@@ -15,6 +17,8 @@ import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,6 +34,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -138,6 +143,75 @@ class ConversationToolExecutorTest {
 
         assertThat(result.candidates()).hasSize(1);
         assertThat(result.candidates().get(0).placeId()).isEqualTo(7L);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"find_alternatives", "get_gap_recommendations"})
+    void NaN_후보는_유한_후보_뒤로_가고_유한_점수와_동점_순서를_유지한다(String tool) {
+        // 혼합 점수: NaN, 0.25, 0.75, 0.25. 동점은 입력 순서를 유지한다.
+        assertQueryOrder(tool, Map.of(1L, Double.NaN, 2L, -0.25, 3L, 1.0, 4L, 0.25),
+                3L, 2L, 4L, 1L);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"find_alternatives", "get_gap_recommendations"})
+    void 전부_NaN이면_원래_순서를_유지한다(String tool) {
+        // 0 벡터 query의 cosine 조회 결과는 모든 후보가 NaN이다.
+        assertQueryOrder(tool, Map.of(1L, Double.NaN, 2L, Double.NaN, 3L, Double.NaN, 4L, Double.NaN),
+                1L, 2L, 3L, 4L);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"find_alternatives", "get_gap_recommendations"})
+    void 무한대도_후순위이고_무효_후보끼리는_원래_순서를_유지한다(String tool) {
+        assertQueryOrder(tool, Map.of(1L, Double.NEGATIVE_INFINITY, 2L, Double.NaN,
+                3L, Double.POSITIVE_INFINITY, 4L, -1.0), 4L, 1L, 2L, 3L);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"find_alternatives", "get_gap_recommendations"})
+    void 유한_점수의_기존_재정렬과_누락된_유사도의_0점_처리를_유지한다(String tool) {
+        assertQueryOrder(tool, Map.of(1L, -0.75, 3L, 1.0, 4L, 0.0), 3L, 2L, 1L, 4L);
+    }
+
+    private void assertQueryOrder(String tool, Map<Long, Double> scores, Long... expected) {
+        List<AlternativeCandidate> candidates = List.of(
+                candidate(1L, "장소1"), candidate(2L, "장소2"), candidate(3L, "장소3"), candidate(4L, "장소4"));
+        ConversationState state = new ConversationState(1L, 10L, 100L, 2, 50L);
+        if (tool.equals("find_alternatives")) {
+            when(alternativeFinderService.findAlternatives(eq(user), eq(100L), any(AlternativeFilter.class), eq(false)))
+                    .thenReturn(Optional.of(candidates));
+        } else {
+            when(gapRecommendationService.findGaps(user, 10L, 2))
+                    .thenReturn(Optional.of(List.of(new GapRecommendationService.Gap(50L, 60L, 40, candidates))));
+        }
+        when(personalizationService.queryScores("메시지", List.of(1L, 2L, 3L, 4L))).thenReturn(scores);
+
+        ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state,
+                new GeminiChatClient.FunctionCall(tool, Map.of(), "sig"), "메시지");
+
+        assertThat(result.candidates()).extracting(AlternativeCandidate::placeId).containsExactly(expected);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"find_alternatives", "get_gap_recommendations"})
+    void 실제_queryScores에_0_벡터가_들어오면_후보_순서를_유지한다(String tool) {
+        GeminiEmbeddingClient embeddingClient = mock(GeminiEmbeddingClient.class);
+        when(embeddingClient.embed("메시지")).thenReturn(Optional.of(new float[] {0, 0}));
+        List<PlaceRepository.PlaceSimilarity> rows = List.of(1L, 2L, 3L, 4L).stream()
+                .map(id -> {
+                    PlaceRepository.PlaceSimilarity row = mock(PlaceRepository.PlaceSimilarity.class);
+                    when(row.getId()).thenReturn(id);
+                    when(row.getSimilarity()).thenReturn(Double.NaN);
+                    return row;
+                }).toList();
+        when(placeRepository.findSimilarityToQuery(List.of(1L, 2L, 3L, 4L), "[0.0,0.0]"))
+                .thenReturn(rows);
+        PersonalizationService realService = new PersonalizationService(placeRepository,
+                userPreferenceSignalRepository, mock(GeminiTextClient.class), embeddingClient, apiCallLogService);
+
+        assertQueryOrder(tool, realService.queryScores("메시지", List.of(1L, 2L, 3L, 4L)), 1L, 2L, 3L, 4L);
+        verify(placeRepository).findSimilarityToQuery(List.of(1L, 2L, 3L, 4L), "[0.0,0.0]");
     }
 
     @Test
