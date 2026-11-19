@@ -12,6 +12,7 @@ import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
+import com.trova.backend.service.UserAccountService;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
@@ -50,6 +51,7 @@ class TripDraftDetailReadPerformanceTest {
     @Autowired private TripDraftRepository drafts;
     @Autowired private SavedPlaceRepository savedPlaces;
     @Autowired private EntityManagerFactory emf;
+    @Autowired private UserAccountService userAccountService;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -285,6 +287,22 @@ class TripDraftDetailReadPerformanceTest {
         mvc.perform(get("/api/trip-drafts/" + Long.MAX_VALUE).header("Authorization", bearer(owner)))
                 .andExpect(status().isNotFound());
         mvc.perform(get("/api/trip-drafts/" + draft.getId()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void 초안_상세로_예열한_뒤_탈퇴하면_같은_토큰은_기존_초안과_없는_초안_모두_401이다() throws Exception {
+        User owner = user();
+        String bearer = bearer(owner);
+        TripDraft draft = readyDraftWithSaved(owner, 1);
+        read(bearer, draft.getId()); // 사용자 확인을 메모리에 기억시킨다(ADR 0036)
+
+        // 테스트 트랜잭션이 없으므로 탈퇴가 실제로 커밋되고, 커밋 뒤 기억에서 빠진다.
+        userAccountService.withdraw(users.findById(owner.getId()).orElseThrow());
+
+        mvc.perform(get("/api/trip-drafts/" + draft.getId()).header("Authorization", bearer))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/trip-drafts/" + Long.MAX_VALUE).header("Authorization", bearer))
                 .andExpect(status().isUnauthorized());
     }
 }
