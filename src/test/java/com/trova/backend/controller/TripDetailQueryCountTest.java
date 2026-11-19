@@ -54,7 +54,7 @@ class TripDetailQueryCountTest {
     @Autowired private MeterRegistry meterRegistry;
 
     @Test
-    void 여행_상세의_예열_후_SQL_다섯_회를_요청_지표로_기록하고_ID는_태그에_넣지_않는다() throws Exception {
+    void 여행_상세의_예열_후_SQL_두_회를_요청_지표로_기록하고_ID는_태그에_넣지_않는다() throws Exception {
         for (int days : new int[] {1, 3}) {
             int[] counts = new int[days];
             Arrays.fill(counts, 2);
@@ -69,9 +69,9 @@ class TripDetailQueryCountTest {
             statistics().clear();
             mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
                     .andExpect(status().isOk());
-            assertThat(statistics().getPrepareStatementCount()).isEqualTo(5);
+            assertThat(statistics().getPrepareStatementCount()).isEqualTo(2);
             assertThat(summary.count()).isEqualTo(beforeCount + 1);
-            assertThat(summary.totalAmount() - beforeTotal).isEqualTo(5);
+            assertThat(summary.totalAmount() - beforeTotal).isEqualTo(2);
         }
         assertThat(meterRegistry.find("trova.db.queries.per.request").meters())
                 .filteredOn(meter -> meter.getId().getTag("uri").startsWith("/api/trips/"))
@@ -117,7 +117,7 @@ class TripDetailQueryCountTest {
         mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
                 .andExpect(status().isOk());
         assertThat(summary.count()).isEqualTo(count + 1);
-        assertThat(summary.totalAmount() - total).isEqualTo(statistics().getPrepareStatementCount()).isEqualTo(5);
+        assertThat(summary.totalAmount() - total).isEqualTo(statistics().getPrepareStatementCount()).isEqualTo(2);
     }
 
     private long totalSamples() {
@@ -153,10 +153,10 @@ class TripDetailQueryCountTest {
     }
 
     @Test
-    void 일차가_늘어도_상세와_삭제_영향_SQL_수는_고정이다() throws Exception {
+    void 일차가_늘어도_상세는_SQL_두_번이고_삭제_영향은_세_번으로_고정이다() throws Exception {
         List<Long> detailCounts = new ArrayList<>();
         List<Long> impactCounts = new ArrayList<>();
-        for (int days : new int[] {1, 3, 5, 7}) {
+        for (int days : new int[] {1, 3, 5, 7, 30}) {
             int[] counts = new int[days];
             Arrays.fill(counts, 2);
             Trip trip = fixture(counts);
@@ -167,9 +167,9 @@ class TripDetailQueryCountTest {
                     .isEqualTo("여행 1·일차 " + days + "·장소 " + (days * 2));
             impactCounts.add(statistics().getPrepareStatementCount());
         }
-        System.out.println("P1 SQL days=1,3,5,7 detail=" + detailCounts + " impact=" + impactCounts);
-        assertThat(detailCounts).containsOnly(detailCounts.getFirst());
-        assertThat(impactCounts).containsOnly(impactCounts.getFirst());
+        System.out.println("P5 SQL days=1,3,5,7,30 detail=" + detailCounts + " impact=" + impactCounts);
+        assertThat(detailCounts).containsOnly(2L);
+        assertThat(impactCounts).containsOnly(3L);
     }
 
     @Test
