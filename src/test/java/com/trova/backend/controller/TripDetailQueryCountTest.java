@@ -78,6 +78,53 @@ class TripDetailQueryCountTest {
                 .hasSize(1);
     }
 
+    @Test
+    void 컨트롤러_예외와_없는_경로_뒤에도_다음_요청은_영부터_세고_원시_경로를_태그로_만들지_않는다() throws Exception {
+        Trip trip = fixture(2);
+        String bearer = "Bearer " + jwtService.issue(trip.getUser());
+        mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
+                .andExpect(status().isOk());
+        DistributionSummary summary = meterRegistry.get("trova.db.queries.per.request")
+                .tags("uri", "/api/trips/{id}", "method", "GET").summary();
+
+        // 1) 컨트롤러 예외(없는 여행): 같은 템플릿에 표본 하나만 남는다.
+        long missingId = 987654321L;
+        long beforeError = summary.count();
+        mockMvc.perform(get("/api/trips/" + missingId).header("Authorization", bearer))
+                .andExpect(status().is4xxClientError());
+        assertThat(summary.count()).isEqualTo(beforeError + 1);
+        assertNextDetailCountsFromZero(trip, bearer, summary);
+
+        // 2) 매핑 없는 /api 경로 404: 어떤 표본도 늘지 않고 원시 경로 태그도 생기지 않는다.
+        long allBefore = totalSamples();
+        mockMvc.perform(get("/api/no-such-path/" + missingId).header("Authorization", bearer))
+                .andExpect(status().isNotFound());
+        assertThat(totalSamples()).isEqualTo(allBefore);
+        assertNextDetailCountsFromZero(trip, bearer, summary);
+
+        assertThat(meterRegistry.find("trova.db.queries.per.request").meters())
+                .allSatisfy(meter -> {
+                    assertThat(meter.getId().getTag("uri")).doesNotContain("no-such-path")
+                            .doesNotContain(String.valueOf(missingId))
+                            .doesNotContain(String.valueOf(trip.getId()));
+                });
+    }
+
+    private void assertNextDetailCountsFromZero(Trip trip, String bearer, DistributionSummary summary) throws Exception {
+        long count = summary.count();
+        double total = summary.totalAmount();
+        statistics().clear();
+        mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", bearer))
+                .andExpect(status().isOk());
+        assertThat(summary.count()).isEqualTo(count + 1);
+        assertThat(summary.totalAmount() - total).isEqualTo(statistics().getPrepareStatementCount()).isEqualTo(5);
+    }
+
+    private long totalSamples() {
+        return meterRegistry.find("trova.db.queries.per.request").summaries().stream()
+                .mapToLong(DistributionSummary::count).sum();
+    }
+
     private Trip fixture(int... counts) {
         User owner = userRepository.save(new User("google", "detail-count-" + UUID.randomUUID(), "주인", null));
         LocalDate start = LocalDate.of(2026, 12, 1);

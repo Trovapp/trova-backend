@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 동기 API 요청 스레드에서 Hibernate가 준비하는 SQL + 직접 JDBC batch에 제출하는 SQL 항목 수.
@@ -36,9 +38,26 @@ public class RequestDbQueryMetrics extends OncePerRequestFilter
     // 일반 ThreadLocal: @Async·Kafka·스케줄 작업에는 요청 카운터를 전달하지 않는다.
     private static final ThreadLocal<QueryCount> CURRENT = new ThreadLocal<>();
     private final ConcurrentMap<String, ConcurrentMap<String, DistributionSummary>> summaries = new ConcurrentHashMap<>();
+    // 계측이 꺼져(빈이 없어) 있으면 직접 JDBC 훅이 ThreadLocal을 읽기 전에 빠진다. 살아 있는 빈이 하나라도 있으면 켜진다.
+    private static final AtomicInteger LIVE_INSTANCES = new AtomicInteger();
+    static volatile boolean jdbcHookEnabled;
+    private final AtomicBoolean live = new AtomicBoolean(true);
 
     public RequestDbQueryMetrics(MeterRegistry registry) {
         this.registry = registry;
+        jdbcHookEnabled = LIVE_INSTANCES.incrementAndGet() > 0;
+    }
+
+    @Override
+    public void destroy() {
+        // Spring 컨테이너와 서블릿 컨테이너가 둘 다 부를 수 있으므로 한 번만 뺀다.
+        if (live.compareAndSet(true, false)) {
+            jdbcHookEnabled = LIVE_INSTANCES.decrementAndGet() > 0;
+        }
+    }
+
+    static int liveInstances() {
+        return LIVE_INSTANCES.get();
     }
 
     @Override
@@ -54,6 +73,9 @@ public class RequestDbQueryMetrics extends OncePerRequestFilter
 
     /** 직접 JDBC 저장소의 batch 항목 수. 요청이 없거나 계측이 꺼져 있으면 아무것도 하지 않는다. */
     public static void recordJdbcStatements(int statements) {
+        if (!jdbcHookEnabled) {
+            return;
+        }
         QueryCount count = CURRENT.get();
         if (count != null) {
             count.value += statements;

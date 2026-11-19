@@ -154,6 +154,46 @@ class RequestDbQueryMetricsTest {
     }
 
     @Test
+    void 계측이_꺼져_있으면_JDBC_훅은_요청_카운터를_읽지_않고_바로_빠진다() throws Exception {
+        SimpleMeterRegistry registry = new SimpleMeterRegistry();
+        RequestDbQueryMetrics metrics = new RequestDbQueryMetrics(registry);
+        boolean saved = RequestDbQueryMetrics.jdbcHookEnabled;
+        try {
+            metrics.doFilter(request("/api/trips/1", "/api/trips/{id}"), new MockHttpServletResponse(), (req, res) -> {
+                RequestDbQueryMetrics.recordJdbcStatements(2);
+                // 같은 JVM의 다른 테스트 컨텍스트가 빈을 갖고 있을 수 있어 플래그를 직접 내려 "빈 없음"을 흉내 낸다.
+                RequestDbQueryMetrics.jdbcHookEnabled = false;
+                // 요청 카운터가 ThreadLocal에 있어도 읽지 않으므로 더해지지 않는다.
+                RequestDbQueryMetrics.recordJdbcStatements(5);
+                RequestDbQueryMetrics.jdbcHookEnabled = true;
+            });
+            assertThat(summary(registry).count()).isEqualTo(1);
+            assertThat(summary(registry).totalAmount()).isEqualTo(2);
+        } finally {
+            RequestDbQueryMetrics.jdbcHookEnabled = saved;
+            metrics.destroy();
+            registry.close();
+        }
+    }
+
+    @Test
+    void 빈이_만들어지면_훅이_켜지고_destroy가_두_번_불려도_한_번만_뺀다() {
+        int before = RequestDbQueryMetrics.liveInstances();
+        SimpleMeterRegistry registry = new SimpleMeterRegistry();
+        RequestDbQueryMetrics metrics = new RequestDbQueryMetrics(registry);
+        try {
+            assertThat(RequestDbQueryMetrics.liveInstances()).isEqualTo(before + 1);
+            assertThat(RequestDbQueryMetrics.jdbcHookEnabled).isTrue();
+            metrics.destroy();
+            metrics.destroy();
+            assertThat(RequestDbQueryMetrics.liveInstances()).isEqualTo(before);
+            assertThat(RequestDbQueryMetrics.jdbcHookEnabled).isEqualTo(before > 0);
+        } finally {
+            registry.close();
+        }
+    }
+
+    @Test
     void application_yml_기본값이면_켜지고_환경값_false면_꺼진다() {
         ApplicationContextRunner runner = new ApplicationContextRunner()
                 .withInitializer(new ConfigDataApplicationContextInitializer())
