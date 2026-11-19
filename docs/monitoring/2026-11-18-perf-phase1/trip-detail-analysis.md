@@ -148,3 +148,12 @@ PENDING/PROCESSING/FAILED 또는 tripId가 있는 초안은 최신 번호 계산
 이번 확인: 코드 경로 전체, 생성 SQL, H2 SQL 수·엔티티 수·응답 바이트·MockMvc/단계 중앙값, iOS 캡처 육안 검사. 미확인: 운영 실행 계획·현재 RTT·단계 span·풀 대기·실제 응답 크기·배포 전후 동일 fixture·앱 렌더링 시간·Android 캡처. 로컬 측정의 임시 파일은 커밋 대상이 아니며 분석 결과만 남긴다.
 
 필수 전체 `build --offline`도 실행했다. JUnit XML 합산 **1,235개 중 1,227개 통과·2개 실패·6개 skipped**, `BUILD FAILED in 1m 39s`다. 실패는 기존 `ApiSessionCreationIntegrationTest`의 JWT/웹 세션 두 테스트가 fixture를 넣다가 H2 `Table "USERS" not found (this database is empty)`로 종료한 것이다. 해당 클래스만 다시 실행하면 **2개 모두 통과**, `BUILD SUCCESSFUL in 4s`였다. README P2/P3에도 기록된 공유 H2 컨텍스트 수명 간섭과 같은 증상이며 이 문서 작업에서 코드를 수정하지 않았다. 전체 build 통과로 보고하지 않는다.
+
+## P5 구현 결과 (2026-11-19, #476)
+
+B안을 적용했다. `getTrip`은 `resolveUserId`(예열 뒤 메모리 확인) → `TripRepository.findDetailHeader`(id·소유자 ID 조건, 머리 4칸) → `findDetailRows`(일차 left join 장소, `order by i.day, i.id, tp.visitOrder, tp.id`)의 scalar DTO 두 개로 응답을 만든다. 엔티티 매핑(EAGER)은 바꾸지 않았고, 날짜·이름 변경 응답의 `toDetail(Trip)`과 삭제 영향 경로는 그대로다.
+
+- SQL(로컬 H2, 예열 JWT): 1/3/5/7/30일 모두 **5→2회**, 삭제 영향은 3회 그대로. 첫 JWT 요청은 사용자 존재 확인 1회가 더해진다.
+- 응답: 이전 `toDetail`을 옮긴 참조 조립 + MVC 실제 JSON 변환기 출력과 **바이트 단위 동일**(빈 일차·날짜 미정·장소 0개·일차 0개·메모/시간/이동수단·특수문자·30일 약 300장소). 남의/없는 여행 404, 인증 없음·탈퇴 사용자 401 유지.
+- 변형 검사: 방문 순서 역순 → 2건 실패, inner join(빈 일차 제외) → 4건 실패, 원복 후 통과.
+- 로컬 MockMvc 중앙값(H2, 전체 예열 200회 + 시나리오별 20회 뒤 51회, 전후 각 1회 실행): 1일·2장소 0.784→0.656ms, 3일·6장소 0.708→0.564ms, 5일·10장소 0.647→0.509ms, 7일·14장소 0.672→0.550ms, 30일·300장소 1.927→1.283ms. 네트워크 없는 H2라 운영 절감(왕복 3회 ≈ 94.5ms 추정)을 대신하지 않는다. 운영 효과는 배포 뒤 표본으로 확인한다.
