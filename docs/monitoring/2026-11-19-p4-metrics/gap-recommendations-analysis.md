@@ -146,6 +146,21 @@ H2는 네트워크가 없고 개인화 SQL이 즉시 실패하므로 운영 시�
 - Google 후보에 `types`가 없으면 카탈로그 `category`가 null이 되고, `NOT_A_STOP`(`Set.of`)의 `contains(null)`이 NPE를 던져 이 API가 **500**이 된다(로컬 재현). 필터 조건을 바꾸지 않는다는 조건이라 그대로 두었다 — 별도 이슈 후보.
 - 빈 시간 사이 묶기(C안), 대안 찾기(`AlternativeFinderService`)의 같은 후보별 `retrieveAndScore` N+1도 같은 묶음 조회로 줄일 수 있다(다만 그쪽은 이유 생성에 신호 목록까지 필요).
 
+## 운영 배포
+
+devflow `deploy.sh`(0.5.3)로 운영 서버(Oracle E2.1.Micro, systemd `trova-backend`)에 반영했다. 시각은 KST.
+
+| 항목 | 값 |
+|---|---|
+| 시각 | 2026-11-19 18:32:12 시작 → 18:35:07 끝(전체 175초) |
+| 커밋 | `fa02baf` perf: 빈 시간 추천 SQL을 후보 수와 무관하게 줄임 (#482) (#483) |
+| 사전 확인 | 운영 진행 중 작업(영상 분석·일정 초안) 0건 |
+| 전송 | JAR 104M, 해시 일치 `30514438f3b8e231` |
+| UP 걸린 시간 | 재시작 후 134초 |
+| 스크립트 확인 | 인증 없는 공유 요청 401, 세션 쿠키 0개, 자동 초안 목록 인증 없이 401 — 모두 통과 |
+| 추가 확인(curl) | `/actuator/health` 200, `/api/trips/1` 인증 없이 401, `/api/trips/1/days/1/gap-recommendations` 인증 없이 401 |
+| 백업 경로 | `/opt/trova-backend/app.jar.bak-20261119-183212` |
+
 ## 남은 것
 
 - 운영 배포 뒤 표본으로 SQL/요청과 시간 확인.
