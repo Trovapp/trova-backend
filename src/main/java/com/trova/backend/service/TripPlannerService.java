@@ -13,6 +13,7 @@ import com.trova.backend.planner.OpeningHoursService;
 import com.trova.backend.planner.PlanPlaceGatherer;
 import com.trova.backend.planner.PlanRequestParser;
 import com.trova.backend.planner.TripPlanGraph;
+import com.trova.backend.repository.JobSourceUrlRow;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripDraftRepository;
@@ -108,6 +109,8 @@ public class TripPlannerService {
      * 생기는데 초안은 예전 작업을 가리켜, "조건 바꿔 다시 짜기"에서 영상이 0개 선택되고 새로 바로잡은 위치도 초안과
      * 이어지지 않았다(수정 확인 QA 2026-11-12, #416). 초안 내용은 건드리지 않고 앱이 다시 짤 때 이 번호를 쓴다.
      * 만드는 중(폴링)이거나 이미 여행이 된 초안은 계산하지 않고 원래 번호를 돌려준다.
+     * 사용자의 저장 장소 전체를 엔티티로 읽으면 장소 100개에 엔티티 204개가 실렸다 — 작업 번호·주소만 읽는다(#473).
+     * 두 조회를 한 읽기 트랜잭션(커넥션 하나)에서 실행하려고 트랜잭션은 유지한다.
      */
     @Transactional(readOnly = true)
     public List<Long> currentJobIds(TripDraft draft) {
@@ -117,12 +120,11 @@ public class TripPlannerService {
             return jobIds;
         }
         Map<Long, String> videoByJob = new HashMap<>();
-        processingJobRepository.findAllById(jobIds)
-                .forEach(job -> videoByJob.put(job.getId(), VideoKey.of(job.getSourceUrl())));
+        processingJobRepository.findSourceUrlRowsByIdIn(jobIds)
+                .forEach(job -> videoByJob.put(job.id(), VideoKey.of(job.sourceUrl())));
         Map<String, Long> latestByVideo = new HashMap<>();
-        for (SavedPlace place : savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(draft.getUser())) {
-            ProcessingJob job = place.getProcessingJob();
-            latestByVideo.merge(VideoKey.of(job.getSourceUrl()), job.getId(), Math::max);
+        for (JobSourceUrlRow job : savedPlaceRepository.findJobsWithPlacesByUserId(draft.getUser().getId())) {
+            latestByVideo.merge(VideoKey.of(job.sourceUrl()), job.id(), Math::max);
         }
         return jobIds.stream()
                 .map(id -> latestByVideo.getOrDefault(videoByJob.get(id), id))
