@@ -25,13 +25,15 @@ import com.trova.backend.security.JwtService;
 import com.trova.backend.service.UserAccountService;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.AopTestUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -50,18 +52,23 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 // 빈 시간 추천(P7, #482)의 응답·권한·SQL 수를 테스트 트랜잭션 없이 실제 HTTP 요청으로 잰다.
 // SQL 수는 운영 P4 지표(trova.db.queries.per.request)와 같은 계측기로 센다.
-// 다른 성능 테스트와 H2 DB를 나눠 기본 testdb의 create-drop 수명에 간섭하지 않는다.
-// 외부 API(Google Places·Gemini 임베딩/문장)는 목이다. H2에는 pgvector embedding 칸이 없어
-// 임베딩 존재 확인·개인화 조회가 실패하고 0점으로 폴백한다(운영과 같은 폴백 경로).
-@SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:p7-gap;MODE=PostgreSQL;DB_CLOSE_DELAY=-1")
+// P2/P3/P6 성능 테스트의 격리 컨텍스트를 그대로 공유한다(설정이 한 글자라도 다르면 새 컨텍스트가 생긴다).
+// 새 컨텍스트를 만들면 컨텍스트 캐시(32개)가 넘쳐 기본 testdb 컨텍스트가 밀려 닫히고, create-drop으로 공유 testdb 표가
+// 지워져 다른 테스트(ApiSessionCreationIntegrationTest)가 깨졌다(@MockitoBean으로 만든 첫 버전에서 3회 연속 확인).
+// 그래서 외부 API는 @MockitoBean 대신 테스트 동안만 서비스 필드에 목을 끼우고 끝나면 되돌린다.
+// H2에는 pgvector embedding 칸이 없어 임베딩 존재 확인·개인화 조회가 실패하고 0점으로 폴백한다(Gemini 호출 없음, 아래에서 확인).
+@SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:p2-query-count;MODE=PostgreSQL;DB_CLOSE_DELAY=-1")
 @AutoConfigureMockMvc
-@TestPropertySource(properties = "app.quota.place-calls-per-day=1000000")
+@TestPropertySource(properties = {"spring.jpa.properties.hibernate.generate_statistics=true",
+        "app.admin.users=google:p2-admin"})
 class GapRecommendationQueryCountTest {
 
     private static final String URI = "/api/trips/{tripId}/days/{day}/gap-recommendations";
@@ -78,17 +85,45 @@ class GapRecommendationQueryCountTest {
     @Autowired private UserAccountService userAccountService;
     @Autowired private MeterRegistry meterRegistry;
 
-    @MockitoBean private GooglePlacesApiClient googlePlacesApiClient;
-    @MockitoBean private GeminiEmbeddingClient geminiEmbeddingClient;
-    @MockitoBean private GeminiTextClient geminiTextClient;
+    @Autowired private GapRecommendationService gapRecommendationService;
+
+    private final GooglePlacesApiClient googlePlacesApiClient = mock(GooglePlacesApiClient.class);
+    private final GeminiEmbeddingClient geminiEmbeddingClient = mock(GeminiEmbeddingClient.class);
+    private final GeminiTextClient geminiTextClient = mock(GeminiTextClient.class);
+    private final Map<String, Object> originals = new HashMap<>();
 
     private final ObjectMapper mapper = new ObjectMapper();
     /** 검색 종류(식당이면 "restaurant", 아니면 "any")별로 Google이 돌려줄 원시 후보. */
     private Map<String, List<GooglePlacesNearbySearchResponse.Place>> rawByType = new HashMap<>();
     private boolean googleFails;
 
+    private void swap(Object bean, String field, Object replacement) {
+        Object target = AopTestUtils.getTargetObject(bean);
+        originals.put(bean.getClass().getName() + "#" + field, ReflectionTestUtils.getField(target, field));
+        ReflectionTestUtils.setField(target, field, replacement);
+    }
+
+    private void restore(Object bean, String field) {
+        Object target = AopTestUtils.getTargetObject(bean);
+        ReflectionTestUtils.setField(target, field, originals.get(bean.getClass().getName() + "#" + field));
+    }
+
+    @AfterEach
+    void restoreClients() {
+        restore(gapRecommendationService, "googlePlacesApiClient");
+        restore(placeEmbeddingService, "geminiEmbeddingClient");
+        restore(personalizationService, "geminiEmbeddingClient");
+        restore(personalizationService, "geminiTextClient");
+        // 임베딩 생성·추천 이유 생성 같은 Gemini 호출은 이 경로에서 한 번도 일어나지 않아야 한다.
+        verifyNoInteractions(geminiEmbeddingClient, geminiTextClient);
+    }
+
     @BeforeEach
     void stubGoogle() {
+        swap(gapRecommendationService, "googlePlacesApiClient", googlePlacesApiClient);
+        swap(placeEmbeddingService, "geminiEmbeddingClient", geminiEmbeddingClient);
+        swap(personalizationService, "geminiEmbeddingClient", geminiEmbeddingClient);
+        swap(personalizationService, "geminiTextClient", geminiTextClient);
         rawByType = new HashMap<>();
         googleFails = false;
         when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any())).thenAnswer(inv -> {
