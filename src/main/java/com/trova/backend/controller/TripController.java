@@ -582,9 +582,10 @@ public class TripController {
     public ResponseEntity<List<GapResponse>> gapRecommendations(
             Authentication authentication, @PathVariable Long tripId, @PathVariable int day
     ) {
-        User user = currentUserService.resolve(authentication);
-        dailyQuotaService.consumePlaceCall(user);
-        return gapRecommendationService.findGaps(user, tripId, day)
+        // 사용자 ID만 쓰므로 예열 뒤에는 사용자 행을 읽지 않는다(ADR 0036, #482).
+        Long userId = currentUserService.resolveUserId(authentication);
+        dailyQuotaService.consumePlaceCall(userId);
+        return gapRecommendationService.findGaps(userId, tripId, day)
                 .map(gaps -> ResponseEntity.ok(gaps.stream().map(GapResponse::from).toList()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

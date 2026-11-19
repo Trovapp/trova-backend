@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,6 +71,34 @@ public class PersonalizationService {
 
     public double personalizationScore(User user, Place candidate) {
         return retrieveAndScore(user, candidate).score();
+    }
+
+    /**
+     * 후보 여러 개의 personalizationScore를 SQL 한 번으로 계산한다(#482). 후보마다 부르면 후보 수 × 2번
+     * (임베딩 읽기 + 유사 신호 찾기) DB를 오갔다. 점수는 후보별로 같은 top-5 유사도를 같은 순서로 평균한 값이다.
+     * 맵에 없는 후보는 0점(임베딩 없음·신호 없음). 조회가 실패하면 personalizationScore처럼 모두 0점으로 폴백한다.
+     */
+    public Map<Long, Double> personalizationScores(Long userId, List<Place> candidates) {
+        List<Long> ids = candidates.stream().map(Place::getId).distinct().toList();
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
+        List<UserPreferenceSignalRepository.CandidateSimilarity> rows;
+        try {
+            rows = userPreferenceSignalRepository.findCandidateSimilarities(userId, ids);
+        } catch (Exception e) {
+            log.warn("개인화 유사 신호 묶음 조회 실패, 0점으로 폴백합니다", e);
+            return Map.of();
+        }
+        Map<Long, List<Double>> similaritiesById = new LinkedHashMap<>();
+        for (UserPreferenceSignalRepository.CandidateSimilarity row : rows) {
+            similaritiesById.computeIfAbsent(row.getCandidateId(), id -> new ArrayList<>()).add(row.getSimilarity());
+        }
+        Map<Long, Double> scores = new HashMap<>();
+        // retrieveAndScore와 같은 계산(같은 순서의 DoubleStream 평균)이라 점수가 비트 단위로 같다.
+        similaritiesById.forEach((id, similarities) -> scores.put(id,
+                similarities.stream().mapToDouble(Double::doubleValue).average().orElse(0.0)));
+        return scores;
     }
 
     /**

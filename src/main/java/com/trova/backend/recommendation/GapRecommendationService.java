@@ -1,13 +1,11 @@
 package com.trova.backend.recommendation;
 
-import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Place;
-import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
-import com.trova.backend.repository.ItineraryRepository;
+import com.trova.backend.repository.GapPlaceRow;
 import com.trova.backend.repository.TripPlaceRepository;
-import com.trova.backend.repository.TripRepository;
 import com.trova.backend.service.ApiCallLogService;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -47,8 +45,6 @@ public class GapRecommendationService {
     public record Gap(Long beforePlaceId, Long afterPlaceId, int gapMinutes, List<AlternativeCandidate> recommendations) {
     }
 
-    private final TripRepository tripRepository;
-    private final ItineraryRepository itineraryRepository;
     private final TripPlaceRepository tripPlaceRepository;
     private final GooglePlacesApiClient googlePlacesApiClient;
     private final PlaceCatalogService placeCatalogService;
@@ -57,13 +53,10 @@ public class GapRecommendationService {
     private final PersonalizationService personalizationService;
 
     public GapRecommendationService(
-            TripRepository tripRepository, ItineraryRepository itineraryRepository,
             TripPlaceRepository tripPlaceRepository, GooglePlacesApiClient googlePlacesApiClient,
             PlaceCatalogService placeCatalogService, ApiCallLogService apiCallLogService,
             PlaceEmbeddingService placeEmbeddingService, PersonalizationService personalizationService
     ) {
-        this.tripRepository = tripRepository;
-        this.itineraryRepository = itineraryRepository;
         this.tripPlaceRepository = tripPlaceRepository;
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeCatalogService = placeCatalogService;
@@ -73,21 +66,35 @@ public class GapRecommendationService {
     }
 
     public Optional<List<Gap>> findGaps(User user, Long tripId, int day) {
-        return tripRepository.findById(tripId)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()))
-                .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
-                .map(itinerary -> computeGaps(itinerary, user));
+        return findGaps(user.getId(), tripId, day);
     }
 
-    private List<Gap> computeGaps(Itinerary itinerary, User user) {
-        List<TripPlace> places = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary);
+    /**
+     * 남의 여행·없는 여행·없는 일차는 빈 값. 일차와 장소는 소유자 조건을 건 조회 한 번으로 읽는다(#482) — 예전에는
+     * 여행·일차·장소 엔티티와 기본 EAGER 연관(일차의 여행, 장소의 일차)을 따로 읽어 SQL이 5~6번이었다.
+     */
+    public Optional<List<Gap>> findGaps(Long userId, Long tripId, int day) {
+        List<GapPlaceRow> rows = tripPlaceRepository.findGapPlaceRows(tripId, userId, day);
+        if (rows.isEmpty()) {
+            return Optional.empty();
+        }
+        long itineraryCount = rows.stream().map(GapPlaceRow::itineraryId).distinct().count();
+        if (itineraryCount > 1) {
+            // 이전 findByTripAndDay(Optional)와 같이 같은 일차가 둘이면 결과 하나를 고르지 않고 실패한다.
+            throw new IncorrectResultSizeDataAccessException(1, (int) itineraryCount);
+        }
+        List<GapPlaceRow> places = rows.stream().filter(row -> row.placeId() != null).toList();
+        return Optional.of(computeGaps(places, userId));
+    }
+
+    private List<Gap> computeGaps(List<GapPlaceRow> places, Long userId) {
         List<Gap> gaps = new ArrayList<>();
 
         for (int i = 0; i < places.size() - 1; i++) {
-            TripPlace before = places.get(i);
-            TripPlace after = places.get(i + 1);
-            LocalTime endTime = before.getVisitEndTime();
-            LocalTime startTime = after.getVisitStartTime();
+            GapPlaceRow before = places.get(i);
+            GapPlaceRow after = places.get(i + 1);
+            LocalTime endTime = before.visitEndTime();
+            LocalTime startTime = after.visitStartTime();
             if (endTime == null || startTime == null) {
                 continue;
             }
@@ -95,35 +102,35 @@ public class GapRecommendationService {
             if (gap.compareTo(GAP_THRESHOLD) <= 0) {
                 continue;
             }
-            if (before.getLatitude() == null || before.getLongitude() == null
-                    || after.getLatitude() == null || after.getLongitude() == null) {
+            if (before.latitude() == null || before.longitude() == null
+                    || after.latitude() == null || after.longitude() == null) {
                 continue;
             }
-            double midLat = (before.getLatitude() + after.getLatitude()) / 2;
-            double midLng = (before.getLongitude() + after.getLongitude()) / 2;
-            gaps.add(new Gap(before.getId(), after.getId(), (int) gap.toMinutes(),
-                    recommend(user, midLat, midLng, endTime, startTime, List.of(before, after))));
+            double midLat = (before.latitude() + after.latitude()) / 2;
+            double midLng = (before.longitude() + after.longitude()) / 2;
+            gaps.add(new Gap(before.placeId(), after.placeId(), (int) gap.toMinutes(),
+                    recommend(userId, midLat, midLng, endTime, startTime, List.of(before, after))));
         }
 
         // 마지막 장소 뒤 ~ 하루 끝(21:00)도 빈 시간이다 — 장소 사이만 봐서 09:00~10:00 한 곳뿐인 날에
         // "채울 빈 시간이 없어요"가 떴다(안드로이드 사용성 테스트 2026-11-12, #414). 마지막 장소 뒤에 넣으면 되므로
         // 기존 "뒤에 넣기"(insertPlaceAfter)를 그대로 쓴다.
         if (!places.isEmpty()) {
-            TripPlace last = places.get(places.size() - 1);
-            LocalTime endTime = last.getVisitEndTime();
-            if (endTime != null && endTime.isBefore(DAY_END) && last.getLatitude() != null && last.getLongitude() != null) {
+            GapPlaceRow last = places.get(places.size() - 1);
+            LocalTime endTime = last.visitEndTime();
+            if (endTime != null && endTime.isBefore(DAY_END) && last.latitude() != null && last.longitude() != null) {
                 Duration gap = Duration.between(endTime, DAY_END);
                 if (gap.compareTo(GAP_THRESHOLD) > 0) {
-                    gaps.add(new Gap(last.getId(), null, (int) gap.toMinutes(),
-                            recommend(user, last.getLatitude(), last.getLongitude(), endTime, DAY_END, List.of(last))));
+                    gaps.add(new Gap(last.placeId(), null, (int) gap.toMinutes(),
+                            recommend(userId, last.latitude(), last.longitude(), endTime, DAY_END, List.of(last))));
                 }
             }
         }
         return gaps;
     }
 
-    private List<AlternativeCandidate> recommend(User user, double lat, double lng, LocalTime from, LocalTime to,
-                                                 List<TripPlace> neighbors) {
+    private List<AlternativeCandidate> recommend(Long userId, double lat, double lng, LocalTime from, LocalTime to,
+                                                 List<GapPlaceRow> neighbors) {
         // 점심·저녁 시간대가 걸리면 식당부터 찾는다 — 점심 시간 빈칸에 호텔·역·대학교가 20개 넘게 섞여 나왔다(#414).
         String includedType = overlaps(from, to, LUNCH_FROM, LUNCH_TO) || overlaps(from, to, DINNER_FROM, DINNER_TO)
                 ? "restaurant" : null;
@@ -152,13 +159,14 @@ public class GapRecommendationService {
                 .filter(c -> neighbors.stream().noneMatch(n -> isSameGooglePlace(c, n)))
                 .filter(c -> !NOT_A_STOP.contains(c.getCategory()))
                 .toList();
-        // Comparator 안에서 점수를 계산하면 정렬 비교마다(O(n log n)회) 매번 다시
-        // 계산돼 personalizationScore의 pgvector 조회가 그만큼 반복된다 — 후보당
-        // 한 번만 계산해 맵에 담아두고 정렬은 조회 없이 맵 조회만 하도록 한다.
+        // Comparator 안에서 점수를 계산하면 정렬 비교마다(O(n log n)회) 매번 다시 계산된다 — 후보당 한 번만
+        // 계산해 맵에 담아두고 정렬은 맵 조회만 한다. 개인화 점수는 후보마다 pgvector를 2번씩 조회하던 것을
+        // 후보 전체에 대해 한 번으로 묶었다(#482, 운영 요청당 SQL 평균 20회의 대부분).
+        Map<Long, Double> personalization = personalizationService.personalizationScores(userId, filteredCandidates);
         Map<Long, Double> scoreByPlaceId = new HashMap<>();
         for (Place c : filteredCandidates) {
             double score = Math.max(PlaceScoring.baseScore(c), MIN_BASE_SCORE_FOR_BOOST)
-                    * (1 + personalizationService.personalizationScore(user, c) * PERSONALIZATION_BOOST_WEIGHT);
+                    * (1 + personalization.getOrDefault(c.getId(), 0.0) * PERSONALIZATION_BOOST_WEIGHT);
             scoreByPlaceId.put(c.getId(), score);
         }
         return filteredCandidates.stream()
@@ -174,8 +182,8 @@ public class GapRecommendationService {
         return from.isBefore(windowTo) && to.isAfter(windowFrom);
     }
 
-    private boolean isSameGooglePlace(Place candidate, TripPlace tripPlace) {
-        return tripPlace.getGooglePlaceId() != null
-                && tripPlace.getGooglePlaceId().equals(candidate.getGooglePlaceId());
+    private boolean isSameGooglePlace(Place candidate, GapPlaceRow tripPlace) {
+        return tripPlace.googlePlaceId() != null
+                && tripPlace.googlePlaceId().equals(candidate.getGooglePlaceId());
     }
 }

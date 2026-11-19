@@ -20,6 +20,16 @@ public interface TripPlaceRepository extends JpaRepository<TripPlace, Long> {
             + "where t = :trip order by i.day, tp.visitOrder")
     List<TripPlace> findByTripOrderByDayAndVisitOrder(@Param("trip") Trip trip);
 
+    // 빈 시간 추천(#482) — 소유자·일차 조건으로 일차와 장소를 한 번에 읽는다(SQL 1회). 남의 여행·없는 여행·없는 일차는
+    // 빈 결과, 장소가 없는 일차는 placeId가 null인 한 줄이다. 정렬은 이전과 같은 방문 순서(동순위는 id로 고정).
+    @Query("select new com.trova.backend.repository.GapPlaceRow("
+            + "i.id, tp.id, tp.visitStartTime, tp.visitEndTime, tp.latitude, tp.longitude, tp.googlePlaceId) "
+            + "from Itinerary i left join TripPlace tp on tp.itinerary = i "
+            + "where i.trip.id = :tripId and i.trip.user.id = :userId and i.day = :day "
+            + "order by i.id, tp.visitOrder, tp.id")
+    List<GapPlaceRow> findGapPlaceRows(
+            @Param("tripId") Long tripId, @Param("userId") Long userId, @Param("day") int day);
+
     long countByItinerary_Trip(Trip trip);
 
     // 여행 전체(모든 일차)의 장소 — 대안 후보에서 이미 여행에 있는 곳을 빼는 데 쓴다(#177).

@@ -12,13 +12,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PersonalizationServiceTest {
@@ -31,7 +37,7 @@ class PersonalizationServiceTest {
 
     private void setId(Object entity, Long id) {
         try {
-            var field = entity.getClass().getDeclaredField("id");
+            Field field = entity.getClass().getDeclaredField("id");
             field.setAccessible(true);
             field.set(entity, id);
         } catch (Exception e) {
@@ -147,7 +153,7 @@ class PersonalizationServiceTest {
         User user = user(1L);
         Place candidate = place(10L);
         when(placeRepository.findEmbeddingText(10L)).thenReturn(Optional.of("[0.1,0.2]"));
-        var signal = similarSignal("카페A", "cafe", "차분한", 0.9);
+        UserPreferenceSignalRepository.SimilarSignal signal = similarSignal("카페A", "cafe", "차분한", 0.9);
         when(userPreferenceSignalRepository.findTopSimilarSignals(1L, "[0.1,0.2]")).thenReturn(List.of(signal));
 
         PersonalizationService.PersonalizationResult result = personalizationService.retrieveAndScore(user, candidate);
@@ -169,7 +175,7 @@ class PersonalizationServiceTest {
     @Test
     void explainFromSignals는_신호가_있으면_전달받은_신호로_생성을_호출한다() {
         Place candidate = place(10L);
-        var signal = similarSignal("카페A", "cafe", "차분한", 0.9);
+        UserPreferenceSignalRepository.SimilarSignal signal = similarSignal("카페A", "cafe", "차분한", 0.9);
         when(geminiTextClient.generate(anyString())).thenReturn(Optional.of("전에 좋아하신 카페A와 비슷해요"));
 
         Optional<String> reason = personalizationService.explainFromSignals(candidate, List.of(signal));
@@ -196,5 +202,60 @@ class PersonalizationServiceTest {
         Optional<String> reason = personalizationService.explainRecommendation(user, candidate);
 
         assertThat(reason).contains("카페A처럼 조용해요, 취향 저격");
+    }
+
+    // ---- 묶음 개인화 점수(#482) ----
+
+    private UserPreferenceSignalRepository.CandidateSimilarity similarity(long candidateId, double similarity) {
+        return new UserPreferenceSignalRepository.CandidateSimilarity() {
+            public Long getCandidateId() { return candidateId; }
+            public double getSimilarity() { return similarity; }
+        };
+    }
+
+    @Test
+    void 묶음_점수는_후보마다_따로_구한_점수와_비트까지_같다() {
+        User user = user(1L);
+        // 후보별 top-5 유사도(거리 순). 부동소수점 합 순서가 결과를 바꿀 수 있는 값들을 일부러 섞었다.
+        Map<Long, List<Double>> topByCandidate = Map.of(
+                10L, List.of(0.9137, 0.7000000000000001, 0.1 + 0.2, 0.3, 0.12345678901234),
+                11L, List.of(0.5),
+                12L, List.of(0.99, 0.98, 0.97));
+        List<UserPreferenceSignalRepository.CandidateSimilarity> rows = new ArrayList<>();
+        for (Long id : List.of(10L, 11L, 12L)) {
+            topByCandidate.get(id).forEach(s -> rows.add(similarity(id, s)));
+        }
+        Place c10 = place(10L);
+        Place c11 = place(11L);
+        Place c12 = place(12L);
+        Place c13 = place(13L); // 임베딩 없음 또는 신호 없음 → 줄 없음
+        when(userPreferenceSignalRepository.findCandidateSimilarities(1L, List.of(10L, 11L, 12L, 13L))).thenReturn(rows);
+
+        Map<Long, Double> scores = personalizationService.personalizationScores(1L, List.of(c10, c11, c12, c13));
+
+        // 이전 경로(retrieveAndScore)로 같은 신호를 하나씩 받았을 때의 점수
+        for (Long id : List.of(10L, 11L, 12L)) {
+            when(placeRepository.findEmbeddingText(id)).thenReturn(Optional.of("[" + id + "]"));
+            when(userPreferenceSignalRepository.findTopSimilarSignals(1L, "[" + id + "]")).thenReturn(
+                    topByCandidate.get(id).stream().map(s -> similarSignal("n", "cafe", null, s)).toList());
+            assertThat(scores.get(id)).isEqualTo(personalizationService.personalizationScore(user, place(id)));
+        }
+        when(placeRepository.findEmbeddingText(13L)).thenReturn(Optional.empty());
+        assertThat(scores.getOrDefault(13L, 0.0)).isEqualTo(personalizationService.personalizationScore(user, c13));
+        assertThat(scores).doesNotContainKey(13L);
+    }
+
+    @Test
+    void 묶음_조회가_실패하면_모두_0점으로_폴백한다() {
+        when(userPreferenceSignalRepository.findCandidateSimilarities(anyLong(), anyList()))
+                .thenThrow(new IllegalStateException("vector 타입 없음"));
+
+        assertThat(personalizationService.personalizationScores(1L, List.of(place(10L), place(11L)))).isEmpty();
+    }
+
+    @Test
+    void 후보가_없으면_DB를_조회하지_않는다() {
+        assertThat(personalizationService.personalizationScores(1L, List.of())).isEmpty();
+        verifyNoInteractions(userPreferenceSignalRepository, placeRepository);
     }
 }
