@@ -217,7 +217,7 @@ Grafana Explore, `sum by (uri)(increase(..._sum[10m])) / sum by (uri)(increase(.
 
 ### P4로 새로 보인 후보
 
-- `/api/trips/{tripId}/days/{day}/gap-recommendations`: 요청당 SQL **20.15회**(35건). 다음 N+1 후보.
+- `/api/trips/{tripId}/days/{day}/gap-recommendations`: 요청당 SQL **20.15회**(35건). 다음 N+1 후보. → P7(#482)에서 후보별 개인화 조회를 묶고 데이터 읽기를 한 번으로 줄임(로컬 빈 시간 1개 기준 후보 수와 무관하게 5회). [분석](gap-recommendations-analysis.md)
 - `/api/places/pending`: 요청당 4회 × 21분 232건(앱 폴링). 1회 비용은 작지만 횟수가 많다.
 
 ### 한계
