@@ -1,0 +1,68 @@
+com.trova.backend.recommendation.PersonalizationPgvectorEquivalenceTest: tests=3 failures=0 skipped=0
+com.trova.backend.recommendation.AlternativeReasonTest: tests=3 failures=0 skipped=0
+com.trova.backend.recommendation.AlternativeFinderServiceTest: tests=28 failures=0 skipped=0
+com.trova.backend.controller.AlternativeLatencyMeasurementTest: tests=1 failures=0 skipped=0
+P8 mode=missing-column candidates=0 coldSql=5 coldHibernate=5 warmSql=5.0 hibernateSql=5.0 medianMs=1.604 minMs=1.313 maxMs=2.113
+P8 mode=missing-column candidates=1 coldSql=11 coldHibernate=11 warmSql=9.0 hibernateSql=9.0 medianMs=2.969 minMs=2.613 maxMs=4.342
+P8 mode=missing-column candidates=5 coldSql=15 coldHibernate=15 warmSql=9.0 hibernateSql=9.0 medianMs=3.047 minMs=2.154 maxMs=6.142
+P8 mode=missing-column candidates=20 coldSql=30 coldHibernate=30 warmSql=9.0 hibernateSql=9.0 medianMs=2.296 minMs=2.008 maxMs=2.760
+P8 mode=stored-vector candidates=0 coldSql=5 coldHibernate=5 warmSql=5.0 hibernateSql=5.0 medianMs=0.837 minMs=0.772 maxMs=1.524
+P8 mode=stored-vector candidates=1 coldSql=9 coldHibernate=9 warmSql=9.0 hibernateSql=9.0 medianMs=1.627 minMs=1.453 maxMs=4.497
+P8 mode=stored-vector candidates=5 coldSql=9 coldHibernate=9 warmSql=9.0 hibernateSql=9.0 medianMs=1.558 minMs=1.360 maxMs=2.158
+P8 mode=stored-vector candidates=20 coldSql=9 coldHibernate=9 warmSql=9.0 hibernateSql=9.0 medianMs=1.965 minMs=1.499 maxMs=5.293
+P8 mode=new-vector candidates=0 coldSql=5 coldHibernate=5 warmSql=5.0 hibernateSql=5.0 medianMs=0.632 minMs=0.598 maxMs=0.774
+P8 mode=new-vector candidates=1 coldSql=13 coldHibernate=11 warmSql=9.0 hibernateSql=9.0 medianMs=1.473 minMs=1.090 maxMs=6.616
+P8 mode=new-vector candidates=5 coldSql=25 coldHibernate=15 warmSql=9.0 hibernateSql=9.0 medianMs=1.429 minMs=1.205 maxMs=2.709
+P8 mode=new-vector candidates=20 coldSql=70 coldHibernate=30 warmSql=9.0 hibernateSql=9.0 medianMs=1.595 minMs=1.326 maxMs=2.570
+
+Additional targeted PostgreSQL run: PersonalizationPgvectorEquivalenceTest tests=4 failures=0 skipped=0
+P8 pgvector API candidates=1,5,12 SQL=[9, 9, 9]
+
+Red phase: rule stub 3 failures; fixed SQL 1 failure; default service ordering 1 failure; pgvector comparison missing flag 1 failure.
+Mutations (each restored): score >=0 -> 3 rule failures; default Gemini=true -> 1 service failure; batch replaced with per-candidate retrieval -> 1 SQL failure.
+
+Final full suite: ./gradlew test --offline --console=plain
+{'tests': 1296, 'failures': 0, 'errors': 0, 'skipped': 6}
+com.trova.backend.recommendation.PersonalizationPgvectorEquivalenceTest {'tests': '4', 'failures': '0', 'errors': '0', 'skipped': '0'}
+
+PR #493 review fixes — 2026-11-20
+Scope: no commit/push/PR comments, no external API/production DB/.env use; no helper workers.
+Read handoff, ADR 0052, CLAUDE.md; no applicable AGENTS.md found in workspace/ancestor directories.
+
+Review item locations (paths below relative to src unless docs/ is specified):
+1. test/java/com/trova/backend/recommendation/AlternativeFinderServiceTest.java:62,139,262 — full assertEquals for target/candidate category, target distance 142m, target 1.2km versus next-place distance 111m; filter category differs from target; pgvector full reason at PersonalizationPgvectorEquivalenceTest.java:330.
+2. main/java/com/trova/backend/recommendation/AlternativeReason.java:12 — all eight category phrases now say 같은 종류의.
+3. main/java/com/trova/backend/recommendation/AlternativeReason.java:24; test/java/com/trova/backend/recommendation/AlternativeReasonTest.java:25,32 — omit rounded 0m; cover exact zero/sub-meter distance and rating 5 versus 5.01.
+4. main/java/com/trova/backend/recommendation/AlternativeReason.java:32; test/java/com/trova/backend/recommendation/AlternativeReasonTest.java:38; docs/adr/0052-alternative-rule-reasons.md:14 — prioritize matching category before positive personalization without inventing an uncalibrated score threshold.
+5. test/java/com/trova/backend/recommendation/AlternativeFinderServiceTest.java:56 — remove test-name flag inference; 27 default-mode tests, 3 explicitly enabled recovery tests; ranking tests now stub batch scores.
+6. test/java/com/trova/backend/recommendation/AlternativeFinderServiceTest.java:75 — three candidates, exact Gemini reasons on first two, null on third, explainFromSignals exactly twice and retrieval three times, no batch scores.
+7. test/java/com/trova/backend/recommendation/AlternativeExplanationBindingTest.java:24 — real main application.yml loaded into isolated Spring context; synthetic environment unset/true/false injected through SystemEnvironmentPropertySource and actual service @Value checked; no full application startup.
+8. Actual Docker engine 29.1.3; Testcontainers pgvector/pgvector:0.8.1-pg17; targeted run passed all 43 tests including all 4 pgvector tests with no skips.
+9. Existing commit 84e4534 message including Closes #492 left untouched.
+
+Red: ./gradlew test --offline --console=plain with AlternativeReasonTest, AlternativeFinderServiceTest, AlternativeExplanationBindingTest: 39 tests, 6 expected assertion failures before production changes (3 service, 3 reason); binding/recovery/rating boundary already passed.
+Green targeted: same tests plus PersonalizationPgvectorEquivalenceTest, 43 tests passed, 0 skipped; 19 seconds.
+Mutations: each applied alone, tested, and restored in finally; all 9 detected:
+next-distance: exit=1, tests=30, failures=3
+target-category: exit=1, tests=30, failures=1
+candidate-category: exit=1, tests=30, failures=1
+zero-distance: exit=1, tests=6, failures=1
+rating-five: exit=1, tests=6, failures=1
+third-explanation: exit=1, tests=30, failures=2
+env-binding: exit=1, tests=3, failures=1
+value-binding: exit=1, tests=3, failures=1
+taste-priority: exit=1, tests=6, failures=1
+
+Full-suite environment issue: initial sandboxed run repeatedly failed existing AuxiliaryRunnerInterruptTest/AuxiliaryRunnerLifecycleTest waiting for fixture PIDs; process enumeration (`ps`) was denied by the sandbox, so that run was interrupted rather than treated as a completed suite.
+The same two process test classes passed unchanged outside the sandbox after automatic escalation approval (16 seconds); no unrelated production/test changes were made.
+Final full suite: ./gradlew test --offline --console=plain (approved local execution outside sandbox)
+{'tests': 1304, 'failures': 0, 'errors': 0, 'skipped': 6}
+com.trova.backend.recommendation.PersonalizationPgvectorEquivalenceTest {'tests': '4', 'failures': '0', 'errors': '0', 'skipped': '0'}
+P7 pgvector order users=5 reorderedByPersonalization=3
+P7 pgvector equivalence pairs=70 nonZero=36 nan=0
+P8 pgvector API candidates=1,5,12 SQL=[9, 9, 9]
+com.trova.backend.recommendation.AlternativeReasonTest {'tests': '6', 'failures': '0', 'errors': '0', 'skipped': '0'}
+com.trova.backend.recommendation.AlternativeFinderServiceTest {'tests': '30', 'failures': '0', 'errors': '0', 'skipped': '0'}
+com.trova.backend.recommendation.AlternativeExplanationBindingTest {'tests': '3', 'failures': '0', 'errors': '0', 'skipped': '0'}
+git diff --check: passed.
+Remaining implementation/verification work: none; coordinator owns commit/push/PR comments.

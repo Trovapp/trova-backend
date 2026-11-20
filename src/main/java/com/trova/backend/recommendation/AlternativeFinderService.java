@@ -15,6 +15,7 @@ import com.trova.backend.service.ApiCallLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -53,6 +54,10 @@ public class AlternativeFinderService {
     // 적은 숨은 장소" 케이스를 정확히 못 살리게 되므로 최소 바닥값을 둔다.
     private static final double MIN_BASE_SCORE_FOR_BOOST = 1.0;
     private static final int EXPLANATION_TOP_N = 2;
+
+    // 대안만 복구하는 플래그. 채팅 등 공용 Gemini 생성기는 바꾸지 않는다.
+    @Value("${app.alternatives.gemini-explanation-enabled:false}")
+    private boolean geminiExplanationEnabled;
 
     // 실측 아닌 통상적 평균 속도 추정치 — 실제 도로망을 반영하는 경로 API가 아니다.
     private static final Map<TransportMode, Double> AVERAGE_SPEED_KMH = Map.of(
@@ -207,7 +212,10 @@ public class AlternativeFinderService {
         placeEmbeddingService.ensureEmbeddings(candidates);
         long embeddingMs = System.currentTimeMillis() - embeddingStart;
         long congestionMs = 0;
-        long personalizationMs = 0;
+        long personalizationStart = System.currentTimeMillis();
+        Map<Long, Double> personalizationScores = geminiExplanationEnabled ? Map.of()
+                : personalizationService.personalizationScores(user.getId(), candidates);
+        long personalizationMs = System.currentTimeMillis() - personalizationStart;
 
         List<AlternativeCandidate> result = new ArrayList<>();
         Map<Long, Double> scoreByPlaceId = new java.util.HashMap<>();
@@ -260,9 +268,12 @@ public class AlternativeFinderService {
 
             congestionMs += System.currentTimeMillis() - congestionStart;
 
-            long personalizationStart = System.currentTimeMillis();
-            PersonalizationService.PersonalizationResult personalization = personalizationService.retrieveAndScore(user, candidate);
-            personalizationMs += System.currentTimeMillis() - personalizationStart;
+            long candidatePersonalizationStart = System.currentTimeMillis();
+            PersonalizationService.PersonalizationResult personalization = geminiExplanationEnabled
+                    ? personalizationService.retrieveAndScore(user, candidate)
+                    : new PersonalizationService.PersonalizationResult(
+                            personalizationScores.getOrDefault(candidate.getId(), 0.0), List.of());
+            personalizationMs += System.currentTimeMillis() - candidatePersonalizationStart;
             double score = Math.max(PlaceScoring.baseScore(candidate), MIN_BASE_SCORE_FOR_BOOST)
                     * (1 + personalization.score() * PERSONALIZATION_BOOST_WEIGHT);
             scoreByPlaceId.put(candidate.getId(), score);
@@ -283,8 +294,7 @@ public class AlternativeFinderService {
                                 (AlternativeCandidate c) -> scoreByPlaceId.get(c.placeId())).reversed()))
                 .toList();
 
-        // 상위 EXPLANATION_TOP_N개에만 추천 이유를 생성한다 — 무료 티어 한도 안에서
-        // 감당하기 위해 요청당 생성 호출을 이 개수로 제한한다(스펙 "생성 단계" 절).
+        // 기본은 상위 두 곳에 규칙 문구. 복구 모드만 기존 신호로 Gemini 이유를 생성한다.
         long explanationStart = System.currentTimeMillis();
         List<AlternativeCandidate> withReasons = new ArrayList<>();
         for (int i = 0; i < result.size(); i++) {
@@ -294,10 +304,17 @@ public class AlternativeFinderService {
                         .filter(p -> java.util.Objects.equals(p.getId(), c.placeId()))
                         .findFirst()
                         .orElse(null);
-                Optional<String> reason = candidatePlace != null
-                        ? personalizationService.explainFromSignals(
-                                candidatePlace, similarSignalsByPlaceId.getOrDefault(candidatePlace.getId(), List.of()))
-                        : Optional.empty();
+                Optional<String> reason;
+                if (geminiExplanationEnabled) {
+                    reason = candidatePlace != null
+                            ? personalizationService.explainFromSignals(candidatePlace,
+                                    similarSignalsByPlaceId.getOrDefault(candidatePlace.getId(), List.of()))
+                            : Optional.empty();
+                } else {
+                    double distanceKm = haversineKm(target.getLatitude(), target.getLongitude(), c.latitude(), c.longitude());
+                    reason = Optional.ofNullable(AlternativeReason.create(distanceKm, target.getCategory(), c.category(),
+                            personalizationScores.getOrDefault(c.placeId(), 0.0), c.rating(), c.userRatingCount()));
+                }
                 withReasons.add(new AlternativeCandidate(
                         c.placeId(), c.googlePlaceId(), c.name(), c.category(), c.rating(), c.userRatingCount(),
                         c.latitude(), c.longitude(), c.address(), c.distanceToNextKm(), c.estimatedTravelMinutes(),

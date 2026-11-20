@@ -1,0 +1,64 @@
+T24 (P8) 2단계 완료 인계
+
+구현
+- 기본 대안 이유는 규칙 문장, 상위 2곳·근거 최대 2개, API JSON 형식/후보 순서/필터 유지.
+- ALTERNATIVES_GEMINI_EXPLANATION_ENABLED=true로 기존 Gemini+후보별 조회 복구(재시작 필요).
+- P7 personalizationScores/findCandidateSimilarities 재사용, 여행 전체 조회 EntityGraph 적용.
+- 신규 INSERT 묶기는 공유 ON CONFLICT/동시성 변경 위험으로 보류; 낮은 위험 기본 조회 감소를 선택.
+- 채팅 Gemini/Google 검색/임베딩 생성 증가 없음.
+
+변경 파일 (이 인계 포함 14개)
+src/main/java/com/trova/backend/recommendation/AlternativeFinderService.java
+src/main/java/com/trova/backend/recommendation/AlternativeReason.java
+src/main/java/com/trova/backend/repository/TripPlaceRepository.java
+src/main/resources/application.yml
+src/test/java/com/trova/backend/recommendation/AlternativeReasonTest.java
+src/test/java/com/trova/backend/recommendation/AlternativeFinderServiceTest.java
+src/test/java/com/trova/backend/recommendation/PersonalizationPgvectorEquivalenceTest.java
+src/test/java/com/trova/backend/controller/AlternativeLatencyMeasurementTest.java
+docs/adr/0052-alternative-rule-reasons.md
+docs/adr/README.md
+docs/experience-notes.md
+docs/monitoring/2026-11-20-alternatives/analysis.md
+docs/monitoring/2026-11-20-alternatives/phase2-local-results.txt
+docs/monitoring/2026-11-20-alternatives/phase2-handoff.txt
+
+규칙 문장 예시 5개
+1. 원래 장소에서 직선 350m · 같은 음식점이에요
+2. 원래 장소에서 직선 1.3km · 같은 카페예요
+3. 취향과 비슷해요 · 평점 4.5
+4. 평점 4.5 · 리뷰 1,200개
+5. 리뷰 12개
+
+로컬 전후
+- H2 따뜻한 stored-vector 후보 1/5/20: SQL 11/19/49 → 9/9/9.
+- 중앙값 ms 2.278/2.913/5.205 → 1.627/1.558/1.965 (전은 1단계 기록; 같은 프로세스 비교 아님).
+- 신규20 최초 요청 SQL 항목110 →70, Hibernate70 →30; 임베딩 batch 항목40은 동일.
+- 실제 pgvector 성공 API 후보1/5/12 SQL=[9,9,9], text/embedding 목0회, Google 요청당1회.
+- 운영 예측: 제공된 타이머 기준 이유 대기 약15초/요청 제거 + 따뜻한20후보 조회40왕복 감소(30~54ms 가정 1.20~2.16초 민감도); 운영 실측 아님.
+
+검증
+- 구현 전: 규칙 테스트3·SQL고정1 실패, 기본모드 기존 순서 불일치, pgvector 비교 플래그 부재 실패 확인.
+- 변형: >0→>=0은 규칙3실패, 기본 Gemini=true는 서비스1실패, batch→후보별 조회는 SQL1실패; 전부 원복.
+- 실제 pgvector: 사용자5명/14후보의 이유 외 모든 필드·순서 동일; P7 top-5/비트 단위 점수 동일성 포함4개 통과, 건너뜀0.
+- ./gradlew test --offline --console=plain 단독: 1,296개, 통과1,290·실패0·오류0·기존 조건부 건너뜀6, 1분38초; 기존 실패0/새 실패0.
+- ./gradlew build --offline --console=plain 성공(전체 test 결과 UP-TO-DATE 재사용).
+- 외부 API/운영 DB/.env/git/docker CLI 미사용, 쓰기 확인 성공, 하위 작업자 없음.
+
+커밋 초안 (실제 커밋하지 않음)
+perf: 대안 추천 이유를 규칙 문장으로 바꾸고 개인화 조회 묶기
+
+PR 제목 초안
+perf: 대안 장소 Gemini 이유 제거와 개인화 SQL 묶음 조회
+
+PR 본문 초안
+대안 장소를 조회할 때 상위 두 후보의 Gemini 설명을 순차로 기다리던 동작을 확인된 값 최대 두 개의 짧은 한국어 문구로 바꿉니다. 개인화 점수는 기존 P7 묶음 쿼리를 재사용하고 여행 전체 장소의 EAGER 추가 조회를 제거해 따뜻한 20후보 SQL을 49회에서 9회로 줄입니다.
+
+응답 형식·이유 외 필드·순서·필터를 유지하며 Google/임베딩 호출을 늘리지 않습니다. ALTERNATIVES_GEMINI_EXPLANATION_ENABLED=true로 기존 이유/조회 경로 복구가 가능합니다. 신규 INSERT 묶기는 이번 범위에서 보류했습니다.
+
+검증: 전체 1,296개 중 통과1,290·실패0·기존 조건부 건너뜀6, pgvector4개 통과, 실패 먼저/변형3개 검출 후 원복, 전체 build 성공. 운영 이유 대기 약15초 제거는 배포 후 확인할 예측입니다.
+
+Closes #<매니저가 실제 P8 이슈 번호 기입>
+
+남은 일
+매니저의 변경 검토·커밋·PR 생성 및 승인된 배포 뒤 운영 전후 측정. 이 worker는 저장소 커밋/PR/배포를 수행하지 않음.
