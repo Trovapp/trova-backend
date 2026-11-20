@@ -97,10 +97,10 @@ Slack은 알림 대상·스케줄과 PC 활동 여부에 따른 모바일 전달
 7. **저장본 동기화:** 변경 후 Cloud가 기준인 현행 ADR에 따라 export를 저장한다. Synthetic 사본은 `monitoring/grafana-cloud/synthetic/trova-health.json`에 저장하고 체크 ID/대상/주기/실패 조건/라벨/연결 Alertmanager·연락처/취득 시각을 포함한다. 이는 조회 증빙이며 provisioning 복구 입력이 아니다. 실제 값을 취득하기 전에는 파일을 만들지 않는다. [저장본 안내](../../../monitoring/grafana-cloud/README.md)의 취지에 따라 아래 시크릿 검사와 로컬 검증을 수행한다. README 예시 문자열을 검사하지 않도록 **JSON·템플릿 사본만** 대상으로 삼고 Synthetic 사본도 검사에 포함한다.
 
 ```sh
-grep -riqE --include='*.json' --include='*.tmpl' 'hooks\.slack\.com|xox[abp]-|glc_|glsa_|Authorization|basicAuth' monitoring/grafana-cloud
+grep -riqE --include='*.json' --include='*.tmpl' 'hooks\.slack\.com|xox[abp]-|glc_|glsa_|Authorization|basicAuth|bearerToken|[^/@[:space:]":]+:[^/@[:space:]"]+@' monitoring/grafana-cloud
 ```
 
-비밀값 자체는 출력하지 않는다. 종료 0이면 의심 패턴 발견으로 반출을 중단하고 로컬에서 마스킹 여부를 확인한다. `Authorization`·`basicAuth`는 키 이름이나 안전한 비활성 설정에도 걸릴 수 있으므로 값이 비밀인지 검토하고, 필요한 키는 유지하되 비밀값을 제거한 근거를 남긴다. 종료 1이면 패턴 미검출, 2 이상이면 검사 오류다. 미검출은 모든 비밀의 부재를 증명하지 않으므로 export의 인증 헤더·URL 자격 증명도 검토한다.
+비밀값 자체는 출력하지 않는다. 종료 0이면 의심 패턴 발견으로 반출을 중단하고 로컬에서 마스킹 여부를 확인한다. `Authorization`·`basicAuth`·`bearerToken`은 키 이름이나 안전한 비활성 설정에도 걸릴 수 있으며, 마지막 패턴은 `user:pass@` 형태의 URL 자격 증명을 찾는다. 값이 비밀인지 검토하고, 필요한 키는 유지하되 비밀값을 제거한 근거를 남긴다. 종료 1이면 패턴 미검출, 2 이상이면 검사 오류다. 미검출은 모든 비밀의 부재를 증명하지 않으므로 export의 인증 헤더·URL 자격 증명도 검토한다.
 
 이어 `python3 monitoring/grafana-cloud/validate_host_alert.py`와 `python3 -m unittest discover -s monitoring/grafana-cloud -p 'test_validate_host_alert.py' -v`를 실행하고 결과를 기록한다. promtool 등 전제 도구가 없으면 검증 미완료로 남긴다. **검증 범위는 host 규칙의 구조·식·합성 동작과 alerting 저장본의 UID/title 중복·후보 재유입 등이다.** Synthetic 사본, 다른 경보의 조건 의미, 연락처·정책 라우팅 전체의 정확성은 검증하지 않으며 Cloud 발화·휴대폰 전달 시험을 대체하지 않는다.
 
@@ -137,20 +137,33 @@ UptimeRobot을 실제 채택할 때는 기존 다운 감지 구성을 정한 **A
 
 허용 지연은 다음 **인수용 제안 기준**이며 서비스 SLA나 실측 결과가 아니다. 매니저와 사용자가 시험 전에 확정하고 변경 사유를 남긴다. 실제 정책의 평가 간격/대기와 맞지 않으면 시험 전에 기준·점검 창을 조정하며 결과를 본 뒤 기준을 느슨하게 바꾸지 않는다.
 
-- **D(감지):** Synthetic은 첫 실패 표본부터 Alerting까지 5분 이내, 지표 부재는 마지막 표본부터 Alerting까지 8분 이내를 제안한다. 실제 Synthetic 추가 지속 조건은 사전 확인한다.
+- **D(감지):** Synthetic은 첫 실패 표본부터 Alerting까지 5분 이내, 지표 부재는 마지막 표본부터 Alerting까지 **10분 이내**를 제안한다. 지표 부재 5분+평가 위상 최대 1분+Pending 2분의 8분에 평가 지연 여유 2분을 더한 기준이다. 실제 Synthetic 추가 지속 조건은 사전 확인한다.
 - **N(전송):** 새 그룹의 Alerting→Slack은 실제 `group_wait`+2분 이내, Slack→휴대폰 소리는 1분 이내. 기존 그룹 갱신/RESOLVED→Slack은 실제 `group_interval`+2분 이내로 별도 측정한다. 서로 다른 Alertmanager의 정책 시간을 각각 기록한다. 연락처 직접 Test는 실행→Slack 2분 이내를 사용한다.
 - **W(깨움):** 휴대폰 소리→사용자가 깨어 확인하기까지 5분 이내. 소리가 없거나 소리가 아닌 다른 이유로 깨어 확인한 경우 깨움 시험 실패다.
 - **U(독립 보조):** 장애 시작→이메일/앱 알림 10분 이내, 모바일 소리·깨움은 N의 모바일 구간/W 적용을 제안한다. 실제 무료 기능의 제약을 먼저 확인한다.
 - 판정은 `통과/실패/미실행` 중 하나로 기록한다. 해당 지연 초과·누락·소리 미발생은 실패다. 미실행/증거 미확보를 통과로 처리하지 않는다. D·N과 복구 확인이 필요한 행은 모두 충족해야 통과다.
+
+Synthetic 판정 대상은 `trova-health`에 연결된 **`ProbeFailedExecutionsTooHigh`와 `SyntheticCheckFailedExecutionsBreach`**다. 실제 활성 규칙·체크 ID·probe/인스턴스 라벨을 시험 전에 확인하고 각각 판정한다. 둘 중 하나가 현재 구성에 없으면 부재 근거와 실제 대체 규칙을 사전 기록하며, 다른 규칙의 발화로 해당 행을 통과시키지 않는다. 장애 중간에 RESOLVED가 오면 인스턴스별 실패 표본과 대조한다. 실제 정상 probe 응답과 조건 해소가 확인되면 일시 회복으로 기록하고 재실패부터 D를 다시 측정한다. **실패가 지속되거나 정상 표본 없이 NoData/MissingSeries 등으로 해제됐다면 정상 복구로 인정하지 않고 해당 경보의 지속 감지 시험은 실패**로 남긴다. 최종 통과에는 실제 UP·조건 해소 이후 정상 복귀와 RESOLVED 전달이 필요하다.
+
+아래 시각 표를 **각 인수 행·경보 인스턴스·발화/해제 회차별로 복사**하여 작성하고 인수 표에서 기록 ID를 참조한다. D·N·W의 시작/끝을 한 칸에 합치지 않으며 적용하지 않는 구간은 사유와 함께 해당 없음으로 기록한다.
+
+| 기록 ID·경보 인스턴스·회차 | 구간 | 시작 KST | 끝 KST | 실제 지연·허용 기준 | 통과/실패 |
+|---|---|---|---|---|---|
+| 미기록 | D: 첫 probe 실패/마지막 OTLP 표본 → Alerting | 미확인 | 미확인 | 미확인 | 미실행 |
+| 미기록 | N 서버 전달: Alerting/Test 실행/정상 복귀 → Slack 도착 | 미확인 | 미확인 | 미확인 | 미실행 |
+| 미기록 | N 모바일: Slack 도착 → 휴대폰 소리 | 미확인 | 미확인 | 미확인 | 미실행 |
+| 미기록 | W: 휴대폰 소리 → 깨어 직접 확인 | 미확인 | 미확인 | 미확인 | 미실행 |
 
 | 시험·적용 기준 | 실패 감지/발화 KST | 정책/억제 여부 | Slack 도착 KST·링크 | 휴대폰 수신·사용자 확인 KST | 해제/정리 | 통과/실패 |
 |---|---|---|---|---|---|---|
 | 기존 Slack 연락처 테스트(N) | 미실행 | 연락처만 시험 | 미확인 | 미확인 | 미확인 | 미실행 |
 | Synthetic 경로 라우팅 FIRING→RESOLVED(N) | 미실행 | Alertmanager·정책 미확인 | 미확인 | 미확인 | 미확인 | 미실행 |
 | Grafana 관리 경로 라우팅 FIRING→RESOLVED(N) | 미실행 | Alertmanager·정책 미확인 | 미확인 | 미확인 | 미확인 | 미실행 |
-| 기존 trova-health 실패 → 기존 Synthetic 경보 실제 발화(D·N) | 미실행 | 미확인 | 미확인 | 미확인 | UP·정상 복귀·RESOLVED 미확인 | 미실행 |
+| trova-health → ProbeFailedExecutionsTooHigh 실제 발화(D·N) | 미실행 | 미확인 | 미확인 | 미확인 | UP·정상 복귀·RESOLVED 미확인 | 미실행 |
+| trova-health → SyntheticCheckFailedExecutionsBreach 실제 발화(D·N) | 미실행 | 미확인 | 미확인 | 미확인 | UP·정상 복귀·RESOLVED 미확인 | 미실행 |
 | 기존 TrovaCloudScrapeUnavailable 표본 부재 → 실제 발화(D·N) | 미실행 | 미확인 | 미확인 | 미확인 | 새 표본·정상 복귀·RESOLVED 미확인 | 미실행 |
-| 야간·잠금 화면·PC 활성/비활성(N) | 미실행 | 미확인 | 미확인 | 미확인 | 미확인 | 미실행 |
+| 야간·잠금 화면·PC 활성(N) | 미실행 | 미확인 | 미확인 | 미확인 | 미확인 | 미실행 |
+| 야간·잠금 화면·PC 비활성(N) | 미실행 | 미확인 | 미확인 | 미확인 | 미확인 | 미실행 |
 | 취침 위치에서 무음·방해 금지 각각/조합의 알림 소리(N) | 미실행 | OS 예외 미확인 | 미확인 | 소리·음량·설정 미확인 | 미확인 | 미실행 |
 | 사전 동의한 실제 수면 중 알림 소리로 깨움(N·W) | 미실행 | 미확인 | 미확인 | 깨어 확인한 시각·지연 미확인 | 미확인 | 미실행 |
 | 독립 보조 경로(채택 시, U·N 모바일 구간·W) | 미실행 | 별도 서비스 | 해당 없음(별도 도착 시각 기록) | 미확인 | 미확인 | 미실행 |
