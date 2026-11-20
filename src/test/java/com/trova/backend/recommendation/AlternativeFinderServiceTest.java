@@ -17,19 +17,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.lang.reflect.Field;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -48,13 +53,44 @@ class AlternativeFinderServiceTest {
     @InjectMocks private AlternativeFinderService alternativeFinderService;
 
     @BeforeEach
-    void 보충_검색의_기본_응답은_빈_목록이다(org.junit.jupiter.api.TestInfo info) {
-        // 기존 후보별 점수/설명 스텁은 복구 경로 회귀 검증으로 유지한다.
-        if (!info.getTestMethod().orElseThrow().getName().startsWith("기본_모드")) {
-            org.springframework.test.util.ReflectionTestUtils.setField(alternativeFinderService, "geminiExplanationEnabled", true);
-        }
+    void 보충_검색의_기본_응답은_빈_목록이다() {
         lenient().when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
                 .thenReturn(new GooglePlacesNearbySearchResponse(List.of()));
+    }
+
+    @Test
+    void 기본_모드_이유는_검색_필터가_아닌_원본과_후보_종류를_비교한다() {
+        User owner = prepareTarget("museum");
+        List<GooglePlacesNearbySearchResponse.Place> raw = List.of(rawPlace("park", "park"), rawPlace("museum", "museum"));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "park"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+        prepareCandidates(raw);
+        List<AlternativeCandidate> actual = alternativeFinderService.findAlternatives(owner, 1L,
+                new AlternativeFilter("공원", null, null, null, null), false).orElseThrow();
+        assertEquals("원래 장소에서 직선 142m · 평점 4", actual.get(0).recommendationReason());
+        assertEquals("원래 장소에서 직선 142m · 같은 종류의 박물관이에요", actual.get(1).recommendationReason());
+    }
+
+    @Test
+    void 복구_모드는_상위_두곳에만_Gemini_이유를_붙인다() {
+        ReflectionTestUtils.setField(alternativeFinderService, "geminiExplanationEnabled", true);
+        User owner = prepareTarget();
+        List<GooglePlacesNearbySearchResponse.Place> raw = List.of(rawPlace("first", "cafe"),
+                rawPlace("second", "cafe"), rawPlace("third", "cafe"));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "cafe"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+        prepareCandidates(raw);
+        when(personalizationService.retrieveAndScore(eq(owner), any()))
+                .thenReturn(new PersonalizationService.PersonalizationResult(0, List.of()));
+        when(personalizationService.explainFromSignals(any(), any())).thenAnswer(invocation ->
+                Optional.of(((Place) invocation.getArgument(0)).getGooglePlaceId() + " Gemini 이유"));
+        List<AlternativeCandidate> actual = alternativeFinderService.findAlternatives(owner, 1L,
+                new AlternativeFilter(null, null, null, null, null)).orElseThrow();
+        assertThat(actual).extracting(AlternativeCandidate::recommendationReason)
+                .containsExactly("first Gemini 이유", "second Gemini 이유", null);
+        verify(personalizationService, times(2)).explainFromSignals(any(), eq(List.of()));
+        verify(personalizationService, times(3)).retrieveAndScore(eq(owner), any());
+        verify(personalizationService, never()).personalizationScores(anyLong(), anyList());
     }
 
     private void setId(Object entity, Long id) {
@@ -95,14 +131,13 @@ class AlternativeFinderServiceTest {
             return c;
         }).toList();
         when(placeCatalogService.upsertAll(raw)).thenReturn(candidates);
-        lenient().when(personalizationService.retrieveAndScore(any(), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
-        lenient().when(personalizationService.personalizationScores(owner.getId(), candidates))
-                .thenReturn(java.util.Map.of(10L, 0.0, 11L, 0.8, 12L, 0.0));
+        when(personalizationService.personalizationScores(owner.getId(), candidates))
+                .thenReturn(Map.of(10L, 0.0, 11L, 0.8, 12L, 0.0));
         List<AlternativeCandidate> actual = alternativeFinderService.findAlternatives(owner, 1L,
                 new AlternativeFilter(null, null, null, null, null)).orElseThrow();
         assertThat(actual).extracting(AlternativeCandidate::googlePlaceId).containsExactly("high", "low", "tie");
-        assertThat(actual.get(0).recommendationReason()).contains("취향과 비슷해요");
+        assertEquals("원래 장소에서 직선 142m · 같은 종류의 카페예요", actual.get(0).recommendationReason());
+        assertEquals("원래 장소에서 직선 142m · 같은 종류의 카페예요", actual.get(1).recommendationReason());
         assertThat(actual.get(2).recommendationReason()).isNull();
         verify(personalizationService, never()).retrieveAndScore(any(), any());
         verify(personalizationService, never()).explainFromSignals(any(), any());
@@ -148,8 +183,6 @@ class AlternativeFinderServiceTest {
 
         Place upserted = new Place("gp-1", "대안카페", "cafe", 4.3, 50, "PRICE_LEVEL_MODERATE", 37.501, 127.001, "서울 어딘가");
         when(placeCatalogService.upsertAll(List.of(raw))).thenReturn(List.of(upserted));
-        when(personalizationService.retrieveAndScore(eq(owner), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -186,8 +219,6 @@ class AlternativeFinderServiceTest {
 
         when(placeTaggingRunner.run(anyList(), anyLong())).thenReturn(List.of(
                 new PlaceTag(0, "조용한", "INDOOR"), new PlaceTag(1, "활기찬", "OUTDOOR")));
-        when(personalizationService.retrieveAndScore(eq(owner), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, true, null, null, null));
@@ -222,14 +253,14 @@ class AlternativeFinderServiceTest {
         Place nearPlace = new Place("gp-near", "가까운곳", "cafe", null, null, null, 37.511, 127.000, null);
         Place farPlace = new Place("gp-far", "먼곳", "cafe", null, null, null, 37.560, 127.000, null);
         when(placeCatalogService.upsertAll(List.of(near, far))).thenReturn(List.of(nearPlace, farPlace));
-        when(personalizationService.retrieveAndScore(eq(owner), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, 2.0, null, null));
 
         assertThat(result).isPresent();
         assertThat(result.get()).extracting(AlternativeCandidate::name).containsExactly("가까운곳");
+        assertEquals("원래 장소에서 직선 1.2km · 같은 종류의 카페예요",
+                result.orElseThrow().get(0).recommendationReason());
     }
 
     @Test
@@ -303,8 +334,6 @@ class AlternativeFinderServiceTest {
         Place withCoordPlace = new Place("gp-with-coord", "좌표있는곳", "cafe", null, null, null, 37.502, 127.002, "주소2");
         when(placeCatalogService.upsertAll(List.of(rawNoCoord, rawWithCoord)))
                 .thenReturn(List.of(noCoordPlace, withCoordPlace));
-        when(personalizationService.retrieveAndScore(eq(owner), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -363,8 +392,6 @@ class AlternativeFinderServiceTest {
                 new Place("gp-other", "새로운 곳", "cafe", 4.2, 5, null, 37.503, 127.0, "주소3"),
                 new Place("gp-temple", "대한불교조계종 진관사", "attraction", 4.6, 300, null, 37.5045, 127.0, "주소4"),
                 new Place("gp-branch", "청류 진관사점", "cafe", 4.0, 20, null, 37.5041, 127.0, "주소5")));
-        when(personalizationService.retrieveAndScore(eq(owner), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -401,8 +428,6 @@ class AlternativeFinderServiceTest {
                 new Place("gp-hotel", "어느 호텔", "hotel", 4.4, 5000, null, 37.501, 127.0, "주소1"),
                 new Place("gp-station", "어느 역", "subway_station", 4.0, 900, null, 37.502, 127.0, "주소2"),
                 new Place("gp-cafe", "대안카페", "cafe", 4.2, 50, null, 37.503, 127.0, "주소3")));
-        when(personalizationService.retrieveAndScore(eq(owner), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -430,8 +455,6 @@ class AlternativeFinderServiceTest {
                 .thenReturn(new GooglePlacesNearbySearchResponse(List.of(raw)));
         when(placeCatalogService.upsertAll(List.of(raw))).thenReturn(List.of(
                 new Place("gp-r", "다른 국밥집", "korean_restaurant", 4.3, 50, null, 37.501, 127.001, "주소")));
-        when(personalizationService.retrieveAndScore(eq(owner), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -462,8 +485,6 @@ class AlternativeFinderServiceTest {
         Place selfPlace = new Place("gp-self", "원래 장소", "cafe", 4.0, 10, null, 37.5, 127.0, "주소");
         Place otherPlace = new Place("gp-other", "다른 카페", "cafe", 4.2, 5, null, 37.501, 127.001, "주소2");
         when(placeCatalogService.upsertAll(List.of(rawSelf, rawOther))).thenReturn(List.of(selfPlace, otherPlace));
-        when(personalizationService.retrieveAndScore(eq(owner), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -497,11 +518,8 @@ class AlternativeFinderServiceTest {
         setId(low, 10L);
         setId(high, 11L);
         when(placeCatalogService.upsertAll(List.of(rawLow, rawHigh))).thenReturn(List.of(low, high));
-        when(personalizationService.retrieveAndScore(owner, low))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
-        when(personalizationService.retrieveAndScore(owner, high))
-                .thenReturn(new PersonalizationService.PersonalizationResult(1.0, List.of()));
-        when(personalizationService.explainFromSignals(any(), any())).thenReturn(Optional.empty());
+        when(personalizationService.personalizationScores(owner.getId(), List.of(low, high)))
+                .thenReturn(Map.of(10L, 0.0, 11L, 1.0));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -536,11 +554,8 @@ class AlternativeFinderServiceTest {
         setId(low, 10L);
         setId(high, 11L);
         when(placeCatalogService.upsertAll(List.of(rawLow, rawHigh))).thenReturn(List.of(low, high));
-        when(personalizationService.retrieveAndScore(owner, low))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
-        when(personalizationService.retrieveAndScore(owner, high))
-                .thenReturn(new PersonalizationService.PersonalizationResult(1.0, List.of()));
-        when(personalizationService.explainFromSignals(any(), any())).thenReturn(Optional.empty());
+        when(personalizationService.personalizationScores(owner.getId(), List.of(low, high)))
+                .thenReturn(Map.of(10L, 0.0, 11L, 1.0));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));
@@ -551,6 +566,7 @@ class AlternativeFinderServiceTest {
 
     @Test
     void NaN_대안은_유한_점수_뒤로_가고_유한_점수와_동점_순서는_유지된다() {
+        ReflectionTestUtils.setField(alternativeFinderService, "geminiExplanationEnabled", true);
         User owner = prepareTarget();
         List<GooglePlacesNearbySearchResponse.Place> raw = List.of(rawPlace("nan", "cafe"),
                 rawPlace("low", "cafe"), rawPlace("high", "cafe"), rawPlace("tie", "cafe"));
@@ -574,6 +590,7 @@ class AlternativeFinderServiceTest {
 
     @Test
     void NaN인_기본_검색_후보보다_유한한_보충_후보가_앞선다() {
+        ReflectionTestUtils.setField(alternativeFinderService, "geminiExplanationEnabled", true);
         User owner = prepareTarget();
         GooglePlacesNearbySearchResponse.Place nan = rawPlace("nan", "cafe");
         GooglePlacesNearbySearchResponse.Place primary = rawPlace("primary", "cafe");
@@ -628,8 +645,6 @@ class AlternativeFinderServiceTest {
             return place;
         }).toList();
         when(placeCatalogService.upsertAll(raw)).thenReturn(places);
-        when(personalizationService.retrieveAndScore(any(), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
     }
 
     @Test
@@ -771,8 +786,6 @@ class AlternativeFinderServiceTest {
         setId(park, 10L);
         setId(uncategorized, 11L);
         when(placeCatalogService.upsertAll(raw)).thenReturn(List.of(park, lodging, station, uncategorized));
-        when(personalizationService.retrieveAndScore(any(), any()))
-                .thenReturn(new PersonalizationService.PersonalizationResult(0.0, List.of()));
 
         Optional<List<AlternativeCandidate>> result = alternativeFinderService.findAlternatives(
                 owner, 1L, new AlternativeFilter(null, null, null, null, null));

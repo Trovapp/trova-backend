@@ -10,10 +10,10 @@ import java.util.Map;
 /** 대안 상위 두 곳에만 표시하는 근거 문구. 외부 조회 없이 확인된 값 두 개까지 쓴다. */
 final class AlternativeReason {
     private static final Map<String, String> SAME_CATEGORY = Map.of(
-            "restaurant", "같은 음식점이에요", "cafe", "같은 카페예요",
-            "museum", "같은 박물관이에요", "park", "같은 공원이에요",
-            "art_gallery", "같은 미술관이에요", "lodging", "같은 숙소예요",
-            "shopping_mall", "같은 쇼핑몰이에요", "bar", "같은 술집이에요");
+            "restaurant", "같은 종류의 음식점이에요", "cafe", "같은 종류의 카페예요",
+            "museum", "같은 종류의 박물관이에요", "park", "같은 종류의 공원이에요",
+            "art_gallery", "같은 종류의 미술관이에요", "lodging", "같은 종류의 숙소예요",
+            "shopping_mall", "같은 종류의 쇼핑몰이에요", "bar", "같은 종류의 술집이에요");
 
     private AlternativeReason() {
     }
@@ -23,16 +23,19 @@ final class AlternativeReason {
         List<String> facts = new ArrayList<>();
         if (distanceKm != null && Double.isFinite(distanceKm) && distanceKm >= 0) {
             long meters = Math.round(distanceKm * 1000);
-            String distance = meters < 1000 ? meters + "m" : decimal(distanceKm) + "km";
-            facts.add("원래 장소에서 직선 " + distance);
-        }
-        // 0점은 신호 없음·조회 실패도 뜻한다. 음수/NaN/무한대도 취향 근거로 쓰지 않는다(ADR 0051).
-        if (Double.isFinite(score) && score > 0) {
-            facts.add("취향과 비슷해요");
+            // 같은 좌표와 반올림하면 0m인 거리는 유용한 거리 근거가 아니다.
+            if (meters > 0) {
+                String distance = meters < 1000 ? meters + "m" : decimal(distanceKm) + "km";
+                facts.add("원래 장소에서 직선 " + distance);
+            }
         }
         String type = normalizedCategory(category);
         if (type != null && type.equals(normalizedCategory(targetCategory)) && SAME_CATEGORY.containsKey(type)) {
             facts.add(SAME_CATEGORY.get(type));
+        }
+        // 0점은 신호 없음·조회 실패도 뜻한다. 음수/NaN/무한대도 취향 근거로 쓰지 않는다(ADR 0051).
+        if (Double.isFinite(score) && score > 0) {
+            facts.add("취향과 비슷해요");
         }
         if (rating != null && Double.isFinite(rating) && rating > 0 && rating <= 5) {
             facts.add("평점 " + decimal(rating));

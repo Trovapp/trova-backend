@@ -327,7 +327,7 @@ class PersonalizationPgvectorEquivalenceTest {
             counts.add(stats.getPrepareStatementCount() - before);
             com.fasterxml.jackson.databind.JsonNode response = new com.fasterxml.jackson.databind.ObjectMapper().readTree(body);
             assertThat(response).hasSize(count);
-            assertThat(response.get(0).get("recommendationReason").asText()).contains("취향과 비슷해요");
+            assertThat(response.get(0).get("recommendationReason").asText()).isEqualTo("같은 종류의 음식점이에요 · 취향과 비슷해요");
         }
         assertThat(counts).containsExactly(9L, 9L, 9L);
         org.mockito.Mockito.verifyNoInteractions(geminiTextClient, geminiEmbeddingClient);
