@@ -9,6 +9,12 @@ import java.time.LocalTime;
 @Table(name = "trip_places")
 public class TripPlace {
 
+    @Version
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private long version;
+
+    public long getVersion() { return version; }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

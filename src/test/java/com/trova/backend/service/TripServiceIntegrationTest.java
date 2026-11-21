@@ -367,8 +367,10 @@ class TripServiceIntegrationTest {
         User stranger = userRepository.save(new User("google", "trip-service-integration-stranger-2", "다른유저", null));
 
         try {
-            Optional<TripPlace> result = tripService.addPlaceToDay(stranger, trip.getId(), 1, "trip-place-test-ownership");
-            assertThat(result).isEmpty();
+            org.assertj.core.api.Assertions.assertThatExceptionOfType(
+                    org.springframework.web.server.ResponseStatusException.class)
+                    .isThrownBy(() -> tripService.addPlaceToDay(stranger, trip.getId(), 1, "trip-place-test-ownership"))
+                    .satisfies(error -> assertThat(error.getStatusCode().value()).isEqualTo(403));
         } finally {
             userRepository.delete(stranger);
         }
@@ -782,9 +784,10 @@ class TripServiceIntegrationTest {
         User stranger = userRepository.save(new User("google", "trip-service-integration-stranger", "다른유저", null));
 
         try {
-            Optional<TripPlace> result =
-                    tripService.updateDetails(stranger, place.getId(), null, null, TransportMode.WALK, null);
-            assertThat(result).isEmpty();
+            org.assertj.core.api.Assertions.assertThatExceptionOfType(
+                    org.springframework.web.server.ResponseStatusException.class)
+                    .isThrownBy(() -> tripService.updateDetails(stranger, place.getId(), null, null, TransportMode.WALK, null))
+                    .satisfies(error -> assertThat(error.getStatusCode().value()).isEqualTo(403));
         } finally {
             userRepository.delete(stranger);
         }

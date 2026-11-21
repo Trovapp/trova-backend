@@ -3,6 +3,7 @@ package com.trova.backend.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.TripMember;
 import com.trova.backend.entity.TripReplanJob;
 import com.trova.backend.service.OrphanedJobRecoveryService;
 import com.trova.backend.entity.User;
@@ -116,6 +117,25 @@ class TripReplanControllerTest {
     }
 
     @Test
+    void 편집자가_재구성하면_본인_계정에_작업이_기록되고_나가면_조회가_차단된다() throws Exception {
+        User editor = userRepository.save(new User("google", "replan-editor", "편집자", null));
+        trip.getMembers().add(new TripMember(editor, TripMember.Role.EDITOR));
+        tripRepository.saveAndFlush(trip);
+        String path = "/api/trips/" + trip.getId() + "/replan";
+        mockMvc.perform(post(path).with(loginAs("replan-editor", "편집자"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"allPlaces\":true}"))
+                .andExpect(status().isAccepted());
+        TripReplanJob job = tripReplanJobRepository.findAll().get(0);
+        org.assertj.core.api.Assertions.assertThat(job.getUser().getId()).isEqualTo(editor.getId());
+        mockMvc.perform(get(path + "/" + job.getId()).with(loginAs("replan-editor", "편집자")))
+                .andExpect(status().isOk());
+        trip.getMembers().removeIf(member -> member.getUser().getId().equals(editor.getId()));
+        tripRepository.saveAndFlush(trip);
+        mockMvc.perform(get(path + "/" + job.getId()).with(loginAs("replan-editor", "편집자")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void allPlaces만_있어도_202와_jobId를_반환한다() throws Exception {
         mockMvc.perform(post("/api/trips/" + trip.getId() + "/replan")
                         .with(loginAs("replan1", "재구성유저"))
@@ -131,7 +151,7 @@ class TripReplanControllerTest {
     }
 
     @Test
-    void 남의_여행이면_POST에서_404() throws Exception {
+    void 남의_여행이면_POST에서_403() throws Exception {
         User other = userRepository.save(new User("google", "other", "다른유저", null));
         Trip otherTrip = tripRepository.save(new Trip(other, "다른 여행", LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 1)));
 
@@ -139,7 +159,7 @@ class TripReplanControllerTest {
                         .with(loginAs("replan1", "재구성유저"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"indoorOnly\":true}"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -172,14 +192,14 @@ class TripReplanControllerTest {
     }
 
     @Test
-    void 남의_작업을_폴링하면_404() throws Exception {
+    void 남의_작업을_폴링하면_403() throws Exception {
         User other = userRepository.save(new User("google", "other2", "다른유저2", null));
         Trip otherTrip = tripRepository.save(new Trip(other, "다른 여행2", LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 1)));
         TripReplanJob otherJob = tripReplanJobRepository.save(new TripReplanJob(other, otherTrip, true));
 
         mockMvc.perform(get("/api/trips/" + otherTrip.getId() + "/replan/" + otherJob.getId())
                         .with(loginAs("replan1", "재구성유저")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
 
     @Test

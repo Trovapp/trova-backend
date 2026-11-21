@@ -1,6 +1,8 @@
 package com.trova.backend.service;
 
 import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.User;
+import com.trova.backend.repository.TripRepository;
 import com.trova.backend.entity.TripShareLink;
 import com.trova.backend.repository.TripShareLinkRepository;
 import com.trova.backend.security.SuspendedUsers;
@@ -18,13 +20,15 @@ import java.util.Optional;
 public class TripShareLinkService {
 
     private final TripShareLinkRepository repository;
+    private final TripRepository trips;
     private final SuspendedUsers suspendedUsers;
     private final String webAppUrl;
     private final SecureRandom random = new SecureRandom();
 
     public TripShareLinkService(
-            TripShareLinkRepository repository, SuspendedUsers suspendedUsers, @Value("${app.web-app-url:}") String webAppUrl
+            TripRepository trips, TripShareLinkRepository repository, SuspendedUsers suspendedUsers, @Value("${app.web-app-url:}") String webAppUrl
     ) {
+        this.trips = trips;
         this.repository = repository;
         this.suspendedUsers = suspendedUsers;
         this.webAppUrl = webAppUrl.replaceAll("/+$", "");
@@ -39,19 +43,25 @@ public class TripShareLinkService {
     }
 
     @Transactional
-    public CreateResult createOrGet(Trip trip) {
-        return repository.findFirstByTripAndRevokedAtIsNullOrderByCreatedAtAsc(trip)
-                .map(link -> new CreateResult(link, false))
-                .orElseGet(() -> {
-                    byte[] bytes = new byte[32];
-                    random.nextBytes(bytes);
-                    String token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-                    return new CreateResult(repository.save(new TripShareLink(trip, token)), true);
-                });
+    public CreateResult createOrGet(Trip trip, User actor) {
+        Trip locked = trips.lockById(trip.getId()).orElseThrow();
+        TripAccess.requireMember(locked, actor);
+        return getActive(locked).map(link -> new CreateResult(link, false)).orElseGet(() -> {
+            TripAccess.requireOwner(locked, actor);
+            return create(locked);
+        });
+    }
+
+    private CreateResult create(Trip trip) {
+        byte[] bytes = new byte[32];
+        random.nextBytes(bytes);
+        String token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        return new CreateResult(repository.save(new TripShareLink(trip, token)), true);
     }
 
     @Transactional
     public boolean revoke(Trip trip) {
+        trips.lockById(trip.getId()).orElseThrow();
         List<TripShareLink> links = repository.findByTripAndRevokedAtIsNull(trip);
         links.forEach(TripShareLink::revoke);
         return !links.isEmpty();
@@ -67,6 +77,16 @@ public class TripShareLinkService {
                     return trip;
                 })
                 .filter(trip -> !suspendedUsers.isSuspended(trip.getUser().getId()));
+    }
+
+    public Optional<Trip> lockTripForToken(String token) {
+        return trips.lockForToken(token);
+    }
+
+    @Transactional
+    public TripShareLink rotate(Trip trip) {
+        revoke(trip);
+        return create(trip).link();
     }
 
     public String url(String token) {

@@ -1,5 +1,6 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.service.TripAccess;
 import org.springframework.core.task.TaskRejectedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -107,7 +108,7 @@ public class TripReplanController {
             return ResponseEntity.badRequest().build();
         }
         return tripRepository.findById(tripId)
-                .filter(t -> t.getUser().getId().equals(user.getId()))
+                .filter(t -> TripAccess.requireMember(t, user))
                 .map(trip -> ResponseEntity.status(HttpStatus.ACCEPTED)
                         .body(new CreateReplanJobResponse(resolveJobId(user, trip, indoorOnly, allPlaces))))
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -119,7 +120,7 @@ public class TripReplanController {
     ) {
         User user = currentUserService.resolve(authentication);
         return tripReplanJobRepository.findById(jobId)
-                .filter(job -> job.getUser().getId().equals(user.getId()) && job.getTrip().getId().equals(tripId))
+                .filter(job -> job.getTrip().getId().equals(tripId) && TripAccess.requireMember(job.getTrip(), user))
                 .map(job -> ResponseEntity.ok(toStatusResponse(job)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

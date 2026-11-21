@@ -1,5 +1,7 @@
 package com.trova.backend.controller;
 
+import org.springframework.web.server.ResponseStatusException;
+import com.trova.backend.service.TripAccess;
 import com.trova.backend.admin.RequestRateLimiter;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripPlace;
@@ -82,7 +84,7 @@ public class TripShareLinkController {
 
     @GetMapping("/api/trips/{id}/share-link")
     public ResponseEntity<?> getShareLink(Authentication authentication, @PathVariable Long id) {
-        return ownedTrip(authentication, id)
+        return memberTrip(authentication, id)
                 .<ResponseEntity<?>>map(trip -> shareLinkService.getActive(trip)
                         .<ResponseEntity<?>>map(link -> ResponseEntity.ok(toResponse(link)))
                         // 앱은 성공 응답을 res.json()으로 읽으므로 빈 본문 대신 JSON null을 보낸다.
@@ -92,18 +94,29 @@ public class TripShareLinkController {
 
     @PostMapping("/api/trips/{id}/share-link")
     public ResponseEntity<ShareLinkResponse> createShareLink(Authentication authentication, @PathVariable Long id) {
-        return ownedTrip(authentication, id)
+        User actor = currentUserService.resolve(authentication);
+        return tripRepository.findById(id)
                 .map(trip -> {
-                    TripShareLinkService.CreateResult result = shareLinkService.createOrGet(trip);
+                    TripShareLinkService.CreateResult result = shareLinkService.createOrGet(trip, actor);
                     return ResponseEntity.status(result.created() ? HttpStatus.CREATED : HttpStatus.OK)
                             .body(toResponse(result.link()));
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/api/trips/{id}/share-link/rotate")
+    public ShareLinkResponse rotate(Authentication authentication, @PathVariable Long id) {
+        Trip trip = tripRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND));
+        TripAccess.requireOwner(trip, currentUserService.resolve(authentication));
+        return toResponse(shareLinkService.rotate(trip));
+    }
+
     @DeleteMapping("/api/trips/{id}/share-link")
     public ResponseEntity<Void> revokeShareLink(Authentication authentication, @PathVariable Long id) {
-        boolean revoked = ownedTrip(authentication, id).map(shareLinkService::revoke).orElse(false);
+        User actor = currentUserService.resolve(authentication);
+        boolean revoked = tripRepository.findById(id).filter(trip -> TripAccess.requireOwner(trip, actor))
+                .map(shareLinkService::revoke).orElse(false);
         return revoked ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
@@ -146,10 +159,10 @@ public class TripShareLinkController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    private Optional<Trip> ownedTrip(Authentication authentication, Long id) {
+    private Optional<Trip> memberTrip(Authentication authentication, Long id) {
         User user = currentUserService.resolve(authentication);
         return tripRepository.findById(id)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()));
+                .filter(trip -> TripAccess.requireMember(trip, user));
     }
 
     private ShareLinkResponse toResponse(TripShareLink link) {

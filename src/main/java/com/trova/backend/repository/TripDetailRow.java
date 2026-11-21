@@ -15,6 +15,6 @@ public record TripDetailRow(
         Long placeId, String placeName, String region, String category,
         Double latitude, Double longitude, String phone, String address,
         Integer visitOrder, PlaceSource source, String googlePlaceId,
-        LocalTime visitStartTime, LocalTime visitEndTime, TransportMode arrivalTransportMode, String memo
+        LocalTime visitStartTime, LocalTime visitEndTime, TransportMode arrivalTransportMode, String memo, Long version
 ) {
 }

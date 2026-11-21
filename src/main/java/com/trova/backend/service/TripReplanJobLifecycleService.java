@@ -25,6 +25,7 @@ public class TripReplanJobLifecycleService {
     @Transactional
     public JobContext markProcessing(Long jobId) {
         TripReplanJob job = getJob(jobId);
+        TripAccess.requireMember(job.getTrip(), job.getUser());
         job.markProcessing();
         return new JobContext(job.getUser(), job.getTrip(), job.isIndoorOnly(), job.isAllPlaces());
     }
@@ -39,6 +40,7 @@ public class TripReplanJobLifecycleService {
         if (job == null || (job.getStatus() != JobStatus.PENDING && job.getStatus() != JobStatus.PROCESSING)) {
             return null;
         }
+        TripAccess.requireMember(job.getTrip(), job.getUser());
         job.markProcessing();
         return new JobContext(job.getUser(), job.getTrip(), job.isIndoorOnly(), job.isAllPlaces());
     }

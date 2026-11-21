@@ -161,10 +161,10 @@ class AlternativeFinderServiceTest {
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
 
-        Optional<List<AlternativeCandidate>> result =
-                alternativeFinderService.findAlternatives(other, 1L, new AlternativeFilter(null, null, null, null, null));
-
-        assertThat(result).isEmpty();
+        org.assertj.core.api.Assertions.assertThatExceptionOfType(
+                    org.springframework.web.server.ResponseStatusException.class)
+                    .isThrownBy(() -> alternativeFinderService.findAlternatives(other, 1L, new AlternativeFilter(null, null, null, null, null)))
+                    .satisfies(error -> assertThat(error.getStatusCode().value()).isEqualTo(403));
     }
 
     @Test

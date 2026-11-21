@@ -6,6 +6,7 @@ import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.PlaceSource;
 import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.TripMember;
 import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.GooglePlacesApiClient;
@@ -101,6 +102,23 @@ class ConversationControllerTest {
     }
 
     @Test
+    void 편집자는_대화할_수_있고_나가면_열린_대화도_차단된다() throws Exception {
+        User editor = userRepository.save(new User("google", "conversation-editor", "편집자", null));
+        trip.getMembers().add(new TripMember(editor, TripMember.Role.EDITOR));
+        tripRepository.saveAndFlush(trip);
+        when(geminiChatClient.sendMessage(any(), any(), any()))
+                .thenReturn(new GeminiChatClient.ChatResult(null, "반가워요"));
+        String path = "/api/conversations/shared-session/messages";
+        mockMvc.perform(post(path).with(loginAs("conversation-editor", "편집자")).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"message\":\"hello\",\"tripId\":%d,\"tripPlaceId\":%d}".formatted(trip.getId(), place.getId())))
+                .andExpect(status().isOk());
+        trip.getMembers().removeIf(member -> member.getUser().getId().equals(editor.getId()));
+        tripRepository.saveAndFlush(trip);
+        mockMvc.perform(post(path).with(loginAs("conversation-editor", "편집자")).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"message\":\"hello\"}")).andExpect(status().isForbidden());
+    }
+
+    @Test
     void 첫_메시지로_세션이_생성되고_텍스트만_오면_답변만_온다() throws Exception {
         when(geminiChatClient.sendMessage(any(), any(), any()))
                 .thenReturn(new GeminiChatClient.ChatResult(null, "안녕하세요! 뭘 도와드릴까요?"));
@@ -126,7 +144,7 @@ class ConversationControllerTest {
     }
 
     @Test
-    void 소유하지_않은_tripPlaceId면_404() throws Exception {
+    void 소유하지_않은_tripPlaceId면_403() throws Exception {
         User other = userRepository.save(new User("google", "other", "다른유저", null));
         Trip otherTrip = tripRepository.save(new Trip(other, "다른 여행", LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 1)));
         Itinerary otherItinerary = itineraryRepository.save(new Itinerary(otherTrip, 1, LocalDate.of(2026, 2, 1)));
@@ -138,7 +156,7 @@ class ConversationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"message\":\"안녕\",\"tripId\":%d,\"tripPlaceId\":%d}"
                                 .formatted(otherTrip.getId(), otherPlace.getId())))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
 
     @Test

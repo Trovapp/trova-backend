@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TripPlaceRepository extends JpaRepository<TripPlace, Long> {
+    @EntityGraph(attributePaths = {"itinerary.trip.user", "itinerary.trip.members.user"})
+    Optional<TripPlace> findById(Long id);
+
     List<TripPlace> findByItineraryOrderByVisitOrder(Itinerary itinerary);
 
     // 기본 EAGER 연관까지 함께 읽어 트랜잭션 밖에서도 일차별 추가 SELECT를 막는다.
@@ -26,7 +29,7 @@ public interface TripPlaceRepository extends JpaRepository<TripPlace, Long> {
     @Query("select new com.trova.backend.repository.GapPlaceRow("
             + "i.id, tp.id, tp.visitStartTime, tp.visitEndTime, tp.latitude, tp.longitude, tp.googlePlaceId) "
             + "from Itinerary i left join TripPlace tp on tp.itinerary = i "
-            + "where i.trip.id = :tripId and i.trip.user.id = :userId and i.day = :day "
+            + "where i.trip.id = :tripId and exists (select 1 from Trip t join t.members m where t=i.trip and m.user.id=:userId) and i.day = :day "
             + "order by i.id, tp.visitOrder, tp.id")
     List<GapPlaceRow> findGapPlaceRows(
             @Param("tripId") Long tripId, @Param("userId") Long userId, @Param("day") int day);
@@ -46,6 +49,7 @@ public interface TripPlaceRepository extends JpaRepository<TripPlace, Long> {
 
     // 같은 영상(ProcessingJob)의 SavedPlace가 이미 어떤 Trip으로 확정된 적이
     // 있는지 확인하는 용도 — confirm-trip 중복 제출 방지에 쓴다.
+    @EntityGraph(attributePaths = {"itinerary.trip.user", "itinerary.trip.members.user"})
     Optional<TripPlace> findFirstBySavedPlaceIdIn(List<Long> savedPlaceIds);
 
 

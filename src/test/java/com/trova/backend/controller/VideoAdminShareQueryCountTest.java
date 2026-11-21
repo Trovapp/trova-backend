@@ -180,7 +180,7 @@ class VideoAdminShareQueryCountTest {
             int[] places = new int[days];
             Arrays.fill(places, 2);
             Trip trip = trip(user(), places);
-            String token = shareLinks.createOrGet(trip).link().getToken();
+            String token = shareLinks.createOrGet(trip, trip.getUser()).link().getToken();
             counts.add(statements(get("/api/public/trips/" + token)));
         }
         System.out.println("P2 public days=1,3,5,7 SQL=" + counts);
@@ -191,7 +191,7 @@ class VideoAdminShareQueryCountTest {
     void 공개_여행은_빈_일차와_정렬과_여행_격리를_유지한다() throws Exception {
         Trip trip = trip(user(), 2, 0, 3);
         trip(user(), 4, 4);
-        String token = shareLinks.createOrGet(trip).link().getToken();
+        String token = shareLinks.createOrGet(trip, trip.getUser()).link().getToken();
         mockMvc.perform(get("/api/public/trips/" + token)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.days", hasSize(3)))
                 .andExpect(jsonPath("$.days[0].places[0].placeName").value("1일차-1"))
@@ -212,7 +212,7 @@ class VideoAdminShareQueryCountTest {
                     .andExpect(content().contentTypeCompatibleWith("application/json"))
                     .andExpect(content().string("null"));
         }
-        shareLinks.createOrGet(trip);
+        shareLinks.createOrGet(trip, trip.getUser());
         shareLinks.revoke(trip);
         mockMvc.perform(get("/api/trips/" + trip.getId() + "/share-link").header("Authorization", bearer))
                 .andExpect(status().isOk()).andExpect(content().string("null"));
@@ -227,7 +227,8 @@ class VideoAdminShareQueryCountTest {
         for (String path : List.of("/api/places/videos/" + job.getId() + "/trip",
                 "/api/trips/" + trip.getId() + "/share-link", "/api/places/videos/9223372036854775807/trip",
                 "/api/trips/9223372036854775807/share-link")) {
-            mockMvc.perform(get(path).header("Authorization", bearer)).andExpect(status().isNotFound());
+            mockMvc.perform(get(path).header("Authorization", bearer)).andExpect(
+                    path.equals("/api/trips/" + trip.getId() + "/share-link") ? status().isForbidden() : status().isNotFound());
             mockMvc.perform(get(path)).andExpect(status().isUnauthorized());
         }
         mockMvc.perform(get("/api/admin/users/" + owner.getId()).header("Authorization", bearer))

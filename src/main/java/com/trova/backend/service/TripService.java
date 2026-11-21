@@ -65,6 +65,7 @@ public class TripService {
     private static final double SAME_PLACE_RADIUS_KM = 0.2; // 같은 이름이 이 안이면 같은 장소(지점이 다른 체인점은 보통 더 멀다)
     private static final int MIN_SUFFIX_NAME_LENGTH = 3; // "카페"처럼 짧은 이름은 끝맺음으로 비교하지 않는다(어느 "○○카페"와도 맞아 버린다)
 
+    private final TripChanges changes;
     private final TripRepository tripRepository;
     private final TripShareLinkRepository tripShareLinkRepository;
     private final ItineraryRepository itineraryRepository;
@@ -79,7 +80,7 @@ public class TripService {
     private final SavedPlaceRepository savedPlaceRepository;
 
     public TripService(
-            TripRepository tripRepository,
+            TripChanges changes, TripRepository tripRepository,
             ItineraryRepository itineraryRepository,
             TripPlaceRepository tripPlaceRepository,
             PlaceRepository placeRepository,
@@ -92,6 +93,7 @@ public class TripService {
             SavedPlaceRepository savedPlaceRepository,
             TripShareLinkRepository tripShareLinkRepository
     ) {
+        this.changes = changes;
         this.tripRepository = tripRepository;
         this.tripShareLinkRepository = tripShareLinkRepository;
         this.itineraryRepository = itineraryRepository;
@@ -106,6 +108,19 @@ public class TripService {
         this.savedPlaceRepository = savedPlaceRepository;
     }
 
+    private boolean requireTripEdit(Trip trip, User user) {
+        TripAccess.requireMember(trip, user);
+        changes.checkVersion(trip, trip.getVersion());
+        return true;
+    }
+
+    private boolean requirePlaceEdit(TripPlace place, User user) {
+        Trip trip = place.getItinerary().getTrip();
+        TripAccess.requireMember(trip, user);
+        changes.checkVersion(trip, place.getVersion());
+        return true;
+    }
+
     /**
      * Trip과 그에 딸린 Itinerary/TripPlace/Notification/TripShareLink를 전부 지운다(소유자 확인 후).
      * 여러 테이블을 순서대로 지우므로 중간에 실패하면 전부 되돌린다(#41).
@@ -113,8 +128,9 @@ public class TripService {
     @Transactional
     public boolean deleteTrip(User user, Long tripId) {
         return tripRepository.findById(tripId)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .filter(trip -> TripAccess.requireOwner(trip, user))
                 .map(trip -> {
+                    changes.checkVersion(trip, trip.getVersion());
                     List<Itinerary> itineraries = itineraryRepository.findByTripOrderByDay(trip);
                     for (Itinerary itinerary : itineraries) {
                         notificationRepository.findByItinerary(itinerary).ifPresent(notificationRepository::delete);
@@ -150,7 +166,7 @@ public class TripService {
      * COMMIT 왕복 한 번(운영 약 31ms)을 아낀다. 위의 User 버전은 기존 호출부를 위해 읽기 전용 트랜잭션을 유지한다.
      */
     public List<TripSummary> listTripSummaries(Long userId) {
-        List<Trip> trips = tripRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        List<Trip> trips = tripRepository.findTripsForMember(userId);
         if (trips.isEmpty()) {
             return List.of();
         }
@@ -200,10 +216,11 @@ public class TripService {
     @Transactional
     public Optional<Trip> setDates(User user, Long tripId, LocalDate startDate) {
         return tripRepository.findById(tripId)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .filter(trip -> requireTripEdit(trip, user))
                 .map(trip -> {
                     List<Itinerary> days = itineraryRepository.findByTripOrderByDay(trip);
                     int dayCount = Math.max(1, days.size());
+                    changes.record(trip, user, "TRIP_DATES", "여행 날짜를 바꿨어요");
                     trip.applyDates(startDate, startDate.plusDays(dayCount - 1));
                     for (Itinerary itinerary : days) {
                         itinerary.applyDate(startDate.plusDays(itinerary.getDay() - 1));
@@ -218,8 +235,9 @@ public class TripService {
     @Transactional
     public Optional<Trip> rename(User user, Long tripId, String title) {
         return tripRepository.findById(tripId)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .filter(trip -> requireTripEdit(trip, user))
                 .map(trip -> {
+                    changes.record(trip, user, "TRIP_TITLE", "여행 이름을 바꿨어요");
                     trip.applyTitle(title);
                     return tripRepository.save(trip);
                 });
@@ -242,7 +260,7 @@ public class TripService {
             User user, Long tripId, int day, String googlePlaceId, boolean fitRoute, boolean allowOtherDay
     ) {
         return tripRepository.findById(tripId)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .filter(trip -> requireTripEdit(trip, user))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .flatMap(itinerary -> placeRepository.findByGooglePlaceId(googlePlaceId).map(place -> {
                     rejectDuplicate(itinerary, allowOtherDay, existing ->
@@ -272,6 +290,7 @@ public class TripService {
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, place, SignalType.TRIP_PLACE_ADDED));
                     placeEmbeddingService.ensureEmbeddings(List.of(place));
                     tripPlaceRepository.saveAll(siblings);
+                    changes.record(itinerary.getTrip(), user, "PLACE_ADDED", "장소를 추가했어요");
                     return tripPlaceRepository.save(tripPlace);
                 }));
     }
@@ -287,15 +306,13 @@ public class TripService {
 
     @Transactional
     public Optional<TripPlace> addVideoPlaceToDay(User user, Long tripId, int day, Long savedPlaceId, boolean allowOtherDay) {
+        Optional<Trip> target = tripRepository.findById(tripId).filter(trip -> requireTripEdit(trip, user));
+        if (target.isEmpty()) return Optional.empty();
         Optional<SavedPlace> saved = savedPlaceRepository.findById(savedPlaceId)
                 .filter(p -> p.getUser().getId().equals(user.getId()));
-        if (saved.isEmpty()) {
-            return Optional.empty();
-        }
+        if (saved.isEmpty()) return Optional.empty();
         SavedPlace place = saved.get();
-        return tripRepository.findById(tripId)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()))
-                .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
+        return itineraryRepository.findByTripAndDay(target.get(), day)
                 .map(itinerary -> {
                     rejectDuplicate(itinerary, allowOtherDay, existing ->
                             place.getId().equals(existing.getSavedPlaceId())
@@ -307,6 +324,7 @@ public class TripService {
                             place.getLatitude(), place.getLongitude(), place.getPhone(), place.getAddress(),
                             nextOrder, PlaceSource.VIDEO, place.getId());
                     tripPlace.applyDetails(null, null, null, place.videoNotesAsMemo()); // 영상에서 말한 내용(#134)
+                    changes.record(itinerary.getTrip(), user, "PLACE_ADDED", "장소를 추가했어요");
                     return tripPlaceRepository.save(tripPlace);
                 });
     }
@@ -415,13 +433,15 @@ public class TripService {
     }
 
     /** 보낸 필드만 부분적으로 갱신한다(null인 필드는 기존 값 유지 — TripPlace.applyDetails 참고). */
+    @Transactional
     public Optional<TripPlace> updateDetails(
             User user, Long tripPlaceId, LocalTime visitStartTime, LocalTime visitEndTime,
             TransportMode arrivalTransportMode, String memo
     ) {
         return tripPlaceRepository.findById(tripPlaceId)
-                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .filter(p -> requirePlaceEdit(p, user))
                 .map(place -> {
+                    changes.record(place.getItinerary().getTrip(), user, "PLACE_DETAILS", "장소 정보를 바꿨어요");
                     place.applyDetails(visitStartTime, visitEndTime, arrivalTransportMode, memo);
                     return tripPlaceRepository.save(place);
                 });
@@ -437,7 +457,7 @@ public class TripService {
     @Transactional
     public Optional<Place> resolveDetailsPlace(User user, Long tripPlaceId) {
         return tripPlaceRepository.findById(tripPlaceId)
-                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .filter(p -> TripAccess.requireMember(p.getItinerary().getTrip(), user))
                 .flatMap(tripPlace -> {
                     if (tripPlace.getGooglePlaceId() != null) {
                         return placeRepository.findByGooglePlaceId(tripPlace.getGooglePlaceId());
@@ -502,8 +522,9 @@ public class TripService {
     @Transactional
     public Optional<TripPlace> replacePlace(User user, Long tripPlaceId, String googlePlaceId) {
         return tripPlaceRepository.findById(tripPlaceId)
-                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .filter(p -> requirePlaceEdit(p, user))
                 .flatMap(place -> placeRepository.findByGooglePlaceId(googlePlaceId).map(newPlace -> {
+                    changes.record(place.getItinerary().getTrip(), user, "PLACE_REPLACED", "장소를 교체했어요");
                     place.applyReplacement(newPlace);
                     // 비 알림은 교체 전 장소(예: 실외)를 기준으로 만든 것이라, 대안으로 바꿨으면 이미 대응한 것이다(#41).
                     notificationRepository.findByTripPlaceId(place.getId()).forEach(Notification::markRead);
@@ -516,7 +537,7 @@ public class TripService {
     @Transactional
     public Optional<TripPlace> insertPlaceAfter(User user, Long afterTripPlaceId, String googlePlaceId) {
         return tripPlaceRepository.findById(afterTripPlaceId)
-                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .filter(p -> requirePlaceEdit(p, user))
                 .flatMap(after -> placeRepository.findByGooglePlaceId(googlePlaceId).map(newPlace -> {
                     List<TripPlace> siblings =
                             tripPlaceRepository.findByItineraryOrderByVisitOrder(after.getItinerary());
@@ -552,6 +573,7 @@ public class TripService {
                     }
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, newPlace, SignalType.GAP_INSERTED));
                     placeEmbeddingService.ensureEmbeddings(List.of(newPlace));
+                    changes.record(after.getItinerary().getTrip(), user, "PLACE_INSERTED", "장소를 넣었어요");
                     return tripPlaceRepository.save(inserted);
                 }));
     }
@@ -559,12 +581,13 @@ public class TripService {
     @Transactional
     public boolean removePlace(User user, Long tripPlaceId) {
         return tripPlaceRepository.findById(tripPlaceId)
-                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .filter(p -> requirePlaceEdit(p, user))
                 .map(p -> {
                     // 지운 장소를 가리키는 알림이 남으면 배너를 눌렀을 때 대안 찾기가 404가 된다(#41).
                     // 읽음 처리가 아니라 지우는 이유: 일차당 알림은 1개라, 지워야 그 일차의 남은 실외 장소를
                     // 다음 날씨 검사에서 다시 판단할 수 있다.
                     notificationRepository.deleteAll(notificationRepository.findByTripPlaceId(p.getId()));
+                    changes.record(p.getItinerary().getTrip(), user, "PLACE_REMOVED", "장소를 지웠어요");
                     tripPlaceRepository.delete(p);
                     return true;
                 })
@@ -577,7 +600,7 @@ public class TripService {
             return Optional.empty();
         }
         return tripPlaceRepository.findById(tripPlaceId)
-                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .filter(p -> requirePlaceEdit(p, user))
                 .map(place -> {
                     List<TripPlace> siblings =
                             tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary());
@@ -595,6 +618,7 @@ public class TripService {
                     }
 
                     TripPlace neighbor = siblings.get(swapIndex);
+                    changes.record(place.getItinerary().getTrip(), user, "PLACE_ORDER", "방문 순서를 바꿨어요");
                     swapVisitOrder(place, neighbor);
                     // 순서만 바꾸면 시간이 거꾸로 남는다(#175) — 새 순서대로 시간을 다시 매긴다.
                     List<TripPlace> reordered = new ArrayList<>(siblings);
@@ -622,7 +646,7 @@ public class TripService {
     @Transactional
     public Optional<List<TripPlace>> optimizeRoute(User user, Long tripId, int day) {
         return tripRepository.findById(tripId)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .filter(trip -> requireTripEdit(trip, user))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .map(itinerary -> {
                     List<TripPlace> places = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary);
@@ -638,6 +662,7 @@ public class TripService {
                     }
                     // 순서만 바꾸면 1번 12:10, 2번 09:00처럼 시간이 거꾸로 남았다(#175).
                     TripDayRetimer.retime(optimized);
+                    changes.record(itinerary.getTrip(), user, "DAY_OPTIMIZED", "동선을 다듬었어요");
                     tripPlaceRepository.saveAll(optimized);
                     return optimized;
                 });
@@ -654,7 +679,7 @@ public class TripService {
     @Transactional
     public Optional<List<TripPlace>> restoreDay(User user, Long tripId, int day, List<ScheduleEntry> entries) {
         return tripRepository.findById(tripId)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .filter(trip -> requireTripEdit(trip, user))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .flatMap(itinerary -> {
                     List<TripPlace> places = tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary);
@@ -672,6 +697,7 @@ public class TripService {
                         p.restoreSchedule(i + 1, e.visitStartTime(), e.visitEndTime());
                         restored.add(p);
                     }
+                    changes.record(itinerary.getTrip(), user, "DAY_RESTORED", "동선을 복원했어요");
                     tripPlaceRepository.saveAll(restored);
                     return Optional.of(restored);
                 });

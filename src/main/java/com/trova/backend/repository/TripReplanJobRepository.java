@@ -1,5 +1,7 @@
 package com.trova.backend.repository;
 
+import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripReplanJob;
@@ -12,6 +14,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TripReplanJobRepository extends JpaRepository<TripReplanJob, Long> {
+    @EntityGraph(attributePaths = {"user", "trip.user", "trip.members.user"})
+    Optional<TripReplanJob> findById(Long id);
+
     void deleteByUser(User user);
 
     List<TripReplanJob> findByTrip(Trip trip);
