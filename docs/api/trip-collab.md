@@ -76,3 +76,20 @@ If-Match: "4"
 ```
 
 편집자는 GET share-link 및 기존 링크를 반환하는 POST share-link를 쓸 수 있다. 꺼진 링크를 다시 켜거나 기존 링크를 rotate 하는 작업에는 OWNER가 필요하다. 링크를 끄거나 교체해도 기존 멤버는 유지된다. 나간 멤버가 유효한 링크를 다시 열면 재참여할 수 있다.
+
+## 실시간 변경 알림
+
+여행 상세 화면에서 `GET /api/trips/{id}/events`를 연다. 네이티브 앱은 Authorization Bearer 헤더를 사용한다. PWA는 같은 인증으로 `POST /api/trips/{id}/events/ticket`을 호출해 200 응답 `{"ticket":"…"}`을 받고, EventSource로 `/api/trips/{id}/events?ticket=…`를 연다. 표는 발급받은 여행에서 60초 동안 한 번 쓸 수 있다. 연결 시점에도 멤버여야 한다. 인증 실패·표 만료·재사용은 401, 멤버 제외는 403, 연결 상한 초과는 429다.
+
+```text
+event:ready
+data:{"version":8}
+
+event:changed
+data:{"tripId":12,"version":9,"actorId":7,"actorName":"민수","type":"PLACE_ADDED","summary":"장소를 추가했어요"}
+
+:heartbeat
+
+```
+
+25초 간격의 주석은 연결 유지용이다. 앱은 changed 수신 시 상세를 다시 조회한다. 재연결·포그라운드 복귀 때도 상세를 조회하고, 웹 재연결에는 새 표를 발급받는다. 버전은 여행 단위다. CORS 응답에서 `X-Trip-Version`과 `Retry-After`를 읽을 수 있다.

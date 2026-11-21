@@ -10,6 +10,18 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 public class AsyncConfig {
 
+    @Bean("tripEventExecutor")
+    public Executor tripEventExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(256);
+        executor.setThreadNamePrefix("trip-event-");
+        executor.setRejectedExecutionHandler(new java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy());
+        applyGracefulShutdown(executor);
+        return executor;
+    }
+
     @Bean("pipelineTaskExecutor")
     public Executor pipelineTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

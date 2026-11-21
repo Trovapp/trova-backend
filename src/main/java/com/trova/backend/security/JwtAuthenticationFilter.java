@@ -41,6 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 정지된 계정은 이미 받은 토큰이라도 인증하지 않는다 — 다음 요청부터 바로 401(#167).
                 if ((!verified.adminWeb() || request.getRequestURI().startsWith(ADMIN_API_PREFIX))
                         && !suspendedUsers.isSuspended(verified.userId())) {
+                    request.setAttribute("trova.jwt.expiresAt", verified.expiresAt());
                     SecurityContextHolder.getContext().setAuthentication(
                             new JwtAuthenticationToken(verified.userId(), verified.adminWeb(), verified.issuedAt()));
                 }

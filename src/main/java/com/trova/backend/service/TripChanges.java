@@ -1,5 +1,8 @@
 package com.trova.backend.service;
 
+import com.trova.backend.events.TripChangedEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.event.TransactionalEventListener;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +22,11 @@ public class TripChanges {
     public static final String CONFLICT_TRIP = TripChanges.class.getName();
     private final JdbcTemplate jdbc;
 
-    public TripChanges(JdbcTemplate jdbc) { this.jdbc = jdbc; }
+    private final ApplicationEventPublisher publisher;
+    public TripChanges(JdbcTemplate jdbc, ApplicationEventPublisher publisher) {
+        this.jdbc = jdbc;
+        this.publisher = publisher;
+    }
 
     public static class VersionConflict extends RuntimeException {}
 
@@ -59,5 +66,15 @@ public class TripChanges {
                 delete from trip_activity where trip_id=? and id in
                 (select id from trip_activity where trip_id=? order by id desc offset 100 rows)
                 """, trip.getId(), trip.getId());
+        publisher.publishEvent(new Recorded(trip, actor.getId(), actor.getNickname(), type, summary));
+    }
+
+    record Recorded(Trip trip, long actorId, String actorName, String type, String summary) {}
+
+    @TransactionalEventListener
+    public void committed(Recorded change) {
+        Trip trip = change.trip();
+        publisher.publishEvent(new TripChangedEvent(trip.getId(), trip.getVersion(), change.actorId(),
+                change.actorName(), change.type(), change.summary()));
     }
 }
