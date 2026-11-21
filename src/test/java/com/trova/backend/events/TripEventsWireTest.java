@@ -5,6 +5,9 @@ import com.trova.backend.entity.*;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
+import com.trova.backend.push.ExpoPushService;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import static org.mockito.Mockito.*;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
@@ -29,11 +32,13 @@ class TripEventsWireTest {
     @Autowired UserRepository users;
     @Autowired TripRepository trips;
     @Autowired JwtService jwt;
+    @MockitoBean ExpoPushService expo;
 
-    @Test void committedTitleReachesReadyEditorWithinThreeSeconds() throws Exception {
-        User owner = user(), editor = user();
+    @Test void committedEditAndDeletionReachReadyEditorBeforeStreamEnds() throws Exception {
+        User owner = user(), editor = user(), offline = user();
         var trip = new Trip(owner, "여행", LocalDate.now(), LocalDate.now());
         trip.getMembers().add(new TripMember(editor, TripMember.Role.EDITOR));
+        trip.getMembers().add(new TripMember(offline, TripMember.Role.EDITOR));
         trips.saveAndFlush(trip);
         String url = "http://127.0.0.1:" + port + "/api/trips/" + trip.getId();
         var open = HttpRequest.newBuilder(URI.create(url + "/events"))
@@ -58,6 +63,29 @@ class TripEventsWireTest {
                 assertThat(payload.path("type").asText()).isEqualTo("TRIP_TITLE");
                 assertThat(payload.path("tripId").asLong()).isEqualTo(trip.getId());
                 assertThat(payload.path("actorId").asLong()).isEqualTo(owner.getId());
+
+                verify(expo, timeout(3000)).sendToUser(eq(offline.getId()), eq("trip-change"), any());
+                var denied = HttpRequest.newBuilder(URI.create(url)).header("Authorization", "Bearer " + jwt.issue(editor))
+                        .DELETE().build();
+                assertThat(client.send(denied, HttpResponse.BodyHandlers.discarding()).statusCode()).isEqualTo(403);
+
+                var delete = HttpRequest.newBuilder(URI.create(url)).header("Authorization", "Bearer " + jwt.issue(owner))
+                        .DELETE().build();
+                var terminal = readerThread.submit(() -> readFrame(reader));
+                assertThat(client.send(delete, HttpResponse.BodyHandlers.discarding()).statusCode()).isEqualTo(204);
+                String last = terminal.get(3, TimeUnit.SECONDS);
+                assertThat(last).startsWith("event:changed\ndata:");
+                var deletion = new ObjectMapper().readTree(last.substring(last.indexOf("data:") + 5));
+                assertThat(deletion.path("type").asText()).isEqualTo("TRIP_DELETED");
+                assertThat(deletion.path("version").asLong()).isEqualTo(payload.path("version").asLong() + 1);
+                assertThat(deletion.path("actorId").asLong()).isEqualTo(owner.getId());
+                assertThat(deletion.size()).isEqualTo(6);
+                assertThat(readerThread.submit(() -> reader.readLine()).get(3, TimeUnit.SECONDS)).isNull();
+                for (var member : java.util.List.of(editor, offline)) {
+                    verify(expo, timeout(3000)).sendToUser(eq(member.getId()), eq("trip-deleted"),
+                            argThat(message -> message.title().equals("친구가 여행을 삭제했어요")));
+                }
+                verify(expo, never()).sendToUser(eq(owner.getId()), anyString(), any());
             }
         }
     }

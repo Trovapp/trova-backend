@@ -69,6 +69,20 @@ public class TripChanges {
         publisher.publishEvent(new Recorded(trip, actor.getId(), actor.getNickname(), type, summary));
     }
 
+    private record Deletion(TripChangedEvent event) {}
+
+    public void recordDeletion(Trip trip, User owner) {
+        var members = trip.getMembers().stream().map(m -> m.getUser()).filter(user -> !user.isSuspended())
+                .map(User::getId).toList();
+        publisher.publishEvent(new Deletion(new TripChangedEvent(trip.getId(), trip.getVersion() + 1,
+                owner.getId(), owner.getNickname(), TripChangedEvent.TRIP_DELETED, "여행을 삭제했어요", members)));
+    }
+
+    @TransactionalEventListener
+    public void deleted(Deletion deletion) {
+        publisher.publishEvent(deletion.event());
+    }
+
     record Recorded(Trip trip, long actorId, String actorName, String type, String summary) {}
 
     @TransactionalEventListener

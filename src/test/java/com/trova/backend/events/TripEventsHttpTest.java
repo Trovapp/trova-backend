@@ -47,6 +47,19 @@ class TripEventsHttpTest {
                 trips.findById(id).orElseThrow().getVersion(), owner.getId(), owner.getNickname(), "TRIP_TITLE", "제목 변경"));
     }
 
+    @Autowired com.trova.backend.service.TripService tripService;
+
+    @Test void rolledBackDeletionKeepsTripAndPublishesNothing() {
+        var owner = user();
+        long id = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now())).getId();
+        transactions.executeWithoutResult(tx -> {
+            assertThat(tripService.deleteTrip(owner, id)).isTrue();
+            tx.setRollbackOnly();
+        });
+        assertThat(trips.existsById(id)).isTrue();
+        assertThat(events.stream(TripChangedEvent.class)).isEmpty();
+    }
+
     User user() { return users.save(new User("google", UUID.randomUUID().toString(), "친구", null)); }
 
     @Test void pwaCanReadVersionAndRetryDelay() throws Exception {

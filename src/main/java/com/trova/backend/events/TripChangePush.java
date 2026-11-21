@@ -1,5 +1,6 @@
 package com.trova.backend.events;
 
+import com.trova.backend.planner.Josa;
 import com.trova.backend.push.ExpoPushService;
 import com.trova.backend.push.PushMessage;
 import java.time.Clock;
@@ -27,6 +28,15 @@ class TripChangePush {
     @Async("tripPushExecutor")
     @EventListener
     public void changed(TripChangedEvent event) {
+        if (event.deleted()) {
+            String name = event.actorName() == null || event.actorName().isBlank() ? "만든 사람" : event.actorName();
+            var message = new PushMessage(Josa.iGa(name) + " 여행을 삭제했어요", event.summary(), "",
+                    "trip-" + event.tripId());
+            for (long user : event.membersAtDeletion()) {
+                if (user != event.actorId()) expo.sendToUser(user, "trip-deleted", message);
+            }
+            return;
+        }
         for (long user : audience.members(event.tripId())) {
             if (user == event.actorId() || streams.viewing(event.tripId(), user)) continue;
             Window key = new Window(event.tripId(), event.actorId(), user);

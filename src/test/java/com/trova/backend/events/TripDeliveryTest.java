@@ -29,8 +29,8 @@ class TripDeliveryTest {
 
     @Test void memberReceivesReadyHeartbeatAndChangesUntilRemoval() throws Exception {
         try (var emitters = mockConstruction(SseEmitter.class)) {
-            when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(0, List.of(5L)));
-            when(members.members(7)).thenReturn(List.of(5L), List.of());
+            var present = new TripAudience.Snapshot(0, List.of(5L));
+            when(members.snapshot(7)).thenReturn(present, present, new TripAudience.Snapshot(1, List.of()));
             var stream = open(7, 5, now.plusSeconds(100));
             streams.heartbeat();
             var bus = new MemoryTripEventBus(streams);
@@ -74,10 +74,29 @@ class TripDeliveryTest {
         }
     }
 
+    @Test void deletionOnAnotherNodeOnlyReachesFinalMembers() throws Exception {
+        try (var emitters = mockConstruction(SseEmitter.class)) {
+            var member = open(7, 5, now.plusSeconds(100));
+            var removed = open(7, 6, now.plusSeconds(100));
+            verify(member, timeout(1000)).send(any(SseEmitter.SseEventBuilder.class));
+            verify(removed, timeout(1000)).send(any(SseEmitter.SseEventBuilder.class));
+            when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(-1, List.of()));
+            streams.deliver(event);
+            streams.heartbeat();
+            var deletion = new TripChangedEvent(7, 4, 4, "민수", "TRIP_DELETED", "삭제", List.of(4L, 5L));
+            streams.deliver(deletion);
+            streams.deliver(deletion);
+            verify(member, timeout(1000)).complete();
+            verify(member, times(2)).send(any(SseEmitter.SseEventBuilder.class));
+            verify(removed, timeout(1000)).complete();
+            verify(removed, times(1)).send(any(SseEmitter.SseEventBuilder.class));
+        }
+    }
+
     @Test void slowClientDoesNotHoldPublisherOrHealthyConnection() throws Exception {
         var entered = new java.util.concurrent.CountDownLatch(1);
         var release = new java.util.concurrent.CountDownLatch(1);
-        when(members.members(7)).thenReturn(List.of(5L, 6L));
+        when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(0, List.of(5L, 6L)));
         try (var mocks = mockConstruction(SseEmitter.class, (mock, context) -> {
             if (context.getCount() == 1) doAnswer(invocation -> {
                 entered.countDown();

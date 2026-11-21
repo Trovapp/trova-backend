@@ -21,18 +21,21 @@ class TripAudience {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
     }
 
-    record Snapshot(long version, List<Long> members) {}
+    record Snapshot(long version, List<Long> members) {
+        boolean tripGone() { return version < 0; }
+    }
 
     Snapshot snapshot(long trip) {
         return jdbc.query("""
-                select t.version, m.user_id from trips t join trip_members m on m.trip_id=t.id
-                join users u on u.id=m.user_id where t.id=? and u.suspended_at is null
+                select t.version, u.id from trips t left join trip_members m on m.trip_id=t.id
+                left join users u on u.id=m.user_id and u.suspended_at is null where t.id=?
                 """, rows -> {
-                    long version = 0;
+                    long version = -1;
                     var members = new ArrayList<Long>();
                     while (rows.next()) {
                         version = rows.getLong(1);
-                        members.add(rows.getLong(2));
+                        Long user = rows.getObject(2, Long.class);
+                        if (user != null) members.add(user);
                     }
                     return new Snapshot(version, members);
                 }, trip);

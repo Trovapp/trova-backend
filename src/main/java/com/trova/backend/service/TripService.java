@@ -141,6 +141,7 @@ public class TripService {
                     // (안 지우면 재구성을 한 번이라도 돌린 여행은 삭제가 FK 제약 위반으로 실패함).
                     tripReplanJobRepository.deleteAll(tripReplanJobRepository.findByTrip(trip));
                     tripShareLinkRepository.deleteByTrip(trip);
+                    changes.recordDeletion(trip, user);
                     tripRepository.delete(trip);
                     return true;
                 })

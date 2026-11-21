@@ -47,6 +47,10 @@ class TripEventKafkaTest {
             verify(second.getBean(TripStreams.class), timeout(10000)).deliver(event);
             verify(third.getBean(TripStreams.class), timeout(10000)).deliver(event);
             verify(sender.getBean(TripStreams.class)).deliver(event);
+            var deletion = new TripChangedEvent(17, 4, 4, "민수", "TRIP_DELETED", "삭제", java.util.List.of(4L, 5L));
+            sender.getBean(KafkaTripEventBus.class).publish(deletion);
+            verify(second.getBean(TripStreams.class), timeout(10000)).deliver(deletion);
+            verify(third.getBean(TripStreams.class), timeout(10000)).deliver(deletion);
         }
     }
 }

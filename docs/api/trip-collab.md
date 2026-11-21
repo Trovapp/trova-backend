@@ -92,4 +92,12 @@ data:{"tripId":12,"version":9,"actorId":7,"actorName":"민수","type":"PLACE_ADD
 
 ```
 
+만든 사람이 `DELETE /api/trips/{id}`로 여행을 삭제하면 커밋 후 마지막 `changed` 프레임의 `type`은 `TRIP_DELETED`이고, `version`은 삭제 직전 여행 버전보다 1 크다. 예를 들어 삭제 직전 버전이 9이면 마지막 데이터는 다음과 같다.
+
+```json
+{"tripId":12,"version":10,"actorId":7,"actorName":"민수","type":"TRIP_DELETED","summary":"여행을 삭제했어요"}
+```
+
+삭제 당시 멤버가 열어 둔 연결은 이 프레임을 보낸 뒤 닫힌다. 앱은 해당 여행을 상세·목록에서 제거하고 구독을 종료한다. 삭제 알림은 기존 Expo 토큰을 등록한 다른 멤버에게 한 번 발송하며, 여행 상세를 보고 있거나 최근 편집 푸시를 받았어도 대상에 포함된다. 알림을 눌렀을 때 삭제된 여행 상세로 이동하지 않는다.
+
 25초 간격의 주석은 연결 유지용이다. 앱은 changed 수신 시 상세를 다시 조회한다. 재연결·포그라운드 복귀 때도 상세를 조회하고, 웹 재연결에는 새 표를 발급받는다. 버전은 여행 단위다. CORS 응답에서 `X-Trip-Version`과 `Retry-After`를 읽을 수 있다.

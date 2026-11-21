@@ -31,6 +31,9 @@ final class TripStream implements Runnable {
     private volatile Thread writer;
     private volatile AsyncContext transport;
     private volatile long writeStarted;
+    private final SseEmitter.SseEventBuilder initial;
+    private volatile SseEmitter.SseEventBuilder terminal;
+    private boolean missingAtPreviousHeartbeat;
 
     TripStream(long trip, long user, long version, StreamAuth auth, Clock clock, long timeout,
                Executor sender, Consumer<TripStream> release) {
@@ -41,6 +44,8 @@ final class TripStream implements Runnable {
         this.auth = auth;
         this.clock = clock;
         this.emitter = new SseEmitter(timeout);
+        initial = SseEmitter.event().name("ready").data(java.util.Map.of("version", version));
+        pending.add(initial);
         this.sender = sender;
         this.release = release;
         emitter.onCompletion(this::close);
@@ -59,6 +64,7 @@ final class TripStream implements Runnable {
                 if (!active()) break;
                 emitter.send(message);
                 writeStarted = 0;
+                if (message == terminal) break;
             }
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
@@ -94,15 +100,39 @@ final class TripStream implements Runnable {
     // Allow one heartbeat interval for normal delivery. A persistent gap means this
     // subscription needs the same refetch the client already performs on reconnect.
     synchronized void heartbeat(long committedVersion) {
+        if (terminal != null) { checkWriteTimeout(); return; }
+        missingAtPreviousHeartbeat = false;
         if (latestOffered.get() < previousHeartbeatVersion) close();
         else offer(SseEmitter.event().comment("heartbeat"));
         previousHeartbeatVersion = committedVersion;
     }
 
-    void offer(SseEmitter.SseEventBuilder message) {
+    synchronized void finish(TripChangedEvent event) {
+        if (terminal != null || !checkWriteTimeout()) return;
+        terminal = SseEmitter.event().name("changed").data(event.forClient());
+        pending.removeIf(message -> message != initial);
+        pending.add(terminal);
+    }
+
+    synchronized void membershipLost(boolean tripGone) {
+        // A post-delete lookup is empty even for the intended recipient. Allow the
+        // committed terminal event to arrive from the bus before closing that stream.
+        if (terminal != null) { checkWriteTimeout(); return; }
+        if (!tripGone || missingAtPreviousHeartbeat || !active()) close();
+        missingAtPreviousHeartbeat = true;
+    }
+
+    private boolean checkWriteTimeout() {
         long started = writeStarted;
-        if (!active() || (started != 0 && System.nanoTime() - started >= MAX_WRITE_NANOS) || !pending.offer(message))
+        if (!active() || (started != 0 && System.nanoTime() - started >= MAX_WRITE_NANOS)) {
             close();
+            return false;
+        }
+        return true;
+    }
+
+    synchronized void offer(SseEmitter.SseEventBuilder message) {
+        if (checkWriteTimeout() && terminal == null && !pending.offer(message)) close();
     }
 
     void close() {
