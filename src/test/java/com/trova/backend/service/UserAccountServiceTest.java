@@ -169,9 +169,9 @@ class UserAccountServiceTest {
         bookmark = bookmarkRepository.save(bookmark);
 
         Trip trip = tripService.createTrip(me, "제주 여행", LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 1));
-        tripShareLinkService.createOrGet(trip);
+        tripShareLinkService.createOrGet(trip, trip.getUser());
         tripShareLinkService.revoke(trip);
-        tripShareLinkService.createOrGet(trip);
+        tripShareLinkService.createOrGet(trip, trip.getUser());
         assertThat(tripShareLinkRepository.count()).isEqualTo(2);
         TripPlace tripPlace = tripService.addPlaceToDay(me, trip.getId(), 1, "withdraw-place-1").orElseThrow();
         Itinerary itinerary = itineraryRepository.findByTripOrderByDay(trip).get(0);

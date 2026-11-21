@@ -411,7 +411,7 @@ class GapRecommendationQueryCountTest {
         place(day(trip, 1), 1, "09:00", "10:00", 37.5, 127.0, null);
         String path = "/api/trips/" + trip.getId() + "/days/";
         mvc.perform(get(path + "1/gap-recommendations").header("Authorization", bearer(stranger)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
         mvc.perform(get("/api/trips/" + Long.MAX_VALUE + "/days/1/gap-recommendations")
                         .header("Authorization", bearer(owner)))
                 .andExpect(status().isNotFound());

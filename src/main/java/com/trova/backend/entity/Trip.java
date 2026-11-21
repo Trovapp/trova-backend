@@ -1,5 +1,7 @@
 package com.trova.backend.entity;
 
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -8,6 +10,12 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "trips")
 public class Trip {
+
+    @Version
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private long version;
+
+    public long getVersion() { return version; }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,11 +40,20 @@ public class Trip {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @ElementCollection
+    @CollectionTable(name = "trip_members", joinColumns = @JoinColumn(name = "trip_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"trip_id", "user_id"}),
+            indexes = @Index(columnList = "user_id,trip_id"))
+    private List<TripMember> members = new ArrayList<>();
+
+    public List<TripMember> getMembers() { return members; }
+
     protected Trip() {
     }
 
     public Trip(User user, String title, LocalDate startDate, LocalDate endDate) {
         this.user = user;
+        members.add(new TripMember(user, TripMember.Role.OWNER));
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -56,6 +73,8 @@ public class Trip {
         this.title = title.trim();
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void touch() { updatedAt = LocalDateTime.now(); }
 
     public Long getId() { return id; }
     public User getUser() { return user; }

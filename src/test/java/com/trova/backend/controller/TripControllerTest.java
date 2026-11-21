@@ -7,6 +7,9 @@ import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.TripMember;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.GooglePlacesApiClient;
@@ -138,6 +141,14 @@ class TripControllerTest {
         return trip;
     }
 
+    private Trip tripForActor(User actor, int days, boolean editor) {
+        if (!editor) return trip(actor, days);
+        User owner = userRepository.save(new User("google", "owner-of-shared-trip", "owner", null));
+        Trip shared = trip(owner, days);
+        shared.getMembers().add(new TripMember(actor, TripMember.Role.EDITOR));
+        return tripRepository.saveAndFlush(shared);
+    }
+
     @Test
     void 날짜_없는_여행에_시작일을_정하면_종료일과_일차_날짜가_채워진다() throws Exception {
         // 자동 초안으로 만든 여행은 날짜가 없어 날씨 확인을 못 했고 날짜를 정할 방법도 없었다(#181)
@@ -170,7 +181,7 @@ class TripControllerTest {
     }
 
     @Test
-    void 남의_여행_날짜는_바꿀_수_없어_404() throws Exception {
+    void 남의_여행_날짜는_바꿀_수_없어_403() throws Exception {
         User owner = userRepository.save(new User("google", "dates3-owner", "주인", null));
         userRepository.save(new User("google", "dates3", "날짜유저3", null));
         Trip t = trip(owner, 1);
@@ -179,15 +190,16 @@ class TripControllerTest {
                         .with(loginAs("dates3", "날짜유저3"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"startDate\":\"2026-11-01\"}"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
         assertThat(tripRepository.findById(t.getId()).orElseThrow().getStartDate()).isEqualTo(LocalDate.of(2026, 1, 1));
     }
 
-    @Test
-    void 여행_이름을_바꾸면_상세에_새_이름이_온다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 여행_이름을_바꾸면_상세에_새_이름이_온다(boolean editor) throws Exception {
         // 앱 어디에도 여행 이름을 바꿀 곳이 없었다(2026-10-18 안드로이드 QA, #221)
         User me = userRepository.save(new User("google", "title1", "이름유저1", null));
-        Trip t = trip(me, 1);
+        Trip t = tripForActor(me, 1, editor);
 
         mockMvc.perform(patch("/api/trips/" + t.getId() + "/title")
                         .with(loginAs("title1", "이름유저1"))
@@ -214,7 +226,7 @@ class TripControllerTest {
     }
 
     @Test
-    void 남의_여행_이름은_바꿀_수_없어_404() throws Exception {
+    void 남의_여행_이름은_바꿀_수_없어_403() throws Exception {
         User owner = userRepository.save(new User("google", "title3-owner", "주인", null));
         userRepository.save(new User("google", "title3", "이름유저3", null));
         Trip t = trip(owner, 1);
@@ -224,7 +236,7 @@ class TripControllerTest {
                         .with(loginAs("title3", "이름유저3"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\":\"바꾼 이름\"}"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
         assertThat(tripRepository.findById(t.getId()).orElseThrow().getTitle()).isEqualTo(before);
     }
 
@@ -360,10 +372,11 @@ class TripControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void 여행_상세_조회시_일차별로_장소가_묶여서_온다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 여행_상세_조회시_일차별로_장소가_묶여서_온다(boolean editor) throws Exception {
         User me = userRepository.save(new User("google", "trip4", "여행유저4", null));
-        Trip t = trip(me, 2);
+        Trip t = tripForActor(me, 2, editor);
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
         tripPlace(day1, "장소A", 37.5, 127.0, 1);
 
@@ -374,13 +387,13 @@ class TripControllerTest {
     }
 
     @Test
-    void 타인_여행_조회는_404() throws Exception {
+    void 타인_여행_조회는_403() throws Exception {
         User me = userRepository.save(new User("google", "trip5", "여행유저5", null));
         User other = userRepository.save(new User("google", "trip6", "여행유저6", null));
         Trip otherTrip = trip(other, 1);
 
         mockMvc.perform(get("/api/trips/" + otherTrip.getId()).with(loginAs("trip5", "여행유저5")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -397,10 +410,11 @@ class TripControllerTest {
         assertThat(tripPlaceRepository.findById(place.getId())).isEmpty();
     }
 
-    @Test
-    void 카탈로그_장소를_일차에_추가한다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 카탈로그_장소를_일차에_추가한다(boolean editor) throws Exception {
         User me = userRepository.save(new User("google", "trip8", "여행유저8", null));
-        Trip t = trip(me, 1);
+        Trip t = tripForActor(me, 1, editor);
         placeRepository.save(new Place("gp-1", "경복궁", "attraction", 4.5, 100, null, 37.58, 126.97, "서울 종로구"));
 
         mockMvc.perform(post("/api/trips/" + t.getId() + "/days/1/places")
@@ -424,10 +438,11 @@ class TripControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void 장소_삭제_성공() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 장소_삭제_성공(boolean editor) throws Exception {
         User me = userRepository.save(new User("google", "trip10", "여행유저10", null));
-        Trip t = trip(me, 1);
+        Trip t = tripForActor(me, 1, editor);
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
         TripPlace place = tripPlace(day1, "장소", 37.5, 127.0, 1);
 
@@ -438,7 +453,7 @@ class TripControllerTest {
     }
 
     @Test
-    void 타인_장소_삭제는_404() throws Exception {
+    void 타인_장소_삭제는_403() throws Exception {
         User me = userRepository.save(new User("google", "trip11", "여행유저11", null));
         User other = userRepository.save(new User("google", "trip12", "여행유저12", null));
         Trip otherTrip = trip(other, 1);
@@ -446,13 +461,14 @@ class TripControllerTest {
         TripPlace place = tripPlace(day1, "남의 장소", 37.5, 127.0, 1);
 
         mockMvc.perform(delete("/api/trip-places/" + place.getId()).with(loginAs("trip11", "여행유저11")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
 
-    @Test
-    void 순서를_아래로_바꾸면_인접_장소와_교체된다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 순서를_아래로_바꾸면_인접_장소와_교체된다(boolean editor) throws Exception {
         User me = userRepository.save(new User("google", "trip13", "여행유저13", null));
-        Trip t = trip(me, 1);
+        Trip t = tripForActor(me, 1, editor);
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
         TripPlace first = tripPlace(day1, "첫번째", 37.5, 127.0, 1);
         TripPlace second = tripPlace(day1, "두번째", 37.6, 127.1, 2);
@@ -481,10 +497,11 @@ class TripControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void 동선_최적화는_총_이동거리가_최소가_되도록_재배열한다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 동선_최적화는_총_이동거리가_최소가_되도록_재배열한다(boolean editor) throws Exception {
         User me = userRepository.save(new User("google", "trip15", "여행유저15", null));
-        Trip t = trip(me, 1);
+        Trip t = tripForActor(me, 1, editor);
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
         // A(37.500)---C(37.501)---B(37.502) 일직선상, C가 중간. 입력 순서는 A,B,C지만
         // 총 이동거리를 최소화하면 C가 반드시 가운데(index 1)로 와야 한다.
@@ -518,14 +535,14 @@ class TripControllerTest {
     }
 
     @Test
-    void 타인_여행의_동선_최적화는_404() throws Exception {
+    void 타인_여행의_동선_최적화는_403() throws Exception {
         User me = userRepository.save(new User("google", "trip17", "여행유저17", null));
         User other = userRepository.save(new User("google", "trip18", "여행유저18", null));
         Trip otherTrip = trip(other, 1);
 
         mockMvc.perform(post("/api/trips/" + otherTrip.getId() + "/days/1/optimize-route")
                         .with(loginAs("trip17", "여행유저17")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -538,10 +555,11 @@ class TripControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void 대안_찾기는_후보_목록을_반환한다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 대안_찾기는_후보_목록을_반환한다(boolean editor) throws Exception {
         User me = userRepository.save(new User("google", "alt1", "대안유저1", null));
-        Trip t = trip(me, 1);
+        Trip t = tripForActor(me, 1, editor);
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
         TripPlace place = tripPlace(day1, "장소", 37.5, 127.0, 1);
 
@@ -575,7 +593,7 @@ class TripControllerTest {
     }
 
     @Test
-    void 타인_소유_장소의_대안_찾기는_404() throws Exception {
+    void 타인_소유_장소의_대안_찾기는_403() throws Exception {
         User me = userRepository.save(new User("google", "alt2", "대안유저2", null));
         User other = userRepository.save(new User("google", "alt3", "대안유저3", null));
         Trip otherTrip = trip(other, 1);
@@ -584,13 +602,14 @@ class TripControllerTest {
 
         mockMvc.perform(get("/api/trip-places/" + place.getId() + "/alternatives")
                         .with(loginAs("alt2", "대안유저2")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
 
-    @Test
-    void 대안으로_교체하면_이름_좌표_카테고리가_바뀌고_시간은_유지된다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 대안으로_교체하면_이름_좌표_카테고리가_바뀌고_시간은_유지된다(boolean editor) throws Exception {
         User me = userRepository.save(new User("google", "rep1", "교체유저1", null));
-        Trip t = trip(me, 1);
+        Trip t = tripForActor(me, 1, editor);
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
         TripPlace place = tripPlace(day1, "원래장소", 37.5, 127.0, 1);
         tripService.updateDetails(me, place.getId(), LocalTime.of(10, 0), null, null, "원래 메모");
@@ -615,10 +634,11 @@ class TripControllerTest {
         assertThat(updated.getVisitOrder()).isEqualTo(1);
     }
 
-    @Test
-    void 빈_시간이_있으면_추천_목록을_반환한다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 빈_시간이_있으면_추천_목록을_반환한다(boolean editor) throws Exception {
         User me = userRepository.save(new User("google", "gapc1", "빈시간유저1", null));
-        Trip t = trip(me, 1);
+        Trip t = tripForActor(me, 1, editor);
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
         TripPlace a = tripPlace(day1, "A", 37.500, 127.000, 1);
         TripPlace b = tripPlace(day1, "B", 37.510, 127.000, 2);
@@ -646,10 +666,11 @@ class TripControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void 특정_장소_뒤에_삽입하면_뒤_장소들의_순서가_밀린다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 특정_장소_뒤에_삽입하면_뒤_장소들의_순서가_밀린다(boolean editor) throws Exception {
         User me = userRepository.save(new User("google", "ins1", "삽입유저1", null));
-        Trip t = trip(me, 1);
+        Trip t = tripForActor(me, 1, editor);
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();
         TripPlace a = tripPlace(day1, "A", 37.5, 127.0, 1);
         TripPlace b = tripPlace(day1, "B", 37.6, 127.1, 2);
@@ -667,7 +688,7 @@ class TripControllerTest {
     }
 
     @Test
-    void 타인_소유_장소_뒤에_삽입하면_404() throws Exception {
+    void 타인_소유_장소_뒤에_삽입하면_403() throws Exception {
         User me = userRepository.save(new User("google", "ins2", "삽입유저2", null));
         User other = userRepository.save(new User("google", "ins3", "삽입유저3", null));
         Trip otherTrip = trip(other, 1);
@@ -679,7 +700,7 @@ class TripControllerTest {
                         .with(loginAs("ins2", "삽입유저2"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"afterTripPlaceId\":" + place.getId() + ",\"googlePlaceId\":\"gp-x\"}"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -717,14 +738,19 @@ class TripControllerTest {
     }
 
     @Test
-    void 같은_영상을_다시_추출한_작업으로_여행을_확정하면_새로_만들지_않고_기존_여행을_돌려준다() throws Exception {
+    void 영상_장소가_공동_여행에_먼저_들어가도_기존_개인_여행을_찾고_재사용한다() throws Exception {
         User me = userRepository.save(new User("google", "video-trip-5", "영상유저5", null));
         ProcessingJob first = videoJob(me, "https://www.youtube.com/watch?v=CtrlConf05");
+        Trip shared = tripForActor(me, 1, true);
+        Long savedId = savedPlaceRepository.findByProcessingJob(first).getFirst().getId();
+        tripService.addVideoPlaceToDay(me, shared.getId(), 1, savedId).orElseThrow();
         Trip trip = tripService.confirmVideoPlacesIntoTrip(
                 me, "부산 여행", savedPlaceRepository.findByProcessingJob(first), null);
         ProcessingJob again = videoJob(me, "https://youtu.be/CtrlConf05");
         long before = tripRepository.findByUserOrderByCreatedAtDesc(me).size();
 
+        mockMvc.perform(get("/api/places/videos/" + again.getId() + "/trip").with(loginAs("video-trip-5", "영상유저5")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(trip.getId()));
         mockMvc.perform(post("/api/places/videos/" + again.getId() + "/confirm-trip")
                         .with(loginAs("video-trip-5", "영상유저5"))
                         .contentType(MediaType.APPLICATION_JSON)

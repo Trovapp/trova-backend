@@ -1,5 +1,7 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.service.TripAccess;
+import com.trova.backend.service.TripMembershipService;
 import com.trova.backend.service.DailyQuotaService;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Place;
@@ -128,12 +130,12 @@ public class TripController {
     }
 
     public record TripResponse(Long id, String title, LocalDate startDate, LocalDate endDate,
-                               int placeCount, List<String> regions) {
+                               int placeCount, List<String> regions, String role, int memberCount, List<TripMembershipService.Member> members) {
         static TripResponse from(Trip trip) {
-            return new TripResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(), 0, List.of());
+            return from(trip, List.of(), trip.getUser().getId());
         }
 
-        static TripResponse from(Trip trip, List<String> placeRegions) {
+        static TripResponse from(Trip trip, List<String> placeRegions, Long viewerId) {
             // 많이 나온 지역 순, 같으면 먼저 나온 지역(일차·방문 순서) — 최대 2개("제주", "김해·부산").
             Map<String, Long> counts = placeRegions.stream()
                     .filter(r -> r != null && !r.isBlank())
@@ -145,7 +147,8 @@ public class TripController {
                     .map(Map.Entry::getKey)
                     .toList();
             return new TripResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(),
-                    placeRegions.size(), regions);
+                    placeRegions.size(), regions, trip.getUser().getId().equals(viewerId) ? "OWNER" : "EDITOR",
+                    trip.getMembers().size(), TripMembershipService.members(trip).stream().limit(4).toList());
         }
     }
 
@@ -153,7 +156,7 @@ public class TripController {
             Long id, String placeName, String region, String category,
             Double latitude, Double longitude, String phone, String address,
             int visitOrder, String source, String googlePlaceId,
-            LocalTime visitStartTime, LocalTime visitEndTime, String arrivalTransportMode, String memo
+            LocalTime visitStartTime, LocalTime visitEndTime, String arrivalTransportMode, String memo, long version
     ) {
         static TripPlaceResponse from(TripPlace p) {
             return new TripPlaceResponse(
@@ -162,7 +165,7 @@ public class TripController {
                     p.getVisitOrder(), p.getSource().name(), p.getGooglePlaceId(),
                     p.getVisitStartTime(), p.getVisitEndTime(),
                     p.getArrivalTransportMode() != null ? p.getArrivalTransportMode().name() : null,
-                    p.getMemo());
+                    p.getMemo(), p.getVersion());
         }
 
         static TripPlaceResponse from(TripDetailRow r) {
@@ -172,7 +175,7 @@ public class TripController {
                     r.visitOrder(), r.source().name(), r.googlePlaceId(),
                     r.visitStartTime(), r.visitEndTime(),
                     r.arrivalTransportMode() != null ? r.arrivalTransportMode().name() : null,
-                    r.memo());
+                    r.memo(), r.version());
         }
     }
 
@@ -183,10 +186,14 @@ public class TripController {
             Boolean isCongestionAvailable, String congestionLevel, String recommendationReason
     ) {
         static AlternativeCandidateResponse from(AlternativeCandidate c) {
+            return from(c, c.recommendationReason());
+        }
+
+        static AlternativeCandidateResponse from(AlternativeCandidate c, String recommendationReason) {
             return new AlternativeCandidateResponse(
                     c.placeId(), c.googlePlaceId(), c.name(), c.category(), c.rating(), c.userRatingCount(),
                     c.latitude(), c.longitude(), c.address(), c.distanceToNextKm(), c.estimatedTravelMinutes(),
-                    c.isCongestionAvailable(), c.congestionLevel(), c.recommendationReason());
+                    c.isCongestionAvailable(), c.congestionLevel(), recommendationReason);
         }
     }
 
@@ -204,7 +211,7 @@ public class TripController {
     }
 
     public record TripDetailResponse(
-            Long id, String title, LocalDate startDate, LocalDate endDate, List<ItineraryResponse> days
+            Long id, String title, LocalDate startDate, LocalDate endDate, List<ItineraryResponse> days, long version
     ) {
     }
 
@@ -251,7 +258,7 @@ public class TripController {
         Long userId = currentUserService.resolveUserId(authentication);
         // 이름이 같은 여행을 목록에서 구분할 수 없었다(#123) — 장소 수와 가장 많이 나온 지역(최대 2개)을 함께 준다.
         return tripService.listTripSummaries(userId).stream()
-                .map(s -> TripResponse.from(s.trip(), s.regions()))
+                .map(s -> TripResponse.from(s.trip(), s.regions(), userId))
                 .toList();
     }
 
@@ -260,11 +267,11 @@ public class TripController {
             Authentication authentication, @PathVariable Long id
     ) {
         // 예열 뒤 SQL 2회(#476): 사용자 확인은 메모리(ADR 0036), 머리+소유자 1회, 일차 left join 장소 1회.
-        // 남의 여행과 없는 여행은 머리가 비어 똑같이 404다.
+        // 조회 행이 없으면 비멤버(403)와 삭제된 여행(404)을 구분한다.
         Long userId = currentUserService.resolveUserId(authentication);
         return tripRepository.findDetailHeader(id, userId)
                 .map(header -> ResponseEntity.ok(toDetail(header, tripRepository.findDetailRows(header.id()))))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> tripRepository.existsById(id) ? ResponseEntity.status(403).build() : ResponseEntity.notFound().build());
     }
 
     /** 일차·방문 순서로 정렬된 줄을 한 번 훑어 일차별로 묶는다. 장소 칸이 빈 줄은 빈 일차다. */
@@ -283,7 +290,7 @@ public class TripController {
             }
             days.add(new ItineraryResponse(first.itineraryId(), first.day(), first.date(), places));
         }
-        return new TripDetailResponse(header.id(), header.title(), header.startDate(), header.endDate(), days);
+        return new TripDetailResponse(header.id(), header.title(), header.startDate(), header.endDate(), days, header.version());
     }
 
     public record SetTripDatesRequest(LocalDate startDate) {
@@ -330,7 +337,7 @@ public class TripController {
                                 .map(TripPlaceResponse::from)
                                 .toList()))
                 .toList();
-        return new TripDetailResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(), days);
+        return new TripDetailResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(), days, trip.getVersion());
     }
 
     @DeleteMapping("/api/trips/{id}")
@@ -527,7 +534,7 @@ public class TripController {
             @RequestBody RestoreDayRequest body
     ) {
         User user = currentUserService.resolve(authentication);
-        boolean owned = tripRepository.findById(tripId).filter(t -> t.getUser().getId().equals(user.getId())).isPresent();
+        boolean owned = tripRepository.findById(tripId).filter(t -> TripAccess.requireMember(t, user)).isPresent();
         if (!owned) {
             return ResponseEntity.notFound().build();
         }
@@ -542,7 +549,7 @@ public class TripController {
     ) {
         User user = currentUserService.resolve(authentication);
         return tripRepository.findById(tripId)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()))
+                .filter(trip -> TripAccess.requireMember(trip, user))
                 .flatMap(trip -> itineraryRepository.findByTripAndDay(trip, day))
                 .map(itinerary -> {
                     // 이유 하나만 사람이 읽는 문장으로(#202) — 예전엔 "알림을 만들 조건이 아니에요(비 소식 없음/…)".
@@ -587,6 +594,9 @@ public class TripController {
         dailyQuotaService.consumePlaceCall(userId);
         return gapRecommendationService.findGaps(userId, tripId, day)
                 .map(gaps -> ResponseEntity.ok(gaps.stream().map(GapResponse::from).toList()))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> {
+                    tripRepository.findById(tripId).ifPresent(trip -> TripAccess.requireMember(trip, currentUserService.resolve(authentication)));
+                    return ResponseEntity.notFound().build();
+                });
     }
 }

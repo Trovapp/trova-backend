@@ -10,6 +10,17 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 public class AsyncConfig {
 
+    @Bean("tripEventExecutor")
+    public Executor tripEventExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(256);
+        executor.setThreadNamePrefix("trip-event-");
+        applyGracefulShutdown(executor);
+        return executor;
+    }
+
     @Bean("pipelineTaskExecutor")
     public Executor pipelineTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -48,14 +59,23 @@ public class AsyncConfig {
     }
 
     // 웹 푸시 발송(#185). 알림 하나에 기기 몇 개라 짧은 HTTP 요청뿐 — 작은 풀, 쉬면 스레드를 내린다(운영 956MB).
+    @Bean("tripPushExecutor")
+    public Executor tripPushExecutor() {
+        return pushExecutor("trip-push-");
+    }
+
     @Bean("pushTaskExecutor")
     public Executor pushTaskExecutor() {
+        return pushExecutor("push-");
+    }
+
+    private Executor pushExecutor(String threadPrefix) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(1);
         executor.setMaxPoolSize(1);
         executor.setAllowCoreThreadTimeOut(true);
         executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("push-");
+        executor.setThreadNamePrefix(threadPrefix);
         // 대기열이 차면 가장 오래 기다린 알림을 버린다 — 예외를 던지면 알림을 맡긴 초안·날씨 처리까지 실패로 번진다.
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
         applyGracefulShutdown(executor);

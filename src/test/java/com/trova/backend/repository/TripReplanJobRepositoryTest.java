@@ -65,12 +65,12 @@ class TripReplanJobRepositoryTest {
         Trip trip = tripRepository.save(new Trip(user, "테스트 여행4", LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 1)));
         TripReplanJob allPlacesJob = tripReplanJobRepository.save(new TripReplanJob(user, trip, true, true));
 
-        List<TripReplanJob> active = tripReplanJobRepository.findByUserAndTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
-                user, trip, true, false, List.of(JobStatus.PENDING, JobStatus.PROCESSING), LocalDateTime.now().minusMinutes(5));
+        List<TripReplanJob> active = tripReplanJobRepository.findByTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
+                trip, true, false, List.of(JobStatus.PENDING, JobStatus.PROCESSING), LocalDateTime.now().minusMinutes(5));
 
         assertThat(active).isEmpty();
-        List<TripReplanJob> sameConfig = tripReplanJobRepository.findByUserAndTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
-                user, trip, true, true, List.of(JobStatus.PENDING, JobStatus.PROCESSING), LocalDateTime.now().minusMinutes(5));
+        List<TripReplanJob> sameConfig = tripReplanJobRepository.findByTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
+                trip, true, true, List.of(JobStatus.PENDING, JobStatus.PROCESSING), LocalDateTime.now().minusMinutes(5));
         assertThat(sameConfig).extracting(TripReplanJob::getId).containsExactly(allPlacesJob.getId());
     }
 

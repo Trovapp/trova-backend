@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import com.trova.backend.service.TripChanges;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -97,6 +98,7 @@ public class SecurityConfig {
                             // 관리자 웹 1회용 코드 교환 — 코드 자체가 인증이다(AdminWebLoginService, #163).
                             .requestMatchers(HttpMethod.POST, "/api/auth/exchange").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/auth/web-exchange").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/trips/*/events").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/public/trips/*").permitAll()
                             // 인증 없이 열어두되, 실제로 노출되는 엔드포인트는 application.yml의
                             // management.endpoints.web.exposure.include가 정한다 — 기본은 health만이고
@@ -189,6 +191,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(origin));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of(TripChanges.VERSION_HEADER, "Retry-After"));
         configuration.setAllowCredentials(credentials);
         return configuration;
     }

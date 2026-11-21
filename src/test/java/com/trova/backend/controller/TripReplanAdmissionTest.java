@@ -75,8 +75,8 @@ class TripReplanAdmissionTest {
     @Test
     void 한도를_소진했어도_기존_작업은_차감없이_재사용한다() {
         quota.consumePlaceCall(user);
-        when(jobs.findByUserAndTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
-                any(), any(), anyBoolean(), anyBoolean(), any(), any())).thenReturn(List.of(saved));
+        when(jobs.findByTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
+                any(), anyBoolean(), anyBoolean(), any(), any())).thenReturn(List.of(saved));
         assertThat(submit()).isEqualTo(1L);
         verify(jobs, never()).save(any());
         verify(worker, never()).process(any());
@@ -86,8 +86,8 @@ class TripReplanAdmissionTest {
     @Timeout(10)
     void 같은_여행의_동시_접수는_작업과_한도를_한번만_사용한다() throws Exception {
         AtomicReference<TripReplanJob> stored = new AtomicReference<>();
-        when(jobs.findByUserAndTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
-                any(), any(), anyBoolean(), anyBoolean(), any(), any()))
+        when(jobs.findByTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
+                any(), anyBoolean(), anyBoolean(), any(), any()))
                 .thenAnswer(call -> stored.get() == null ? List.of() : List.of(stored.get()));
         when(jobs.save(any())).thenAnswer(call -> { stored.set(saved); return saved; });
         CountDownLatch firstEnqueue = new CountDownLatch(1);
@@ -103,8 +103,8 @@ class TripReplanAdmissionTest {
             try {
                 Thread.sleep(100);
                 assertThat(second.isDone()).isFalse();
-                verify(jobs, times(1)).findByUserAndTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
-                        any(), any(), anyBoolean(), anyBoolean(), any(), any());
+                verify(jobs, times(1)).findByTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
+                        any(), anyBoolean(), anyBoolean(), any(), any());
             } finally { release.countDown(); }
             assertThat(first.get(5, TimeUnit.SECONDS)).isEqualTo(second.get(5, TimeUnit.SECONDS));
         } finally { release.countDown(); }

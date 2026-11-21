@@ -136,12 +136,12 @@ class TripDetailResponseEquivalenceTest {
         String strangerBearer = "Bearer " + jwtService.issue(stranger);
 
         mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", strangerBearer))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
         mockMvc.perform(get("/api/trips/" + Long.MAX_VALUE).header("Authorization", strangerBearer))
                 .andExpect(status().isNotFound());
         // 예열(메모리 확인)된 뒤에도 같은 결과.
         mockMvc.perform(get("/api/trips/" + trip.getId()).header("Authorization", strangerBearer))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
         mockMvc.perform(get("/api/trips/" + trip.getId()))
                 .andExpect(status().isUnauthorized());
 
@@ -197,7 +197,7 @@ class TripDetailResponseEquivalenceTest {
                                 .map(TripPlaceResponse::from)
                                 .toList()))
                 .toList();
-        return new TripDetailResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(), days);
+        return new TripDetailResponse(trip.getId(), trip.getTitle(), trip.getStartDate(), trip.getEndDate(), days, trip.getVersion());
     }
 
     @SuppressWarnings("unchecked")

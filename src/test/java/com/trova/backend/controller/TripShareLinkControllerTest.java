@@ -41,6 +41,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -132,6 +133,288 @@ class TripShareLinkControllerTest {
         return token;
     }
 
+    @Test
+    void 이미_참여한_편집자는_다시_참여하고_나갈_수_있다() throws Exception {
+        Trip trip = trip(owner(), 1);
+        String token = createLink(trip);
+        User friend = userRepository.save(new User("google", "editor", "Editor", null));
+        RequestPostProcessor editor = loginAs("editor", "Editor");
+        String members = "/api/trips/" + trip.getId() + "/members";
+        mockMvc.perform(get(members).with(editor)).andExpect(status().isForbidden());
+        for (int i = 0; i < 2; i++) {
+            mockMvc.perform(post("/api/public/trips/{token}/join", token).with(fromIp("198.51.100.40")).with(editor))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.tripId").value(trip.getId()));
+        }
+        mockMvc.perform(get(members).with(editor)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+        mockMvc.perform(delete("/api/trips/{id}", trip.getId()).with(editor)).andExpect(status().isForbidden());
+        mockMvc.perform(delete(members + "/" + friend.getId()).with(editor)).andExpect(status().isNoContent());
+        mockMvc.perform(get(members).with(editor)).andExpect(status().isForbidden());
+    }
+
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbc;
+
+    @Autowired
+    private com.trova.backend.service.TripMemberBackfill backfill;
+
+    @Test
+    void 기존_여행_OWNER는_재시작해도_한_명이다() {
+        Trip trip = trip(owner(), 1);
+        tripRepository.flush();
+        jdbc.update("delete from trip_members where trip_id=?", trip.getId());
+        backfill.afterSingletonsInstantiated();
+        backfill.afterSingletonsInstantiated();
+        assertThat(jdbc.queryForList("select role from trip_members where trip_id=? and user_id=?",
+                String.class, trip.getId(), trip.getUser().getId())).containsExactly("OWNER");
+    }
+
+    @Test
+    void 참여에는_로그인과_유효한_링크가_필요하고_OWNER포함_열명이_상한이다() throws Exception {
+        Trip trip = trip(owner(), 1);
+        String token = createLink(trip);
+        String path = "/api/public/trips/" + token + "/join";
+        mockMvc.perform(post(path)).andExpect(status().isUnauthorized());
+        userRepository.save(new User("google", "invalid-user", "bad", null));
+        userRepository.save(new User("google", "last", "last", null));
+        mockMvc.perform(post("/api/public/trips/invalid/join").with(fromIp("192.0.2.201")).with(loginAs("invalid-user", "bad")))
+                .andExpect(status().isNotFound());
+        for (int i = 1; i <= 9; i++) {
+            userRepository.save(new User("google", "join-" + i, "editor", null));
+            mockMvc.perform(post(path).with(fromIp("198.51.100." + i)).with(loginAs("join-" + i, "editor")))
+                    .andExpect(status().isOk());
+        }
+        mockMvc.perform(post(path).with(fromIp("192.0.2.100")).with(loginAs("last", "editor")))
+                .andExpect(status().isConflict()).andExpect(jsonPath("$.code").value("MEMBER_LIMIT"));
+        mockMvc.perform(post(path).with(fromIp("192.0.2.101")).with(loginAs("join-9", "editor")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void 링크를_교체해도_기존_멤버는_편집하고_내보낸_뒤에는_접근할_수_없다() throws Exception {
+        Trip trip = trip(owner(), 1);
+        String token = createLink(trip);
+        User friend = userRepository.save(new User("google", "rotate-editor", "editor", null));
+        RequestPostProcessor editor = loginAs("rotate-editor", "editor");
+        RequestPostProcessor owner = loginAs("trip-share-owner", "owner");
+        String prefix = "/api/trips/" + trip.getId();
+        String link = prefix + "/share-link";
+        String join = "/api/public/trips/" + token + "/join";
+        mockMvc.perform(post(join).with(fromIp("192.0.2.171")).with(editor)).andExpect(status().isOk());
+        mockMvc.perform(get(link).with(editor)).andExpect(status().isOk()).andExpect(jsonPath("$.token").value(token));
+        mockMvc.perform(post(link).with(editor)).andExpect(status().isOk()).andExpect(jsonPath("$.token").value(token));
+        mockMvc.perform(delete(prefix + "/members/" + trip.getUser().getId()).with(owner)).andExpect(status().isForbidden());
+        mockMvc.perform(delete(prefix + "/members/" + trip.getUser().getId()).with(editor)).andExpect(status().isForbidden());
+        mockMvc.perform(post(prefix + "/days/1/weather-check").with(editor)).andExpect(status().isOk());
+        mockMvc.perform(post(prefix + "/days/1/restore").with(editor).contentType("application/json")
+                        .content("{\"places\":[]}")).andExpect(status().isOk());
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(prefix + "/dates")
+                        .with(editor).contentType("application/json").content("{\"startDate\":\"2026-12-01\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.startDate").value("2026-12-01"));
+        mockMvc.perform(delete(link).with(editor)).andExpect(status().isForbidden());
+        mockMvc.perform(post(link + "/rotate").with(editor)).andExpect(status().isForbidden());
+        mockMvc.perform(post(link + "/rotate").with(owner)).andExpect(status().isOk());
+        mockMvc.perform(post(join).with(fromIp("192.0.2.172")).with(editor)).andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/public/trips/" + token).with(fromIp("192.0.2.173"))).andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/trips").with(editor)).andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(trip.getId())).andExpect(jsonPath("$[0].role").value("EDITOR"))
+                .andExpect(jsonPath("$[0].memberCount").value(2));
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(prefix + "/title")
+                        .contentType("application/json").content("{\"title\":\"Renamed\"}").with(editor))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.title").value("Renamed"));
+        mockMvc.perform(delete(prefix + "/members/" + friend.getId()).with(owner)).andExpect(status().isNoContent());
+        mockMvc.perform(get(prefix).with(editor)).andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/trips").with(editor)).andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void 오래된_장소_수정은_409와_최신_일정을_반환한다() throws Exception {
+        Trip trip = trip(owner(), 1);
+        TripPlace item = place(trip);
+        tripRepository.flush();
+        String url = "/api/trip-places/" + item.getId() + "/details";
+        RequestPostProcessor owner = loginAs("trip-share-owner", "owner");
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(url).with(owner)
+                        .header("If-Match", "\"0\"").contentType("application/json").content("{\"memo\":\"new\"}"))
+                .andExpect(status().isOk());
+        tripRepository.flush();
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(url).with(owner)
+                        .header("If-Match", "\"0\"").contentType("application/json").content("{\"memo\":\"stale\"}"))
+                .andExpect(status().isConflict()).andExpect(jsonPath("$.code").value("VERSION_CONFLICT"))
+                .andExpect(jsonPath("$.latest.days[0].places[0].memo").value("new"));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void 같은_버전으로_두_계정이_수정하면_한쪽만_커밋된다() throws Exception {
+        User owner = owner();
+        User editor = userRepository.save(new User("google", "race-editor", "editor", null));
+        Trip trip = trip(owner, 1);
+        TripPlace item = place(trip);
+        try {
+            String token = createLink(trip);
+            mockMvc.perform(post("/api/public/trips/" + token + "/join").with(fromIp("198.51.100.61"))
+                            .with(loginAs("race-editor", "editor"))).andExpect(status().isOk());
+            java.util.concurrent.CyclicBarrier barrier = new java.util.concurrent.CyclicBarrier(2);
+            try (java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newFixedThreadPool(2)) {
+                List<java.util.concurrent.Future<Integer>> futures = new java.util.ArrayList<>();
+                for (String sub : List.of("trip-share-owner", "race-editor")) {
+                    futures.add(executor.submit(() -> {
+                        barrier.await(5, java.util.concurrent.TimeUnit.SECONDS);
+                        return mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                                        "/api/trip-places/" + item.getId() + "/details")
+                                        .with(loginAs(sub, sub)).header("If-Match", "\"0\"")
+                                        .contentType("application/json").content("{\"memo\":\"" + sub + "\"}"))
+                                .andReturn().getResponse().getStatus();
+                    }));
+                }
+                assertThat(List.of(futures.get(0).get(10, java.util.concurrent.TimeUnit.SECONDS),
+                        futures.get(1).get(10, java.util.concurrent.TimeUnit.SECONDS))).containsExactlyInAnyOrder(200, 409);
+            }
+            assertThat(tripPlaceRepository.findById(item.getId()).orElseThrow().getVersion()).isEqualTo(1);
+            assertThat(jdbc.queryForObject("select count(*) from trip_activity where trip_id=? and type='PLACE_DETAILS'",
+                    Integer.class, trip.getId())).isOne();
+        } finally {
+            tripService.deleteTrip(owner, trip.getId());
+            userRepository.delete(editor);
+            userRepository.delete(owner);
+        }
+    }
+
+    @Test
+    void 변경_기록은_여행별로_최근_100개를_유지한다() {
+        Trip trip = trip(owner(), 1);
+        for (int i = 0; i < 102; i++) tripService.rename(trip.getUser(), trip.getId(), "title " + i);
+        assertThat(jdbc.queryForObject("select count(*) from trip_activity where trip_id=?",
+                Integer.class, trip.getId())).isEqualTo(100);
+    }
+
+    @Test
+    void 비멤버는_여행과_장소와_AI_작업에_접근할_수_없다() throws Exception {
+        Trip trip = trip(owner(), 1);
+        TripPlace place = place(trip);
+        userRepository.save(new User("google", "outside", "outside", null));
+        RequestPostProcessor outsider = loginAs("outside", "outside");
+        String base = "/api/trips/" + trip.getId();
+        String day = base + "/days/1";
+        String item = "/api/trip-places/" + place.getId();
+        for (String path : List.of(base, base + "/members", base + "/share-link", day + "/gap-recommendations",
+                item + "/alternatives", item + "/details")) {
+            mockMvc.perform(get(path).with(outsider)).andExpect(status().isForbidden());
+        }
+        for (String path : List.of(base, item, base + "/members/" + trip.getUser().getId(), base + "/share-link")) {
+            mockMvc.perform(delete(path).with(outsider)).andExpect(status().isForbidden());
+        }
+        for (String path : List.of(base + "/share-link", base + "/share-link/rotate", day + "/weather-check",
+                day + "/optimize-route", day + "/restore", day + "/places", day + "/video-places", item + "/replace",
+                "/api/trip-places/insert", base + "/replan", "/api/conversations/outsider/messages")) {
+            String body = """
+                    {"googlePlaceId":"catalog","savedPlaceId":1,"afterTripPlaceId":%d,"allPlaces":true,
+                     "message":"hello","tripId":%d,"tripPlaceId":%d}
+                    """.formatted(place.getId(), trip.getId(), place.getId());
+            mockMvc.perform(post(path).with(outsider).contentType("application/json").content(body))
+                    .andExpect(status().isForbidden());
+        }
+        for (String path : List.of(base + "/title", base + "/dates", item + "/order", item + "/details")) {
+            mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(path).with(outsider)
+                            .contentType("application/json").content("""
+                                    {"title":"updated","startDate":"2026-11-25","direction":"UP","memo":"memo"}
+                                    """)).andExpect(status().isForbidden());
+        }
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void 편집_성공_헤더로_다음_여행_수정을_하고_오래된_버전은_409다() throws Exception {
+        User maker = owner();
+        Trip trip = trip(maker, 1);
+        TripPlace item = place(trip);
+        RequestPostProcessor auth = loginAs("trip-share-owner", "소유자");
+        String base = "/api/trips/" + trip.getId();
+        try {
+            String placed = mockMvc.perform(patch("/api/trip-places/" + item.getId() + "/details").with(auth)
+                            .contentType("application/json").content("{\"memo\":\"편집\"}"))
+                    .andExpect(status().isOk()).andExpect(header().exists("X-Trip-Version"))
+                    .andReturn().getResponse().getHeader("X-Trip-Version");
+            String optimized = mockMvc.perform(post(base + "/days/1/optimize-route").with(auth)
+                            .header("If-Match", "\"" + placed + "\""))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(item.getId()))
+                    .andReturn().getResponse().getHeader("X-Trip-Version");
+            assertThat(Long.parseLong(optimized)).isGreaterThan(Long.parseLong(placed));
+            String current = mockMvc.perform(delete("/api/trip-places/" + item.getId()).with(auth))
+                    .andExpect(status().isNoContent()).andExpect(header().exists("X-Trip-Version"))
+                    .andReturn().getResponse().getHeader("X-Trip-Version");
+            assertThat(current).isEqualTo(String.valueOf(tripRepository.findById(trip.getId()).orElseThrow().getVersion()));
+            String newer = mockMvc.perform(patch(base + "/title").with(auth).header("If-Match", "\"" + current + "\"")
+                            .contentType("application/json").content("{\"title\":\"new title\"}"))
+                    .andExpect(status().isOk()).andReturn().getResponse().getHeader("X-Trip-Version");
+            assertThat(Long.parseLong(newer)).isGreaterThan(Long.parseLong(current));
+            mockMvc.perform(patch(base + "/dates").with(auth).header("If-Match", "\"" + current + "\"")
+                            .contentType("application/json").content("{\"startDate\":\"2027-01-01\"}"))
+                    .andExpect(status().isConflict()).andExpect(jsonPath("$.latest.version").value(Long.parseLong(newer)));
+            String token = createLink(trip);
+            User friend = userRepository.save(new User("google", "version-editor", "editor", null));
+            try {
+                RequestPostProcessor editor = loginAs("version-editor", "editor");
+                String joined = mockMvc.perform(post("/api/public/trips/" + token + "/join").with(editor)
+                                .with(fromIp("198.51.100.211"))).andExpect(status().isOk())
+                        .andReturn().getResponse().getHeader("X-Trip-Version");
+                assertThat(Long.parseLong(joined)).isGreaterThan(Long.parseLong(newer));
+                String revoked = mockMvc.perform(delete(base + "/share-link").with(auth)).andExpect(status().isNoContent())
+                        .andReturn().getResponse().getHeader("X-Trip-Version");
+                assertThat(Long.parseLong(revoked)).isGreaterThan(Long.parseLong(joined));
+                mockMvc.perform(post(base + "/share-link").with(editor)).andExpect(status().isForbidden());
+                String removed = mockMvc.perform(delete(base + "/members/" + friend.getId()).with(editor))
+                        .andExpect(status().isNoContent()).andReturn().getResponse().getHeader("X-Trip-Version");
+                assertThat(Long.parseLong(removed)).isGreaterThan(Long.parseLong(revoked));
+            } finally {
+                tripService.deleteTrip(maker, trip.getId());
+                userRepository.delete(friend);
+            }
+        } finally {
+            if (tripRepository.existsById(trip.getId())) tripService.deleteTrip(maker, trip.getId());
+            userRepository.delete(maker);
+        }
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void 마지막_한_자리에_동시_참여하면_한_명만_추가된다() throws Exception {
+        User maker = owner();
+        Trip trip = trip(maker, 1);
+        List<User> friends = new java.util.ArrayList<>();
+        try {
+            String token = createLink(trip);
+            for (int i = 0; i < 10; i++) {
+                String sub = "join-race-" + i;
+                friends.add(userRepository.save(new User("google", sub, sub, null)));
+                if (i < 8) mockMvc.perform(post("/api/public/trips/" + token + "/join")
+                                .with(loginAs(sub, sub)).with(fromIp("203.0.113." + (150 + i))))
+                        .andExpect(status().isOk());
+            }
+            java.util.concurrent.CyclicBarrier barrier = new java.util.concurrent.CyclicBarrier(2);
+            try (java.util.concurrent.ExecutorService pool = java.util.concurrent.Executors.newFixedThreadPool(2)) {
+                List<java.util.concurrent.Future<Integer>> results = new java.util.ArrayList<>();
+                for (int i : List.of(8, 9)) {
+                    results.add(pool.submit(() -> {
+                        String sub = "join-race-" + i;
+                        barrier.await(5, java.util.concurrent.TimeUnit.SECONDS);
+                        return mockMvc.perform(post("/api/public/trips/" + token + "/join")
+                                        .with(loginAs(sub, sub)).with(fromIp("203.0.113." + (150 + i))))
+                                .andReturn().getResponse().getStatus();
+                    }));
+                }
+                assertThat(List.of(results.get(0).get(10, java.util.concurrent.TimeUnit.SECONDS),
+                        results.get(1).get(10, java.util.concurrent.TimeUnit.SECONDS))).containsExactlyInAnyOrder(200, 409);
+            }
+            assertThat(tripRepository.findById(trip.getId()).orElseThrow().getMembers()).hasSize(10);
+        } finally {
+            tripService.deleteTrip(maker, trip.getId());
+            userRepository.deleteAll(friends);
+            userRepository.delete(maker);
+        }
+    }
+
     private RequestPostProcessor fromIp(String ip) {
         return request -> {
             request.setRemoteAddr(ip);
@@ -180,20 +463,20 @@ class TripShareLinkControllerTest {
     }
 
     @Test
-    void 남의_여행은_404() throws Exception {
+    void 비멤버의_링크_관리는_403() throws Exception {
         Trip trip = trip(owner(), 1);
         createLink(trip);
         userRepository.save(new User("google", "trip-share-other", "다른 사용자", null));
 
         mockMvc.perform(get("/api/trips/{id}/share-link", trip.getId())
                         .with(loginAs("trip-share-other", "다른 사용자")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
         mockMvc.perform(post("/api/trips/{id}/share-link", trip.getId())
                         .with(loginAs("trip-share-other", "다른 사용자")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
         mockMvc.perform(delete("/api/trips/{id}/share-link", trip.getId())
                         .with(loginAs("trip-share-other", "다른 사용자")))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
         assertThat(tripShareLinkRepository.findByTripAndRevokedAtIsNull(trip)).isNotEmpty();
     }
 
@@ -360,7 +643,7 @@ class TripShareLinkControllerTest {
             User user = owner();
             Trip trip = trip(user, 1);
             place(trip);
-            String token = tripShareLinkService.createOrGet(trip).link().getToken();
+            String token = tripShareLinkService.createOrGet(trip, trip.getUser()).link().getToken();
             return new PublicTripFixture(user.getId(), trip.getId(), token);
         });
         assertThat(fixture).isNotNull();
@@ -634,7 +917,7 @@ class TripShareLinkControllerTest {
             User recipient = userRepository.save(new User("google", "copy-outside-tx", "복사 사용자", null));
             Trip source = trip(owner, 2);
             place(source);
-            String token = tripShareLinkService.createOrGet(source).link().getToken();
+            String token = tripShareLinkService.createOrGet(source, source.getUser()).link().getToken();
             return new CopyTripFixture(owner.getId(), source.getId(), recipient.getId(), token);
         });
         assertThat(fixture).isNotNull();

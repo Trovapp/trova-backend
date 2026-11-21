@@ -124,6 +124,26 @@ class VideoPlaceActionsTest {
     }
 
     @Test
+    void 편집자는_본인_영상의_장소를_공동_일정에_담고_상세를_볼_수_있다() throws Exception {
+        User owner = userRepository.save(new User("google", "video-owner", "owner", null));
+        User editor = userRepository.save(new User("google", "video-editor", "editor", null));
+        Trip shared = trip(owner);
+        shared.getMembers().add(new TripMember(editor, TripMember.Role.EDITOR));
+        tripRepository.saveAndFlush(shared);
+        SavedPlace cafe = videoPlace(editor, "바다카페");
+        placeRepository.save(new Place("collab-cafe", "바다카페", "cafe", 4.4, 30, null, 33.45, 126.5, "제주"));
+        mockMvc.perform(post("/api/trips/" + shared.getId() + "/days/1/video-places").with(loginAs("video-editor"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + cafe.getId() + "}"))
+                .andExpect(status().isOk());
+        TripPlace item = tripPlaceRepository.findByItinerary_Trip(shared).getFirst();
+        item.applyGooglePlaceId("collab-cafe");
+        when(placeReviewService.getOrGenerateSummary(anyLong())).thenReturn(Optional.of(new PlaceReviewService.PlaceReviewInfo(
+                new ReviewSummary("카페", List.of(), List.of(), null, null, List.of(), List.of()), List.of())));
+        mockMvc.perform(get("/api/trip-places/" + item.getId() + "/details").with(loginAs("video-editor")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("바다카페"));
+    }
+
+    @Test
     void 이미_담긴_영상_장소는_같은_날이면_409로_막고_다른_날은_확인하면_담는다() throws Exception {
         User me = userRepository.save(new User("google", "vp-trip-dup", "영상유저", null));
         SavedPlace cafe = videoPlace(me, "바다카페");
@@ -166,7 +186,7 @@ class VideoPlaceActionsTest {
                 .andExpect(status().isNotFound());
         mockMvc.perform(post("/api/trips/" + othersTrip.getId() + "/days/1/video-places").with(loginAs("vp-trip-2"))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + mine.getId() + "}"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -1,5 +1,7 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.service.TripAccess;
+import com.trova.backend.entity.Trip;
 import com.trova.backend.conversation.ConversationService;
 import com.trova.backend.conversation.ConversationSessionStore;
 import com.trova.backend.conversation.ConversationState;
@@ -85,6 +87,11 @@ public class ConversationController {
             // 않기 위해 403이 아닌 404로 응답한다.
             return ResponseEntity.notFound().build();
         }
+        if (state != null) {
+            Trip trip = tripRepository.findById(state.getTripId()).orElse(null);
+            if (trip == null) return ResponseEntity.notFound().build();
+            TripAccess.requireMember(trip, user);
+        }
         if (state == null) {
             boolean hasPlaceContext = request.tripPlaceId() != null;
             boolean hasGapContext = request.day() != null && request.gapBeforePlaceId() != null;
@@ -124,7 +131,8 @@ public class ConversationController {
 
     private ConversationState createPlaceSession(User user, String sessionId, ConversationMessageRequest request) {
         boolean owned = tripPlaceRepository.findById(request.tripPlaceId())
-                .filter(p -> p.getItinerary().getTrip().getUser().getId().equals(user.getId()))
+                .filter(p -> p.getItinerary().getTrip().getId().equals(request.tripId()))
+                .filter(p -> TripAccess.requireMember(p.getItinerary().getTrip(), user))
                 .isPresent();
         return owned
                 ? sessionStore.create(sessionId, user.getId(), request.tripId(), request.tripPlaceId(), null, null)
@@ -133,9 +141,14 @@ public class ConversationController {
 
     private ConversationState createGapSession(User user, String sessionId, ConversationMessageRequest request) {
         boolean owned = tripRepository.findById(request.tripId())
-                .filter(t -> t.getUser().getId().equals(user.getId()))
+                .filter(t -> TripAccess.requireMember(t, user))
                 .flatMap(t -> itineraryRepository.findByTripAndDay(t, request.day()))
                 .isPresent();
+        if (owned) {
+            owned = tripPlaceRepository.findById(request.gapBeforePlaceId()).filter(place ->
+                    place.getItinerary().getTrip().getId().equals(request.tripId())
+                            && place.getItinerary().getDay() == request.day()).isPresent();
+        }
         return owned
                 ? sessionStore.create(sessionId, user.getId(), request.tripId(), null, request.day(), request.gapBeforePlaceId())
                 : null;

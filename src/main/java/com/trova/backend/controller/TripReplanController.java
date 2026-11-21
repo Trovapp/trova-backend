@@ -1,5 +1,6 @@
 package com.trova.backend.controller;
 
+import com.trova.backend.service.TripAccess;
 import org.springframework.core.task.TaskRejectedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,17 +70,18 @@ public class TripReplanController {
     public record ReplanResultResponse(
             Long tripPlaceId, String originalName, TripController.AlternativeCandidateResponse candidate
     ) {
-        static ReplanResultResponse from(TripReplanGraph.ReplanMatch match) {
+        static ReplanResultResponse from(TripReplanGraph.ReplanMatch match, boolean showActorReason) {
             return new ReplanResultResponse(
                     match.tripPlaceId(), match.originalName(),
-                    TripController.AlternativeCandidateResponse.from(match.candidate()));
+                    TripController.AlternativeCandidateResponse.from(match.candidate(),
+                            showActorReason ? match.candidate().recommendationReason() : null));
         }
     }
 
     public record TripReplanResponse(List<ReplanResultResponse> replaced, List<Long> failedTripPlaceIds) {
-        static TripReplanResponse from(TripReplanGraph.ReplanOutcome outcome) {
+        static TripReplanResponse from(TripReplanGraph.ReplanOutcome outcome, boolean showActorReason) {
             return new TripReplanResponse(
-                    outcome.matches().stream().map(ReplanResultResponse::from).toList(),
+                    outcome.matches().stream().map(match -> ReplanResultResponse.from(match, showActorReason)).toList(),
                     outcome.failedTripPlaceIds());
         }
     }
@@ -107,7 +109,7 @@ public class TripReplanController {
             return ResponseEntity.badRequest().build();
         }
         return tripRepository.findById(tripId)
-                .filter(t -> t.getUser().getId().equals(user.getId()))
+                .filter(t -> TripAccess.requireMember(t, user))
                 .map(trip -> ResponseEntity.status(HttpStatus.ACCEPTED)
                         .body(new CreateReplanJobResponse(resolveJobId(user, trip, indoorOnly, allPlaces))))
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -119,14 +121,14 @@ public class TripReplanController {
     ) {
         User user = currentUserService.resolve(authentication);
         return tripReplanJobRepository.findById(jobId)
-                .filter(job -> job.getUser().getId().equals(user.getId()) && job.getTrip().getId().equals(tripId))
-                .map(job -> ResponseEntity.ok(toStatusResponse(job)))
+                .filter(job -> job.getTrip().getId().equals(tripId) && TripAccess.requireMember(job.getTrip(), user))
+                .map(job -> ResponseEntity.ok(toStatusResponse(job, user)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     private static final long STALE_JOB_MINUTES = 5;
 
-    // 같은 (user, trip, indoorOnly, allPlaces)로 PENDING/PROCESSING인 작업이 있으면 그 jobId를
+    // 같은 (trip, indoorOnly, allPlaces)로 PENDING/PROCESSING인 작업이 있으면 그 jobId를
     // 재사용한다 — 영상 파이프라인(SharesController)의 중복 제출 방지와 동일한 패턴.
     // updatedAt이 STALE_JOB_MINUTES 이내인 작업만 "살아있다"고 본다 — 배포/재시작으로
     // 스레드가 중간에 죽으면 PROCESSING 상태로 영원히 멈춘 row가 생기는데, 그걸
@@ -140,8 +142,8 @@ public class TripReplanController {
     }
 
     private Long resolveJobIdSerially(User user, Trip trip, boolean indoorOnly, boolean allPlaces) {
-        List<TripReplanJob> inFlight = tripReplanJobRepository.findByUserAndTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
-                user, trip, indoorOnly, allPlaces, List.of(JobStatus.PENDING, JobStatus.PROCESSING),
+        List<TripReplanJob> inFlight = tripReplanJobRepository.findByTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
+                trip, indoorOnly, allPlaces, List.of(JobStatus.PENDING, JobStatus.PROCESSING),
                 LocalDateTime.now().minusMinutes(STALE_JOB_MINUTES));
         if (!inFlight.isEmpty()) {
             return inFlight.get(0).getId();
@@ -160,13 +162,14 @@ public class TripReplanController {
         return job.getId();
     }
 
-    private ReplanJobStatusResponse toStatusResponse(TripReplanJob job) {
+    private ReplanJobStatusResponse toStatusResponse(TripReplanJob job, User viewer) {
         TripReplanResponse result = null;
         if (job.getStatus() == JobStatus.DONE && job.getResultJson() != null) {
             try {
                 TripReplanGraph.ReplanOutcome outcome =
                         MAPPER.readValue(job.getResultJson(), TripReplanGraph.ReplanOutcome.class);
-                result = TripReplanResponse.from(outcome);
+                // 기존 저장 결과도 생성 방식과 무관하게 실행자에게만 취향 설명을 보여준다.
+                result = TripReplanResponse.from(outcome, job.getUser().getId().equals(viewer.getId()));
             } catch (JsonProcessingException e) {
                 throw new IllegalStateException("저장된 재구성 결과를 읽을 수 없습니다: jobId=" + job.getId(), e);
             }

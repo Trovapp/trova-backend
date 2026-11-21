@@ -116,6 +116,8 @@ app:
       authorization: ${APP_METRICS_OTLP_AUTHORIZATION:}
       service-name: trova-prod
   # 영상 분석 작업 대기열(#244, ADR 0021). async(기본) = 서버 안 @Async, kafka = Kafka 토픽 trova.share-jobs.
+  trip-events:
+    type: ${APP_TRIP_EVENTS_TYPE:memory}
   queue:
     type: ${APP_QUEUE_TYPE:async}
     kafka:

@@ -1,5 +1,6 @@
 package com.trova.backend.recommendation;
 
+import com.trova.backend.service.TripAccess;
 import com.trova.backend.congestion.SeoulCongestionApiClient;
 import com.trova.backend.congestion.SeoulCongestionAreaCache;
 import com.trova.backend.congestion.SeoulCongestionResponse;
@@ -368,7 +369,7 @@ public class AlternativeFinderService {
     }
 
     private boolean isOwner(TripPlace place, User user) {
-        return place.getItinerary().getTrip().getUser().getId().equals(user.getId());
+        return TripAccess.requireMember(place.getItinerary().getTrip(), user);
     }
 
     private TripPlace findNext(TripPlace target) {
