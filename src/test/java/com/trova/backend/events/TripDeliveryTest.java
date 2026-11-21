@@ -29,7 +29,8 @@ class TripDeliveryTest {
 
     @Test void memberReceivesReadyHeartbeatAndChangesUntilRemoval() throws Exception {
         try (var emitters = mockConstruction(SseEmitter.class)) {
-            when(members.members(7)).thenReturn(List.of(5L), List.of(5L), List.of());
+            when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(0, List.of(5L)));
+            when(members.members(7)).thenReturn(List.of(5L), List.of());
             var stream = open(7, 5, now.plusSeconds(100));
             streams.heartbeat();
             var bus = new MemoryTripEventBus(streams);
@@ -48,13 +49,29 @@ class TripDeliveryTest {
         assertThatThrownBy(() -> open(7, 5, now.plusSeconds(10))).isInstanceOf(ResponseStatusException.class);
     }
     @Test void expiredCredentialsCloseStream() {
-        when(members.members(7)).thenReturn(List.of(5L));
+        when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(0, List.of(5L)));
         open(7, 5, now.plusSeconds(1));
         when(clock.instant()).thenReturn(now.plusSeconds(1));
         streams.heartbeat();
         assertThat(streams.viewing(7, 5)).isFalse();
         org.awaitility.Awaitility.await().untilAsserted(() ->
                 assertThatCode(() -> open(7, 5, now.plusSeconds(10))).doesNotThrowAnyException());
+    }
+
+    @Test void missedVersionReconnectsOnlyStaleSubscriberAfterGraceInterval() throws Exception {
+        try (var emitters = mockConstruction(SseEmitter.class)) {
+            when(members.version(7, 5)).thenReturn(2L);
+            when(members.version(7, 6)).thenReturn(3L);
+            var stale = open(7, 5, now.plusSeconds(100));
+            var current = open(7, 6, now.plusSeconds(100));
+            when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(3, List.of(5L, 6L)));
+            streams.heartbeat();
+            assertThat(streams.viewing(7, 5)).isTrue();
+            streams.heartbeat();
+            verify(stale, timeout(1000)).complete();
+            verify(current, never()).complete();
+            assertThat(streams.viewing(7, 6)).isTrue();
+        }
     }
 
     @Test void slowClientDoesNotHoldPublisherOrHealthyConnection() throws Exception {
@@ -98,7 +115,7 @@ class TripDeliveryTest {
         var listener = new TripChangeListener(bus, job -> {
             if (rejecting.get()) throw new java.util.concurrent.RejectedExecutionException();
             submitted.add(job);
-        });
+        }, clock, new SimpleMeterRegistry());
         var older = new TripChangedEvent(7, 2, 4, "민수", "TRIP_TITLE", "제목");
         var other = new TripChangedEvent(8, 1, 4, "민수", "TRIP_TITLE", "제목");
         listener.changed(event);

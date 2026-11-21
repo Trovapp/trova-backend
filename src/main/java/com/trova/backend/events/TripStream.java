@@ -9,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -18,6 +19,8 @@ final class TripStream implements Runnable {
     final long trip;
     final long user;
     final SseEmitter emitter;
+    private final AtomicLong latestOffered;
+    private long previousHeartbeatVersion;
     private final StreamAuth auth;
     private final Clock clock;
     private final ArrayBlockingQueue<SseEmitter.SseEventBuilder> pending = new ArrayBlockingQueue<>(8);
@@ -29,9 +32,11 @@ final class TripStream implements Runnable {
     private volatile AsyncContext transport;
     private volatile long writeStarted;
 
-    TripStream(long trip, long user, StreamAuth auth, Clock clock, long timeout,
+    TripStream(long trip, long user, long version, StreamAuth auth, Clock clock, long timeout,
                Executor sender, Consumer<TripStream> release) {
         this.trip = trip;
+        this.latestOffered = new AtomicLong(version);
+        this.previousHeartbeatVersion = version;
         this.user = user;
         this.auth = auth;
         this.clock = clock;
@@ -64,6 +69,8 @@ final class TripStream implements Runnable {
             pending.clear();
             try {
                 emitter.complete();
+            } catch (IllegalStateException alreadyCompleted) {
+                // A client disconnect can recycle Tomcat's response before the writer exits.
             } finally {
                 release.accept(this);
             }
@@ -78,6 +85,19 @@ final class TripStream implements Runnable {
     }
 
     boolean active() { return !closed.get() && auth.validAt(clock.instant()); }
+
+    void changed(TripChangedEvent event) {
+        offer(SseEmitter.event().name("changed").data(event));
+        latestOffered.accumulateAndGet(event.version(), Math::max);
+    }
+
+    // Allow one heartbeat interval for normal delivery. A persistent gap means this
+    // subscription needs the same refetch the client already performs on reconnect.
+    synchronized void heartbeat(long committedVersion) {
+        if (latestOffered.get() < previousHeartbeatVersion) close();
+        else offer(SseEmitter.event().comment("heartbeat"));
+        previousHeartbeatVersion = committedVersion;
+    }
 
     void offer(SseEmitter.SseEventBuilder message) {
         long started = writeStarted;

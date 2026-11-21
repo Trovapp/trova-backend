@@ -88,7 +88,7 @@ sum by (queue) (increase(trova_queue_requeued_total{job="trova-prod"}[1h]))
 
 ## 여행 SSE 배포
 
-`APP_TRIP_EVENTS_TYPE=memory`가 기본이다. Kafka를 켤 때는 `APP_TRIP_EVENTS_TYPE=kafka`, 기존 `KAFKA_BOOTSTRAP_SERVERS`와 Spring Kafka SSL 설정을 사용한다. 기존 무료 브로커에서 `trova.trip-events` 토픽 한 개(파티션 1, 기존 복제 수)를 생성할 여유와 읽기·쓰기·그룹 권한을 확인한다. 프로세스별 소비자 그룹은 자동 생성된다. 로컬 전달로 전환되면 `trova_trip_events_fallback_total`이 증가한다.
+`APP_TRIP_EVENTS_TYPE=memory`가 기본이다. Kafka를 켤 때는 `APP_TRIP_EVENTS_TYPE=kafka`, 기존 `KAFKA_BOOTSTRAP_SERVERS`와 Spring Kafka SSL 설정을 사용한다. 기존 무료 브로커에서 `trova.trip-events` 토픽 한 개(파티션 1, 기존 복제 수)를 생성할 여유와 읽기·쓰기·그룹 권한을 확인한다. 프로세스별 소비자 그룹은 자동 생성된다. 로컬 전달로 전환되면 `trova_trip_events_fallback_total`이 증가한다. `trova_trip_events_deferred_size`는 재시도를 기다리는 여행 수(최대 1,000)다. `trova_trip_events_deferred_discarded_total`의 `reason=capacity`는 상한 초과, `reason=expired`는 60초 만료 건수다. 누락된 버전은 SSE 연결의 heartbeat 검사와 재접속 조회로 복구한다.
 
 Caddy의 API reverse_proxy가 `text/event-stream`을 받으면 매 쓰기 직후 전달한다. SSE 경로에 별도 응답 버퍼를 두지 말고, 배포 후 테스트 계정으로 프록시를 거쳐 연결해 ready와 25초 간격의 heartbeat를 확인한다. 접근 로그에서 ticket 쿼리를 가린다. [Caddy 스트리밍 문서](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#streaming)
 

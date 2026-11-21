@@ -39,7 +39,7 @@ class TripStreams {
         if (timeout <= 0 || !auth.validAt(clock.instant())) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         if (streams.size() >= total || streams.stream().filter(s -> s.user == user).count() >= perUser)
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS);
-        var stream = new TripStream(trip, user, auth, clock, timeout, senders, streams::remove);
+        var stream = new TripStream(trip, user, version, auth, clock, timeout, senders, streams::remove);
         streams.add(stream);
         stream.offer(SseEmitter.event().name("ready").data(Map.of("version", version)));
         senders.execute(stream);
@@ -71,17 +71,17 @@ class TripStreams {
         if (targets.isEmpty()) return;
         var members = audience.members(event.tripId());
         for (var stream : targets) {
-            if (members.contains(stream.user)) stream.offer(SseEmitter.event().name("changed").data(event));
+            if (members.contains(stream.user)) stream.changed(event);
             else stream.close();
         }
     }
 
     @Scheduled(fixedRate = 25000)
     void heartbeat() {
-        var members = new java.util.HashMap<Long, List<Long>>();
+        var trips = new java.util.HashMap<Long, TripAudience.Snapshot>();
         for (var stream : snapshot()) {
-            if (members.computeIfAbsent(stream.trip, audience::members).contains(stream.user))
-                stream.offer(SseEmitter.event().comment("heartbeat"));
+            var state = trips.computeIfAbsent(stream.trip, audience::snapshot);
+            if (state.members().contains(stream.user)) stream.heartbeat(state.version());
             else stream.close();
         }
     }

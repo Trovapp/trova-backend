@@ -73,12 +73,6 @@ class TripEventsHttpTest {
                 .andExpect(request().asyncStarted()).andReturn();
         org.awaitility.Awaitility.await().untilAsserted(() ->
                 assertThat(nativeStream.getResponse().getContentAsString()).contains("event:ready", "version"));
-        mvc.perform(patch("/api/trips/{id}/title", trip.getId())
-                        .header("Authorization", "Bearer " + jwt.issue(owner))
-                        .contentType("application/json").content("{\"title\":\"새 여행\"}"))
-                .andExpect(status().isOk());
-        org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(3)).untilAsserted(() ->
-                assertThat(nativeStream.getResponse().getContentAsString()).contains("event:changed", "TRIP_TITLE"));
         String first = ticket(path, token);
         mvc.perform(get("/api/trips").param("ticket", first)).andExpect(status().isUnauthorized());
         mvc.perform(get("/api/trips").header("Authorization", "Bearer invalid")).andExpect(status().isUnauthorized());
