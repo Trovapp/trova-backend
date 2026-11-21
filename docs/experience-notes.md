@@ -3148,3 +3148,16 @@
 - 범위: 운영 서버·DB·Cloud 접근/변경·Slack 발송·서비스 가입 없음. git 쓰기 차단 뒤 매니저가 최신 main을 반영하고 [PR #497](https://github.com/Trovapp/trova-backend/pull/497)을 생성했다(`Closes #496`). 리뷰 수정 커밋도 매니저가 담당한다.
 - 리뷰 반영: 기존 경보 실제 발화와 야간 소리·깨움 시험, 경로별 통과/실패·허용 지연 기준, 과거 원인 대조/복원 재시험 기록을 추가했다. Synthetic 사본 위치, JSON·템플릿만 대상으로 하는 시크릿 검사와 host validator의 검증 한계, webhook 복구 조건, UptimeRobot 채택 시 ADR 0039 갱신 필요를 명시했다. 실제 시험과 서비스 채택은 미실행이다.
 - 검증: 링크·비밀값 패턴·`git diff --check` 통과; `./gradlew build`는 1,304개 중 34 실패·6 skipped로 실패(2분 55초), 기존 pipeline 테스트 5개 클래스의 sysctl 권한/프로세스 관측 실패를 확인했다.
+
+## 2026-11-21 여행 같이 고치기 운영 배포 (#499, #500)
+
+- 배포 기록 `trip-collab-2026-11-21`. `origin/main`과 작업 폴더의 HEAD가 `acfed70`으로 일치했다. devflow 미리보기와 진행 중 작업 0건 사전 점검을 통과했다. 11월 21일 23:57:32 KST에 시작해 11월 22일 00:00:48에 마쳤다(총 196초).
+- 재시작 후 146초에 `/actuator/health`가 `UP`이 됐다. 배포 후에도 공개 HTTPS 주소에서 `UP`을 확인했다. 로컬 빌드와 운영에 설치된 JAR의 전체 SHA-256은 `1e700f2809203749f57c26d98303fe03901113d94b42b70d46fb7fd9aab583f8`로 일치했다.
+- 서버 기동 로그에서 애플리케이션 시작 완료, ERROR 0건, DDL 실패 0건을 확인했다. `TripMemberBackfill`은 완료 로그를 남기지 않아 운영 DB에서 읽기 전용으로 검증했다. 자신의 소유자가 `OWNER` 멤버로 등록되지 않은 여행은 0건이었다.
+- Caddy를 거쳐 인증 없이 `GET /api/trips/1/events`를 `Accept: text/event-stream`으로 호출해 HTTP/2 401을 확인했다. 인증이 필요한 스트림의 `ready`와 heartbeat 도착 간격은 측정하지 못했다. 실행 중 프로세스에 `APP_TRIP_EVENTS_TYPE`이 없어 이번 배포는 기본값 `memory`를 사용한다. Kafka 전환은 Aiven 토픽 생성 후 별도 작업이다.
+- devflow 후속 점검 3건을 통과했다. 인증 없는 공유 요청과 자동 초안 목록 요청은 각각 401이었고 세션 쿠키는 0개였다.
+- 운영 백업 파일 `/opt/trova-backend/app.jar.bak-20261121-235732`의 존재를 확인했다. 복구가 필요하면 운영 서버에서 아래 명령을 실행한다.
+
+```sh
+sudo cp -p /opt/trova-backend/app.jar.bak-20261121-235732 /opt/trova-backend/app.jar && sudo systemctl restart trova-backend
+```
