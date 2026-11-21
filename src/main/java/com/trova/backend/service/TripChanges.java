@@ -3,6 +3,9 @@ package com.trova.backend.service;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class TripChanges {
+    public static final String VERSION_HEADER = "X-Trip-Version";
     public static final String CONFLICT_TRIP = TripChanges.class.getName();
     private final JdbcTemplate jdbc;
 
@@ -31,8 +35,22 @@ public class TripChanges {
         }
     }
 
+    // JPA가 flush/commit에서 할당한 버전만 보낸다. 204 응답도 같은 헤더를 사용한다.
+    public void returnVersionAfterCommit(Trip trip) {
+        if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes)) return;
+        HttpServletResponse response = attributes.getResponse();
+        if (response == null) return;
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                response.setHeader(VERSION_HEADER, Long.toString(trip.getVersion()));
+            }
+        });
+    }
+
     public void record(Trip trip, User actor, String type, String summary) {
         trip.touch();
+        returnVersionAfterCommit(trip);
         jdbc.update("""
                 insert into trip_activity (trip_id, actor_id, type, summary, created_at)
                 values (?, ?, ?, ?, current_timestamp)

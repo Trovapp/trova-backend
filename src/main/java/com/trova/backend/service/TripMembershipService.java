@@ -39,7 +39,10 @@ public class TripMembershipService {
     public Long join(String token, User user) {
         Long id = links.lockTripForToken(token).orElseThrow(TripMembershipService::missing).getId();
         Trip trip = links.findPublic(token).orElseThrow(TripMembershipService::missing);
-        if (trip.getMembers().stream().anyMatch(m -> m.getUser().getId().equals(user.getId()))) return id;
+        if (trip.getMembers().stream().anyMatch(m -> m.getUser().getId().equals(user.getId()))) {
+            changes.returnVersionAfterCommit(trip);
+            return id;
+        }
         if (trip.getMembers().size() >= 10) throw new MemberLimitException();
         changes.record(trip, user, "MEMBER_JOINED", "여행에 참여했어요");
         trip.getMembers().add(new TripMember(user, TripMember.Role.EDITOR));

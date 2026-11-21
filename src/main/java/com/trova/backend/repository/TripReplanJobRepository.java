@@ -32,6 +32,6 @@ public interface TripReplanJobRepository extends JpaRepository<TripReplanJob, Lo
     List<TripReplanJob> findByUserAndTripAndIndoorOnlyAndStatusInAndUpdatedAtAfter(
             User user, Trip trip, boolean indoorOnly, List<JobStatus> statuses, LocalDateTime updatedAfter);
 
-    List<TripReplanJob> findByUserAndTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
-            User user, Trip trip, boolean indoorOnly, boolean allPlaces, List<JobStatus> statuses, LocalDateTime updatedAfter);
+    List<TripReplanJob> findByTripAndIndoorOnlyAndAllPlacesAndStatusInAndUpdatedAtAfter(
+            Trip trip, boolean indoorOnly, boolean allPlaces, List<JobStatus> statuses, LocalDateTime updatedAfter);
 }

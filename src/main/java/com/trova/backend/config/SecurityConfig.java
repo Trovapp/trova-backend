@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import com.trova.backend.service.TripChanges;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -189,6 +190,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(origin));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of(TripChanges.VERSION_HEADER));
         configuration.setAllowCredentials(credentials);
         return configuration;
     }

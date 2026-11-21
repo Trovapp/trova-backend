@@ -127,6 +127,10 @@ class TripReplanControllerTest {
                 .andExpect(status().isAccepted());
         TripReplanJob job = tripReplanJobRepository.findAll().get(0);
         org.assertj.core.api.Assertions.assertThat(job.getUser().getId()).isEqualTo(editor.getId());
+        mockMvc.perform(post(path).with(loginAs("replan1", "소유자"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"allPlaces\":true}"))
+                .andExpect(status().isAccepted()).andExpect(jsonPath("$.jobId").value(job.getId()));
+        org.assertj.core.api.Assertions.assertThat(tripReplanJobRepository.count()).isOne();
         mockMvc.perform(get(path + "/" + job.getId()).with(loginAs("replan-editor", "편집자")))
                 .andExpect(status().isOk());
         trip.getMembers().removeIf(member -> member.getUser().getId().equals(editor.getId()));

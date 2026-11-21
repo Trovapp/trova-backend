@@ -85,8 +85,8 @@
 | [0043](0043-job-handoff-outbox-or-sweeper.md) | 작업 저장과 Kafka 전달 사이 유실 막기 — 아웃박스 대신 멈춘 작업 다시 보내기(`StuckJobRequeueService`) | 확정 | 2026-11-12 |
 | [0044](0044-pwa-static-on-oracle-caddy.md) | PWA 정적 파일은 Cloudflare 대신 운영 서버 Caddy에서 내보낸다 (0013의 호스팅 부분을 바꿈 — workers.dev가 한국에서 시애틀 경로) | 확정 | 2026-11-15 |
 | [0045](0045-answers-from-cross-check.md) | 장소 추출 정답에 Gemini·GPT 교차 일치분과 판정분을 넣는다 (0022의 "AI 출력을 정답으로 넣지 않는다"를 바꿈) | 확정 | 2026-11-16 |
-| [0046](0046-trip-share-link.md) | 여행 읽기 전용 공유 링크 — 토큰 원문 재조회, 공개 정보 제한, IP별 분당 한도 | 확정 | 2026-11-17 |
-| [0047](0047-trip-copy-from-share-link.md) | 공유 링크에서 내 여행 사본 만들기 — 공개 범위 복사, 원본 보호, 독립된 일정 (0046의 공개 API 원칙에 예외 추가) | 확정 | 2026-11-17 |
+| [0046](0046-trip-share-link.md) | 여행 읽기 전용 공유 링크 — 토큰 원문 재조회, 공개 정보 제한, IP별 분당 한도 | 0053으로 일부 대체 | 2026-11-17 |
+| [0047](0047-trip-copy-from-share-link.md) | 공유 링크에서 내 여행 사본 만들기 — 공개 범위 복사, 원본 보호, 독립된 일정 (0046의 공개 API 원칙에 예외 추가) | 0053으로 일부 대체 | 2026-11-17 |
 | [0048](0048-supabase-rls-lockdown.md) | Supabase public 테이블 RLS 활성화와 API 역할 권한 회수, 새 테이블 자동 보호 | 확정 | 2026-11-17 |
 | [0049](0049-user-consent-records.md) | 명시 동의·약관과 방침 버전·만 14세 확인 기록, 서버는 다른 API를 차단하지 않음 | 확정 | 2026-11-17 |
 | [0050](0050-memory-pressure-alert-gap-continuity.md) | 메모리 압박 경보의 짧은 계산 공백을 마지막 유효값으로 잇는다 | 승인·반영 완료 | 2026-11-18 |

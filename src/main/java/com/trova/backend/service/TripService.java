@@ -243,6 +243,7 @@ public class TripService {
                 });
     }
 
+    @Transactional
     public Optional<TripPlace> addPlaceToDay(User user, Long tripId, int day, String googlePlaceId) {
         return addPlaceToDay(user, tripId, day, googlePlaceId, false, false);
     }
@@ -300,6 +301,7 @@ public class TripService {
      * 다시 검색하지 않아도 되게. 영상 장소의 값(이름·좌표·주소·전화)을 그대로 복사하고 외부 호출은 하지 않는다.
      * 영상 장소와 여행 모두 본인 것이어야 한다. 이미 있는 장소면 addPlaceToDay와 같이 막는다(#233).
      */
+    @Transactional
     public Optional<TripPlace> addVideoPlaceToDay(User user, Long tripId, int day, Long savedPlaceId) {
         return addVideoPlaceToDay(user, tripId, day, savedPlaceId, false);
     }
@@ -614,6 +616,7 @@ public class TripService {
                     }
                     int swapIndex = "UP".equals(direction) ? index - 1 : index + 1;
                     if (index < 0 || swapIndex < 0 || swapIndex >= siblings.size()) {
+                        changes.returnVersionAfterCommit(place.getItinerary().getTrip());
                         return place; // 경계값 — no-op
                     }
 

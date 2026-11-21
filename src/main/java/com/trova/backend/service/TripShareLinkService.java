@@ -21,14 +21,16 @@ public class TripShareLinkService {
 
     private final TripShareLinkRepository repository;
     private final TripRepository trips;
+    private final TripChanges changes;
     private final SuspendedUsers suspendedUsers;
     private final String webAppUrl;
     private final SecureRandom random = new SecureRandom();
 
     public TripShareLinkService(
-            TripRepository trips, TripShareLinkRepository repository, SuspendedUsers suspendedUsers, @Value("${app.web-app-url:}") String webAppUrl
+            TripRepository trips, TripShareLinkRepository repository, TripChanges changes, SuspendedUsers suspendedUsers, @Value("${app.web-app-url:}") String webAppUrl
     ) {
         this.trips = trips;
+        this.changes = changes;
         this.repository = repository;
         this.suspendedUsers = suspendedUsers;
         this.webAppUrl = webAppUrl.replaceAll("/+$", "");
@@ -46,10 +48,14 @@ public class TripShareLinkService {
     public CreateResult createOrGet(Trip trip, User actor) {
         Trip locked = trips.lockById(trip.getId()).orElseThrow();
         TripAccess.requireMember(locked, actor);
-        return getActive(locked).map(link -> new CreateResult(link, false)).orElseGet(() -> {
-            TripAccess.requireOwner(locked, actor);
-            return create(locked);
-        });
+        Optional<TripShareLink> active = getActive(locked);
+        if (active.isPresent()) {
+            changes.returnVersionAfterCommit(locked);
+            return new CreateResult(active.get(), false);
+        }
+        TripAccess.requireOwner(locked, actor);
+        changes.record(locked, actor, "LINK_CREATED", "공유 링크를 만들었어요");
+        return create(locked);
     }
 
     private CreateResult create(Trip trip) {
@@ -61,7 +67,13 @@ public class TripShareLinkService {
 
     @Transactional
     public boolean revoke(Trip trip) {
-        trips.lockById(trip.getId()).orElseThrow();
+        Trip locked = trips.lockById(trip.getId()).orElseThrow();
+        if (!revokeActive(locked)) return false;
+        changes.record(locked, locked.getUser(), "LINK_REVOKED", "공유 링크를 껐어요");
+        return true;
+    }
+
+    private boolean revokeActive(Trip trip) {
         List<TripShareLink> links = repository.findByTripAndRevokedAtIsNull(trip);
         links.forEach(TripShareLink::revoke);
         return !links.isEmpty();
@@ -85,8 +97,10 @@ public class TripShareLinkService {
 
     @Transactional
     public TripShareLink rotate(Trip trip) {
-        revoke(trip);
-        return create(trip).link();
+        Trip locked = trips.lockById(trip.getId()).orElseThrow();
+        revokeActive(locked);
+        changes.record(locked, locked.getUser(), "LINK_ROTATED", "공유 링크를 새로 만들었어요");
+        return create(locked).link();
     }
 
     public String url(String token) {

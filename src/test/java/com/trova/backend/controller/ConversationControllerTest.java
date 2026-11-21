@@ -102,6 +102,20 @@ class ConversationControllerTest {
     }
 
     @Test
+    void 빈_시간_대화는_앞_장소가_해당_여행의_같은_일차인지_검사한다() throws Exception {
+        Trip another = tripRepository.save(new Trip(me, "두 번째 여행", null, null));
+        itineraryRepository.save(new Itinerary(another, 1, null));
+        itineraryRepository.save(new Itinerary(trip, 2, null));
+        for (String context : List.of("\"tripId\":" + another.getId() + ",\"day\":1",
+                "\"tripId\":" + trip.getId() + ",\"day\":2")) {
+            mockMvc.perform(post("/api/conversations/gap-validation/messages").with(loginAs("conv1", "대화유저"))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"message\":\"안녕\"," + context + ",\"gapBeforePlaceId\":" + place.getId() + "}"))
+                    .andExpect(status().isNotFound());
+        }
+    }
+
+    @Test
     void 편집자는_대화할_수_있고_나가면_열린_대화도_차단된다() throws Exception {
         User editor = userRepository.save(new User("google", "conversation-editor", "편집자", null));
         trip.getMembers().add(new TripMember(editor, TripMember.Role.EDITOR));

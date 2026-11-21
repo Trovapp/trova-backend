@@ -41,6 +41,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -162,8 +163,8 @@ class TripShareLinkControllerTest {
         Trip trip = trip(owner(), 1);
         tripRepository.flush();
         jdbc.update("delete from trip_members where trip_id=?", trip.getId());
-        backfill.run(null);
-        backfill.run(null);
+        backfill.afterSingletonsInstantiated();
+        backfill.afterSingletonsInstantiated();
         assertThat(jdbc.queryForList("select role from trip_members where trip_id=? and user_id=?",
                 String.class, trip.getId(), trip.getUser().getId())).containsExactly("OWNER");
     }
@@ -319,6 +320,98 @@ class TripShareLinkControllerTest {
                             .contentType("application/json").content("""
                                     {"title":"updated","startDate":"2026-11-25","direction":"UP","memo":"memo"}
                                     """)).andExpect(status().isForbidden());
+        }
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void 편집_성공_헤더로_다음_여행_수정을_하고_오래된_버전은_409다() throws Exception {
+        User maker = owner();
+        Trip trip = trip(maker, 1);
+        TripPlace item = place(trip);
+        RequestPostProcessor auth = loginAs("trip-share-owner", "소유자");
+        String base = "/api/trips/" + trip.getId();
+        try {
+            String placed = mockMvc.perform(patch("/api/trip-places/" + item.getId() + "/details").with(auth)
+                            .contentType("application/json").content("{\"memo\":\"편집\"}"))
+                    .andExpect(status().isOk()).andExpect(header().exists("X-Trip-Version"))
+                    .andReturn().getResponse().getHeader("X-Trip-Version");
+            String optimized = mockMvc.perform(post(base + "/days/1/optimize-route").with(auth)
+                            .header("If-Match", "\"" + placed + "\""))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(item.getId()))
+                    .andReturn().getResponse().getHeader("X-Trip-Version");
+            assertThat(Long.parseLong(optimized)).isGreaterThan(Long.parseLong(placed));
+            String current = mockMvc.perform(delete("/api/trip-places/" + item.getId()).with(auth))
+                    .andExpect(status().isNoContent()).andExpect(header().exists("X-Trip-Version"))
+                    .andReturn().getResponse().getHeader("X-Trip-Version");
+            assertThat(current).isEqualTo(String.valueOf(tripRepository.findById(trip.getId()).orElseThrow().getVersion()));
+            String newer = mockMvc.perform(patch(base + "/title").with(auth).header("If-Match", "\"" + current + "\"")
+                            .contentType("application/json").content("{\"title\":\"new title\"}"))
+                    .andExpect(status().isOk()).andReturn().getResponse().getHeader("X-Trip-Version");
+            assertThat(Long.parseLong(newer)).isGreaterThan(Long.parseLong(current));
+            mockMvc.perform(patch(base + "/dates").with(auth).header("If-Match", "\"" + current + "\"")
+                            .contentType("application/json").content("{\"startDate\":\"2027-01-01\"}"))
+                    .andExpect(status().isConflict()).andExpect(jsonPath("$.latest.version").value(Long.parseLong(newer)));
+            String token = createLink(trip);
+            User friend = userRepository.save(new User("google", "version-editor", "editor", null));
+            try {
+                RequestPostProcessor editor = loginAs("version-editor", "editor");
+                String joined = mockMvc.perform(post("/api/public/trips/" + token + "/join").with(editor)
+                                .with(fromIp("198.51.100.211"))).andExpect(status().isOk())
+                        .andReturn().getResponse().getHeader("X-Trip-Version");
+                assertThat(Long.parseLong(joined)).isGreaterThan(Long.parseLong(newer));
+                String revoked = mockMvc.perform(delete(base + "/share-link").with(auth)).andExpect(status().isNoContent())
+                        .andReturn().getResponse().getHeader("X-Trip-Version");
+                assertThat(Long.parseLong(revoked)).isGreaterThan(Long.parseLong(joined));
+                mockMvc.perform(post(base + "/share-link").with(editor)).andExpect(status().isForbidden());
+                String removed = mockMvc.perform(delete(base + "/members/" + friend.getId()).with(editor))
+                        .andExpect(status().isNoContent()).andReturn().getResponse().getHeader("X-Trip-Version");
+                assertThat(Long.parseLong(removed)).isGreaterThan(Long.parseLong(revoked));
+            } finally {
+                tripService.deleteTrip(maker, trip.getId());
+                userRepository.delete(friend);
+            }
+        } finally {
+            if (tripRepository.existsById(trip.getId())) tripService.deleteTrip(maker, trip.getId());
+            userRepository.delete(maker);
+        }
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void 마지막_한_자리에_동시_참여하면_한_명만_추가된다() throws Exception {
+        User maker = owner();
+        Trip trip = trip(maker, 1);
+        List<User> friends = new java.util.ArrayList<>();
+        try {
+            String token = createLink(trip);
+            for (int i = 0; i < 10; i++) {
+                String sub = "join-race-" + i;
+                friends.add(userRepository.save(new User("google", sub, sub, null)));
+                if (i < 8) mockMvc.perform(post("/api/public/trips/" + token + "/join")
+                                .with(loginAs(sub, sub)).with(fromIp("203.0.113." + (150 + i))))
+                        .andExpect(status().isOk());
+            }
+            java.util.concurrent.CyclicBarrier barrier = new java.util.concurrent.CyclicBarrier(2);
+            try (java.util.concurrent.ExecutorService pool = java.util.concurrent.Executors.newFixedThreadPool(2)) {
+                List<java.util.concurrent.Future<Integer>> results = new java.util.ArrayList<>();
+                for (int i : List.of(8, 9)) {
+                    results.add(pool.submit(() -> {
+                        String sub = "join-race-" + i;
+                        barrier.await(5, java.util.concurrent.TimeUnit.SECONDS);
+                        return mockMvc.perform(post("/api/public/trips/" + token + "/join")
+                                        .with(loginAs(sub, sub)).with(fromIp("203.0.113." + (150 + i))))
+                                .andReturn().getResponse().getStatus();
+                    }));
+                }
+                assertThat(List.of(results.get(0).get(10, java.util.concurrent.TimeUnit.SECONDS),
+                        results.get(1).get(10, java.util.concurrent.TimeUnit.SECONDS))).containsExactlyInAnyOrder(200, 409);
+            }
+            assertThat(tripRepository.findById(trip.getId()).orElseThrow().getMembers()).hasSize(10);
+        } finally {
+            tripService.deleteTrip(maker, trip.getId());
+            userRepository.deleteAll(friends);
+            userRepository.delete(maker);
         }
     }
 
