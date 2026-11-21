@@ -40,19 +40,22 @@ class TripEventsController {
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     ResponseEntity<SseEmitter> open(@PathVariable long id, @RequestParam(required = false) String ticket,
                                      Authentication auth, HttpServletRequest request) {
-        SseEmitter emitter;
-        if (ticket == null) emitter = streams.open(id, users.resolveUserId(auth), expiry(request));
+        TripStream stream;
+        if (ticket == null) stream = streams.open(id, users.resolveUserId(auth), expiry(request));
         else {
             var grant = tickets.consume(id, ticket);
-            emitter = streams.open(id, grant.user(), grant.authEnd());
+            stream = streams.open(id, grant.user(), grant.auth());
         }
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(emitter);
+        request.setAttribute(TripSseMvc.STREAM, stream);
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(stream.emitter);
     }
 
-    private Instant expiry(HttpServletRequest request) {
-        if (request.getAttribute("trova.jwt.expiresAt") instanceof Instant end) return end;
+    private StreamAuth expiry(HttpServletRequest request) {
+        if (request.getAttribute("trova.jwt.expiresAt") instanceof Instant end) return new StreamAuth(end, null);
         var session = request.getSession(false);
         if (session == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        return clock.instant().plusSeconds(session.getMaxInactiveInterval());
+        int seconds = session.getMaxInactiveInterval();
+        Instant end = seconds > 0 ? clock.instant().plusSeconds(seconds) : Instant.ofEpochMilli(Long.MAX_VALUE);
+        return new StreamAuth(end, session);
     }
 }

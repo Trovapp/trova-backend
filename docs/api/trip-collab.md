@@ -79,7 +79,7 @@ If-Match: "4"
 
 ## 실시간 변경 알림
 
-여행 상세 화면에서 `GET /api/trips/{id}/events`를 연다. 네이티브 앱은 Authorization Bearer 헤더를 사용한다. PWA는 같은 인증으로 `POST /api/trips/{id}/events/ticket`을 호출해 200 응답 `{"ticket":"…"}`을 받고, EventSource로 `/api/trips/{id}/events?ticket=…`를 연다. 표는 발급받은 여행에서 60초 동안 한 번 쓸 수 있다. 연결 시점에도 멤버여야 한다. 인증 실패·표 만료·재사용은 401, 멤버 제외는 403, 연결 상한 초과는 429다.
+여행 상세 화면에서 `GET /api/trips/{id}/events`를 연다. 네이티브 앱은 Authorization Bearer 헤더를 사용한다. PWA는 같은 인증으로 `POST /api/trips/{id}/events/ticket`을 호출해 200 응답 `{"ticket":"…"}`을 받고, EventSource로 `/api/trips/{id}/events?ticket=…`를 연다. 표는 발급받은 여행에서 60초 동안 한 번 쓸 수 있다. 연결 시점에도 멤버여야 한다. 인증 실패·표 만료·재사용은 401, 멤버 제외는 403, 미사용 표(사용자당 8개) 또는 연결 상한 초과는 429다. 세션으로 인증했다면 로그아웃하거나 세션이 무효가 된 뒤에는 발급받은 표를 쓸 수 없고 열린 연결도 다음 전송 전에 종료된다. 느린 연결의 송신 대기열이 차면 서버가 연결을 닫는다.
 
 ```text
 event:ready

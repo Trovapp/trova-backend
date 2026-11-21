@@ -25,6 +25,7 @@ class TripEventsHttpTest {
     @Autowired UserRepository users;
     @Autowired TripRepository trips;
     @Autowired JwtService jwt;
+    @Autowired org.springframework.security.oauth2.client.registration.ClientRegistrationRepository providers;
     @Autowired TripMembershipService memberships;
     @Autowired TripStreams streams;
 
@@ -70,7 +71,8 @@ class TripEventsHttpTest {
         mvc.perform(get(path).header("Authorization", "Bearer " + jwt.issue(outsider))).andExpect(status().isForbidden());
         var nativeStream = mvc.perform(get(path).header("Authorization", token))
                 .andExpect(request().asyncStarted()).andReturn();
-        assertThat(nativeStream.getResponse().getContentAsString()).contains("event:ready", "version");
+        org.awaitility.Awaitility.await().untilAsserted(() ->
+                assertThat(nativeStream.getResponse().getContentAsString()).contains("event:ready", "version"));
         mvc.perform(patch("/api/trips/{id}/title", trip.getId())
                         .header("Authorization", "Bearer " + jwt.issue(owner))
                         .contentType("application/json").content("{\"title\":\"새 여행\"}"))
@@ -78,6 +80,8 @@ class TripEventsHttpTest {
         org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(3)).untilAsserted(() ->
                 assertThat(nativeStream.getResponse().getContentAsString()).contains("event:changed", "TRIP_TITLE"));
         String first = ticket(path, token);
+        mvc.perform(get("/api/trips").param("ticket", first)).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/trips").header("Authorization", "Bearer invalid")).andExpect(status().isUnauthorized());
         mvc.perform(get(path).param("ticket", first)).andExpect(request().asyncStarted());
         mvc.perform(get(path).param("ticket", first)).andExpect(status().isUnauthorized());
         String outstanding = ticket(path, token);
@@ -85,6 +89,31 @@ class TripEventsHttpTest {
         assertThat(streams.viewing(trip.getId(), editor.getId())).isFalse();
         mvc.perform(get(path).param("ticket", outstanding)).andExpect(status().isForbidden());
         mvc.perform(post(path + "/ticket").header("Authorization", token)).andExpect(status().isForbidden());
+    }
+
+    @Test void logoutRevokesSessionTicketAndStream() throws Exception {
+        var owner = user();
+        var trip = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now()));
+        String path = "/api/trips/" + trip.getId() + "/events";
+        var session = new org.springframework.mock.web.MockHttpSession();
+        session.setMaxInactiveInterval(1800);
+        var login = org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login()
+                .clientRegistration(providers.findByRegistrationId("google")).attributes(a -> a.put("sub", owner.getProviderUserId()));
+        String first = mvc.perform(post(path + "/ticket").session(session).with(login))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        String spare = mvc.perform(post(path + "/ticket").session(session).with(login))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        var ticketStream = mvc.perform(get(path).param("ticket", new ObjectMapper().readTree(first).get("ticket").asText()))
+                .andExpect(request().asyncStarted()).andReturn();
+        var sessionStream = mvc.perform(get(path).session(session).with(login))
+                .andExpect(request().asyncStarted()).andReturn();
+        mvc.perform(post("/api/auth/logout").session(session)).andExpect(status().isOk());
+        mvc.perform(get(path).param("ticket", new ObjectMapper().readTree(spare).get("ticket").asText()))
+                .andExpect(status().isUnauthorized());
+        streams.heartbeat();
+        assertThat(ticketStream.getAsyncResult(3000)).isNull();
+        assertThat(sessionStream.getAsyncResult(3000)).isNull();
+        assertThat(streams.viewing(trip.getId(), owner.getId())).isFalse();
     }
 
     @Test void accountSuspensionInvalidatesOutstandingTicket() throws Exception {

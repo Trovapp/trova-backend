@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConditionalOnProperty(name = "app.trip-events.type", havingValue = "kafka")
 class KafkaTripEventBus implements TripEventBus {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(KafkaTripEventBus.class);
     static final String TOPIC = "trova.trip-events";
     record Envelope(String origin, TripChangedEvent event) {}
     private final String origin = UUID.randomUUID().toString();
@@ -42,7 +43,12 @@ class KafkaTripEventBus implements TripEventBus {
 
     public void publish(TripChangedEvent event) {
         // Local delivery is independent of broker latency. Ignore our own Kafka echo.
-        streams.deliver(event);
+        try {
+            streams.deliver(event);
+        } catch (RuntimeException failure) {
+            metrics.counter("trova.trip-events.local-delivery-failures").increment();
+            log.warn("Local delivery failed for trip {}", event.tripId(), failure);
+        }
         if (!clock.instant().isBefore(retryAt)) {
             try {
                 kafka.send(TOPIC, Long.toString(event.tripId()), json.writeValueAsString(new Envelope(origin, event)))

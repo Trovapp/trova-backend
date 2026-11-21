@@ -24,7 +24,7 @@ class TripChangePush {
         this.expo = expo;
         this.clock = clock;
     }
-    @Async("pushTaskExecutor")
+    @Async("tripPushExecutor")
     @EventListener
     public void changed(TripChangedEvent event) {
         for (long user : audience.members(event.tripId())) {

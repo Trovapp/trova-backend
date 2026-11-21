@@ -19,33 +19,104 @@ class TripDeliveryTest {
     final TripChangedEvent event = new TripChangedEvent(7, 3, 4, "민수", "MEMBER_REMOVED", "변경됐어요");
     TripDeliveryTest() { when(clock.instant()).thenReturn(now); }
 
+    @org.junit.jupiter.api.AfterEach void stopWriters() { streams.shutdown(); }
+
+    SseEmitter open(long trip, long user, Instant end) {
+        var stream = streams.open(trip, user, new StreamAuth(end, null));
+        stream.ready(null);
+        return stream.emitter;
+    }
+
     @Test void memberReceivesReadyHeartbeatAndChangesUntilRemoval() throws Exception {
         try (var emitters = mockConstruction(SseEmitter.class)) {
             when(members.members(7)).thenReturn(List.of(5L), List.of(5L), List.of());
-            var stream = streams.open(7, 5, now.plusSeconds(100));
+            var stream = open(7, 5, now.plusSeconds(100));
             streams.heartbeat();
             var bus = new MemoryTripEventBus(streams);
             bus.publish(event);
+            verify(stream, timeout(1000).times(3)).send(any(SseEmitter.SseEventBuilder.class));
             bus.publish(event);
-            verify(stream, times(3)).send(any(SseEmitter.SseEventBuilder.class));
-            verify(stream).complete();
+            verify(stream, timeout(1000)).complete();
             assertThat(streams.viewing(7, 5)).isFalse();
         }
     }
 
     @Test void rejectsNonmemberAndLimitsConnections() {
         when(members.version(7, 6)).thenThrow(new ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN));
-        assertThatThrownBy(() -> streams.open(7, 6, now.plusSeconds(10))).isInstanceOf(ResponseStatusException.class);
-        streams.open(7, 5, now.plusSeconds(10));
-        assertThatThrownBy(() -> streams.open(7, 5, now.plusSeconds(10))).isInstanceOf(ResponseStatusException.class);
+        assertThatThrownBy(() -> open(7, 6, now.plusSeconds(10))).isInstanceOf(ResponseStatusException.class);
+        open(7, 5, now.plusSeconds(10));
+        assertThatThrownBy(() -> open(7, 5, now.plusSeconds(10))).isInstanceOf(ResponseStatusException.class);
     }
     @Test void expiredCredentialsCloseStream() {
         when(members.members(7)).thenReturn(List.of(5L));
-        streams.open(7, 5, now.plusSeconds(1));
+        open(7, 5, now.plusSeconds(1));
         when(clock.instant()).thenReturn(now.plusSeconds(1));
         streams.heartbeat();
         assertThat(streams.viewing(7, 5)).isFalse();
-        streams.open(7, 5, now.plusSeconds(10));
+        org.awaitility.Awaitility.await().untilAsserted(() ->
+                assertThatCode(() -> open(7, 5, now.plusSeconds(10))).doesNotThrowAnyException());
+    }
+
+    @Test void slowClientDoesNotHoldPublisherOrHealthyConnection() throws Exception {
+        var entered = new java.util.concurrent.CountDownLatch(1);
+        var release = new java.util.concurrent.CountDownLatch(1);
+        when(members.members(7)).thenReturn(List.of(5L, 6L));
+        try (var mocks = mockConstruction(SseEmitter.class, (mock, context) -> {
+            if (context.getCount() == 1) doAnswer(invocation -> {
+                entered.countDown();
+                release.await(5, java.util.concurrent.TimeUnit.SECONDS);
+                return null;
+            }).when(mock).send(any(SseEmitter.SseEventBuilder.class));
+        })) {
+            org.junit.jupiter.api.Assertions.assertTimeout(Duration.ofSeconds(1), () -> open(7, 5, now.plusSeconds(100)));
+            assertThat(entered.await(1, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+            var fast = open(7, 6, now.plusSeconds(100));
+            for (int i = 0; i < 20; i++) {
+                streams.deliver(event);
+                verify(fast, timeout(1000).times(i + 2)).send(any(SseEmitter.SseEventBuilder.class));
+            }
+            assertThat(streams.viewing(7, 5)).isFalse();
+            assertThat(streams.viewing(7, 6)).isTrue();
+            verify(mocks.constructed().getFirst(), timeout(1000)).complete();
+        } finally { release.countDown(); }
+    }
+
+    @Test void localFailureStillPublishesToKafka() {
+        KafkaTemplate<String, String> kafka = mock(KafkaTemplate.class);
+        when(kafka.send(anyString(), anyString(), anyString())).thenReturn(java.util.concurrent.CompletableFuture.completedFuture(null));
+        var local = mock(TripStreams.class);
+        doThrow(new IllegalStateException("local delivery")).when(local).deliver(event);
+        var bus = new KafkaTripEventBus(kafka, local, new SimpleMeterRegistry(), clock);
+        bus.publish(event);
+        verify(kafka).send(eq(KafkaTripEventBus.TOPIC), eq("7"), anyString());
+    }
+
+    @Test void eventExecutorOverloadRetriesLatestVersionForEachTrip() {
+        var bus = mock(TripEventBus.class);
+        var submitted = new java.util.ArrayDeque<Runnable>();
+        var rejecting = new java.util.concurrent.atomic.AtomicBoolean(true);
+        var listener = new TripChangeListener(bus, job -> {
+            if (rejecting.get()) throw new java.util.concurrent.RejectedExecutionException();
+            submitted.add(job);
+        });
+        var older = new TripChangedEvent(7, 2, 4, "민수", "TRIP_TITLE", "제목");
+        var other = new TripChangedEvent(8, 1, 4, "민수", "TRIP_TITLE", "제목");
+        listener.changed(event);
+        listener.changed(older);
+        listener.changed(other);
+        verifyNoInteractions(bus);
+        rejecting.set(false);
+        listener.retry();
+        submitted.forEach(Runnable::run);
+        verify(bus).publish(event);
+        verify(bus).publish(other);
+        verifyNoMoreInteractions(bus);
+    }
+
+    @Test void editPushHasAnIndependentExecutor() throws Exception {
+        var async = TripChangePush.class.getMethod("changed", TripChangedEvent.class)
+                .getAnnotation(org.springframework.scheduling.annotation.Async.class);
+        assertThat(async.value()).isEqualTo("tripPushExecutor");
     }
 
     @Test void fallbackSkipsBrokerForOneMinute() {
@@ -65,7 +136,7 @@ class TripDeliveryTest {
 
     @Test void pushOnlyOncePerFiveMinutesToOfflineMembers() {
         var expo = mock(ExpoPushService.class);
-        streams.open(7, 5, now.plusSeconds(600));
+        open(7, 5, now.plusSeconds(600));
         when(members.members(7)).thenReturn(List.of(4L, 5L, 6L));
         var push = new TripChangePush(members, streams, expo, clock);
         push.changed(event);
