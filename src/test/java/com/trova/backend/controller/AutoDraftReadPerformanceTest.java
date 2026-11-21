@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -213,6 +214,7 @@ class AutoDraftReadPerformanceTest {
         replacement.markReady("{}", "{\"days\":[{\"day\":1,\"items\":[{\"name\":\"카페\"}]}]}");
         drafts.save(replacement);
         TripDraft missing = TripDraft.auto(user, List.of(-100L), "없는 영상");
+        ReflectionTestUtils.setField(missing, "createdAt", replacement.getCreatedAt());
         missing.markReady("{}", "broken json");
         drafts.save(missing);
         drafts.save(new TripDraft(user, List.of(first.getId()), "직접 만든 초안"));
