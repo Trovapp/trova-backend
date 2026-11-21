@@ -45,12 +45,12 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
 
     // 홈에 보여줄 초안 — 자동 초안과, 그런 초안을 "다시 짜기"로 대신한 초안(#424). 닫지 않은 것만, 최신순.
     @Query("select d from TripDraft d where d.user.id = :userId and (d.autoCreated = true or d.replacesDraftId is not null) "
-            + "and d.dismissedAt is null and d.status in :statuses order by d.createdAt desc")
+            + "and d.dismissedAt is null and d.status in :statuses order by d.createdAt desc, d.id desc")
     List<TripDraft> findListedByUserId(@Param("userId") Long userId, @Param("statuses") List<TripDraftStatus> statuses);
 
     @Query("select new com.trova.backend.repository.AutoDraftRow(d.id, d.status, d.jobIds, d.days, d.createdAt, d.draftJson) "
             + "from TripDraft d where d.user.id = :userId and (d.autoCreated = true or d.replacesDraftId is not null) "
-            + "and d.dismissedAt is null and d.status in :statuses order by d.createdAt desc")
+            + "and d.dismissedAt is null and d.status in :statuses order by d.createdAt desc, d.id desc")
     List<AutoDraftRow> findListedRowsByUserId(@Param("userId") Long userId, @Param("statuses") List<TripDraftStatus> statuses);
 
     // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
