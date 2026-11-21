@@ -474,8 +474,12 @@ public class TripService {
                         return Optional.empty();
                     }
                     Place match = nearest.get();
-                    tripPlace.applyGooglePlaceId(match.getGooglePlaceId());
-                    tripPlaceRepository.save(tripPlace);
+                    if (tripPlaceRepository.backfillGooglePlaceId(tripPlaceId, match.getGooglePlaceId()) == 0) {
+                        return tripPlaceRepository.findById(tripPlaceId)
+                                .filter(current -> TripAccess.requireMember(current.getItinerary().getTrip(), user))
+                                .map(TripPlace::getGooglePlaceId)
+                                .flatMap(placeRepository::findByGooglePlaceId);
+                    }
                     userPreferenceSignalRepository.save(new UserPreferenceSignal(user, match, SignalType.VIDEO_PLACE_MATCHED));
                     placeEmbeddingService.ensureEmbeddings(List.of(match));
                     return Optional.of(match);
@@ -723,8 +727,7 @@ public class TripService {
                 .toList();
         List<SavedPlace> places = matchingJobs.isEmpty() ? List.of()
                 : savedPlaceRepository.findByProcessingJobIn(matchingJobs);
-        return findExistingTripForSavedPlaces(places)
-                .filter(trip -> trip.getUser().getId().equals(user.getId()));
+        return findExistingTripForSavedPlaces(user, places);
     }
 
     /**
@@ -750,13 +753,12 @@ public class TripService {
                 .collect(java.util.stream.Collectors.toSet());
     }
 
-    public Optional<Trip> findExistingTripForSavedPlaces(List<SavedPlace> places) {
+    public Optional<Trip> findExistingTripForSavedPlaces(User user, List<SavedPlace> places) {
         List<Long> savedPlaceIds = places.stream().map(SavedPlace::getId).toList();
         if (savedPlaceIds.isEmpty()) {
             return Optional.empty();
         }
-        return tripPlaceRepository.findFirstBySavedPlaceIdIn(savedPlaceIds)
-                .map(tripPlace -> tripPlace.getItinerary().getTrip());
+        return tripRepository.findOwnedTripForSavedPlaces(user.getId(), savedPlaceIds);
     }
 
     /**

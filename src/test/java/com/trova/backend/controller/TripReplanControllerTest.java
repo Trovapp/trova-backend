@@ -224,16 +224,19 @@ class TripReplanControllerTest {
     }
 
     @Test
-    void DONE_상태를_폴링하면_결과가_담긴다() throws Exception {
-        Itinerary itinerary = itineraryRepository.save(new Itinerary(trip, 1, LocalDate.of(2026, 1, 1)));
+    void 재구성_후보의_개인화_설명은_실행자에게만_보인다() throws Exception {
+        User editor = userRepository.save(new User("google", "private-replan", "편집자", null));
+        trip.getMembers().add(new TripMember(editor, TripMember.Role.EDITOR));
+        tripRepository.saveAndFlush(trip);
+        String personalReason = "예전에 좋아한 은하카페의 조용한 분위기";
         AlternativeCandidate candidate = new AlternativeCandidate(
                 99L, "g-99", "실내카페", "cafe", 4.7, 200, 37.501, 127.001, "서울",
-                null, null, false, null, null);
+                null, null, false, null, personalReason);
         TripReplanGraph.ReplanMatch match = new TripReplanGraph.ReplanMatch(1L, "야외공원", candidate);
         TripReplanGraph.ReplanOutcome outcome = new TripReplanGraph.ReplanOutcome(List.of(match), List.of(2L));
         String resultJson = mapper.writeValueAsString(outcome);
 
-        TripReplanJob job = tripReplanJobRepository.save(new TripReplanJob(me, trip, true));
+        TripReplanJob job = tripReplanJobRepository.save(new TripReplanJob(editor, trip, true));
         job.markProcessing();
         job.markDone(resultJson);
         tripReplanJobRepository.save(job);
@@ -245,8 +248,13 @@ class TripReplanControllerTest {
                 .andExpect(jsonPath("$.result.replaced[0].tripPlaceId").value(1))
                 .andExpect(jsonPath("$.result.replaced[0].originalName").value("야외공원"))
                 .andExpect(jsonPath("$.result.replaced[0].candidate.placeId").value(99))
+                .andExpect(jsonPath("$.result.replaced[0].candidate.recommendationReason").doesNotExist())
                 .andExpect(jsonPath("$.result.failedTripPlaceIds[0]").value(2))
                 .andExpect(jsonPath("$.errorMessage").doesNotExist());
+        mockMvc.perform(get("/api/trips/" + trip.getId() + "/replan/" + job.getId())
+                        .with(loginAs("private-replan", "편집자")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result.replaced[0].candidate.recommendationReason").value(personalReason));
     }
 
     @Test

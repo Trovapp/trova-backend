@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,6 +32,9 @@ class TripServiceIntegrationTest {
 
     @Autowired
     private TripService tripService;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
     private ProcessingJobRepository processingJobRepository;
@@ -142,11 +148,11 @@ class TripServiceIntegrationTest {
         SavedPlace place = savedPlaceRepository.save(
                 new SavedPlace(job, user, "장소", "부산", "cafe", 35.1, 129.0, 1, 1));
 
-        assertThat(tripService.findExistingTripForSavedPlaces(List.of(place))).isEmpty();
+        assertThat(tripService.findExistingTripForSavedPlaces(user, List.of(place))).isEmpty();
 
         Trip trip = tripService.confirmVideoPlacesIntoTrip(user, "부산 여행", List.of(place), null);
 
-        Optional<Trip> found = tripService.findExistingTripForSavedPlaces(List.of(place));
+        Optional<Trip> found = tripService.findExistingTripForSavedPlaces(user, List.of(place));
         assertThat(found).isPresent();
         assertThat(found.get().getId()).isEqualTo(trip.getId());
     }
@@ -187,7 +193,7 @@ class TripServiceIntegrationTest {
 
     @Test
     void findExistingTripForSavedPlaces는_빈_리스트면_아무것도_찾지_않는다() {
-        assertThat(tripService.findExistingTripForSavedPlaces(List.of())).isEmpty();
+        assertThat(tripService.findExistingTripForSavedPlaces(newUser(), List.of())).isEmpty();
     }
 
     @Test
@@ -459,12 +465,44 @@ class TripServiceIntegrationTest {
         Place resolved = tripService.resolveDetailsPlace(user, videoPlace.getId()).orElseThrow();
 
         assertThat(resolved.getGooglePlaceId()).isEqualTo("trip-place-test-signal-video-match");
+        TripPlace afterRead = tripPlaceRepository.findById(videoPlace.getId()).orElseThrow();
+        assertThat(afterRead.getGooglePlaceId()).isEqualTo(resolved.getGooglePlaceId());
+        assertThat(afterRead.getVersion()).isEqualTo(videoPlace.getVersion());
+        assertThat(tripRepository.findById(trip.getId()).orElseThrow().getVersion()).isEqualTo(trip.getVersion());
         List<UserPreferenceSignal> signals = userPreferenceSignalRepository.findAll().stream()
                 .filter(s -> s.getUser().getId().equals(user.getId()))
                 .toList();
         assertThat(signals).hasSize(1);
         assertThat(signals.get(0).getSignalType()).isEqualTo(SignalType.VIDEO_PLACE_MATCHED);
         assertThat(signals.get(0).getPlace().getGooglePlaceId()).isEqualTo("trip-place-test-signal-video-match");
+    }
+
+    @Test
+    void 상세_조회_전에_장소를_읽은_편집도_카탈로그_연결과_메모를_함께_보존한다() {
+        User user = newUser();
+        LocalDate date = LocalDate.of(2026, 11, 1);
+        Trip trip = tripService.createTrip(user, "제주", date, date);
+        Itinerary day = itineraryRepository.findByTripAndDay(trip, 1).orElseThrow();
+        TripPlace place = tripPlaceRepository.save(new TripPlace(day, "섬카페", "제주", "cafe",
+                33.5, 126.9, null, null, 1, PlaceSource.VIDEO, 42L));
+        String googleId = "concurrent-metadata";
+        when(googlePlacesApiClient.searchText("제주 섬카페")).thenReturn(new GooglePlacesNearbySearchResponse(
+                List.of(rawPlace(googleId, "섬카페", 33.5, 126.9, "제주"))));
+
+        TransactionTemplate reader = new TransactionTemplate(transactionManager);
+        reader.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        new TransactionTemplate(transactionManager).executeWithoutResult(edit -> {
+            TripPlace opened = tripPlaceRepository.findById(place.getId()).orElseThrow();
+            assertThat(opened.getGooglePlaceId()).isNull();
+            reader.executeWithoutResult(detail ->
+                    assertThat(tripService.resolveDetailsPlace(user, place.getId())).isPresent());
+            tripService.updateDetails(user, opened.getId(), null, null, null, "오후 방문").orElseThrow();
+        });
+
+        TripPlace saved = tripPlaceRepository.findById(place.getId()).orElseThrow();
+        assertThat(saved.getGooglePlaceId()).isEqualTo(googleId);
+        assertThat(saved.getMemo()).isEqualTo("오후 방문");
+        assertThat(saved.getVersion()).isEqualTo(place.getVersion() + 1);
     }
 
     private static GooglePlacesNearbySearchResponse.Place rawPlace(String id, String name, double lat, double lng, String address) {

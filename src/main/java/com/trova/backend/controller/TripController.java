@@ -186,10 +186,14 @@ public class TripController {
             Boolean isCongestionAvailable, String congestionLevel, String recommendationReason
     ) {
         static AlternativeCandidateResponse from(AlternativeCandidate c) {
+            return from(c, c.recommendationReason());
+        }
+
+        static AlternativeCandidateResponse from(AlternativeCandidate c, String recommendationReason) {
             return new AlternativeCandidateResponse(
                     c.placeId(), c.googlePlaceId(), c.name(), c.category(), c.rating(), c.userRatingCount(),
                     c.latitude(), c.longitude(), c.address(), c.distanceToNextKm(), c.estimatedTravelMinutes(),
-                    c.isCongestionAvailable(), c.congestionLevel(), c.recommendationReason());
+                    c.isCongestionAvailable(), c.congestionLevel(), recommendationReason);
         }
     }
 

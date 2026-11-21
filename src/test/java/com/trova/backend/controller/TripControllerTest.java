@@ -738,14 +738,19 @@ class TripControllerTest {
     }
 
     @Test
-    void 같은_영상을_다시_추출한_작업으로_여행을_확정하면_새로_만들지_않고_기존_여행을_돌려준다() throws Exception {
+    void 영상_장소가_공동_여행에_먼저_들어가도_기존_개인_여행을_찾고_재사용한다() throws Exception {
         User me = userRepository.save(new User("google", "video-trip-5", "영상유저5", null));
         ProcessingJob first = videoJob(me, "https://www.youtube.com/watch?v=CtrlConf05");
+        Trip shared = tripForActor(me, 1, true);
+        Long savedId = savedPlaceRepository.findByProcessingJob(first).getFirst().getId();
+        tripService.addVideoPlaceToDay(me, shared.getId(), 1, savedId).orElseThrow();
         Trip trip = tripService.confirmVideoPlacesIntoTrip(
                 me, "부산 여행", savedPlaceRepository.findByProcessingJob(first), null);
         ProcessingJob again = videoJob(me, "https://youtu.be/CtrlConf05");
         long before = tripRepository.findByUserOrderByCreatedAtDesc(me).size();
 
+        mockMvc.perform(get("/api/places/videos/" + again.getId() + "/trip").with(loginAs("video-trip-5", "영상유저5")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(trip.getId()));
         mockMvc.perform(post("/api/places/videos/" + again.getId() + "/confirm-trip")
                         .with(loginAs("video-trip-5", "영상유저5"))
                         .contentType(MediaType.APPLICATION_JSON)

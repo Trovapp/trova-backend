@@ -1,10 +1,13 @@
 package com.trova.backend.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+// 동시에 실행한 메모·순서 수정이 상세 조회에서 연결한 카탈로그 ID를 덮지 않게 한다.
+@DynamicUpdate
 @Entity
 @Table(name = "trip_places")
 public class TripPlace {

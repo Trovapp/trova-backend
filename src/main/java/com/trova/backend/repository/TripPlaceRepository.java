@@ -6,6 +6,7 @@ import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -47,11 +48,10 @@ public interface TripPlaceRepository extends JpaRepository<TripPlace, Long> {
             + "where i.trip in :trips order by i.trip.id, i.day, tp.visitOrder, tp.id")
     List<TripRegion> findRegionsByTripIn(@Param("trips") Collection<Trip> trips);
 
-    // 같은 영상(ProcessingJob)의 SavedPlace가 이미 어떤 Trip으로 확정된 적이
-    // 있는지 확인하는 용도 — confirm-trip 중복 제출 방지에 쓴다.
-    @EntityGraph(attributePaths = {"itinerary.trip.user", "itinerary.trip.members.user"})
-    Optional<TripPlace> findFirstBySavedPlaceIdIn(List<Long> savedPlaceIds);
-
+    // 상세 조회의 카탈로그 연결은 편집 버전을 바꾸지 않는다. 먼저 연결하거나 교체한 장소는 보존한다.
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("update TripPlace p set p.googlePlaceId=:googlePlaceId where p.id=:id and p.googlePlaceId is null")
+    int backfillGooglePlaceId(@Param("id") Long id, @Param("googlePlaceId") String googlePlaceId);
 
     // 자동 초안 목록(#204) — 이 사용자의 여행에 들어간 영상 장소들의 원본 영상 주소만. 예전엔 사용자의 영상·저장 장소
     // 전체를 엔티티로 읽은 뒤 걸렀다(쿼리 3번 + 큰 칸들).

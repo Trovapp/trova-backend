@@ -70,17 +70,18 @@ public class TripReplanController {
     public record ReplanResultResponse(
             Long tripPlaceId, String originalName, TripController.AlternativeCandidateResponse candidate
     ) {
-        static ReplanResultResponse from(TripReplanGraph.ReplanMatch match) {
+        static ReplanResultResponse from(TripReplanGraph.ReplanMatch match, boolean showActorReason) {
             return new ReplanResultResponse(
                     match.tripPlaceId(), match.originalName(),
-                    TripController.AlternativeCandidateResponse.from(match.candidate()));
+                    TripController.AlternativeCandidateResponse.from(match.candidate(),
+                            showActorReason ? match.candidate().recommendationReason() : null));
         }
     }
 
     public record TripReplanResponse(List<ReplanResultResponse> replaced, List<Long> failedTripPlaceIds) {
-        static TripReplanResponse from(TripReplanGraph.ReplanOutcome outcome) {
+        static TripReplanResponse from(TripReplanGraph.ReplanOutcome outcome, boolean showActorReason) {
             return new TripReplanResponse(
-                    outcome.matches().stream().map(ReplanResultResponse::from).toList(),
+                    outcome.matches().stream().map(match -> ReplanResultResponse.from(match, showActorReason)).toList(),
                     outcome.failedTripPlaceIds());
         }
     }
@@ -121,7 +122,7 @@ public class TripReplanController {
         User user = currentUserService.resolve(authentication);
         return tripReplanJobRepository.findById(jobId)
                 .filter(job -> job.getTrip().getId().equals(tripId) && TripAccess.requireMember(job.getTrip(), user))
-                .map(job -> ResponseEntity.ok(toStatusResponse(job)))
+                .map(job -> ResponseEntity.ok(toStatusResponse(job, user)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -161,13 +162,14 @@ public class TripReplanController {
         return job.getId();
     }
 
-    private ReplanJobStatusResponse toStatusResponse(TripReplanJob job) {
+    private ReplanJobStatusResponse toStatusResponse(TripReplanJob job, User viewer) {
         TripReplanResponse result = null;
         if (job.getStatus() == JobStatus.DONE && job.getResultJson() != null) {
             try {
                 TripReplanGraph.ReplanOutcome outcome =
                         MAPPER.readValue(job.getResultJson(), TripReplanGraph.ReplanOutcome.class);
-                result = TripReplanResponse.from(outcome);
+                // 기존 저장 결과도 생성 방식과 무관하게 실행자에게만 취향 설명을 보여준다.
+                result = TripReplanResponse.from(outcome, job.getUser().getId().equals(viewer.getId()));
             } catch (JsonProcessingException e) {
                 throw new IllegalStateException("저장된 재구성 결과를 읽을 수 없습니다: jobId=" + job.getId(), e);
             }

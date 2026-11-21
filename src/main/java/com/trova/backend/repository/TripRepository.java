@@ -39,6 +39,15 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
     List<TripDetailRow> findDetailRows(@Param("tripId") Long tripId);
 
 
+    @EntityGraph(attributePaths = {"user", "members.user"})
+    @Query("""
+            select t from Trip t where t.id = (
+                select min(p.itinerary.trip.id) from TripPlace p
+                where p.savedPlaceId in :savedPlaceIds and p.itinerary.trip.user.id = :ownerId)
+            """)
+    Optional<Trip> findOwnedTripForSavedPlaces(@Param("ownerId") Long ownerId,
+                                              @Param("savedPlaceIds") List<Long> savedPlaceIds);
+
     List<Trip> findByUserOrderByCreatedAtDesc(User user);
     // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
     @Query("select distinct t from Trip t left join fetch t.members where exists (select 1 from t.members m where m.user.id=:userId) order by t.createdAt desc")
