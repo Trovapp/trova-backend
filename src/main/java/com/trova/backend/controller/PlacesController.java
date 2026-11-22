@@ -8,11 +8,13 @@ import com.trova.backend.entity.User;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.SavedPlaceListRow;
+import com.trova.backend.repository.VideoHistoryRow;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.FoundPlaceNameStore;
 import com.trova.backend.service.ItineraryEditService;
 import com.trova.backend.service.ItineraryGenerationService;
 import com.trova.backend.service.PlaceRelocateService;
+import com.trova.backend.service.VideoKey;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,20 +150,13 @@ public class PlacesController {
                 .toList();
     }
 
-    public record HistoryResponse(Long jobId, LocalDateTime createdAt, long placeCount) {
-    }
-
     @GetMapping("/videos/{jobId}/history")
-    public ResponseEntity<List<HistoryResponse>> history(Authentication authentication, @PathVariable Long jobId) {
+    public ResponseEntity<List<VideoHistoryRow>> history(Authentication authentication, @PathVariable Long jobId) {
         User user = currentUserService.resolve(authentication);
         return processingJobRepository.findByIdAndUser(jobId, user)
-                .map(anchor -> {
-                    String video = ShareUrl.videoKey(anchor.getSourceUrl());
-                    return ResponseEntity.ok(savedPlaceRepository.findVideoHistoryByUserId(user.getId()).stream()
-                            .filter(row -> video.equals(ShareUrl.videoKey(row.sourceUrl())))
-                            .map(row -> new HistoryResponse(row.jobId(), row.createdAt(), row.placeCount()))
-                            .toList());
-                }).orElseGet(() -> ResponseEntity.notFound().build());
+                .map(anchor -> ResponseEntity.ok(savedPlaceRepository.findVideoHistory(user.getId(),
+                        VideoKey.of(anchor.getSourceUrl()), VideoKey.YOUTUBE, VideoKey.INSTAGRAM)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/videos/{jobId}/history/{resultId}")

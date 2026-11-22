@@ -250,7 +250,7 @@ class PlacesControllerTest {
         User me = userRepository.save(new User("google", "hist", "나", null));
         User stranger = userRepository.save(new User("google", "hist-other", "남", null));
         ProcessingJob older = doneJob(me, "https://youtube.com/shorts/history");
-        ProcessingJob newer = doneJob(me, "https://youtube.com/shorts/history?si=tail");
+        ProcessingJob newer = doneJob(me, "https://youtu.be/history?si=tail");
         ProcessingJob foreign = doneJob(stranger, older.getSourceUrl());
         ProcessingJob unrelated = doneJob(me, "https://youtube.com/shorts/another");
         for (ProcessingJob job : List.of(older, newer, foreign, unrelated)) {

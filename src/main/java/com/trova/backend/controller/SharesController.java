@@ -103,7 +103,7 @@ public class SharesController {
         // 결과의 장소를 모두 지운 영상은 대표 결과가 없으므로 새로 분석한다.
         if (!reanalyze) {
             Long existingJobId = VideoResults.latestJobIdByVideo(savedPlaceRepository.findByUserOrderByCreatedAtDescIdDesc(user))
-                    .get(url);
+                    .get(ShareUrl.videoKey(url));
             if (existingJobId != null) {
                 return ResponseEntity.ok(new ShareResponse(existingJobId, JobStatus.DONE.name(), true));
             }

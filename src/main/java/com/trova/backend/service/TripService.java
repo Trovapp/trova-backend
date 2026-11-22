@@ -339,20 +339,29 @@ public class TripService {
      */
     @Transactional
     public Optional<SavedPlaceMatch> resolveSavedPlace(User user, Long savedPlaceId) {
-        return savedPlaceRepository.findById(savedPlaceId)
-                .filter(p -> p.getUser().getId().equals(user.getId()))
+        return resolveSavedPlace(user, savedPlaceId, true);
+    }
+
+    @Transactional
+    public Optional<SavedPlaceMatch> resolveSavedPlaceForDetails(User user, Long savedPlaceId) {
+        return resolveSavedPlace(user, savedPlaceId, false);
+    }
+
+    private Optional<SavedPlaceMatch> resolveSavedPlace(User user, Long savedPlaceId, boolean forBookmark) {
+        return savedPlaceRepository.findByIdAndUser(savedPlaceId, user)
                 .map(saved -> {
                     if (saved.getGooglePlaceId() != null) {
                         Optional<Place> known = placeRepository.findByGooglePlaceId(saved.getGooglePlaceId());
-                        if (known.filter(candidate -> matchesSavedPlace(saved, candidate)).isPresent()) {
+                        if (known.filter(candidate -> !forBookmark || matchesSavedPlace(saved, candidate)).isPresent()) {
                             return new SavedPlaceMatch(known);
                         }
                     }
                     List<Place> candidates = placeSearchService.search(detailsSearchQuery(saved.getPlaceName(), saved.getRegion()));
-                    Optional<Place> match = candidates.stream()
+                    Optional<Place> match = forBookmark ? candidates.stream()
                             .filter(candidate -> matchesSavedPlace(saved, candidate))
                             .min(Comparator.comparingDouble((Place candidate) -> matchDistanceKm(saved, candidate))
-                                    .thenComparing(Place::getId));
+                                    .thenComparing(Place::getId))
+                            : pickMatch(saved.getPlaceName(), saved.getLatitude(), saved.getLongitude(), candidates);
                     if (match.isEmpty()) {
                         log.info("영상 장소 찜 연결 실패 — 근처 검색 결과 없음(savedPlaceId={}, name={}, 후보 {}곳)",
                                 saved.getId(), saved.getPlaceName(), candidates.size());

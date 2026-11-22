@@ -19,6 +19,16 @@ class PlaceNameMatchTest {
     }
 
     @Test
+    void 카탈로그_지점_별칭은_다른_브랜드나_다른_지점과_구분한다() {
+        String wanted = "이삭토스트 서울명동성당점";
+        assertThat(PlaceNameMatch.sameCatalogName(wanted, "이삭토스트 명동성당점")).isTrue();
+        assertThat(PlaceNameMatch.sameCatalogName(wanted, "명동성당점")).isTrue();
+        assertThat(PlaceNameMatch.sameCatalogName(wanted, "설빙 명동성당점")).isFalse();
+        assertThat(PlaceNameMatch.sameCatalogName(wanted, "이삭토스트 명동역점")).isFalse();
+        assertThat(PlaceNameMatch.sameCatalogName(wanted, "이삭토스트 부산명동성당점")).isFalse();
+    }
+
+    @Test
     void 이름이_없으면_막지_않는다() {
         assertThat(PlaceNameMatch.sameBusiness("이삭토스트", null)).isTrue();
     }

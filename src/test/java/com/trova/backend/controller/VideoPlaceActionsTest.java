@@ -193,7 +193,7 @@ class VideoPlaceActionsTest {
     void 일정_초안의_영상_장소도_리뷰_요약을_본다() throws Exception {
         // #235: 일정 초안 장소는 아직 여행 장소가 아니라 영상 장소 — 찜하기와 같은 규칙으로 구글 장소에 연결해 리뷰를 준다.
         User me = userRepository.save(new User("google", "vp-review-1", "영상유저", null));
-        placeRepository.save(new Place("gp-video-review", "바다카페", "cafe", 4.4, 30, null, 33.45, 126.5, "제주"));
+        placeRepository.save(new Place("gp-video-review", "바다카페", "cafe", 4.4, 30, null, 33.46, 126.5, "제주"));
         SavedPlace cafe = videoPlace(me, "바다카페");
         cafe.applyOpeningHours("gp-video-review", null);
         savedPlaceRepository.save(cafe);
@@ -280,6 +280,25 @@ class VideoPlaceActionsTest {
                         .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + lake.getId() + "}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.placeId").value(correct.getId()))
                 .andExpect(jsonPath("$.address").value("저동 94"));
+    }
+
+    @Test
+    void 지점_별칭은_가까운_핀을_저장하고_누락된_카탈로그_좌표를_복구한다() throws Exception {
+        User user = userRepository.save(new User("google", "isaac", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, "https://youtu.be/toast", SourcePlatform.YOUTUBE));
+        SavedPlace toast = savedPlaceRepository.save(new SavedPlace(job, user, "이삭토스트 서울명동성당점", "서울", "cafe",
+                37.5630, 126.9860));
+        toast.applyOpeningHours("isaac-myeongdong", null);
+        Place catalog = placeRepository.save(new Place("isaac-myeongdong", "이삭토스트 명동성당점", "cafe",
+                null, null, null, null, null, null));
+        when(googlePlacesApiClient.searchText(anyString())).thenReturn(new GooglePlacesNearbySearchResponse(List.of(
+                new GooglePlacesNearbySearchResponse.Place("isaac-myeongdong",
+                        new GooglePlacesNearbySearchResponse.Place.DisplayName("이삭토스트 명동성당점"), List.of("cafe"),
+                        null, null, null, new GooglePlacesNearbySearchResponse.Place.Location(37.5632, 126.9861), "명동"))));
+        mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("isaac"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + toast.getId() + "}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.placeId").value(catalog.getId()))
+                .andExpect(jsonPath("$.latitude").value(37.5632)).andExpect(jsonPath("$.longitude").value(126.9861));
     }
 
     @Test

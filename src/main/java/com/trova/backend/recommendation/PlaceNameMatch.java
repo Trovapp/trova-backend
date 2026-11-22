@@ -32,7 +32,26 @@ public final class PlaceNameMatch {
             return false;
         }
         String expected = catalogName(wanted);
-        return !expected.isEmpty() && expected.equals(catalogName(found));
+        if (expected.isEmpty()) {
+            return false;
+        }
+        if (expected.equals(catalogName(found))) {
+            return true;
+        }
+        String[] a = wanted.strip().split("\\s+(?=\\S+$)", 2);
+        String[] b = found.strip().split("\\s+(?=\\S+$)", 2);
+        String branchA = catalogName(a[a.length - 1]);
+        String branchB = catalogName(b[b.length - 1]);
+        if (!branchA.endsWith("점") || !branchB.endsWith("점")
+                || Math.min(branchA.length(), branchB.length()) < 3
+                || (a.length == 2 && b.length == 2 && !catalogName(a[0]).equals(catalogName(b[0])))) {
+            return false;
+        }
+        return branchA.equals(branchB) || withoutCity(branchA).equals(branchB) || withoutCity(branchB).equals(branchA);
+    }
+
+    private static String withoutCity(String branch) {
+        return branch.replaceFirst("^(서울|부산|대구|인천|광주|대전|울산|세종|제주)", "");
     }
 
     private static String catalogName(String name) {

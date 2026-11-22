@@ -33,13 +33,16 @@ public interface SavedPlaceRepository extends JpaRepository<SavedPlace, Long> {
     List<SavedPlaceListRow> findListRowsByUserIdAndJobId(Long userId, Long jobId);
 
     @Query("""
-            select new com.trova.backend.repository.VideoHistoryRow(j.id, j.sourceUrl, j.createdAt, count(p))
+            select new com.trova.backend.repository.VideoHistoryRow(j.id, j.createdAt, count(p))
             from SavedPlace p join p.processingJob j
-            where p.user.id = :userId
-            group by j.id, j.sourceUrl, j.createdAt
+            where p.user.id = :userId and coalesce(
+                'yt:' || cast(function('regexp_substr', j.sourceUrl, :youtube, 1, 1, 'i', 1) as String),
+                'ig:' || cast(function('regexp_substr', j.sourceUrl, :instagram, 1, 1, 'i', 1) as String),
+                trim(j.sourceUrl)) = :videoKey
+            group by j.id, j.createdAt
             order by j.id desc
             """)
-    List<VideoHistoryRow> findVideoHistoryByUserId(Long userId);
+    List<VideoHistoryRow> findVideoHistory(Long userId, String videoKey, String youtube, String instagram);
 
     // 초안 상세의 현재 번호 계산용(#473) — 장소가 하나라도 남은 작업의 번호·주소만, 작업마다 한 행. 상태는 보지 않는다.
     @Query("""

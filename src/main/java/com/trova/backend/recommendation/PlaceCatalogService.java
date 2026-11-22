@@ -2,7 +2,9 @@ package com.trova.backend.recommendation;
 
 import com.trova.backend.entity.Place;
 import com.trova.backend.repository.PlaceRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,8 +22,11 @@ public class PlaceCatalogService {
 
     private final PlaceRepository placeRepository;
 
-    public PlaceCatalogService(PlaceRepository placeRepository) {
+    private final EntityManager entityManager;
+
+    public PlaceCatalogService(PlaceRepository placeRepository, EntityManager entityManager) {
         this.placeRepository = placeRepository;
+        this.entityManager = entityManager;
     }
 
     /**
@@ -29,6 +34,7 @@ public class PlaceCatalogService {
      * 없는 장소는 INSERT ... ON CONFLICT DO NOTHING으로 넣고 다시 조회한다 — 같은 검색 결과를
      * 여러 요청이 동시에 저장해도(여러 사용자의 같은 동네 검색 등) 유니크 제약 에러가 나지 않는다(#37).
      */
+    @Transactional
     public List<Place> upsertAll(List<GooglePlacesNearbySearchResponse.Place> rawCandidates) {
         List<String> googleIds = rawCandidates.stream()
                 .map(GooglePlacesNearbySearchResponse.Place::id)
@@ -62,6 +68,13 @@ public class PlaceCatalogService {
         for (GooglePlacesNearbySearchResponse.Place raw : rawCandidates) {
             Place place = byGoogleId.get(raw.id());
             if (place != null) {
+                if ((place.getLatitude() == null || place.getLongitude() == null) && raw.location() != null
+                        && raw.displayName() != null && PlaceNameMatch.sameCatalogName(place.getName(), raw.displayName().text())
+                        && Math.abs(raw.location().latitude()) <= 90 && Math.abs(raw.location().longitude()) <= 180) {
+                    placeRepository.repairMissingLocation(place.getId(), raw.location().latitude(),
+                            raw.location().longitude(), raw.formattedAddress());
+                    entityManager.refresh(place);
+                }
                 result.add(place);
             }
         }
