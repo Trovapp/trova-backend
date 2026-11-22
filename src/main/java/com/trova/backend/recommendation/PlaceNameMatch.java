@@ -1,6 +1,10 @@
 package com.trova.backend.recommendation;
 
+import java.text.Normalizer;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
@@ -26,60 +30,83 @@ public final class PlaceNameMatch {
         return a.contains(b) || b.contains(a);
     }
 
+    private static final Pattern PARENTHESES = Pattern.compile("\\(([^()]*)\\)");
+    private static final Set<String> GENERIC = Set.of("카페", "식당", "매장");
+
+    private record CatalogName(List<String> words, List<String> qualifiers) {
+        static CatalogName parse(String name) {
+            String normalized = Normalizer.normalize(name, Normalizer.Form.NFKC).toLowerCase(Locale.ROOT);
+            List<String> qualifiers = PARENTHESES.matcher(normalized).results()
+                    .map(result -> result.group(1).strip()).toList();
+            List<String> words = Arrays.stream(PARENTHESES.matcher(normalized).replaceAll(" ")
+                            .split("[^\\p{L}\\p{N}]+"))
+                    .filter(word -> !word.isEmpty() && !GENERIC.contains(word)).toList();
+            return new CatalogName(words, qualifiers);
+        }
+
+        boolean hasCompatibleQualifiers(CatalogName other) {
+            if (qualifiers.equals(other.qualifiers)) {
+                return true;
+            }
+            if (!qualifiers.isEmpty() && !other.qualifiers.isEmpty()) {
+                return false;
+            }
+            CatalogName annotated = qualifiers.isEmpty() ? other : this;
+            if (annotated.qualifiers.size() != 1) {
+                return false;
+            }
+            String note = annotated.qualifiers.getFirst();
+            String base = String.join("", annotated.words);
+            // 한글 이름 전체의 한자 병기는 허용한다. 관·동·층 등의 위치 표기는 보존한다.
+            return base.matches("[가-힣]+") && note.matches("[\\p{IsHan}]+")
+                    && note.length() == base.length() && !note.matches(".*[館棟層階室門區]");
+        }
+    }
+
     public static boolean sameCatalogName(String wanted, String found) {
         if (wanted == null || found == null) {
             return false;
         }
-        String expected = catalogName(wanted);
-        if (expected.isEmpty()) {
+        CatalogName left = CatalogName.parse(wanted);
+        CatalogName right = CatalogName.parse(found);
+        if (left.words.isEmpty() || right.words.isEmpty() || !left.hasCompatibleQualifiers(right)) {
             return false;
         }
-        String candidate = catalogName(found);
-        if (expected.equals(candidate)) {
+        String fullA = String.join("", left.words);
+        String fullB = String.join("", right.words);
+        if (fullA.equals(fullB)) {
             return true;
         }
-
-        if (expected.equals("명동성당점")) {
-            return isConfirmedIsaacBranch(candidate);
+        if (fullA.equals("명동성당점") || fullB.equals("명동성당점")) {
+            String named = fullA.equals("명동성당점") ? fullB : fullA;
+            return named.equals("이삭토스트서울명동성당점") || named.equals("이삭토스트명동성당점");
         }
-        if (candidate.equals("명동성당점")) {
-            return isConfirmedIsaacBranch(expected);
-        }
-
-        String[] left = wanted.strip().split("\\s+", 2);
-        String[] right = found.strip().split("\\s+", 2);
-        if (left.length != 2 || right.length != 2) {
+        // 브랜드를 첫 단어로 추측하지 않는다. 마지막 지점 토큰을 제외한 식별 토큰이 모두 일치해야 한다.
+        if (left.words.size() < 2 || right.words.size() < 2) {
             return false;
         }
-        String brand = catalogName(left[0]);
-        if (brand.isEmpty() || !brand.equals(catalogName(right[0]))) {
+        List<String> coreA = left.words.subList(0, left.words.size() - 1);
+        List<String> coreB = right.words.subList(0, right.words.size() - 1);
+        if (!Set.copyOf(coreA).equals(Set.copyOf(coreB))) {
             return false;
         }
-        String branchA = branchName(brand, left[1]);
-        String branchB = branchName(brand, right[1]);
-        if (!branchA.endsWith("점") || !branchB.endsWith("점") || Math.min(branchA.length(), branchB.length()) < 3) {
-            return false;
+        String lastA = left.words.getLast();
+        String lastB = right.words.getLast();
+        if (!lastA.endsWith("점") && !lastB.endsWith("점")) {
+            return lastA.equals(lastB);
         }
-        return branchA.equals(branchB) || withoutRegion(branchA).equals(branchB) || withoutRegion(branchB).equals(branchA);
+        String branchA = branchName(lastA, coreA);
+        String branchB = branchName(lastB, coreB);
+        return !branchA.isEmpty() && !branchB.isEmpty() && (branchA.equals(branchB)
+                || withoutRegion(branchA).equals(branchB) || withoutRegion(branchB).equals(branchA));
     }
 
-    // 브랜드 생략은 QA에서 확인한 지점에만 허용한다. 다른 지역의 동명 지점에는 적용하지 않는다.
-    private static boolean isConfirmedIsaacBranch(String name) {
-        return name.equals("이삭토스트서울명동성당점") || name.equals("이삭토스트명동성당점");
-    }
-
-    private static String branchName(String brand, String branch) {
-        String normalized = catalogName(branch);
-        return brand.equals("스타벅스") ? normalized.replaceFirst("r점$", "점") : normalized;
+    private static String branchName(String word, List<String> core) {
+        return word.replaceFirst(core.equals(List.of("스타벅스")) ? "r?점$" : "점$", "");
     }
 
     private static String withoutRegion(String branch) {
         return branch.replaceFirst("^(서울|강남|부산|대구|인천|광주|대전|울산|세종|제주)", "");
-    }
-
-    private static String catalogName(String name) {
-        return name.replaceAll("[（(]\\s*[\\p{IsHan}\\s]+[）)]", "")
-                .replaceAll("[^\\p{L}\\p{N}]", "").toLowerCase(Locale.ROOT);
     }
 
     /** 공백·기호를 지우고 소문자로, 여러 단어면 "…점"으로 끝나는 지점 단어를 뗀다. */

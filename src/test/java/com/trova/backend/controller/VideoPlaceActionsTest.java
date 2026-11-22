@@ -236,7 +236,7 @@ class VideoPlaceActionsTest {
     }
 
     @Test
-    void 경포호의_기존_ID가_먼_핀을_가리키면_저장을_거절한다() throws Exception {
+    void 경포호의_기존_ID가_일치하면_거리보다_우선한다() throws Exception {
         User user = userRepository.save(new User("google", "lake", "나", null));
         ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, "https://youtu.be/lake", SourcePlatform.YOUTUBE));
         SavedPlace lake = new SavedPlace(job, user, "경포호", "강릉", "attraction", 37.80, 128.91,
@@ -245,17 +245,12 @@ class VideoPlaceActionsTest {
         savedPlaceRepository.save(lake);
         placeRepository.save(new Place("lake-pin", "경포호(鏡浦湖)", "attraction", null, null, null,
                 37.795074, 128.896636, "저동 94"));
-        when(googlePlacesApiClient.searchText("강릉 경포호")).thenReturn(new GooglePlacesNearbySearchResponse(List.of(
-                new GooglePlacesNearbySearchResponse.Place("lake-pin",
-                        new GooglePlacesNearbySearchResponse.Place.DisplayName("경포호(鏡浦湖)"), List.of("park"),
-                        null, null, null, new GooglePlacesNearbySearchResponse.Place.Location(37.795074, 128.896636),
-                        "저동 94"))));
         mockMvc.perform(get("/api/places/" + lake.getId()).with(loginAs("lake")))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.address").value("운정동 984"))
                 .andExpect(jsonPath("$.addressSource").value("ANALYSIS_RESULT"));
         mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("lake"))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + lake.getId() + "}"))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isOk()).andExpect(jsonPath("$.googlePlaceId").value("lake-pin"));
     }
 
     @Test
@@ -301,6 +296,32 @@ class VideoPlaceActionsTest {
                 .andExpect(jsonPath("$.latitude").value(37.5632)).andExpect(jsonPath("$.longitude").value(126.9861));
     }
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource({
+            "cafe,cafe,49,1,200", "cafe,cafe,51,1,422", "attraction,park,299,1,200",
+            "attraction,park,301,1,422", "attraction,cafe,150,1,422", "cafe,cafe,20,2,422"
+    })
+    void ID가_없으면_이름과_거리와_후보_수를_함께_검증한다(
+            String sourceCategory, String catalogCategory, int meters, int count, int statusCode) throws Exception {
+        User user = userRepository.save(new User("google", "distance", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, "https://youtu.be/pin", SourcePlatform.YOUTUBE));
+        SavedPlace saved = savedPlaceRepository.save(new SavedPlace(job, user, "한빛", "서울", sourceCategory, 37.5, 127.0));
+        List<GooglePlacesNearbySearchResponse.Place> candidates = new java.util.ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            candidates.add(new GooglePlacesNearbySearchResponse.Place("pin-" + i,
+                    new GooglePlacesNearbySearchResponse.Place.DisplayName("한빛"), List.of(catalogCategory), null, null, null,
+                    new GooglePlacesNearbySearchResponse.Place.Location(37.5 + meters / 111195.0, 127.0), "서울"));
+        }
+        when(googlePlacesApiClient.searchText(anyString())).thenReturn(new GooglePlacesNearbySearchResponse(candidates));
+        var response = mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("distance"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + saved.getId() + "}"))
+                .andExpect(status().is(statusCode));
+        if (statusCode == 422) {
+            response.andExpect(jsonPath("$.code").value("PLACE_MATCH_AMBIGUOUS"));
+            assertThat(bookmarkRepository.findByUserIdOrderByCreatedAtDesc(user.getId())).isEmpty();
+        }
+    }
+
     @Test
     void 지도에서_찾지_못한_영상_장소는_찜하지_않고_알린다() throws Exception {
         User me = userRepository.save(new User("google", "vp-bm-2", "영상유저", null));
@@ -308,7 +329,7 @@ class VideoPlaceActionsTest {
 
         mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("vp-bm-2"))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + unknown.getId() + "}"))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity()).andExpect(jsonPath("$.code").value("PLACE_MATCH_AMBIGUOUS"));
         verify(googlePlacesApiClient).searchText("제주 어딘가카페");
     }
 }

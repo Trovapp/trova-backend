@@ -82,7 +82,6 @@ public class PlaceCatalogService {
 
     private void repairLocationIfMissing(Place place, GooglePlacesNearbySearchResponse.Place raw) {
         if ((place.getLatitude() == null || place.getLongitude() == null) && raw.location() != null
-                && raw.displayName() != null && PlaceNameMatch.sameCatalogName(place.getName(), raw.displayName().text())
                 && Math.abs(raw.location().latitude()) <= 90 && Math.abs(raw.location().longitude()) <= 180) {
             placeRepository.repairMissingLocation(place.getId(), raw.location().latitude(),
                     raw.location().longitude(), raw.formattedAddress());
