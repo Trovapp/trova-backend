@@ -3185,3 +3185,15 @@ sudo sed -i '/^APP_TRIP_EVENTS_TYPE=kafka[[:space:]]*$/d' /opt/trova-backend/.en
 ```sh
 sudo cp -p /opt/trova-backend/app.jar.bak-20261122-170805 /opt/trova-backend/app.jar && sudo systemctl restart trova-backend
 ```
+
+## 2026-11-23 빈 시간 추천에서 아파트·병원 등 제외 (#505) 운영 배포
+
+- 배포 기록 `gap-junk-filter`. 작업 폴더와 `origin/main`이 `a6a1ca5`로 일치하는 것을 확인했다. devflow 미리보기와 사전 점검을 통과했고, 00:14:51~00:19:24 KST에 배포했다(총 273초).
+- 재시작 150초 후 헬스가 `UP`이 됐다. 공개 `/actuator/health`에서 HTTP 200과 `UP`을 다시 확인했다. 새 프로세스의 기동 로그에 ERROR는 0건이었고, 로컬과 운영 JAR의 전체 SHA-256은 `6ca8ddcde69aac30f9665e7ae51d2b3069d08916a01f9aefab09e08af6b48a3f`로 일치했다.
+- 실행 중 프로세스에서 `APP_TRIP_EVENTS_TYPE=kafka`를 확인했다. 새 소비자가 `trova.trip-events`를 구독하고 그룹 가입·동기화를 마쳐 파티션 0과 1을 모두 할당받았다. 확인 시 fetch 누계는 55회였다.
+- 인증 없는 공유 요청과 자동 초안 목록 요청은 각각 401이었고 세션 쿠키는 0개였다. devflow 후속 점검 3건을 모두 통과했다.
+- 백업 `/opt/trova-backend/app.jar.bak-20261123-001451`의 전체 SHA-256은 배포 직전 운영 JAR과 일치했다. 복구가 필요할 때 운영 서버에서 다음 명령을 실행한다.
+
+```sh
+sudo cp -p /opt/trova-backend/app.jar.bak-20261123-001451 /opt/trova-backend/app.jar && sudo systemctl restart trova-backend
+```
