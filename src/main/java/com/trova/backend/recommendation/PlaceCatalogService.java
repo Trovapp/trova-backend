@@ -2,12 +2,14 @@ package com.trova.backend.recommendation;
 
 import com.trova.backend.entity.Place;
 import com.trova.backend.repository.PlaceRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +22,11 @@ public class PlaceCatalogService {
 
     private final PlaceRepository placeRepository;
 
-    public PlaceCatalogService(PlaceRepository placeRepository) {
+    private final EntityManager entityManager;
+
+    public PlaceCatalogService(PlaceRepository placeRepository, EntityManager entityManager) {
         this.placeRepository = placeRepository;
+        this.entityManager = entityManager;
     }
 
     /**
@@ -29,42 +34,58 @@ public class PlaceCatalogService {
      * 없는 장소는 INSERT ... ON CONFLICT DO NOTHING으로 넣고 다시 조회한다 — 같은 검색 결과를
      * 여러 요청이 동시에 저장해도(여러 사용자의 같은 동네 검색 등) 유니크 제약 에러가 나지 않는다(#37).
      */
+    @Transactional
     public List<Place> upsertAll(List<GooglePlacesNearbySearchResponse.Place> rawCandidates) {
-        List<String> googleIds = rawCandidates.stream()
-                .map(GooglePlacesNearbySearchResponse.Place::id)
-                .distinct()
-                .toList();
+        Map<String, List<GooglePlacesNearbySearchResponse.Place>> groups = new TreeMap<>();
+        for (GooglePlacesNearbySearchResponse.Place raw : rawCandidates) {
+            groups.computeIfAbsent(raw.id(), ignored -> new ArrayList<>()).add(raw);
+        }
         Map<String, Place> byGoogleId = new HashMap<>();
-        placeRepository.findByGooglePlaceIdIn(googleIds).forEach(p -> byGoogleId.put(p.getGooglePlaceId(), p));
+        placeRepository.findByGooglePlaceIdIn(List.copyOf(groups.keySet()))
+                .forEach(place -> byGoogleId.put(place.getGooglePlaceId(), place));
 
-        Map<String, GooglePlacesNearbySearchResponse.Place> missing = new LinkedHashMap<>();
-        for (GooglePlacesNearbySearchResponse.Place raw : rawCandidates) {
-            if (!byGoogleId.containsKey(raw.id())) {
-                missing.putIfAbsent(raw.id(), raw);
+        // INSERT와 좌표 복구 UPDATE를 같은 ID 순서로 실행한다. 마지막 일괄 조회 뒤에는 쓰지 않는다.
+        List<String> inserted = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        for (List<GooglePlacesNearbySearchResponse.Place> group : groups.values()) {
+            GooglePlacesNearbySearchResponse.Place first = group.getFirst();
+            Place place = byGoogleId.get(first.id());
+            if (place == null) {
+                boolean created = insertIfAbsent(first, now);
+                if (created && (first.location() != null || group.size() == 1)) {
+                    inserted.add(first.id());
+                    continue;
+                }
+                // 동시 삽입으로 생긴 행이나, 다음 중복 후보에서 좌표를 보완할 행은 지금 읽는다.
+                place = placeRepository.findByGooglePlaceId(first.id()).orElseThrow();
+                byGoogleId.put(first.id(), place);
+            }
+            for (GooglePlacesNearbySearchResponse.Place raw : group) {
+                repairLocationIfMissing(place, raw);
             }
         }
-        if (!missing.isEmpty()) {
-            LocalDateTime now = LocalDateTime.now();
-            for (GooglePlacesNearbySearchResponse.Place raw : missing.values()) {
-                String category = raw.types() != null && !raw.types().isEmpty() ? raw.types().get(0) : null;
-                String name = raw.displayName() != null ? raw.displayName().text() : null;
-                Double lat = raw.location() != null ? raw.location().latitude() : null;
-                Double lng = raw.location() != null ? raw.location().longitude() : null;
-                placeRepository.insertIfAbsent(
-                        raw.id(), name, category, raw.rating(), raw.userRatingCount(),
-                        raw.priceLevel(), lat, lng, raw.formattedAddress(), now);
-            }
-            placeRepository.findByGooglePlaceIdIn(List.copyOf(missing.keySet()))
-                    .forEach(p -> byGoogleId.put(p.getGooglePlaceId(), p));
+        if (!inserted.isEmpty()) {
+            placeRepository.findByGooglePlaceIdIn(inserted)
+                    .forEach(place -> byGoogleId.put(place.getGooglePlaceId(), place));
         }
+        return rawCandidates.stream().map(raw -> byGoogleId.get(raw.id())).toList();
+    }
 
-        List<Place> result = new ArrayList<>();
-        for (GooglePlacesNearbySearchResponse.Place raw : rawCandidates) {
-            Place place = byGoogleId.get(raw.id());
-            if (place != null) {
-                result.add(place);
-            }
+    private boolean insertIfAbsent(GooglePlacesNearbySearchResponse.Place raw, LocalDateTime now) {
+        String category = raw.types() != null && !raw.types().isEmpty() ? raw.types().getFirst() : null;
+        String name = raw.displayName() == null ? null : raw.displayName().text();
+        Double lat = raw.location() == null ? null : raw.location().latitude();
+        Double lng = raw.location() == null ? null : raw.location().longitude();
+        return placeRepository.insertIfAbsent(raw.id(), name, category, raw.rating(), raw.userRatingCount(),
+                raw.priceLevel(), lat, lng, raw.formattedAddress(), now) == 1;
+    }
+
+    private void repairLocationIfMissing(Place place, GooglePlacesNearbySearchResponse.Place raw) {
+        if ((place.getLatitude() == null || place.getLongitude() == null) && raw.location() != null
+                && Math.abs(raw.location().latitude()) <= 90 && Math.abs(raw.location().longitude()) <= 180) {
+            placeRepository.repairMissingLocation(place.getId(), raw.location().latitude(),
+                    raw.location().longitude(), raw.formattedAddress());
+            entityManager.refresh(place);
         }
-        return result;
     }
 }

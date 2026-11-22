@@ -193,7 +193,7 @@ class VideoPlaceActionsTest {
     void 일정_초안의_영상_장소도_리뷰_요약을_본다() throws Exception {
         // #235: 일정 초안 장소는 아직 여행 장소가 아니라 영상 장소 — 찜하기와 같은 규칙으로 구글 장소에 연결해 리뷰를 준다.
         User me = userRepository.save(new User("google", "vp-review-1", "영상유저", null));
-        placeRepository.save(new Place("gp-video-review", "바다카페", "cafe", 4.4, 30, null, 33.45, 126.5, "제주"));
+        placeRepository.save(new Place("gp-video-review", "바다카페", "cafe", 4.4, 30, null, 33.46, 126.5, "제주"));
         SavedPlace cafe = videoPlace(me, "바다카페");
         cafe.applyOpeningHours("gp-video-review", null);
         savedPlaceRepository.save(cafe);
@@ -228,10 +228,98 @@ class VideoPlaceActionsTest {
 
         mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("vp-bm-1"))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + cafe.getId() + "}"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.addressSource").value("PLACE_CATALOG"));
 
         assertThat(bookmarkRepository.findByUserAndPlace(me, catalog)).isPresent();
         verify(googlePlacesApiClient, never()).searchText(anyString());
+    }
+
+    @Test
+    void 경포호의_기존_ID가_일치하면_거리보다_우선한다() throws Exception {
+        User user = userRepository.save(new User("google", "lake", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, "https://youtu.be/lake", SourcePlatform.YOUTUBE));
+        SavedPlace lake = new SavedPlace(job, user, "경포호", "강릉", "attraction", 37.80, 128.91,
+                null, null, null, "운정동 984", null, null, null);
+        lake.applyOpeningHours("lake-pin", null);
+        savedPlaceRepository.save(lake);
+        placeRepository.save(new Place("lake-pin", "경포호(鏡浦湖)", "attraction", null, null, null,
+                37.795074, 128.896636, "저동 94"));
+        mockMvc.perform(get("/api/places/" + lake.getId()).with(loginAs("lake")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.address").value("운정동 984"))
+                .andExpect(jsonPath("$.addressSource").value("ANALYSIS_RESULT"));
+        mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("lake"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + lake.getId() + "}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.googlePlaceId").value("lake-pin"));
+    }
+
+    @Test
+    void 경포호_옆의_경포호호텔은_건너뛰고_한자_병기된_호수를_저장한다() throws Exception {
+        User user = userRepository.save(new User("google", "lake-near", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, "https://youtu.be/near", SourcePlatform.YOUTUBE));
+        SavedPlace lake = savedPlaceRepository.save(new SavedPlace(job, user, "경포호", "강릉", "attraction", 37.79556, 128.90234,
+                null, null, null, "운정동 984", null, null, null));
+        Place hotel = placeRepository.save(new Place("lake-hotel", "경포호호텔", "hotel", null, null, null,
+                37.79556, 128.90234, "호텔 주소"));
+        Place correct = placeRepository.save(new Place("lake-near", "경포호(鏡浦湖)", "park", null, null, null,
+                37.79670, 128.90205, "저동 94"));
+        Place duplicate = placeRepository.save(new Place("lake-second", "경포호", "park", null, null, null,
+                37.79685, 128.90228, "강릉시 경포호"));
+        List<GooglePlacesNearbySearchResponse.Place> candidates = List.of(hotel, duplicate, correct).stream()
+                .map(p -> new GooglePlacesNearbySearchResponse.Place(p.getGooglePlaceId(),
+                        new GooglePlacesNearbySearchResponse.Place.DisplayName(p.getName()), List.of(p.getCategory()),
+                        null, null, null, new GooglePlacesNearbySearchResponse.Place.Location(p.getLatitude(), p.getLongitude()),
+                        p.getAddress())).toList();
+        when(googlePlacesApiClient.searchText("강릉 경포호")).thenReturn(new GooglePlacesNearbySearchResponse(candidates));
+        mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("lake-near"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + lake.getId() + "}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.placeId").value(correct.getId()))
+                .andExpect(jsonPath("$.address").value("저동 94"));
+    }
+
+    @Test
+    void 지점_별칭은_가까운_핀을_저장하고_누락된_카탈로그_좌표를_복구한다() throws Exception {
+        User user = userRepository.save(new User("google", "isaac", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, "https://youtu.be/toast", SourcePlatform.YOUTUBE));
+        SavedPlace toast = savedPlaceRepository.save(new SavedPlace(job, user, "이삭토스트 서울명동성당점", "서울", "cafe",
+                37.5630, 126.9860));
+        toast.applyOpeningHours("isaac-myeongdong", null);
+        Place catalog = placeRepository.save(new Place("isaac-myeongdong", "이삭토스트 명동성당점", "cafe",
+                null, null, null, null, null, null));
+        when(googlePlacesApiClient.searchText(anyString())).thenReturn(new GooglePlacesNearbySearchResponse(List.of(
+                new GooglePlacesNearbySearchResponse.Place("isaac-myeongdong",
+                        new GooglePlacesNearbySearchResponse.Place.DisplayName("이삭토스트 명동성당점"), List.of("cafe"),
+                        null, null, null, new GooglePlacesNearbySearchResponse.Place.Location(37.5632, 126.9861), "명동"))));
+        mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("isaac"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + toast.getId() + "}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.placeId").value(catalog.getId()))
+                .andExpect(jsonPath("$.latitude").value(37.5632)).andExpect(jsonPath("$.longitude").value(126.9861));
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource({
+            "cafe,cafe,49,1,200", "cafe,cafe,51,1,422", "attraction,park,299,1,200",
+            "attraction,park,301,1,422", "attraction,cafe,150,1,422", "cafe,cafe,20,2,422"
+    })
+    void ID가_없으면_이름과_거리와_후보_수를_함께_검증한다(
+            String sourceCategory, String catalogCategory, int meters, int count, int statusCode) throws Exception {
+        User user = userRepository.save(new User("google", "distance", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, "https://youtu.be/pin", SourcePlatform.YOUTUBE));
+        SavedPlace saved = savedPlaceRepository.save(new SavedPlace(job, user, "한빛", "서울", sourceCategory, 37.5, 127.0));
+        List<GooglePlacesNearbySearchResponse.Place> candidates = new java.util.ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            candidates.add(new GooglePlacesNearbySearchResponse.Place("pin-" + i,
+                    new GooglePlacesNearbySearchResponse.Place.DisplayName("한빛"), List.of(catalogCategory), null, null, null,
+                    new GooglePlacesNearbySearchResponse.Place.Location(37.5 + meters / 111195.0, 127.0), "서울"));
+        }
+        when(googlePlacesApiClient.searchText(anyString())).thenReturn(new GooglePlacesNearbySearchResponse(candidates));
+        var response = mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("distance"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + saved.getId() + "}"))
+                .andExpect(status().is(statusCode));
+        if (statusCode == 422) {
+            response.andExpect(jsonPath("$.code").value("PLACE_MATCH_AMBIGUOUS"));
+            assertThat(bookmarkRepository.findByUserIdOrderByCreatedAtDesc(user.getId())).isEmpty();
+        }
     }
 
     @Test
@@ -241,7 +329,7 @@ class VideoPlaceActionsTest {
 
         mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("vp-bm-2"))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + unknown.getId() + "}"))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity()).andExpect(jsonPath("$.code").value("PLACE_MATCH_AMBIGUOUS"));
         verify(googlePlacesApiClient).searchText("제주 어딘가카페");
     }
 }
