@@ -4,6 +4,9 @@ import com.trova.backend.entity.Place;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.GapPlaceRow;
 import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.repository.SavedPlaceRepository;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +35,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class GapRecommendationServiceTest {
 
+    @Mock private SavedPlaceRepository savedPlaceRepository;
     @Mock private TripPlaceRepository tripPlaceRepository;
     @Mock private GooglePlacesApiClient googlePlacesApiClient;
     @Mock private PlaceCatalogService placeCatalogService;
@@ -69,6 +73,57 @@ class GapRecommendationServiceTest {
         Place place = new Place(googlePlaceId, googlePlaceId, category, rating, reviews, null, 37.505, 127.000, null);
         setId(place, id);
         return place;
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "e편한세상 봉황역아파트, establishment, false", "강일병원, establishment, false",
+            "반계초등학교, establishment, false", "김해시청, establishment, false",
+            "KCC 문막공장, establishment, false", "쌍용자동차 서비스 프라자, establishment, false",
+            "마가의다락방교회, place_of_worship, false", "어승생 공설묘지, cemetery, false",
+            "굴포천역, establishment, false", "무명시설, doctor, false",
+            "유엔기념공원, cemetery|park, true", "불국사, place_of_worship|tourist_attraction, true",
+            "강일병원, cafe, true", "봄의원, korean_restaurant, true", "봄대학교, university|school, true",
+            "봄편의점, convenience_store, true", "봄호텔, hotel|lodging, true"
+    })
+    void 빈시간_후보의_전체_유형과_이름을_검사한다(String name, String types, boolean keep) {
+        when(tripPlaceRepository.findGapPlaceRows(1L, USER_ID, 1)).thenReturn(
+                List.of(row(10L, null, "10:00", 37.5, 127.0, null)));
+        var raw = new GooglePlacesNearbySearchResponse.Place("candidate",
+                new GooglePlacesNearbySearchResponse.Place.DisplayName(name),
+                List.of(("point_of_interest|" + types).split("[|]")), null, null, null, null, null);
+        when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any()))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(raw)));
+        when(placeCatalogService.upsertAll(anyList())).thenReturn(List.of(
+                place(1L, "candidate", "point_of_interest", null, null)));
+
+        var recommendations = gapRecommendationService.findGaps(USER_ID, 1L, 1).orElseThrow().getFirst().recommendations();
+        assertThat(recommendations).hasSize(keep ? 1 : 0);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "의료, false", "관광, true", "음식, true"
+    })
+    void 저장된_카카오_분류도_같은_ID에만_적용한다(String kind, boolean keep) {
+        String path = switch (kind) {
+            case "의료" -> "의료,건강 > 병원 > 내과";
+            case "관광" -> "여행 > 관광,명소 > 문화유적";
+            default -> "음식점 > 카페";
+        };
+        var raw = new GooglePlacesNearbySearchResponse.Place("candidate",
+                new GooglePlacesNearbySearchResponse.Place.DisplayName("의료".equals(kind) ? "새봄" : "강일병원"),
+                List.of("establishment"), null, null, null, null, null);
+        when(tripPlaceRepository.findGapPlaceRows(1L, USER_ID, 1)).thenReturn(
+                List.of(row(10L, null, "10:00", 37.5, 127.0, null)));
+        when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any()))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of(raw)));
+        when(placeCatalogService.upsertAll(anyList())).thenReturn(List.of(place(1L, "candidate", null, null, null)));
+        when(savedPlaceRepository.findKakaoCategories(USER_ID, List.of("candidate")))
+                .thenReturn(List.of(new SavedPlaceRepository.KakaoCategoryRow("candidate", path)));
+
+        assertThat(gapRecommendationService.findGaps(USER_ID, 1L, 1).orElseThrow().getFirst().recommendations())
+                .hasSize(keep ? 1 : 0);
     }
 
     @Test

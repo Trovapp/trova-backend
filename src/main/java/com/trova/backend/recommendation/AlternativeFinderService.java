@@ -41,6 +41,10 @@ public class AlternativeFinderService {
 
     private static final Logger log = LoggerFactory.getLogger(AlternativeFinderService.class);
 
+    private static final Set<String> NOT_A_STOP = Set.of(
+            "lodging", "hotel", "motel", "hostel", "guest_house", "resort_hotel", "extended_stay_hotel",
+            "subway_station", "train_station", "transit_station", "bus_station", "light_rail_station", "airport",
+            "university", "school", "primary_school", "secondary_school", "parking", "gas_station");
     private static final double SEARCH_RADIUS_METERS = 2000;
     // 이름 끝이 같은 후보를 같은 장소로 볼 거리 — 구글·카카오 좌표 차이를 넉넉히 본다(#177).
     private static final double SAME_PLACE_KM = 0.3;
@@ -179,9 +183,9 @@ public class AlternativeFinderService {
         // 바꾸려는 곳이 숙소·역이면 같은 종류가 대안이므로 그대로 둔다.
         boolean lodgingTarget = GoogleTypeMapper.defaultTypeFor(target.getCategory()).filter("lodging"::equals).isPresent();
         if (filter.category() == null && !lodgingTarget
-                && (target.getCategory() == null || !GapRecommendationService.NOT_A_STOP.contains(target.getCategory()))) {
+                && (target.getCategory() == null || !NOT_A_STOP.contains(target.getCategory()))) {
             candidates = candidates.stream()
-                    .filter(p -> !(p.getCategory() != null && GapRecommendationService.NOT_A_STOP.contains(p.getCategory())))
+                    .filter(p -> !(p.getCategory() != null && NOT_A_STOP.contains(p.getCategory())))
                     .toList();
         }
 

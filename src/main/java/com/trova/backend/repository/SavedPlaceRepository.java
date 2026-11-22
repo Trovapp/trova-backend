@@ -17,6 +17,16 @@ public interface SavedPlaceRepository extends JpaRepository<SavedPlace, Long> {
     @EntityGraph(attributePaths = {"processingJob", "processingJob.user", "user"})
     List<SavedPlace> findByUserOrderByCreatedAtDescIdDesc(User user);
 
+    record KakaoCategoryRow(String googlePlaceId, String category) {}
+
+    @Query("""
+            select distinct new com.trova.backend.repository.SavedPlaceRepository$KakaoCategoryRow(
+                p.googlePlaceId, p.kakaoCategoryName)
+            from SavedPlace p
+            where p.user.id = :userId and p.googlePlaceId in :googleIds and p.kakaoCategoryName is not null
+            """)
+    List<KakaoCategoryRow> findKakaoCategories(Long userId, List<String> googleIds);
+
     String LIST_ROWS = """
             select new com.trova.backend.repository.SavedPlaceListRow(
                 p.id, j.id, j.sourceUrl, p.placeName, p.region, p.category, p.latitude, p.longitude,
