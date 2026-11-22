@@ -30,11 +30,21 @@ class PlaceNameMatchTest {
 
     @Test
     void 시설과_입점한_매장은_같은_장소가_아니다() {
-        for (String facility : java.util.List.of("롯데백화점", "롯데몰", "서울역", "김포공항", "롯데몰점", "서울역점", "김포공항점")) {
+        for (String facility : java.util.List.of("롯데면세점", "현대백화점중동점", "롯데백화점", "알수없는시설중동점", "롯데몰", "서울역", "김포공항", "롯데몰점", "서울역점", "김포공항점")) {
             assertThat(PlaceNameMatch.sameCatalogName(facility, "나이키 " + facility)).isFalse();
             assertThat(PlaceNameMatch.sameCatalogName("나이키 " + facility, facility)).isFalse();
         }
         assertThat(PlaceNameMatch.sameCatalogName("나이키 서울롯데몰점", "나이키 롯데몰점")).isTrue();
+    }
+
+    @Test
+    void 브랜드와_지점이_같을_때만_지역명과_R_표기를_허용한다() {
+        assertThat(PlaceNameMatch.sameCatalogName("스타벅스 강남점", "스타벅스 강남R점")).isTrue();
+        assertThat(PlaceNameMatch.sameCatalogName("스타벅스 강남역삼점", "스타벅스 역삼점")).isTrue();
+        assertThat(PlaceNameMatch.sameCatalogName("스타벅스 강남점", "스타벅스 홍대R점")).isFalse();
+        assertThat(PlaceNameMatch.sameCatalogName("나이키 명동성당점", "명동성당점")).isFalse();
+        assertThat(PlaceNameMatch.sameCatalogName("이삭토스트 부산명동성당점", "명동성당점")).isFalse();
+        assertThat(PlaceNameMatch.sameCatalogName("경포호", "경포호(鏡浦湖)")).isTrue();
     }
 
     @Test

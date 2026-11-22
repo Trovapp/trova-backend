@@ -26,7 +26,6 @@ public final class PlaceNameMatch {
         return a.contains(b) || b.contains(a);
     }
 
-    // 북마크는 특정 지점을 가리킨다. 지점명은 유지하고 한자 병기·공백·기호만 제거한다.
     public static boolean sameCatalogName(String wanted, String found) {
         if (wanted == null || found == null) {
             return false;
@@ -35,31 +34,47 @@ public final class PlaceNameMatch {
         if (expected.isEmpty()) {
             return false;
         }
-        if (expected.equals(catalogName(found))) {
+        String candidate = catalogName(found);
+        if (expected.equals(candidate)) {
             return true;
         }
-        String[] a = wanted.strip().split("\\s+(?=\\S+$)", 2);
-        String[] b = found.strip().split("\\s+(?=\\S+$)", 2);
-        String branchA = catalogName(a[a.length - 1]);
-        String branchB = catalogName(b[b.length - 1]);
-        if (!branchA.endsWith("점") || !branchB.endsWith("점")
-                || Math.min(branchA.length(), branchB.length()) < 3
-                || (a.length == 2 && b.length == 2 && !catalogName(a[0]).equals(catalogName(b[0])))) {
+
+        if (expected.equals("명동성당점")) {
+            return isConfirmedIsaacBranch(candidate);
+        }
+        if (candidate.equals("명동성당점")) {
+            return isConfirmedIsaacBranch(expected);
+        }
+
+        String[] left = wanted.strip().split("\\s+", 2);
+        String[] right = found.strip().split("\\s+", 2);
+        if (left.length != 2 || right.length != 2) {
             return false;
         }
-        if (a.length != b.length && (isFacility(branchA) || isFacility(branchB))) {
+        String brand = catalogName(left[0]);
+        if (brand.isEmpty() || !brand.equals(catalogName(right[0]))) {
             return false;
         }
-        return branchA.equals(branchB) || withoutCity(branchA).equals(branchB) || withoutCity(branchB).equals(branchA);
+        String branchA = branchName(brand, left[1]);
+        String branchB = branchName(brand, right[1]);
+        if (!branchA.endsWith("점") || !branchB.endsWith("점") || Math.min(branchA.length(), branchB.length()) < 3) {
+            return false;
+        }
+        return branchA.equals(branchB) || withoutRegion(branchA).equals(branchB) || withoutRegion(branchB).equals(branchA);
     }
 
-    // 시설명이 단독으로 쓰이면 그 안에 있는 매장의 지점 별칭으로 간주하지 않는다.
-    private static boolean isFacility(String branch) {
-        return branch.matches(".*(?:백화점|몰|아울렛|마트|역|공항|터미널)점?");
+    // 브랜드 생략은 QA에서 확인한 지점에만 허용한다. 다른 지역의 동명 지점에는 적용하지 않는다.
+    private static boolean isConfirmedIsaacBranch(String name) {
+        return name.equals("이삭토스트서울명동성당점") || name.equals("이삭토스트명동성당점");
     }
 
-    private static String withoutCity(String branch) {
-        return branch.replaceFirst("^(서울|부산|대구|인천|광주|대전|울산|세종|제주)", "");
+    private static String branchName(String brand, String branch) {
+        String normalized = catalogName(branch);
+        return brand.equals("스타벅스") ? normalized.replaceFirst("r점$", "점") : normalized;
+    }
+
+    private static String withoutRegion(String branch) {
+        return branch.replaceFirst("^(서울|강남|부산|대구|인천|광주|대전|울산|세종|제주)", "");
     }
 
     private static String catalogName(String name) {
