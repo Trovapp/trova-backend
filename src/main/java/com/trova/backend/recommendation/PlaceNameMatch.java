@@ -3,6 +3,7 @@ package com.trova.backend.recommendation;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.Locale;
@@ -31,7 +32,12 @@ public final class PlaceNameMatch {
     }
 
     private static final Pattern PARENTHESES = Pattern.compile("\\(([^()]*)\\)");
-    private static final Set<String> GENERIC = Set.of("카페", "식당", "매장");
+    private static final Set<String> GENERIC = Set.of("카페", "식당", "베이커리", "호텔", "매장");
+    // 붙여 쓴 이름에서 상호와 지점의 경계를 추측하지 않고 확인된 표기만 연결한다.
+    private static final Map<String, String> CONFIRMED_NAMES = Map.of(
+            "교보문고광화문점", "교보문고광화문",
+            "명동성당점", "이삭토스트명동성당점",
+            "이삭토스트서울명동성당점", "이삭토스트명동성당점");
 
     private record CatalogName(List<String> words, List<String> qualifiers) {
         static CatalogName parse(String name) {
@@ -40,7 +46,7 @@ public final class PlaceNameMatch {
                     .map(result -> result.group(1).strip()).toList();
             List<String> words = Arrays.stream(PARENTHESES.matcher(normalized).replaceAll(" ")
                             .split("[^\\p{L}\\p{N}]+"))
-                    .filter(word -> !word.isEmpty() && !GENERIC.contains(word)).toList();
+                    .filter(word -> !word.isEmpty()).toList();
             return new CatalogName(words, qualifiers);
         }
 
@@ -52,14 +58,8 @@ public final class PlaceNameMatch {
                 return false;
             }
             CatalogName annotated = qualifiers.isEmpty() ? other : this;
-            if (annotated.qualifiers.size() != 1) {
-                return false;
-            }
-            String note = annotated.qualifiers.getFirst();
-            String base = String.join("", annotated.words);
-            // 한글 이름 전체의 한자 병기는 허용한다. 관·동·층 등의 위치 표기는 보존한다.
-            return base.matches("[가-힣]+") && note.matches("[\\p{IsHan}]+")
-                    && note.length() == base.length() && !note.matches(".*[館棟層階室門區]");
+            // 괄호를 생략해도 되는 것으로 확인된 표기만 허용한다.
+            return annotated.words.equals(List.of("경포호")) && annotated.qualifiers.equals(List.of("鏡浦湖"));
         }
     }
 
@@ -69,17 +69,13 @@ public final class PlaceNameMatch {
         }
         CatalogName left = CatalogName.parse(wanted);
         CatalogName right = CatalogName.parse(found);
-        if (left.words.isEmpty() || right.words.isEmpty() || !left.hasCompatibleQualifiers(right)) {
+        if (left.words.stream().allMatch(GENERIC::contains) || right.words.stream().allMatch(GENERIC::contains) || !left.hasCompatibleQualifiers(right)) {
             return false;
         }
         String fullA = String.join("", left.words);
         String fullB = String.join("", right.words);
-        if (fullA.equals(fullB)) {
+        if (CONFIRMED_NAMES.getOrDefault(fullA, fullA).equals(CONFIRMED_NAMES.getOrDefault(fullB, fullB))) {
             return true;
-        }
-        if (fullA.equals("명동성당점") || fullB.equals("명동성당점")) {
-            String named = fullA.equals("명동성당점") ? fullB : fullA;
-            return named.equals("이삭토스트서울명동성당점") || named.equals("이삭토스트명동성당점");
         }
         // 브랜드를 첫 단어로 추측하지 않는다. 마지막 지점 토큰을 제외한 식별 토큰이 모두 일치해야 한다.
         if (left.words.size() < 2 || right.words.size() < 2) {
@@ -87,7 +83,7 @@ public final class PlaceNameMatch {
         }
         List<String> coreA = left.words.subList(0, left.words.size() - 1);
         List<String> coreB = right.words.subList(0, right.words.size() - 1);
-        if (!Set.copyOf(coreA).equals(Set.copyOf(coreB))) {
+        if (!coreA.equals(coreB)) {
             return false;
         }
         String lastA = left.words.getLast();

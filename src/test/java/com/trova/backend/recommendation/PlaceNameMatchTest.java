@@ -20,6 +20,14 @@ class PlaceNameMatchTest {
 
     @org.junit.jupiter.params.ParameterizedTest
     @org.junit.jupiter.params.provider.CsvSource({
+            "한빛 카페,한빛 식당,false",
+            "한빛 카페,한빛 베이커리,false",
+            "서울 호텔 명동점,호텔 서울 명동점,false",
+            "달빛,달빛(分店),false",
+            "달빛,달빛(支店),false",
+            "달빛,달빛(별관),false",
+            "달빛,달빛(未知),false",
+            "교보문고광화문점,교보문고 광화문,true",
             "카페 서울숲 성수점,카페 숲 성수점,false",
             "투썸 플레이스 서울명동점,투썸 플레이스 명동점,true",
             "교보문고 광화문점,교보문고 광화문,true",
