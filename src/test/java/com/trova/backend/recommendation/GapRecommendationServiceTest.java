@@ -7,6 +7,7 @@ import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -124,6 +125,36 @@ class GapRecommendationServiceTest {
 
         assertThat(gapRecommendationService.findGaps(USER_ID, 1L, 1).orElseThrow().getFirst().recommendations())
                 .hasSize(keep ? 1 : 0);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "새봄, establishment, hospital, false",
+            "강일병원, point_of_interest, cafe, true",
+            "봄사찰, establishment, tourist_attraction, true",
+            "봄사찰, place_of_worship, historical_place, true",
+            "대구역, establishment, point_of_interest, false",
+            "동대구역, point_of_interest, establishment, false",
+            "옛대구역, tourist_attraction, establishment, true"
+    })
+    void 카탈로그와_검색_분류_및_역_이름을_함께_판단한다(String name, String type, String cached, boolean keep) {
+        var source = new GooglePlacesNearbySearchResponse.Place("id",
+                new GooglePlacesNearbySearchResponse.Place.DisplayName(name), List.of(type),
+                null, null, null, null, null);
+        assertThat(GapStopPolicy.allows(source, place(1L, "id", cached, null, null), List.of())).isEqualTo(keep);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "general_hospital", "medical_lab", "chiropractor", "physiotherapist", "skin_care_clinic",
+            "parking_garage", "parking_lot", "fire_station", "neighborhood_police_station", "embassy",
+            "manufacturer", "business_center", "coworking_space", "supplier", "courier_service",
+            "shipping_service", "moving_company"
+    })
+    void 세부_업무_유형_하나만_있어도_제외한다(String type) {
+        var source = new GooglePlacesNearbySearchResponse.Place("id", null, List.of(type),
+                null, null, null, null, null);
+        assertThat(GapStopPolicy.allows(source, place(1L, "id", null, null, null), List.of())).isFalse();
     }
 
     @Test

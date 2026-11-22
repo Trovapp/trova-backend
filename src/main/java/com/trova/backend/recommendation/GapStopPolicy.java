@@ -12,11 +12,16 @@ final class GapStopPolicy {
 
     private static final Set<String> EXCLUDED = Set.of(
             "apartment_building", "apartment_complex", "condominium_complex", "housing_complex",
-            "hospital", "doctor", "medical_center", "public_health_department", "medical_clinic", "dental_clinic", "dentist", "pharmacy", "drugstore",
+            "hospital", "general_hospital", "doctor", "medical_center", "public_health_department", "medical_clinic",
+            "medical_lab", "skin_care_clinic", "chiropractor", "physiotherapist", "dental_clinic", "dentist",
+            "pharmacy", "drugstore",
             "school", "primary_school", "secondary_school", "middle_school", "high_school", "preschool", "private_tutor",
-            "government_office", "local_government_office", "city_hall", "post_office", "police", "courthouse",
-            "factory", "warehouse", "storage", "logistics_service", "corporate_office", "car_repair", "bank", "atm", "gas_station",
-            "parking", "real_estate_agency", "insurance_agency", "place_of_worship", "shinto_shrine", "buddhist_temple",
+            "government_office", "local_government_office", "city_hall", "post_office", "courthouse", "embassy",
+            "fire_station", "police", "neighborhood_police_station",
+            "factory", "manufacturer", "warehouse", "storage", "logistics_service", "shipping_service",
+            "courier_service", "moving_company", "supplier", "corporate_office", "business_center", "coworking_space",
+            "car_repair", "bank", "atm", "gas_station",
+            "parking", "parking_garage", "parking_lot", "real_estate_agency", "insurance_agency", "place_of_worship", "shinto_shrine", "buddhist_temple",
             "hindu_temple", "church", "mosque", "synagogue", "funeral_home", "cemetery",
             "bus_stop", "bus_station", "train_station", "subway_station", "transit_station",
             "transit_stop", "light_rail_station", "airport",
@@ -41,12 +46,13 @@ final class GapStopPolicy {
             "부동산", "공인중개사", "공인중개사사무소", "보험대리점", "교회", "성당", "사찰", "장례식장",
             "묘지", "정류장", "정거장", "역");
 
-    private static final List<String> AREA_ENDINGS = List.of("구역", "지역", "해역", "권역");
+    // '구역'·'지역' 같은 두 글자는 대구역·동대구역처럼 역 이름과도 겹칠 수 있다.
+    private static final List<String> AREA_ENDINGS = List.of("보호구역", "보전지역", "보호해역");
 
     static boolean allows(GooglePlacesNearbySearchResponse.Place source, Place stored, List<String> kakaoPaths) {
         Set<String> labels = new HashSet<>();
         if (source.types() != null) labels.addAll(source.types());
-        if (labels.isEmpty() && stored.getCategory() != null) labels.add(stored.getCategory());
+        if (stored.getCategory() != null) labels.add(stored.getCategory());
         for (String path : kakaoPaths) {
             Arrays.stream(path.split(">")).map(String::strip).forEach(labels::add);
         }
