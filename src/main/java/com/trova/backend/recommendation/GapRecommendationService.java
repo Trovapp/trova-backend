@@ -3,6 +3,7 @@ package com.trova.backend.recommendation;
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.GapPlaceRow;
+import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.service.ApiCallLogService;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -16,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * 시간이 입력된 연속 장소 사이에 30분 넘는 공백이 있으면, 두 장소의 중간지점
@@ -32,10 +32,6 @@ public class GapRecommendationService {
     private static final LocalTime LUNCH_TO = LocalTime.of(14, 0);
     private static final LocalTime DINNER_FROM = LocalTime.of(17, 0);
     private static final LocalTime DINNER_TO = LocalTime.of(20, 0);
-    static final Set<String> NOT_A_STOP = Set.of(
-            "lodging", "hotel", "motel", "hostel", "guest_house", "resort_hotel", "extended_stay_hotel",
-            "subway_station", "train_station", "transit_station", "bus_station", "light_rail_station", "airport",
-            "university", "school", "primary_school", "secondary_school", "parking", "gas_station");
     private static final double SEARCH_RADIUS_METERS = 1500;
     // AlternativeFinderService와 동일한 이유로 곱셈 부스트 + 바닥값을 쓴다
     // (2026-09-14 실측 — 덧셈 부스트는 인기 랜드마크 baseScore 앞에서 무의미했음).
@@ -45,6 +41,7 @@ public class GapRecommendationService {
     public record Gap(Long beforePlaceId, Long afterPlaceId, int gapMinutes, List<AlternativeCandidate> recommendations) {
     }
 
+    private final SavedPlaceRepository savedPlaceRepository;
     private final TripPlaceRepository tripPlaceRepository;
     private final GooglePlacesApiClient googlePlacesApiClient;
     private final PlaceCatalogService placeCatalogService;
@@ -53,10 +50,11 @@ public class GapRecommendationService {
     private final PersonalizationService personalizationService;
 
     public GapRecommendationService(
-            TripPlaceRepository tripPlaceRepository, GooglePlacesApiClient googlePlacesApiClient,
-            PlaceCatalogService placeCatalogService, ApiCallLogService apiCallLogService,
+            SavedPlaceRepository savedPlaceRepository, TripPlaceRepository tripPlaceRepository,
+            GooglePlacesApiClient googlePlacesApiClient, PlaceCatalogService placeCatalogService, ApiCallLogService apiCallLogService,
             PlaceEmbeddingService placeEmbeddingService, PersonalizationService personalizationService
     ) {
+        this.savedPlaceRepository = savedPlaceRepository;
         this.tripPlaceRepository = tripPlaceRepository;
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeCatalogService = placeCatalogService;
@@ -151,14 +149,24 @@ public class GapRecommendationService {
         List<GooglePlacesNearbySearchResponse.Place> raw =
                 response.places() != null ? response.places() : List.of();
         List<Place> candidates = raw.isEmpty() ? List.of() : placeCatalogService.upsertAll(raw);
-        placeEmbeddingService.ensureEmbeddings(candidates);
-
-        // 앞뒤 장소 자기 자신이 "빈 시간 추천"으로 다시 튀어나오면 안 된다 — 원래 있던 장소를 다시 넣는 결과가 된다.
-        // 숙소·역·학교는 빈 시간에 들를 곳이 아니라 뺀다(#414).
-        List<Place> filteredCandidates = candidates.stream()
-                .filter(c -> neighbors.stream().noneMatch(n -> isSameGooglePlace(c, n)))
-                .filter(c -> c.getCategory() == null || !NOT_A_STOP.contains(c.getCategory()))
-                .toList();
+        Map<String, List<String>> kakaoCategories = new HashMap<>();
+        if (!raw.isEmpty()) {
+            var ids = raw.stream().map(GooglePlacesNearbySearchResponse.Place::id).distinct().toList();
+            for (var row : savedPlaceRepository.findKakaoCategories(userId, ids)) {
+                kakaoCategories.computeIfAbsent(row.googlePlaceId(), ignored -> new ArrayList<>()).add(row.category());
+            }
+        }
+        // upsertAll은 검색 순서(중복 ID 포함)대로 카탈로그 행을 돌려준다.
+        List<Place> filteredCandidates = new ArrayList<>();
+        for (int i = 0; i < candidates.size(); i++) {
+            Place candidate = candidates.get(i);
+            var source = raw.get(i);
+            if (neighbors.stream().noneMatch(n -> isSameGooglePlace(candidate, n))
+                    && GapStopPolicy.allows(source, candidate, kakaoCategories.getOrDefault(source.id(), List.of()))) {
+                filteredCandidates.add(candidate);
+            }
+        }
+        placeEmbeddingService.ensureEmbeddings(filteredCandidates);
         // Comparator 안에서 점수를 계산하면 정렬 비교마다(O(n log n)회) 매번 다시 계산된다 — 후보당 한 번만
         // 계산해 맵에 담아두고 정렬은 맵 조회만 한다. 개인화 점수는 후보마다 pgvector를 2번씩 조회하던 것을
         // 후보 전체에 대해 한 번으로 묶었다(#482, 운영 요청당 SQL 평균 20회의 대부분).

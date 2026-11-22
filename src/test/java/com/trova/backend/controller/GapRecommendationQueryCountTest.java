@@ -5,6 +5,9 @@ import com.trova.backend.embedding.GeminiEmbeddingClient;
 import com.trova.backend.embedding.GeminiTextClient;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Place;
+import com.trova.backend.entity.ProcessingJob;
+import com.trova.backend.entity.SavedPlace;
+import com.trova.backend.entity.SourcePlatform;
 import com.trova.backend.entity.PlaceSource;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripPlace;
@@ -18,6 +21,8 @@ import com.trova.backend.recommendation.PlaceCatalogService;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.recommendation.PlaceScoring;
 import com.trova.backend.repository.ItineraryRepository;
+import com.trova.backend.repository.ProcessingJobRepository;
+import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
@@ -77,6 +82,8 @@ class GapRecommendationQueryCountTest {
     @Autowired private JwtService jwt;
     @Autowired private UserRepository users;
     @Autowired private TripRepository trips;
+    @Autowired private SavedPlaceRepository savedPlaces;
+    @Autowired private ProcessingJobRepository jobs;
     @Autowired private ItineraryRepository itineraries;
     @Autowired private TripPlaceRepository tripPlaces;
     @Autowired private PlaceCatalogService placeCatalogService;
@@ -332,13 +339,13 @@ class GapRecommendationQueryCountTest {
         assertThat(request(bearer(u2), t2.getId(), 1)).isEqualTo("[]");
 
         // 3) 장소 1개가 10:00에 끝남 → 하루 끝까지 빈 시간 하나. 점심·저녁이 걸리므로 식당 검색.
-        //    숙소·역(NOT_A_STOP)과 자기 자신(같은 googlePlaceId)은 빠진다. 동점 후보는 원래 순서를 지킨다.
+        //    주차장·역(NOT_A_STOP)과 자기 자신(같은 googlePlaceId)은 빠진다. 동점 후보는 원래 순서를 지킨다.
         User u3 = user();
         Trip t3 = trip(u3, 1);
         place(day(t3, 1), 1, "09:00", "10:00", 37.5, 127.0, "c3-self");
         List<GooglePlacesNearbySearchResponse.Place> c3 = new ArrayList<>(candidates("c3", 12));
         c3.add(raw("c3-self", "cafe", 5.0, 100));
-        c3.add(raw("c3-hotel", "lodging", 5.0, 100));
+        c3.add(raw("c3-parking", "parking", 5.0, 100));
         c3.add(raw("c3-station", "subway_station", 5.0, 100));
         rawByType.put("restaurant", c3);
         assertSameAsLegacy(u3, t3.getId(), 1);
@@ -386,6 +393,26 @@ class GapRecommendationQueryCountTest {
     }
 
     @Test
+    void 내_저장장소와_Google_ID가_일치하면_카카오_분류도_사용한다() throws Exception {
+        User owner = user();
+        String id = "kakao-" + UUID.randomUUID();
+        ProcessingJob job = jobs.save(new ProcessingJob(owner, "https://example.org/video", SourcePlatform.YOUTUBE));
+        SavedPlace saved = new SavedPlace(job, owner, "새봄", null, null, 37.5, 127.0, null, null,
+                null, null, null, "의료,건강 > 병원 > 내과", null);
+        saved.applyOpeningHours(id, null);
+        savedPlaces.save(saved);
+        rawByType.put("restaurant", List.of(raw(id, "establishment", null, null)));
+
+        for (User viewer : List.of(owner, user())) {
+            Trip trip = trip(viewer, 1);
+            place(day(trip, 1), 1, "09:00", "10:00", 37.5, 127.0, null);
+            var recommendations = mapper.readTree(request(bearer(viewer), trip.getId(), 1))
+                    .get(0).get("recommendations");
+            assertThat(recommendations).hasSize(viewer == owner ? 0 : 1);
+        }
+    }
+
+    @Test
     void types가_없는_Google_후보도_분류_null로_유지하고_200을_반환한다() throws Exception {
         User owner = user();
         Trip trip = trip(owner, 1);
@@ -397,10 +424,11 @@ class GapRecommendationQueryCountTest {
 
         com.fasterxml.jackson.databind.JsonNode recommendations = mapper.readTree(
                 request(bearer(owner), trip.getId(), 1)).get(0).get("recommendations");
-        assertThat(recommendations).hasSize(2);
-        assertThat(recommendations.get(0).get("googlePlaceId").asText()).isEqualTo(prefix);
-        assertThat(recommendations.get(0).get("category").isNull()).isTrue();
-        assertThat(recommendations.get(1).get("googlePlaceId").asText()).isEqualTo(prefix + "-normal");
+        assertThat(recommendations).hasSize(3);
+        assertThat(recommendations.get(0).get("googlePlaceId").asText()).isEqualTo(prefix + "-hotel");
+        assertThat(recommendations.get(1).get("googlePlaceId").asText()).isEqualTo(prefix);
+        assertThat(recommendations.get(1).get("category").isNull()).isTrue();
+        assertThat(recommendations.get(2).get("googlePlaceId").asText()).isEqualTo(prefix + "-normal");
     }
 
     @Test
@@ -470,7 +498,7 @@ class GapRecommendationQueryCountTest {
             medians.add(String.format("%.3f", medianMillis(bearer, trip.getId(), 1)));
         }
         System.out.println("P7 one-gap candidates=0,1,5,20 SQL=" + sql + " medianMs=" + medians);
-        assertThat(sql).containsExactly(2L, 5L, 5L, 5L);
+        assertThat(sql).containsExactly(2L, 6L, 6L, 6L);
     }
 
     @Test
@@ -490,6 +518,6 @@ class GapRecommendationQueryCountTest {
             sql.add(warmSql(bearer(user), trip.getId(), 1));
         }
         System.out.println("P7 gaps=1,2,3 candidates=20 SQL=" + sql);
-        assertThat(sql).containsExactly(5L, 9L, 13L);
+        assertThat(sql).containsExactly(6L, 11L, 16L);
     }
 }
