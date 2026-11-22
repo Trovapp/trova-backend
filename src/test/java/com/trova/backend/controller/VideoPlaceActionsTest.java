@@ -262,12 +262,15 @@ class VideoPlaceActionsTest {
     void 경포호_옆의_경포호호텔은_건너뛰고_한자_병기된_호수를_저장한다() throws Exception {
         User user = userRepository.save(new User("google", "lake-near", "나", null));
         ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, "https://youtu.be/near", SourcePlatform.YOUTUBE));
-        SavedPlace lake = savedPlaceRepository.save(new SavedPlace(job, user, "경포호", "강릉", "attraction", 37.8, 128.91));
+        SavedPlace lake = savedPlaceRepository.save(new SavedPlace(job, user, "경포호", "강릉", "attraction", 37.79556, 128.90234,
+                null, null, null, "운정동 984", null, null, null));
         Place hotel = placeRepository.save(new Place("lake-hotel", "경포호호텔", "hotel", null, null, null,
-                37.8, 128.91, "호텔 주소"));
+                37.79556, 128.90234, "호텔 주소"));
         Place correct = placeRepository.save(new Place("lake-near", "경포호(鏡浦湖)", "park", null, null, null,
-                37.801, 128.91, "호수 주소"));
-        List<GooglePlacesNearbySearchResponse.Place> candidates = List.of(hotel, correct).stream()
+                37.79670, 128.90205, "저동 94"));
+        Place duplicate = placeRepository.save(new Place("lake-second", "경포호", "park", null, null, null,
+                37.79685, 128.90228, "강릉시 경포호"));
+        List<GooglePlacesNearbySearchResponse.Place> candidates = List.of(hotel, duplicate, correct).stream()
                 .map(p -> new GooglePlacesNearbySearchResponse.Place(p.getGooglePlaceId(),
                         new GooglePlacesNearbySearchResponse.Place.DisplayName(p.getName()), List.of(p.getCategory()),
                         null, null, null, new GooglePlacesNearbySearchResponse.Place.Location(p.getLatitude(), p.getLongitude()),
@@ -276,7 +279,7 @@ class VideoPlaceActionsTest {
         mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("lake-near"))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + lake.getId() + "}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.placeId").value(correct.getId()))
-                .andExpect(jsonPath("$.address").value("호수 주소"));
+                .andExpect(jsonPath("$.address").value("저동 94"));
     }
 
     @Test

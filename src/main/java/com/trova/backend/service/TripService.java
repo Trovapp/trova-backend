@@ -349,7 +349,10 @@ public class TripService {
                         }
                     }
                     List<Place> candidates = placeSearchService.search(detailsSearchQuery(saved.getPlaceName(), saved.getRegion()));
-                    Optional<Place> match = candidates.stream().filter(candidate -> matchesSavedPlace(saved, candidate)).findFirst();
+                    Optional<Place> match = candidates.stream()
+                            .filter(candidate -> matchesSavedPlace(saved, candidate))
+                            .min(Comparator.comparingDouble((Place candidate) -> matchDistanceKm(saved, candidate))
+                                    .thenComparing(Place::getId));
                     if (match.isEmpty()) {
                         log.info("영상 장소 찜 연결 실패 — 근처 검색 결과 없음(savedPlaceId={}, name={}, 후보 {}곳)",
                                 saved.getId(), saved.getPlaceName(), candidates.size());
@@ -364,8 +367,12 @@ public class TripService {
         return PlaceNameMatch.sameCatalogName(saved.getPlaceName(), candidate.getName())
                 && saved.getLatitude() != null && saved.getLongitude() != null
                 && candidate.getLatitude() != null && candidate.getLongitude() != null
-                && GeoUtils.haversineKm(saved.getLatitude(), saved.getLongitude(),
-                        candidate.getLatitude(), candidate.getLongitude()) <= SAVED_PLACE_MATCH_DISTANCE_KM;
+                && matchDistanceKm(saved, candidate) <= SAVED_PLACE_MATCH_DISTANCE_KM;
+    }
+
+    private static double matchDistanceKm(SavedPlace saved, Place candidate) {
+        return GeoUtils.haversineKm(saved.getLatitude(), saved.getLongitude(),
+                candidate.getLatitude(), candidate.getLongitude());
     }
 
     /** 본인 영상 장소였을 때의 연결 결과 — place가 비면 지도에서 찾지 못한 것. */
