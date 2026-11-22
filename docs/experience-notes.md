@@ -3161,3 +3161,15 @@
 ```sh
 sudo cp -p /opt/trova-backend/app.jar.bak-20261121-235732 /opt/trova-backend/app.jar && sudo systemctl restart trova-backend
 ```
+
+## 2026-11-22 여행 실시간 이벤트를 Kafka로 전환
+
+- 배포 기록 `trip-events-kafka`. 진행 중인 분석·초안·재구성 작업이 0건일 때 운영 환경 파일을 `.env.bak-trip-events-kafka-20261122-112325`로 백업했다(권한 600). 기존 파일에 `APP_TRIP_EVENTS_TYPE=kafka` 한 줄만 추가된 것을 대조하고 서비스를 재시작했다. 기존 브로커와 SSL 설정을 그대로 사용했다.
+- 11:26:52 KST에 공개 `/actuator/health`가 HTTP 200과 `UP`을 반환했다. 새 프로세스의 로그에서 소비자 그룹 한 개가 `trova.trip-events`를 구독하고 그룹 조정자 연결, 그룹 가입, 동기화를 마친 뒤 파티션 0과 1을 할당받은 것을 확인했다.
+- 11:27:02~11:27:29 KST 두 차례 수집한 Prometheus 지표에서 이 소비자의 fetch 횟수는 52→143회로 늘었고, 소비 레코드와 최대 지연은 모두 0이었다. 재시도 대기·폐기도 0건이고 새 프로세스의 로그에 ERROR는 없었다. `trova_trip_events_fallback_total`은 첫 fallback 때 등록되는 카운터로, 두 번 모두 시계열이 없어 이 프로세스에서 기록된 fallback은 0건이었다.
+- 관측 중 실제 여행 변경 이벤트는 수신되지 않았다. 운영 데이터 쓰기 없이 브로커 구독과 fetch까지 확인했으며, 실제 이벤트의 발행·수신은 다음 여행 변경 때 확인할 수 있다.
+- 기본값 `memory`로 되돌릴 때는 운영 서버에서 이번에 추가한 한 줄을 삭제하고 재시작한 뒤 공개 헬스가 `UP`인지 확인한다.
+
+```sh
+sudo sed -i '/^APP_TRIP_EVENTS_TYPE=kafka[[:space:]]*$/d' /opt/trova-backend/.env && sudo systemctl restart trova-backend
+```
