@@ -44,15 +44,23 @@ final class GapStopPolicy {
             "우체국", "경찰서", "지구대", "법원", "공장", "물류센터", "물류창고", "본사", "사무실",
             "카센터", "카센타", "자동차정비소", "자동차서비스프라자", "은행", "ATM", "주유소", "주차장",
             "부동산", "공인중개사", "공인중개사사무소", "보험대리점", "교회", "성당", "사찰", "장례식장",
-            "묘지", "정류장", "정거장", "역");
+            "묘지", "정류장", "정거장");
 
-    // '구역'·'지역' 같은 두 글자는 대구역·동대구역처럼 역 이름과도 겹칠 수 있다.
-    private static final List<String> AREA_ENDINGS = List.of("보호구역", "보전지역", "보호해역");
+    private static final Set<String> GENERIC_TYPES = Set.of("point_of_interest", "establishment",
+            "premise", "subpremise", "street_address", "geocode", "political");
+    private static final List<String> AREA_ENDINGS = List.of("구역", "지역", "해역", "권역");
+    // 일반 태그만 있는 역 중 지명과 '역'을 붙이면 '구역'으로 끝나는 확인된 사례.
+    private static final Set<String> AMBIGUOUS_STATION_NAMES = Set.of("대구역", "동대구역");
 
     static boolean allows(GooglePlacesNearbySearchResponse.Place source, Place stored, List<String> kakaoPaths) {
         Set<String> labels = new HashSet<>();
         if (source.types() != null) labels.addAll(source.types());
-        if (stored.getCategory() != null) labels.add(stored.getCategory());
+        labels.remove(null);
+        labels.removeAll(GENERIC_TYPES);
+        String cached = stored.getCategory();
+        if (labels.isEmpty() && cached != null && !GENERIC_TYPES.contains(cached)) {
+            labels.add(cached);
+        }
         for (String path : kakaoPaths) {
             Arrays.stream(path.split(">")).map(String::strip).forEach(labels::add);
         }
@@ -69,7 +77,9 @@ final class GapStopPolicy {
         if (name == null || name.isBlank()) name = stored.getName();
         if (name == null) return true;
         String compact = name.replaceAll("\\s+", "");
-        return AREA_ENDINGS.stream().anyMatch(compact::endsWith)
-                || EXCLUDED_ENDINGS.stream().noneMatch(compact::endsWith);
+        if (labels.isEmpty() && compact.length() > 1 && compact.endsWith("역")) {
+            return !AMBIGUOUS_STATION_NAMES.contains(compact) && AREA_ENDINGS.stream().anyMatch(compact::endsWith);
+        }
+        return EXCLUDED_ENDINGS.stream().noneMatch(compact::endsWith);
     }
 }
