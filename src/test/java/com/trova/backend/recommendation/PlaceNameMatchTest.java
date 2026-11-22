@@ -29,6 +29,15 @@ class PlaceNameMatchTest {
     }
 
     @Test
+    void 시설과_입점한_매장은_같은_장소가_아니다() {
+        for (String facility : java.util.List.of("롯데백화점", "롯데몰", "서울역", "김포공항", "롯데몰점", "서울역점", "김포공항점")) {
+            assertThat(PlaceNameMatch.sameCatalogName(facility, "나이키 " + facility)).isFalse();
+            assertThat(PlaceNameMatch.sameCatalogName("나이키 " + facility, facility)).isFalse();
+        }
+        assertThat(PlaceNameMatch.sameCatalogName("나이키 서울롯데몰점", "나이키 롯데몰점")).isTrue();
+    }
+
+    @Test
     void 이름이_없으면_막지_않는다() {
         assertThat(PlaceNameMatch.sameBusiness("이삭토스트", null)).isTrue();
     }

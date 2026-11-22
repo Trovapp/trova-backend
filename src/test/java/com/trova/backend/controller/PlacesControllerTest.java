@@ -249,21 +249,28 @@ class PlacesControllerTest {
     void 이력에서_본인_영상의_이전_결과만_조회한다() throws Exception {
         User me = userRepository.save(new User("google", "hist", "나", null));
         User stranger = userRepository.save(new User("google", "hist-other", "남", null));
+        ProcessingJob live = doneJob(me, "https://www.youtube.com/live/history?si=legacy");
+        ProcessingJob embed = doneJob(me, "https://www.youtube-nocookie.com/embed/history");
+        ProcessingJob watch = doneJob(me, "https://www.youtube.com/watch?v=history");
         ProcessingJob older = doneJob(me, "https://youtube.com/shorts/history");
         ProcessingJob newer = doneJob(me, "https://youtu.be/history?si=tail");
         ProcessingJob foreign = doneJob(stranger, older.getSourceUrl());
         ProcessingJob unrelated = doneJob(me, "https://youtube.com/shorts/another");
-        for (ProcessingJob job : List.of(older, newer, foreign, unrelated)) {
+        for (ProcessingJob job : List.of(live, embed, watch, older, newer, foreign, unrelated)) {
             savedPlaceRepository.save(new SavedPlace(job, job.getUser(), "카페", null, "cafe", 37.5, 127.0));
         }
         String path = "/api/places/videos/" + newer.getId() + "/history";
         mockMvc.perform(get(path).with(loginAs("hist", "나")))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(2))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(5))
                 .andExpect(jsonPath("$[0].jobId").value(newer.getId()))
                 .andExpect(jsonPath("$[1].placeCount").value(1));
         mockMvc.perform(get(path + "/" + older.getId()).with(loginAs("hist", "나")))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].jobId").value(older.getId()));
+        for (ProcessingJob legacy : List.of(live, embed)) {
+            mockMvc.perform(get(path + "/" + legacy.getId()).with(loginAs("hist", "나")))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$[0].jobId").value(legacy.getId()));
+        }
         for (ProcessingJob denied : List.of(foreign, unrelated)) {
             mockMvc.perform(get(path + "/" + denied.getId()).with(loginAs("hist", "나")))
                     .andExpect(status().isNotFound());

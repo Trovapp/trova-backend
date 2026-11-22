@@ -15,7 +15,7 @@ public final class VideoKey {
     }
 
     // Java와 이력 SQL에서 같은 패턴의 첫 번째 캡처 그룹을 ID로 쓴다.
-    public static final String YOUTUBE = "(?:youtube(?:-nocookie)?\\.com/(?:shorts/|watch\\?(?:[^#]*&)?v=)|youtu\\.be/)([a-zA-Z0-9_-]+)";
+    public static final String YOUTUBE = "(?:youtube(?:-nocookie)?\\.com/(?:(?:shorts|live|embed)/|watch\\?(?:[^#]*&)?v=)|youtu\\.be/)([a-zA-Z0-9_-]+)";
     public static final String INSTAGRAM = "instagram\\.com/(?:reels?|tv|p)/([a-zA-Z0-9_-]+)";
 
     private static final List<Rule> RULES = List.of(

@@ -47,7 +47,15 @@ public final class PlaceNameMatch {
                 || (a.length == 2 && b.length == 2 && !catalogName(a[0]).equals(catalogName(b[0])))) {
             return false;
         }
+        if (a.length != b.length && (isFacility(branchA) || isFacility(branchB))) {
+            return false;
+        }
         return branchA.equals(branchB) || withoutCity(branchA).equals(branchB) || withoutCity(branchB).equals(branchA);
+    }
+
+    // 시설명이 단독으로 쓰이면 그 안에 있는 매장의 지점 별칭으로 간주하지 않는다.
+    private static boolean isFacility(String branch) {
+        return branch.matches(".*(?:백화점|몰|아울렛|마트|역|공항|터미널)점?");
     }
 
     private static String withoutCity(String branch) {
