@@ -26,6 +26,20 @@ public final class PlaceNameMatch {
         return a.contains(b) || b.contains(a);
     }
 
+    // 북마크는 특정 지점을 가리킨다. 지점명은 유지하고 한자 병기·공백·기호만 제거한다.
+    public static boolean sameCatalogName(String wanted, String found) {
+        if (wanted == null || found == null) {
+            return false;
+        }
+        String expected = catalogName(wanted);
+        return !expected.isEmpty() && expected.equals(catalogName(found));
+    }
+
+    private static String catalogName(String name) {
+        return name.replaceAll("[（(]\\s*[\\p{IsHan}\\s]+[）)]", "")
+                .replaceAll("[^\\p{L}\\p{N}]", "").toLowerCase(Locale.ROOT);
+    }
+
     /** 공백·기호를 지우고 소문자로, 여러 단어면 "…점"으로 끝나는 지점 단어를 뗀다. */
     static String brand(String name) {
         String[] tokens = name.trim().split("\\s+");

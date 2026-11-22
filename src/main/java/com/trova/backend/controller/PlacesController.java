@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,10 @@ public class PlacesController {
             // 다른 지점일 수 있을 때 영상 근처의 같은 가게 지점 이름(#414). 없으면 null.
             String nearbyBranchName
     ) {
+        public String getAddressSource() {
+            return address == null && roadAddress == null ? null : "ANALYSIS_RESULT";
+        }
+
         static PlaceResponse from(SavedPlaceListRow place) {
             return new PlaceResponse(
                     place.id(), place.jobId(), place.placeName(), place.region(), place.category(),
@@ -142,6 +147,36 @@ public class PlacesController {
         return VideoResults.latestRows(places).stream()
                 .map(PlaceResponse::from)
                 .toList();
+    }
+
+    public record HistoryResponse(Long jobId, LocalDateTime createdAt, long placeCount) {
+    }
+
+    @GetMapping("/videos/{jobId}/history")
+    public ResponseEntity<List<HistoryResponse>> history(Authentication authentication, @PathVariable Long jobId) {
+        User user = currentUserService.resolve(authentication);
+        return processingJobRepository.findByIdAndUser(jobId, user)
+                .map(anchor -> {
+                    String video = ShareUrl.videoKey(anchor.getSourceUrl());
+                    return ResponseEntity.ok(savedPlaceRepository.findVideoHistoryByUserId(user.getId()).stream()
+                            .filter(row -> video.equals(ShareUrl.videoKey(row.sourceUrl())))
+                            .map(row -> new HistoryResponse(row.jobId(), row.createdAt(), row.placeCount()))
+                            .toList());
+                }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/videos/{jobId}/history/{resultId}")
+    public ResponseEntity<List<PlaceResponse>> historyResult(
+            Authentication authentication, @PathVariable Long jobId, @PathVariable Long resultId) {
+        User user = currentUserService.resolve(authentication);
+        return processingJobRepository.findByIdAndUser(jobId, user).map(anchor -> {
+            List<SavedPlaceListRow> rows = savedPlaceRepository.findListRowsByUserIdAndJobId(user.getId(), resultId);
+            if (rows.isEmpty() || !ShareUrl.videoKey(anchor.getSourceUrl())
+                    .equals(ShareUrl.videoKey(rows.getFirst().jobSourceUrl()))) {
+                return ResponseEntity.notFound().<List<PlaceResponse>>build();
+            }
+            return ResponseEntity.ok(rows.stream().map(PlaceResponse::from).toList());
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/pending")

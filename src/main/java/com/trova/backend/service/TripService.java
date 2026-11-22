@@ -335,7 +335,7 @@ public class TripService {
     /**
      * 영상 장소를 Place 카탈로그(구글 장소)에 연결한다(찜하기 #125 — 찜은 카탈로그 장소를 가리킨다).
      * 영업시간 조회로 구글 id가 이미 있으면 그것을, 없으면 여행 장소 상세(#101)와 같은 규칙으로 지역을 붙여 검색해
-     * 영상 장소 좌표 3km 안의 결과만 쓴다. 본인 장소가 아니면 비우고, 연결하지 못하면 NOT_MATCHED.
+     * 이름이 일치하고 영상 장소 좌표 300m 안인 결과만 쓴다. 본인 장소가 아니면 비우고, 연결하지 못하면 NOT_MATCHED.
      */
     @Transactional
     public Optional<SavedPlaceMatch> resolveSavedPlace(User user, Long savedPlaceId) {
@@ -344,12 +344,12 @@ public class TripService {
                 .map(saved -> {
                     if (saved.getGooglePlaceId() != null) {
                         Optional<Place> known = placeRepository.findByGooglePlaceId(saved.getGooglePlaceId());
-                        if (known.isPresent()) {
+                        if (known.filter(candidate -> matchesSavedPlace(saved, candidate)).isPresent()) {
                             return new SavedPlaceMatch(known);
                         }
                     }
                     List<Place> candidates = placeSearchService.search(detailsSearchQuery(saved.getPlaceName(), saved.getRegion()));
-                    Optional<Place> match = pickMatch(saved.getPlaceName(), saved.getLatitude(), saved.getLongitude(), candidates);
+                    Optional<Place> match = candidates.stream().filter(candidate -> matchesSavedPlace(saved, candidate)).findFirst();
                     if (match.isEmpty()) {
                         log.info("영상 장소 찜 연결 실패 — 근처 검색 결과 없음(savedPlaceId={}, name={}, 후보 {}곳)",
                                 saved.getId(), saved.getPlaceName(), candidates.size());
@@ -357,6 +357,15 @@ public class TripService {
                     match.ifPresent(m -> userPreferenceSignalRepository.save(new UserPreferenceSignal(user, m, SignalType.VIDEO_PLACE_MATCHED)));
                     return new SavedPlaceMatch(match);
                 });
+    }
+
+    // 영업시간 조회와 같은 300m 한도를 사용한다. 과거에 연결한 ID도 현 좌표와 대조한다.
+    private static boolean matchesSavedPlace(SavedPlace saved, Place candidate) {
+        return PlaceNameMatch.sameCatalogName(saved.getPlaceName(), candidate.getName())
+                && saved.getLatitude() != null && saved.getLongitude() != null
+                && candidate.getLatitude() != null && candidate.getLongitude() != null
+                && GeoUtils.haversineKm(saved.getLatitude(), saved.getLongitude(),
+                        candidate.getLatitude(), candidate.getLongitude()) <= SAVED_PLACE_MATCH_DISTANCE_KM;
     }
 
     /** 본인 영상 장소였을 때의 연결 결과 — place가 비면 지도에서 찾지 못한 것. */
@@ -490,6 +499,7 @@ public class TripService {
     // 여행 장소와 검색 결과가 이보다 멀면 다른 장소로 본다. 주소·이름으로 잡은 좌표는 보통 수십 m 안이고, 큰 시설(테마파크 등)과
     // 지역 중심으로 대신한 좌표까지 감안한 값이다. 같은 이름의 다른 지역(수십~수백 km)은 확실히 걸러진다.
     static final double MAX_MATCH_DISTANCE_KM = 3.0;
+    private static final double SAVED_PLACE_MATCH_DISTANCE_KM = 0.3;
 
     static String detailsSearchQuery(TripPlace tripPlace) {
         return detailsSearchQuery(tripPlace.getPlaceName(), tripPlace.getRegion());

@@ -246,6 +246,32 @@ class PlacesControllerTest {
     }
 
     @Test
+    void 이력에서_본인_영상의_이전_결과만_조회한다() throws Exception {
+        User me = userRepository.save(new User("google", "hist", "나", null));
+        User stranger = userRepository.save(new User("google", "hist-other", "남", null));
+        ProcessingJob older = doneJob(me, "https://youtube.com/shorts/history");
+        ProcessingJob newer = doneJob(me, "https://youtube.com/shorts/history?si=tail");
+        ProcessingJob foreign = doneJob(stranger, older.getSourceUrl());
+        ProcessingJob unrelated = doneJob(me, "https://youtube.com/shorts/another");
+        for (ProcessingJob job : List.of(older, newer, foreign, unrelated)) {
+            savedPlaceRepository.save(new SavedPlace(job, job.getUser(), "카페", null, "cafe", 37.5, 127.0));
+        }
+        String path = "/api/places/videos/" + newer.getId() + "/history";
+        mockMvc.perform(get(path).with(loginAs("hist", "나")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].jobId").value(newer.getId()))
+                .andExpect(jsonPath("$[1].placeCount").value(1));
+        mockMvc.perform(get(path + "/" + older.getId()).with(loginAs("hist", "나")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].jobId").value(older.getId()));
+        for (ProcessingJob denied : List.of(foreign, unrelated)) {
+            mockMvc.perform(get(path + "/" + denied.getId()).with(loginAs("hist", "나")))
+                    .andExpect(status().isNotFound());
+        }
+        mockMvc.perform(get(path).with(loginAs("hist-other", "남"))).andExpect(status().isNotFound());
+    }
+
+    @Test
     void 장소_목록에_영상_제목이_포함된다() throws Exception {
         User me = userRepository.save(new User("google", "jjj", "제목유저", null));
         ProcessingJob job = processingJobRepository.save(

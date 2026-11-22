@@ -228,10 +228,55 @@ class VideoPlaceActionsTest {
 
         mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("vp-bm-1"))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + cafe.getId() + "}"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.addressSource").value("PLACE_CATALOG"));
 
         assertThat(bookmarkRepository.findByUserAndPlace(me, catalog)).isPresent();
         verify(googlePlacesApiClient, never()).searchText(anyString());
+    }
+
+    @Test
+    void 경포호의_기존_ID가_먼_핀을_가리키면_저장을_거절한다() throws Exception {
+        User user = userRepository.save(new User("google", "lake", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, "https://youtu.be/lake", SourcePlatform.YOUTUBE));
+        SavedPlace lake = new SavedPlace(job, user, "경포호", "강릉", "attraction", 37.80, 128.91,
+                null, null, null, "운정동 984", null, null, null);
+        lake.applyOpeningHours("lake-pin", null);
+        savedPlaceRepository.save(lake);
+        placeRepository.save(new Place("lake-pin", "경포호(鏡浦湖)", "attraction", null, null, null,
+                37.795074, 128.896636, "저동 94"));
+        when(googlePlacesApiClient.searchText("강릉 경포호")).thenReturn(new GooglePlacesNearbySearchResponse(List.of(
+                new GooglePlacesNearbySearchResponse.Place("lake-pin",
+                        new GooglePlacesNearbySearchResponse.Place.DisplayName("경포호(鏡浦湖)"), List.of("park"),
+                        null, null, null, new GooglePlacesNearbySearchResponse.Place.Location(37.795074, 128.896636),
+                        "저동 94"))));
+        mockMvc.perform(get("/api/places/" + lake.getId()).with(loginAs("lake")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.address").value("운정동 984"))
+                .andExpect(jsonPath("$.addressSource").value("ANALYSIS_RESULT"));
+        mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("lake"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + lake.getId() + "}"))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void 경포호_옆의_경포호호텔은_건너뛰고_한자_병기된_호수를_저장한다() throws Exception {
+        User user = userRepository.save(new User("google", "lake-near", "나", null));
+        ProcessingJob job = processingJobRepository.save(new ProcessingJob(user, "https://youtu.be/near", SourcePlatform.YOUTUBE));
+        SavedPlace lake = savedPlaceRepository.save(new SavedPlace(job, user, "경포호", "강릉", "attraction", 37.8, 128.91));
+        Place hotel = placeRepository.save(new Place("lake-hotel", "경포호호텔", "hotel", null, null, null,
+                37.8, 128.91, "호텔 주소"));
+        Place correct = placeRepository.save(new Place("lake-near", "경포호(鏡浦湖)", "park", null, null, null,
+                37.801, 128.91, "호수 주소"));
+        List<GooglePlacesNearbySearchResponse.Place> candidates = List.of(hotel, correct).stream()
+                .map(p -> new GooglePlacesNearbySearchResponse.Place(p.getGooglePlaceId(),
+                        new GooglePlacesNearbySearchResponse.Place.DisplayName(p.getName()), List.of(p.getCategory()),
+                        null, null, null, new GooglePlacesNearbySearchResponse.Place.Location(p.getLatitude(), p.getLongitude()),
+                        p.getAddress())).toList();
+        when(googlePlacesApiClient.searchText("강릉 경포호")).thenReturn(new GooglePlacesNearbySearchResponse(candidates));
+        mockMvc.perform(post("/api/bookmarks/saved-place").with(loginAs("lake-near"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"savedPlaceId\":" + lake.getId() + "}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.placeId").value(correct.getId()))
+                .andExpect(jsonPath("$.address").value("호수 주소"));
     }
 
     @Test

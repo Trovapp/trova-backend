@@ -76,6 +76,10 @@ public class BookmarkController {
             Long id, Long placeId, String placeName, String googlePlaceId, String mood, String space,
             Double latitude, Double longitude, String createdAt, Long folderId, String category, String address
     ) {
+        public String getAddressSource() {
+            return address == null ? null : "PLACE_CATALOG";
+        }
+
         static BookmarkResponse from(Bookmark b) {
             return new BookmarkResponse(
                     b.getId(), b.getPlace().getId(), b.getPlace().getName(), b.getPlace().getGooglePlaceId(),
