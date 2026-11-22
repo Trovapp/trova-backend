@@ -3173,3 +3173,15 @@ sudo cp -p /opt/trova-backend/app.jar.bak-20261121-235732 /opt/trova-backend/app
 ```sh
 sudo sed -i '/^APP_TRIP_EVENTS_TYPE=kafka[[:space:]]*$/d' /opt/trova-backend/.env && sudo systemctl restart trova-backend
 ```
+
+## 2026-11-22 영상 분석 이력·장소 매칭 운영 배포 (#503)
+
+- 배포 기록 `T27-video-history`. 작업 폴더와 `origin/main`이 `f6f4e6a`로 일치하는 것을 확인하고 devflow 미리보기와 사전 점검을 통과했다. 17:08:05~17:12:28 KST에 배포했다(총 263초).
+- 로컬 빌드와 운영에 설치된 JAR의 SHA-256이 `bacdff74b328ed102cbbc7bfeec868bd52a254cfabb656a60d6c4548d0f6f800`로 일치했다. 재시작 후 150초에 헬스가 `UP`이 됐다. 공개 `/actuator/health`에서 HTTP 200과 `UP`을 다시 확인했고, 새 프로세스 기동 로그의 ERROR는 0건이었다.
+- 새 이력 목록 `GET /api/places/videos/1/history`와 회차 상세 `GET /api/places/videos/1/history/1`은 인증 없이 각각 401을 반환했다. devflow의 공유 요청·자동 초안 목록 익명 401, 세션 쿠키 0개 점검도 모두 통과했다.
+- 재시작 전후 모두 실행 중 프로세스에서 `APP_TRIP_EVENTS_TYPE=kafka`를 확인했다. 새 소비자 그룹이 `trova.trip-events`를 구독하고 가입·동기화를 마쳤다. 파티션 0과 1이 모두 할당됐고 점검 시 fetch는 90회였다.
+- 백업 `/opt/trova-backend/app.jar.bak-20261122-170805`의 SHA-256은 배포 직전 운영 JAR과 일치했다. 복구가 필요할 때 운영 서버에서 다음 명령을 실행한다.
+
+```sh
+sudo cp -p /opt/trova-backend/app.jar.bak-20261122-170805 /opt/trova-backend/app.jar && sudo systemctl restart trova-backend
+```
