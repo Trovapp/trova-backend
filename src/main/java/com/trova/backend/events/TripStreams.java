@@ -31,15 +31,20 @@ class TripStreams {
         this.total = total;
     }
 
-    synchronized TripStream open(long trip, long user, StreamAuth auth) {
+    TripStream open(long trip, long user, StreamAuth auth) {
         long version = audience.version(trip, user);
+        TripStream stream = register(trip, user, auth, version);
+        senders.execute(stream);
+        return stream;
+    }
+
+    private synchronized TripStream register(long trip, long user, StreamAuth auth, long version) {
         long timeout = Duration.between(clock.instant(), auth.end()).toMillis();
         if (timeout <= 0 || !auth.validAt(clock.instant())) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         if (streams.size() >= total || streams.stream().filter(s -> s.user == user).count() >= perUser)
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS);
         var stream = new TripStream(trip, user, version, auth, clock, timeout, senders, streams::remove);
         streams.add(stream);
-        senders.execute(stream);
         return stream;
     }
 

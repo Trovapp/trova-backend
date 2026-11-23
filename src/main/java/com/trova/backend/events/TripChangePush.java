@@ -3,37 +3,67 @@ package com.trova.backend.events;
 import com.trova.backend.planner.Josa;
 import com.trova.backend.push.ExpoPushService;
 import com.trova.backend.push.PushMessage;
+import com.trova.backend.push.PushNotificationService;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
 class TripChangePush {
+    private static final Logger log = LoggerFactory.getLogger(TripChangePush.class);
+    private final Executor executor;
+    private final Executor deletionExecutor;
+    private final Counter discarded;
     record Window(long trip, long actor, long recipient) {}
     private final ConcurrentHashMap<Window, Instant> windows = new ConcurrentHashMap<>();
     private final TripAudience audience;
     private final TripStreams streams;
     private final ExpoPushService expo;
     private final Clock clock;
-    TripChangePush(TripAudience audience, TripStreams streams, ExpoPushService expo, Clock clock) {
+    TripChangePush(TripAudience audience, TripStreams streams, ExpoPushService expo, Clock clock,
+                   @Qualifier("tripPushExecutor") Executor executor,
+                   @Qualifier("tripDeletionPushExecutor") Executor deletionExecutor, MeterRegistry metrics) {
+        this.executor = executor;
+        this.deletionExecutor = deletionExecutor;
+        this.discarded = metrics.counter("trova.trip-push.discarded");
         this.audience = audience;
         this.streams = streams;
         this.expo = expo;
         this.clock = clock;
     }
-    @Async("tripPushExecutor")
     @EventListener
     public void changed(TripChangedEvent event) {
+        try {
+            Executor destination = event.deleted() ? deletionExecutor : executor;
+            destination.execute(() -> send(event));
+        } catch (RejectedExecutionException full) {
+            discarded.increment();
+            log.warn("여행 푸시 접수 실패: type={}, trip={}", event.type(), event.tripId());
+        }
+    }
+
+    private void send(TripChangedEvent event) {
         if (event.deleted()) {
             String name = event.actorName() == null || event.actorName().isBlank() ? "만든 사람" : event.actorName();
             var message = new PushMessage(Josa.iGa(name) + " 여행을 삭제했어요", event.summary(), "",
                     "trip-" + event.tripId());
             for (long user : event.membersAtDeletion()) {
-                if (user != event.actorId()) expo.sendToUser(user, "trip-deleted", message);
+                if (user == event.actorId()) continue;
+                try {
+                    expo.sendToUser(user, "trip-deleted", message);
+                } catch (RuntimeException failure) {
+                    log.warn("여행 삭제 푸시 발송 실패: trip={}", event.tripId(), failure);
+                }
             }
             return;
         }
@@ -44,8 +74,14 @@ class TripChangePush {
             Instant end = now.plusSeconds(300);
             Instant previous = windows.putIfAbsent(key, end);
             if (previous != null && (now.isBefore(previous) || !windows.replace(key, previous, end))) continue;
-            expo.sendToUser(user, "trip-change", new PushMessage(event.actorName() + "님이 여행을 고쳤어요",
-                    event.summary(), "trip:" + event.tripId(), "trip-" + event.tripId()));
+            try {
+                PushNotificationService.Result result = expo.sendToUser(user, "trip-change", new PushMessage(
+                        event.actorName() + "님이 여행을 고쳤어요", event.summary(), "trip:" + event.tripId(), "trip-" + event.tripId()));
+                if (result.sent() == 0 && result.failed() > 0) windows.remove(key, end);
+            } catch (RuntimeException failure) {
+                windows.remove(key, end);
+                log.warn("여행 변경 푸시 발송 실패: trip={}", event.tripId(), failure);
+            }
         }
     }
     @Scheduled(fixedDelay = 300000)
