@@ -3197,3 +3197,5 @@ sudo cp -p /opt/trova-backend/app.jar.bak-20261122-170805 /opt/trova-backend/app
 ```sh
 sudo cp -p /opt/trova-backend/app.jar.bak-20261123-001451 /opt/trova-backend/app.jar && sudo systemctl restart trova-backend
 ```
+
+**2026-11-23 공유 웹 주소 이전 (#508)** — 12:22:34 KST에 `9a38389`를 재시작했고 144초 뒤 배포 도구에서 정상 응답을 확인했다(기존 서비스 종료 시작부터 외부 정상 응답까지 약 199초). 전송 전후 해시 `4b0db5d942c0d4d6` 일치, 두 웹 주소의 API 접근 허용, 옛 공유 주소의 경로·쿼리 보존 301 및 Android 검증 파일 직접 200을 확인했다. 백업은 `/var/backups/trova-domain-20261123-031940`에 보관했다. [운영 절차와 복원 방법](runbooks/share-web-domain.md)
