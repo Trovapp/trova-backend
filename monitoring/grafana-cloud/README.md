@@ -9,6 +9,7 @@
 
 | 파일 | Cloud 위치 | 내용 |
 |---|---|---|
+| `dashboards/trova-at-a-glance.json` | 대시보드 "Trova 한눈에 보기" | 24시간·1분 갱신. 신호등 6개, 앱 흐름도, 기능별 5줄. 색 기준은 패널 설명에 있다. 영상 대기·진행 수는 `trova_analysis_outstanding` 수집 전에는 회색으로 표시한다. |
 | `dashboards/trova-essentials.json` | 대시보드 "Trova 필수 모니터링" | 요약 5개 + 시스템(CPU·메모리·스왑·PSI)·JVM·애플리케이션·비즈니스. 평소 보는 화면, 경보 링크가 여기로 온다 |
 | `dashboards/trova-operations.json` | "Trova 운영 모니터링" | 예전 운영 화면(11개 패널, 지표 이름은 직접 전송과 같아 그대로 나옴) |
 | `dashboards/trova-logs.json` | "Trova 운영 로그" | Loki 로그. alloy를 평소 꺼 두므로 대부분 비어 있음 |
