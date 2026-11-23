@@ -31,7 +31,7 @@ class TripEventKafkaTest {
         ctx.registerBean(DefaultKafkaProducerFactory.class, () -> producers);
         ctx.registerBean("streams", TripStreams.class, () -> mock(TripStreams.class));
         ctx.registerBean(KafkaTripEventBus.class, () -> new KafkaTripEventBus(new KafkaTemplate<>(producers),
-                ctx.getBean(TripStreams.class), new SimpleMeterRegistry(), Clock.systemUTC()));
+                ctx.getBean(TripStreams.class), new SimpleMeterRegistry(), Clock.systemUTC(), Runnable::run, server));
 
         ctx.register(Listeners.class);
         ctx.refresh();
@@ -40,9 +40,13 @@ class TripEventKafkaTest {
         return ctx;
     }
 
-    private void assertThatGroup(AnnotationConfigApplicationContext node, String name) {
-        node.getBean(KafkaListenerEndpointRegistry.class).getListenerContainers().forEach(container ->
-                org.assertj.core.api.Assertions.assertThat(container.getGroupId()).isEqualTo("trova-trip-events-" + name));
+    private String group(AnnotationConfigApplicationContext node) {
+        return node.getBean(KafkaListenerEndpointRegistry.class).getListenerContainers().iterator().next().getGroupId();
+    }
+
+    @Test void 호스트명을_얻지_못해도_대체_그룹_이름을_만든다() {
+        String group = KafkaTripEventBus.groupId("", () -> { throw new java.net.UnknownHostException(); });
+        org.assertj.core.api.Assertions.assertThat(group).matches("trova-trip-events-trova-[a-f0-9-]{36}-[a-f0-9]{8}");
     }
 
     @Test void 재시작한_서버는_연결이_없던_동안의_변경을_재생하지_않는다(EmbeddedKafkaBroker broker) {
@@ -64,8 +68,9 @@ class TripEventKafkaTest {
     }
 
     @Test void otherServersReceiveEachEvent(EmbeddedKafkaBroker broker) {
-        try (var sender = node(broker, "sender"); var second = node(broker, "second"); var third = node(broker, "third")) {
-            assertThatGroup(second, "second");
+        try (var sender = node(broker, "sender"); var second = node(broker, "shared"); var third = node(broker, "shared")) {
+            org.assertj.core.api.Assertions.assertThat(group(second)).startsWith("trova-trip-events-shared-")
+                    .isNotEqualTo(group(third));
             var event = new TripChangedEvent(17, 3, 4, "민수", "PLACE_ADDED", "추가했어요");
             sender.getBean(KafkaTripEventBus.class).publish(event);
             verify(second.getBean(TripStreams.class), timeout(10000)).deliver(event);

@@ -21,6 +21,22 @@ public class AsyncConfig {
         return executor;
     }
 
+    @Bean("tripKafkaSender")
+    public Executor tripKafkaSender() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(1);
+        executor.setQueueCapacity(256);
+        executor.setThreadNamePrefix("trip-kafka-");
+        applyGracefulShutdown(executor);
+        return executor;
+    }
+
+    @Bean("tripDeletionPushExecutor")
+    public java.util.concurrent.ExecutorService tripDeletionPushExecutor() {
+        return java.util.concurrent.Executors.newSingleThreadExecutor(Thread.ofVirtual().name("trip-deletion-push-", 0).factory());
+    }
+
     @Bean("pipelineTaskExecutor")
     public Executor pipelineTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

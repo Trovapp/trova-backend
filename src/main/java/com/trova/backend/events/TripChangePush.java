@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 class TripChangePush {
     private static final Logger log = LoggerFactory.getLogger(TripChangePush.class);
     private final Executor executor;
+    private final Executor deletionExecutor;
     private final Counter discarded;
     record Window(long trip, long actor, long recipient) {}
     private final ConcurrentHashMap<Window, Instant> windows = new ConcurrentHashMap<>();
@@ -30,8 +31,10 @@ class TripChangePush {
     private final ExpoPushService expo;
     private final Clock clock;
     TripChangePush(TripAudience audience, TripStreams streams, ExpoPushService expo, Clock clock,
-                   @Qualifier("tripPushExecutor") Executor executor, MeterRegistry metrics) {
+                   @Qualifier("tripPushExecutor") Executor executor,
+                   @Qualifier("tripDeletionPushExecutor") Executor deletionExecutor, MeterRegistry metrics) {
         this.executor = executor;
+        this.deletionExecutor = deletionExecutor;
         this.discarded = metrics.counter("trova.trip-push.discarded");
         this.audience = audience;
         this.streams = streams;
@@ -41,14 +44,11 @@ class TripChangePush {
     @EventListener
     public void changed(TripChangedEvent event) {
         try {
-            executor.execute(() -> send(event));
+            Executor destination = event.deleted() ? deletionExecutor : executor;
+            destination.execute(() -> send(event));
         } catch (RejectedExecutionException full) {
-            if (event.deleted()) {
-                send(event);
-            } else {
-                discarded.increment();
-                log.warn("여행 변경 푸시 대기열 초과: trip={}", event.tripId());
-            }
+            discarded.increment();
+            log.warn("여행 푸시 접수 실패: type={}, trip={}", event.type(), event.tripId());
         }
     }
 
