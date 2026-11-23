@@ -45,9 +45,12 @@ public class SecurityConfig {
     @Value("${app.admin-web-url:}")
     private String adminWebUrl;
 
-    // PWA 웹앱(Cloudflare Pages, #165). 비어 있으면 CORS에 더하지 않는다.
+    // 공유 링크와 로그인 콜백에 쓰는 PWA 주소.
     @Value("${app.web-app-url:}")
     private String webAppUrl;
+
+    @Value("${app.web-app-legacy-origin:}")
+    private String webAppLegacyOrigin;
 
     // API 문서(#149)를 켰을 때만 문서 경로를 로그인 없이 연다. 꺼져 있으면 다른 경로와 똑같이 로그인이 필요하다.
     @Value("${springdoc.api-docs.enabled:false}")
@@ -168,7 +171,11 @@ public class SecurityConfig {
         String adminOrigin = origin(adminWebUrl);
         String webAppOrigin = origin(webAppUrl);
         CorsConfiguration adminWeb = adminOrigin == null ? null : corsFor(adminOrigin, false);
+        String legacyOrigin = origin(webAppLegacyOrigin);
         CorsConfiguration webApp = webAppOrigin == null ? null : corsFor(webAppOrigin, false);
+        if (webApp != null && legacyOrigin != null) {
+            webApp.addAllowedOrigin(legacyOrigin);
+        }
         // 요청을 보낸 주소(Origin)로 설정을 고른다. 쿠키를 싣는 일반 API는 frontendUrl 하나만이라는 CSRF 판단 전제를 지키고,
         // Bearer 토큰만 쓰는 관리자 웹(#163)과 PWA 웹앱(#165)은 쿠키 없이 연다. 관리자 웹은 관리자 API와 교환에만,
         // 웹앱은 관리자 API를 뺀 /api 전체에. 그 밖의 경우는 기본 설정(frontendUrl만 허용)이 다른 주소를 막는다.
@@ -179,7 +186,8 @@ public class SecurityConfig {
                     && (path.startsWith("/api/admin/") || path.equals("/api/auth/exchange"))) {
                 return adminWeb;
             }
-            if (webApp != null && webAppOrigin.equals(origin) && path.startsWith("/api/") && !path.startsWith("/api/admin/")) {
+            if (webApp != null && webApp.getAllowedOrigins().contains(origin)
+                    && path.startsWith("/api/") && !path.startsWith("/api/admin/")) {
                 return webApp;
             }
             return cookieWeb;
