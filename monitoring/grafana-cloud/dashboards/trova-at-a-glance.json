@@ -101,7 +101,7 @@
           "refId": "A"
         }
       ],
-      "title": "서버 살아 있음",
+      "title": "서버 상태",
       "type": "stat"
     },
     {
@@ -189,7 +189,7 @@
           "refId": "A"
         }
       ],
-      "title": "요청 실패율",
+      "title": "실패율",
       "type": "stat"
     },
     {
@@ -277,7 +277,7 @@
           "refId": "A"
         }
       ],
-      "title": "평균 응답 시간",
+      "title": "응답 시간",
       "type": "stat"
     },
     {
@@ -360,7 +360,7 @@
           "refId": "A"
         }
       ],
-      "title": "영상 분석 대기·진행 수",
+      "title": "영상 분석",
       "type": "stat"
     },
     {
@@ -526,7 +526,7 @@
           "refId": "A"
         }
       ],
-      "title": "계산 장치 사용률(CPU)",
+      "title": "CPU",
       "type": "stat"
     },
     {
@@ -1084,6 +1084,6 @@
   "timezone": "Asia/Seoul",
   "title": "Trova 한눈에 보기",
   "uid": "trova-at-a-glance",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
