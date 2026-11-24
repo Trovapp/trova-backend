@@ -3,11 +3,14 @@ package com.trova.backend.controller;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ObjectNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -31,7 +34,13 @@ class ApiErrorAdvice implements ResponseBodyAdvice<Object> {
                                   ServerHttpRequest request, ServerHttpResponse response) {
         int status = ((ServletServerHttpResponse) response).getServletResponse().getStatus();
         if (status < 400) return body;
-        ObjectNode details = body == null ? json.createObjectNode() : json.valueToTree(body);
-        return ApiErrors.body(status, details);
+        // 문자열·바이트 변환기는 ObjectNode를 쓸 수 없고, JSON 배열도 기존 모양을 보존해야 한다.
+        if (!StringHttpMessageConverter.class.isAssignableFrom(converter)
+                && !ByteArrayHttpMessageConverter.class.isAssignableFrom(converter)) {
+            JsonNode tree = body == null ? json.createObjectNode() : json.valueToTree(body);
+            if (tree instanceof ObjectNode fields) return ApiErrors.body(status, fields);
+        }
+        response.getHeaders().set("X-Trace-Id", ApiErrors.logError(status));
+        return body;
     }
 }

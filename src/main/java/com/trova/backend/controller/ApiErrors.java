@@ -24,11 +24,16 @@ public final class ApiErrors {
         if (!fields.has("code")) fields.put("code", known == null ? "HTTP_" + status : known.name());
         if (!fields.has("message")) fields.put("message", message(status, fields.get("code").asString()));
         fields.put("status", status);
+        fields.put("traceId", logError(status));
+        return fields;
+    }
+
+    static String logError(int status) {
         String traceId = MDC.get("traceId");
         if (traceId == null) traceId = UUID.randomUUID().toString();
-        fields.put("traceId", traceId);
         if (status >= 500) LOG.warn("API 오류 status={} traceId={}", status, traceId);
-        return fields;
+        else LOG.info("API 오류 status={} traceId={}", status, traceId);
+        return traceId;
     }
 
     private static String message(int status, String code) {

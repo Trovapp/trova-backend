@@ -2,6 +2,12 @@ package com.trova.backend.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trova.backend.entity.User;
+import com.trova.backend.repository.UserRepository;
+import com.trova.backend.security.JwtService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +23,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,9 +34,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ApiErrorContractTest {
     @LocalServerPort int port;
 
+    @Autowired JwtService jwt;
+    @Autowired UserRepository users;
+
     @RestController
     @TestConfiguration(proxyBeanMethods = false)
     static class FailureRoutes {
+        @GetMapping("/api/test-denied")
+        void denied() {
+            throw new AccessDeniedException("internal-denial");
+        }
+
+        @GetMapping("/api/public/trips/test-text")
+        ResponseEntity<String> text() {
+            return ResponseEntity.badRequest().body("legacy-text");
+        }
+
+        @GetMapping("/api/public/trips/test-list")
+        ResponseEntity<List<String>> list() {
+            return ResponseEntity.badRequest().body(List.of("legacy"));
+        }
+
+        @GetMapping("/api/public/trips/test-bytes")
+        ResponseEntity<byte[]> bytes() {
+            return ResponseEntity.badRequest().body(new byte[]{65, 66});
+        }
+
         @GetMapping("/api/public/trips/test-empty")
         ResponseEntity<Void> empty(@RequestParam int status) {
             return ResponseEntity.status(status).header("Retry-After", "60").build();
@@ -42,6 +73,49 @@ class ApiErrorContractTest {
         @GetMapping("/api/public/trips/test-failure")
         void failure() {
             throw new IllegalStateException("internal-only details");
+        }
+    }
+
+    @Test
+    void 일반_사용자의_접근_거부는_오류_디스패치에서_403으로_전달한다() throws Exception {
+        User member = users.save(new User("google", UUID.randomUUID().toString(), "일반 사용자", null));
+        HttpRequest request = HttpRequest.newBuilder(URI.create("http://localhost:" + port + "/api/test-denied"))
+                .header("Authorization", "Bearer " + jwt.issue(member)).build();
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            assertThat(response.statusCode()).isEqualTo(403);
+            JsonNode body = new ObjectMapper().readTree(response.body());
+            assertThat(body.path("path").asText()).isEqualTo("/api/test-denied");
+            assertThat(body.path("error").asText()).isEqualTo("Forbidden");
+            assertThat(body.path("code").asText()).isEqualTo("FORBIDDEN");
+            assertThat(body.path("traceId").asText()).isNotBlank();
+            assertThat(response.body()).doesNotContain("internal-denial");
+        }
+    }
+
+    @Test
+    void OAuth_콜백이_실패하면_로그인_화면으로_리다이렉트한다() throws Exception {
+        HttpRequest request = HttpRequest.newBuilder(URI.create("http://localhost:" + port
+                + "/login/oauth2/code/google?error=access_denied&state=test")).build();
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            assertThat(response.statusCode()).isEqualTo(302);
+            assertThat(response.headers().firstValue("Location")).contains("http://localhost:3000/login?error=oauth_failed");
+            assertThat(response.headers().firstValue("Content-Type").orElse("")).doesNotContain("json");
+            assertThat(response.body()).isEmpty();
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({"text,legacy-text", "list,[\"legacy\"]", "bytes,AB"})
+    void 객체가_아닌_오류는_상태와_본문을_보존한다(String kind, String expected) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder(URI.create("http://localhost:" + port
+                + "/api/public/trips/test-" + kind)).build();
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            assertThat(response.statusCode()).isEqualTo(400);
+            assertThat(response.body()).isEqualTo(expected);
+            assertThat(response.headers().firstValue("X-Trace-Id")).isPresent();
         }
     }
 
