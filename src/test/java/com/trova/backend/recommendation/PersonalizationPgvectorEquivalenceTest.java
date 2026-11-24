@@ -329,7 +329,8 @@ class PersonalizationPgvectorEquivalenceTest {
             assertThat(response).hasSize(count);
             assertThat(response.get(0).get("recommendationReason").asText()).isEqualTo("같은 종류의 음식점이에요 · 취향과 비슷해요");
         }
-        assertThat(counts).containsExactly(9L, 9L, 9L);
+        // #518: 여행 전체 조회로 다음 장소도 찾아, 같은 일차 장소 조회와 그 일차의 EAGER 연관 조회 2회를 없앴다.
+        assertThat(counts).containsExactly(7L, 7L, 7L);
         org.mockito.Mockito.verifyNoInteractions(geminiTextClient, geminiEmbeddingClient);
         org.mockito.Mockito.verify(googlePlacesApiClient, org.mockito.Mockito.times(3))
                 .searchNearby(anyDouble(), anyDouble(), anyDouble(), any());
