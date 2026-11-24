@@ -2,6 +2,8 @@ package com.trova.backend.pipeline;
 
 import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
@@ -53,6 +55,8 @@ class PipelineRunnerLaunchPolicyTest {
         assertThat(PipelineRunner.needsDownload("https://m.youtube.com/watch?v=abc")).isFalse();
     }
 
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
     @Test
     void 파이썬은_설정한_nice_값으로_실행된다() throws IOException {
         PipelineOutput output = runner(10, 0).run("https://youtu.be/test", 1L);
@@ -60,6 +64,8 @@ class PipelineRunnerLaunchPolicyTest {
         assertThat(output.title().split("\\|")[2]).isEqualTo("10");
     }
 
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
     @Test
     void 인스타그램_분석은_동시에_하나씩만_실행된다() throws Exception {
         PipelineRunner runner = runner(0, 1);
@@ -71,6 +77,8 @@ class PipelineRunnerLaunchPolicyTest {
         assertThat(second[0]).isGreaterThanOrEqualTo(first[1]);
     }
 
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
     @Test
     void 유튜브_분석은_제한_없이_같이_실행된다() throws Exception {
         PipelineRunner runner = runner(0, 1);
