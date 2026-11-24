@@ -1,0 +1,9 @@
+# Append to the existing Caddyfile after approval.
+api.trova.duckdns.org {
+    @actuator {
+        path /actuator /actuator/*
+        not path /actuator/health /actuator/health/*
+    }
+    respond @actuator 404
+    reverse_proxy localhost:8080
+}
