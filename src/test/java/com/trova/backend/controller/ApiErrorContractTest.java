@@ -89,6 +89,7 @@ class ApiErrorContractTest {
             assertThat(body.path("error").asText()).isEqualTo("Forbidden");
             assertThat(body.path("code").asText()).isEqualTo("FORBIDDEN");
             assertThat(body.path("traceId").asText()).isNotBlank();
+            assertThat(response.headers().allValues("X-Trace-Id")).containsExactly(body.path("traceId").asText());
             assertThat(response.body()).doesNotContain("internal-denial");
         }
     }
@@ -146,6 +147,7 @@ class ApiErrorContractTest {
             assertThat(body.path("code").asText()).isEqualTo(code);
             assertThat(body.path("message").asText()).containsPattern("[가-힣]");
             assertThat(body.path("traceId").asText()).isNotBlank();
+            assertThat(response.headers().allValues("X-Trace-Id")).containsExactly(body.path("traceId").asText());
             if (status == 409) assertThat(body.at("/latest/id").asInt()).isEqualTo(7);
             if (status == 429) assertThat(response.headers().firstValue("Retry-After")).contains("60");
             if (status == 500) {

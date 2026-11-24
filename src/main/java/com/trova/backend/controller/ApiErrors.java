@@ -14,17 +14,18 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class ApiErrors {
+    static final String TRACE_HEADER = "X-Trace-Id";
     private static final JsonMapper JSON = JsonMapper.builder().build();
     private static final Logger LOG = LoggerFactory.getLogger(ApiErrors.class);
 
     private ApiErrors() {}
 
-    static ObjectNode body(int status, ObjectNode fields) {
+    static ObjectNode body(int status, ObjectNode fields, String traceId) {
         HttpStatus known = HttpStatus.resolve(status);
         if (!fields.has("code")) fields.put("code", known == null ? "HTTP_" + status : known.name());
         if (!fields.has("message")) fields.put("message", message(status, fields.get("code").asString()));
         fields.put("status", status);
-        fields.put("traceId", logError(status));
+        fields.put("traceId", traceId);
         return fields;
     }
 
@@ -58,6 +59,8 @@ public final class ApiErrors {
         response.setStatus(status);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(JSON.writeValueAsString(body(status, JSON.valueToTree(details))));
+        String traceId = logError(status);
+        response.setHeader(TRACE_HEADER, traceId);
+        response.getWriter().write(JSON.writeValueAsString(body(status, JSON.valueToTree(details), traceId)));
     }
 }

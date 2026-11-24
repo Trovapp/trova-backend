@@ -34,13 +34,14 @@ class ApiErrorAdvice implements ResponseBodyAdvice<Object> {
                                   ServerHttpRequest request, ServerHttpResponse response) {
         int status = ((ServletServerHttpResponse) response).getServletResponse().getStatus();
         if (status < 400) return body;
+        String traceId = ApiErrors.logError(status);
+        response.getHeaders().set(ApiErrors.TRACE_HEADER, traceId);
         // 문자열·바이트 변환기는 ObjectNode를 쓸 수 없고, JSON 배열도 기존 모양을 보존해야 한다.
         if (!StringHttpMessageConverter.class.isAssignableFrom(converter)
                 && !ByteArrayHttpMessageConverter.class.isAssignableFrom(converter)) {
             JsonNode tree = body == null ? json.createObjectNode() : json.valueToTree(body);
-            if (tree instanceof ObjectNode fields) return ApiErrors.body(status, fields);
+            if (tree instanceof ObjectNode fields) return ApiErrors.body(status, fields, traceId);
         }
-        response.getHeaders().set("X-Trace-Id", ApiErrors.logError(status));
         return body;
     }
 }
