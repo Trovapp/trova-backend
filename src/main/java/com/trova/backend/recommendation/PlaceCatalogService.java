@@ -1,12 +1,17 @@
 package com.trova.backend.recommendation;
 
+import com.trova.backend.config.RequestDbQueryMetrics;
 import com.trova.backend.entity.Place;
 import com.trova.backend.repository.PlaceRepository;
 import jakarta.persistence.EntityManager;
+import org.hibernate.Session;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.PreparedStatement;
+import java.sql.Savepoint;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -47,6 +52,16 @@ public class PlaceCatalogService {
         // INSERT와 좌표 복구 UPDATE를 같은 ID 순서로 실행한다. 마지막 일괄 조회 뒤에는 쓰지 않는다.
         List<String> inserted = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
+        // 이미 있는 행에 좌표 복구가 필요하거나 중복 입력이면 원래의 ID순 쓰기를 사용한다.
+        // 새 장소가 충분히 많을 때만 저장점·해제 왕복을 감수한다.
+        List<GooglePlacesNearbySearchResponse.Place> missing = groups.values().stream()
+                .map(List::getFirst).filter(raw -> !byGoogleId.containsKey(raw.id())).toList();
+        if (missing.size() >= 5 && missing.size() <= 100 && rawCandidates.size() == groups.size()
+                && byGoogleId.values().stream().allMatch(p -> p.getLatitude() != null && p.getLongitude() != null)
+                && insertAllNew(missing, now)) {
+            placeRepository.findByGooglePlaceIdIn(missing.stream().map(GooglePlacesNearbySearchResponse.Place::id).toList())
+                    .forEach(place -> byGoogleId.put(place.getGooglePlaceId(), place));
+        }
         for (List<GooglePlacesNearbySearchResponse.Place> group : groups.values()) {
             GooglePlacesNearbySearchResponse.Place first = group.getFirst();
             Place place = byGoogleId.get(first.id());
@@ -69,6 +84,39 @@ public class PlaceCatalogService {
                     .forEach(place -> byGoogleId.put(place.getGooglePlaceId(), place));
         }
         return rawCandidates.stream().map(raw -> byGoogleId.get(raw.id())).toList();
+    }
+
+    private boolean insertAllNew(List<GooglePlacesNearbySearchResponse.Place> sorted, LocalDateTime now) {
+        String sql = "INSERT INTO places (google_place_id,name,category,rating,user_rating_count,price_level,"
+                + "latitude,longitude,address,last_synced_at) VALUES "
+                + String.join(",", Collections.nCopies(sorted.size(), "(?,?,?,?,?,?,?,?,?,?)"))
+                + " ON CONFLICT DO NOTHING";
+        return entityManager.unwrap(Session.class).doReturningWork(connection -> {
+            Savepoint beforeInsert = connection.setSavepoint();
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                int index = 1;
+                for (GooglePlacesNearbySearchResponse.Place raw : sorted) {
+                    statement.setString(index++, raw.id());
+                    statement.setString(index++, raw.displayName() == null ? null : raw.displayName().text());
+                    statement.setString(index++, raw.types() == null || raw.types().isEmpty() ? null : raw.types().getFirst());
+                    statement.setObject(index++, raw.rating());
+                    statement.setObject(index++, raw.userRatingCount());
+                    statement.setString(index++, raw.priceLevel());
+                    statement.setObject(index++, raw.location() == null ? null : raw.location().latitude());
+                    statement.setObject(index++, raw.location() == null ? null : raw.location().longitude());
+                    statement.setString(index++, raw.formattedAddress());
+                    statement.setObject(index++, now);
+                }
+                RequestDbQueryMetrics.recordJdbcStatements(1);
+                boolean allNew = statement.executeUpdate() == sorted.size();
+                if (!allNew) {
+                    // 동시 삽입된 행의 좌표도 복구해야 한다. 먼저 이 묶음의 잠금을 풀어 기존 ID순을 지킨다.
+                    connection.rollback(beforeInsert);
+                }
+                connection.releaseSavepoint(beforeInsert);
+                return allNew;
+            }
+        });
     }
 
     private boolean insertIfAbsent(GooglePlacesNearbySearchResponse.Place raw, LocalDateTime now) {

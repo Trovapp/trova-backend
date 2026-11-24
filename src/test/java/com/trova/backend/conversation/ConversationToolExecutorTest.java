@@ -87,6 +87,7 @@ class ConversationToolExecutorTest {
         verify(alternativeFinderService).findAlternatives(eq(user), eq(100L), filterCaptor.capture(), eq(false));
         assertThat(filterCaptor.getValue().category()).isEqualTo("카페");
         assertThat(filterCaptor.getValue().indoorOnly()).isTrue();
+        verify(personalizationService, never()).queryScores(any(), any());
         assertThat(result.candidates()).hasSize(1);
         assertThat(result.responseForGemini()).containsKey("candidates");
         verify(apiCallLogService).record(
