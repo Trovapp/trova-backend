@@ -5,6 +5,9 @@ server:
   # 운영 서버는 Caddy가 https를 받아 http로 넘긴다. X-Forwarded-Proto를 읽어야 OAuth 돌아올 주소가 https로 만들어진다(#67).
   # 앱은 127.0.0.1에서만 받으므로 Tomcat 기본 신뢰 범위(내부 주소)로 충분하다.
   forward-headers-strategy: native
+  tomcat:
+    remoteip:
+      host-header: X-Forwarded-Host
   servlet:
     session:
       cookie:
