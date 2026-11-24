@@ -139,11 +139,13 @@ class AlternativeLatencyMeasurementTest {
                 double sql = (sqlTotal() - before) / times.length;
                 System.out.printf("P8 mode=%s candidates=%d coldSql=%d coldHibernate=%d warmSql=%.1f hibernateSql=%.1f medianMs=%.3f minMs=%.3f maxMs=%.3f%n",
                         mode, count, coldSql, coldPrepared, sql, prepared / 30.0, (times[14] + times[15]) / 2, times[0], times[29]);
-                assertThat(sql).isEqualTo(count == 0 ? 5 : 9);
+                assertThat(sql).isEqualTo(count == 0 ? 3 : 7);
                 assertThat(prepared / 30.0).isEqualTo(sql);
                 verify(embedding, times(mode.equals("new-vector") && count > 0 ? 1 : 0)).embedBatch(any());
                 if (mode.equals("new-vector") && count > 0) {
-                    assertThat(coldSql - coldPrepared).isEqualTo(2L * count);
+                    // 신규 임베딩의 기록·저장 외에 카탈로그 5곳 이상은 JDBC INSERT 한 문장이다.
+                    assertThat(coldSql - coldPrepared).isEqualTo(2L * count + (count >= 5 ? 1 : 0));
+                    assertThat(coldSql).isEqualTo(9L + 2L * count);
                 }
             }
         }
