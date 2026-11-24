@@ -90,6 +90,33 @@ class TripEventsWireTest {
         }
     }
 
+    @Autowired TripStreams streams;
+    @Autowired org.springframework.jdbc.core.JdbcTemplate jdbc;
+
+    @Test
+    void 연결_후_버전_이벤트가_누락되면_오류_JSON_없이_스트림이_끝난다() throws Exception {
+        User owner = user();
+        Trip trip = trips.saveAndFlush(new Trip(owner, "시험 여행", LocalDate.now(), LocalDate.now()));
+        HttpRequest request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port
+                        + "/api/trips/" + trip.getId() + "/events"))
+                .header("Authorization", "Bearer " + jwt.issue(owner)).timeout(Duration.ofSeconds(10)).build();
+        try (HttpClient client = HttpClient.newHttpClient();
+             var readerThread = Executors.newVirtualThreadPerTaskExecutor()) {
+            HttpResponse<java.io.InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            assertThat(response.statusCode()).isEqualTo(200);
+            assertThat(response.headers().firstValue("Content-Type").orElse("")).startsWith("text/event-stream");
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.body(), StandardCharsets.UTF_8))) {
+                assertThat(readerThread.submit(() -> readFrame(reader)).get(10, TimeUnit.SECONDS)).startsWith("event:ready");
+                jdbc.update("update trips set version = version + 1 where id = ?", trip.getId());
+                streams.heartbeat();
+                streams.heartbeat();
+                // 기한 안에 EOF에 도달해야 하며 남은 데이터는 이미 대기 중이던 하트비트뿐이다.
+                assertThat(readerThread.submit(() -> reader.lines().toList()).get(10, TimeUnit.SECONDS))
+                        .allMatch(line -> line.isEmpty() || line.equals(":heartbeat"));
+            }
+        }
+    }
+
     private User user() {
         return users.save(new User("google", UUID.randomUUID().toString(), "친구", null));
     }

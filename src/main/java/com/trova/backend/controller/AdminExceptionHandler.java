@@ -14,11 +14,11 @@ public class AdminExceptionHandler {
 
     @ExceptionHandler(AdminReauthRequiredException.class)
     public ResponseEntity<Map<String, String>> reauth() {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "REAUTH_REQUIRED"));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "REAUTH_REQUIRED", "code", "REAUTH_REQUIRED"));
     }
 
     @ExceptionHandler(AdminActionException.class)
     public ResponseEntity<Map<String, String>> action(AdminActionException e) {
-        return ResponseEntity.status(e.status()).body(Map.of("error", e.getMessage()));
+        return ResponseEntity.status(e.status()).body(Map.of("error", e.getMessage(), "message", e.getMessage()));
     }
 }
