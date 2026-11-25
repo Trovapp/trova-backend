@@ -1,8 +1,11 @@
 package com.trova.backend.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trova.backend.entity.*;
-import com.trova.backend.repository.*;
+import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.TripMember;
+import com.trova.backend.entity.User;
+import com.trova.backend.repository.TripRepository;
+import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
 import com.trova.backend.service.TripMembershipService;
 import java.time.LocalDate;
@@ -11,15 +14,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.MockMvcPrint;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.OAuth2LoginRequestPostProcessor;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:trip-events;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
         "app.web-app-url=https://pwa.example.test"})
 @org.springframework.test.context.event.RecordApplicationEvents
-@AutoConfigureMockMvc
+// Mock response headers are not thread-safe: the SSE writer can update them during printing.
+@AutoConfigureMockMvc(print = MockMvcPrint.NONE)
 class TripEventsHttpTest {
     @Autowired MockMvc mvc;
     @Autowired UserRepository users;
@@ -34,7 +46,7 @@ class TripEventsHttpTest {
     @Autowired com.trova.backend.service.TripChanges changes;
 
     @Test void publishesCommittedVersionAndDiscardsRolledBackChanges() {
-        var owner = user();
+        User owner = user();
         long id = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now())).getId();
         transactions.executeWithoutResult(tx -> {
             changes.record(trips.findById(id).orElseThrow(), owner, "TRIP_TITLE", "제목 변경");
@@ -50,7 +62,7 @@ class TripEventsHttpTest {
     @Autowired com.trova.backend.service.TripService tripService;
 
     @Test void rolledBackDeletionKeepsTripAndPublishesNothing() {
-        var owner = user();
+        User owner = user();
         long id = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now())).getId();
         transactions.executeWithoutResult(tx -> {
             assertThat(tripService.deleteTrip(owner, id)).isTrue();
@@ -63,7 +75,7 @@ class TripEventsHttpTest {
     User user() { return users.save(new User("google", UUID.randomUUID().toString(), "친구", null)); }
 
     @Test void pwaCanReadVersionAndRetryDelay() throws Exception {
-        var response = mvc.perform(get("/api/trips").header("Origin", "https://pwa.example.test")
+        MockHttpServletResponse response = mvc.perform(get("/api/trips").header("Origin", "https://pwa.example.test")
                         .header("Authorization", "Bearer " + jwt.issue(user())))
                 .andExpect(header().string("Access-Control-Allow-Origin", "https://pwa.example.test"))
                 .andReturn().getResponse();
@@ -71,18 +83,40 @@ class TripEventsHttpTest {
                 .contains("X-Trip-Version", "Retry-After");
     }
 
+    @Test void 같은_사용자의_네번째_실시간_연결도_200이다() throws Exception {
+        User owner = user();
+        Trip trip = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now()));
+        String path = "/api/trips/" + trip.getId() + "/events";
+        String bearer = "Bearer " + jwt.issue(owner);
+        java.util.List<org.springframework.test.web.servlet.MvcResult> opened = new java.util.ArrayList<>();
+        try {
+            for (int count = 0; count < 4; count++) {
+                opened.add(mvc.perform(get(path).header("Authorization", bearer))
+                        .andExpect(status().isOk()).andExpect(request().asyncStarted()).andReturn());
+            }
+            assertThat(opened.getFirst().getAsyncResult(3000)).isNull();
+            assertThat(opened.getFirst().getResponse().getContentAsString())
+                    .contains("event:replaced", "\"reason\":\"connection_limit\"");
+            assertThat(streams.viewing(trip.getId(), owner.getId())).isTrue();
+        } finally {
+            for (org.springframework.test.web.servlet.MvcResult result : opened) {
+                ((TripStream) result.getRequest().getAttribute(TripSseMvc.STREAM)).close();
+            }
+        }
+    }
+
     @Test void nativeAndTicketStreamsRequireCurrentMembership() throws Exception {
-        var owner = user();
-        var editor = user();
-        var outsider = user();
-        var trip = new Trip(owner, "여행", LocalDate.now(), LocalDate.now());
+        User owner = user();
+        User editor = user();
+        User outsider = user();
+        Trip trip = new Trip(owner, "여행", LocalDate.now(), LocalDate.now());
         trip.getMembers().add(new TripMember(editor, TripMember.Role.EDITOR));
         trips.saveAndFlush(trip);
         String path = "/api/trips/" + trip.getId() + "/events";
         String token = "Bearer " + jwt.issue(editor);
         mvc.perform(get(path)).andExpect(status().isUnauthorized());
         mvc.perform(get(path).header("Authorization", "Bearer " + jwt.issue(outsider))).andExpect(status().isForbidden());
-        var nativeStream = mvc.perform(get(path).header("Authorization", token))
+        MvcResult nativeStream = mvc.perform(get(path).header("Authorization", token))
                 .andExpect(request().asyncStarted()).andReturn();
         org.awaitility.Awaitility.await().untilAsserted(() ->
                 assertThat(nativeStream.getResponse().getContentAsString()).contains("event:ready", "version"));
@@ -99,20 +133,20 @@ class TripEventsHttpTest {
     }
 
     @Test void logoutRevokesSessionTicketAndStream() throws Exception {
-        var owner = user();
-        var trip = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now()));
+        User owner = user();
+        Trip trip = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now()));
         String path = "/api/trips/" + trip.getId() + "/events";
-        var session = new org.springframework.mock.web.MockHttpSession();
+        MockHttpSession session = new org.springframework.mock.web.MockHttpSession();
         session.setMaxInactiveInterval(1800);
-        var login = org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login()
+        OAuth2LoginRequestPostProcessor login = org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login()
                 .clientRegistration(providers.findByRegistrationId("google")).attributes(a -> a.put("sub", owner.getProviderUserId()));
         String first = mvc.perform(post(path + "/ticket").session(session).with(login))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         String spare = mvc.perform(post(path + "/ticket").session(session).with(login))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        var ticketStream = mvc.perform(get(path).param("ticket", new ObjectMapper().readTree(first).get("ticket").asText()))
+        MvcResult ticketStream = mvc.perform(get(path).param("ticket", new ObjectMapper().readTree(first).get("ticket").asText()))
                 .andExpect(request().asyncStarted()).andReturn();
-        var sessionStream = mvc.perform(get(path).session(session).with(login))
+        MvcResult sessionStream = mvc.perform(get(path).session(session).with(login))
                 .andExpect(request().asyncStarted()).andReturn();
         mvc.perform(post("/api/auth/logout").session(session)).andExpect(status().isOk());
         mvc.perform(get(path).param("ticket", new ObjectMapper().readTree(spare).get("ticket").asText()))
@@ -124,8 +158,8 @@ class TripEventsHttpTest {
     }
 
     @Test void accountSuspensionInvalidatesOutstandingTicket() throws Exception {
-        var owner = user();
-        var trip = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now()));
+        User owner = user();
+        Trip trip = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now()));
         String path = "/api/trips/" + trip.getId() + "/events";
         String outstanding = ticket(path, "Bearer " + jwt.issue(owner));
         owner.suspend();

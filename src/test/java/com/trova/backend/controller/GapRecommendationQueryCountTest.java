@@ -5,10 +5,10 @@ import com.trova.backend.embedding.GeminiEmbeddingClient;
 import com.trova.backend.embedding.GeminiTextClient;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Place;
+import com.trova.backend.entity.PlaceSource;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.entity.SourcePlatform;
-import com.trova.backend.entity.PlaceSource;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
@@ -27,20 +27,10 @@ import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
+import com.trova.backend.service.DailyQuotaService;
 import com.trova.backend.service.UserAccountService;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.util.AopTestUtils;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
-
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalTime;
@@ -53,6 +43,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.AopTestUtils;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -118,6 +120,7 @@ class GapRecommendationQueryCountTest {
     @AfterEach
     void restoreClients() {
         restore(gapRecommendationService, "googlePlacesApiClient");
+        restore(gapRecommendationService, "dailyQuotaService");
         restore(placeEmbeddingService, "geminiEmbeddingClient");
         restore(personalizationService, "geminiEmbeddingClient");
         restore(personalizationService, "geminiTextClient");
@@ -128,6 +131,7 @@ class GapRecommendationQueryCountTest {
     @BeforeEach
     void stubGoogle() {
         swap(gapRecommendationService, "googlePlacesApiClient", googlePlacesApiClient);
+        swap(gapRecommendationService, "dailyQuotaService", new DailyQuotaService(jobs, 10, 10000, 20));
         swap(placeEmbeddingService, "geminiEmbeddingClient", geminiEmbeddingClient);
         swap(personalizationService, "geminiEmbeddingClient", geminiEmbeddingClient);
         swap(personalizationService, "geminiTextClient", geminiTextClient);
@@ -432,11 +436,13 @@ class GapRecommendationQueryCountTest {
     }
 
     @Test
-    void 남의_여행_없는_여행_없는_일차는_404이고_인증이_없으면_401이다() throws Exception {
+    void 남의_여행은_403_없는_여행과_일차는_404이며_한도를_쓰지_않는다() throws Exception {
         User owner = user();
         User stranger = user();
         Trip trip = trip(owner, 1);
         place(day(trip, 1), 1, "09:00", "10:00", 37.5, 127.0, null);
+        DailyQuotaService quota = new DailyQuotaService(jobs, 10, 1, 20);
+        ReflectionTestUtils.setField(gapRecommendationService, "dailyQuotaService", quota);
         String path = "/api/trips/" + trip.getId() + "/days/";
         mvc.perform(get(path + "1/gap-recommendations").header("Authorization", bearer(stranger)))
                 .andExpect(status().isForbidden());
@@ -447,8 +453,28 @@ class GapRecommendationQueryCountTest {
                 .andExpect(status().isNotFound());
         mvc.perform(get(path + "1/gap-recommendations"))
                 .andExpect(status().isUnauthorized());
+        verifyNoInteractions(googlePlacesApiClient);
+        quota.consumePlaceCall(stranger);
         mvc.perform(get(path + "1/gap-recommendations").header("Authorization", bearer(owner)))
                 .andExpect(status().isOk());
+        Assertions.assertThatThrownBy(() -> quota.consumePlaceCall(owner))
+                .isInstanceOf(DailyQuotaService.QuotaExceededException.class);
+    }
+
+    @Test
+    void 빈시간_두개에_한도가_하나면_첫_검색만_호출하고_429다() throws Exception {
+        User owner = user();
+        Trip trip = trip(owner, 1);
+        Itinerary itinerary = day(trip, 1);
+        place(itinerary, 1, "09:00", "10:00", 37.5, 127.0, null);
+        place(itinerary, 2, "11:00", "12:00", 37.6, 127.1, null);
+        ReflectionTestUtils.setField(gapRecommendationService, "dailyQuotaService",
+                new DailyQuotaService(jobs, 10, 1, 20));
+        mvc.perform(get("/api/trips/" + trip.getId() + "/days/1/gap-recommendations")
+                        .header("Authorization", bearer(owner)))
+                .andExpect(status().isTooManyRequests());
+        Mockito.verify(googlePlacesApiClient).searchNearby(37.55, 127.05, 1500, null);
+        Mockito.verifyNoMoreInteractions(googlePlacesApiClient);
     }
 
     @Test

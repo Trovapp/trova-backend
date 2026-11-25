@@ -26,8 +26,10 @@ final class TripStream implements Runnable {
     private final ArrayBlockingQueue<SseEmitter.SseEventBuilder> pending = new ArrayBlockingQueue<>(8);
     private final CountDownLatch ready = new CountDownLatch(1);
     private final AtomicBoolean closed = new AtomicBoolean();
+    private final AtomicBoolean ending = new AtomicBoolean();
     private final Executor sender;
     private final Consumer<TripStream> release;
+    private final Consumer<TripStream> writerFinished;
     private volatile Thread writer;
     private volatile AsyncContext transport;
     private volatile long writeStarted;
@@ -36,7 +38,7 @@ final class TripStream implements Runnable {
     private boolean missingAtPreviousHeartbeat;
 
     TripStream(long trip, long user, long version, StreamAuth auth, Clock clock, long timeout,
-               Executor sender, Consumer<TripStream> release) {
+               Executor sender, Consumer<TripStream> release, Consumer<TripStream> writerFinished) {
         this.trip = trip;
         this.latestOffered = new AtomicLong(version);
         this.previousHeartbeatVersion = version;
@@ -48,6 +50,7 @@ final class TripStream implements Runnable {
         pending.add(initial);
         this.sender = sender;
         this.release = release;
+        this.writerFinished = writerFinished;
         emitter.onCompletion(this::close);
         emitter.onError(error -> close());
         emitter.onTimeout(this::close);
@@ -59,7 +62,7 @@ final class TripStream implements Runnable {
         try {
             if (closed.get() || !ready.await(10, TimeUnit.SECONDS)) return;
             while (active()) {
-                var message = pending.take();
+                SseEmitter.SseEventBuilder message = pending.take();
                 writeStarted = System.nanoTime();
                 if (!active()) break;
                 emitter.send(message);
@@ -71,14 +74,14 @@ final class TripStream implements Runnable {
         } catch (IOException | IllegalStateException disconnected) {
             // The servlet container may already have closed the response.
         } finally {
-            closed.set(true);
+            close();
             pending.clear();
             try {
                 emitter.complete();
             } catch (IllegalStateException alreadyCompleted) {
                 // A client disconnect can recycle Tomcat's response before the writer exits.
             } finally {
-                release.accept(this);
+                writerFinished.accept(this);
             }
         }
     }
@@ -107,8 +110,22 @@ final class TripStream implements Runnable {
         previousHeartbeatVersion = committedVersion;
     }
 
+    boolean replaceable() { return active() && !ending.get(); }
+
+    // Atomic reservation avoids acquiring the stream monitor under the admission monitor.
+    boolean reserveReplacement() {
+        return active() && ending.compareAndSet(false, true) && !closed.get();
+    }
+
+    synchronized void replaced() {
+        if (!checkWriteTimeout()) return;
+        terminal = SseEmitter.event().name("replaced").data(java.util.Map.of("reason", "connection_limit"));
+        pending.removeIf(message -> message != initial);
+        pending.add(terminal);
+    }
+
     synchronized void finish(TripChangedEvent event) {
-        if (terminal != null || !checkWriteTimeout()) return;
+        if (!checkWriteTimeout() || !ending.compareAndSet(false, true)) return;
         terminal = SseEmitter.event().name("changed").data(event.forClient());
         pending.removeIf(message -> message != initial);
         pending.add(terminal);
@@ -122,7 +139,7 @@ final class TripStream implements Runnable {
         missingAtPreviousHeartbeat = true;
     }
 
-    private boolean checkWriteTimeout() {
+    boolean checkWriteTimeout() {
         long started = writeStarted;
         if (!active() || (started != 0 && System.nanoTime() - started >= MAX_WRITE_NANOS)) {
             close();
@@ -137,16 +154,23 @@ final class TripStream implements Runnable {
 
     void close() {
         if (!closed.compareAndSet(false, true)) return;
+        ending.set(true);
+        // Admission is released immediately, even if a servlet write has not unwound yet.
+        release.accept(this);
         Thread task = writer;
-        if (task != null) task.interrupt();
+        if (task != null && task != Thread.currentThread()) task.interrupt();
         AsyncContext context = transport;
         if (writeStarted != 0 && context != null) {
             // complete() on the emitter waits for its write lock. Ask the container independently
-            // to finish a stalled request and retain the admission slot until the writer exits.
-            sender.execute(() -> {
-                try { context.complete(); }
-                catch (IllegalStateException alreadyCompleted) { /* Servlet has finished. */ }
-            });
+            // to finish a stalled request without waiting for the writer to exit.
+            try {
+                sender.execute(() -> {
+                    try { context.complete(); }
+                    catch (IllegalStateException alreadyCompleted) { /* Servlet has finished. */ }
+                });
+            } catch (java.util.concurrent.RejectedExecutionException stopped) {
+                // Shutdown already interrupts writers; keep close idempotent and nonblocking.
+            }
         }
     }
 }

@@ -1,32 +1,43 @@
 package com.trova.backend.conversation;
 
-import com.trova.backend.entity.Place;
 import com.trova.backend.embedding.GeminiEmbeddingClient;
 import com.trova.backend.embedding.GeminiTextClient;
+import com.trova.backend.entity.Place;
 import com.trova.backend.entity.SignalType;
 import com.trova.backend.entity.User;
 import com.trova.backend.recommendation.AlternativeCandidate;
 import com.trova.backend.recommendation.AlternativeFilter;
 import com.trova.backend.recommendation.AlternativeFinderService;
 import com.trova.backend.recommendation.GapRecommendationService;
+import com.trova.backend.recommendation.GooglePlacesApiClient;
+import com.trova.backend.recommendation.GooglePlacesNearbySearchResponse;
 import com.trova.backend.recommendation.PersonalizationService;
+import com.trova.backend.recommendation.PlaceCatalogService;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
+import com.trova.backend.repository.GapPlaceRow;
 import com.trova.backend.repository.PlaceRepository;
+import com.trova.backend.repository.ProcessingJobRepository;
+import com.trova.backend.repository.SavedPlaceRepository;
+import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
 import com.trova.backend.service.ApiCallLogService;
+import com.trova.backend.service.DailyQuotaService;
+import java.lang.reflect.Field;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,6 +81,45 @@ class ConversationToolExecutorTest {
     private AlternativeCandidate candidate(Long placeId, String name) {
         return new AlternativeCandidate(placeId, "g-" + placeId, name, "cafe", 4.5, 100,
                 37.5, 127.0, "서울", null, null, false, null, null);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"0, 50", "0, 99", "1, 50", "1, 99"})
+    void 실제_빈시간_서비스는_선택한_한곳만_차감하고_소진을_안내한다(int remaining, long beforePlaceId) {
+        TripPlaceRepository rows = mock(TripPlaceRepository.class);
+        GooglePlacesApiClient google = mock(GooglePlacesApiClient.class);
+        DailyQuotaService quota = new DailyQuotaService(
+                mock(ProcessingJobRepository.class), 10, 1, 20);
+        if (remaining == 0) quota.consumePlaceCall(user);
+        when(rows.findGapPlaceRows(10L, 1L, 2)).thenReturn(List.of(
+                new GapPlaceRow(1L, 99L, LocalTime.of(9, 0),
+                        LocalTime.of(10, 0), 37.5, 127.0, null),
+                new GapPlaceRow(1L, 50L, LocalTime.of(11, 0),
+                        LocalTime.of(12, 0), 37.6, 127.1, null)));
+        double lat = beforePlaceId == 50 ? 37.6 : 37.55;
+        double lng = beforePlaceId == 50 ? 127.1 : 127.05;
+        String type = beforePlaceId == 50 ? "restaurant" : null;
+        if (remaining == 1) when(google.searchNearby(lat, lng, 1500, type))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of()));
+        GapRecommendationService realGap = new GapRecommendationService(
+                mock(SavedPlaceRepository.class), rows, google,
+                mock(PlaceCatalogService.class), apiCallLogService,
+                placeEmbeddingService, personalizationService, quota);
+        ConversationToolExecutor realExecutor = new ConversationToolExecutor(alternativeFinderService, realGap,
+                personalizationService, placeRepository, userPreferenceSignalRepository, placeEmbeddingService, apiCallLogService);
+        ConversationToolExecutor.ToolExecutionResult result = realExecutor.execute(user,
+                new ConversationState(1L, 10L, null, 2, beforePlaceId),
+                new GeminiChatClient.FunctionCall("get_gap_recommendations", Map.of(), "sig"), "추천");
+        if (remaining == 0) {
+            assertThat(result.responseForGemini()).containsEntry("error", "오늘 장소 검색·추천을 모두 사용했어요. 내일 다시 시도해주세요.");
+            Mockito.verifyNoInteractions(google);
+        } else {
+            assertThat(result.responseForGemini()).containsKey("candidates");
+            verify(google).searchNearby(lat, lng, 1500, type);
+            Mockito.verifyNoMoreInteractions(google);
+            Assertions.assertThatThrownBy(() -> quota.consumePlaceCall(user))
+                    .isInstanceOf(DailyQuotaService.QuotaExceededException.class);
+        }
     }
 
     @Test
@@ -135,9 +185,8 @@ class ConversationToolExecutorTest {
     void get_gap_recommendations는_세션의_gapBeforePlaceId와_일치하는_gap만_반환한다() {
         ConversationState state = new ConversationState(1L, 10L, null, 2, 50L);
         GapRecommendationService.Gap matchingGap = new GapRecommendationService.Gap(50L, 60L, 40, List.of(candidate(7L, "카페A")));
-        GapRecommendationService.Gap otherGap = new GapRecommendationService.Gap(99L, 100L, 35, List.of(candidate(8L, "카페B")));
-        when(gapRecommendationService.findGaps(user, 10L, 2))
-                .thenReturn(Optional.of(List.of(otherGap, matchingGap)));
+        when(gapRecommendationService.findGap(user, 10L, 2, 50L))
+                .thenReturn(Optional.of(matchingGap));
 
         GeminiChatClient.FunctionCall call = new GeminiChatClient.FunctionCall("get_gap_recommendations", Map.of(), "sig");
         ConversationToolExecutor.ToolExecutionResult result = executor.execute(user, state, call, "메시지");
@@ -183,8 +232,8 @@ class ConversationToolExecutorTest {
             when(alternativeFinderService.findAlternatives(eq(user), eq(100L), any(AlternativeFilter.class), eq(false)))
                     .thenReturn(Optional.of(candidates));
         } else {
-            when(gapRecommendationService.findGaps(user, 10L, 2))
-                    .thenReturn(Optional.of(List.of(new GapRecommendationService.Gap(50L, 60L, 40, candidates))));
+            when(gapRecommendationService.findGap(user, 10L, 2, 50L))
+                    .thenReturn(Optional.of(new GapRecommendationService.Gap(50L, 60L, 40, candidates)));
         }
         when(personalizationService.queryScores("메시지", List.of(1L, 2L, 3L, 4L))).thenReturn(scores);
 
