@@ -13,7 +13,8 @@ root = Path(__file__).resolve().parents[1] / '2026-11-25-v11-recheck'
 pdfmetrics.registerFont(TTFont('Malgun', 'C:/Windows/Fonts/malgun.ttf'))
 pdfmetrics.registerFont(TTFont('MalgunBold', 'C:/Windows/Fonts/malgunbd.ttf'))
 body = ParagraphStyle('body', fontName='Malgun', fontSize=8.5, leading=13, wordWrap='CJK', spaceAfter=5)
-heading = ParagraphStyle('heading', parent=body, fontName='MalgunBold', fontSize=12, leading=17, spaceBefore=10, spaceAfter=7)
+heading = ParagraphStyle('heading', parent=body, fontName='MalgunBold', fontSize=12, leading=17, spaceBefore=10, spaceAfter=7, keepWithNext=True)
+caption = ParagraphStyle('caption', parent=body, keepWithNext=True)
 small = ParagraphStyle('table', parent=body, fontSize=7, leading=10, spaceAfter=0)
 
 def formatted(text):
@@ -23,7 +24,7 @@ def formatted(text):
     return text.replace('`', '')
 
 story = []
-for filename in ['README.md', 'video-frame-observations.md', 'improvement-candidates.md']:
+for filename in ['README.md', 'server-results.md', 'video-frame-observations.md', 'improvement-candidates.md', 'grafana-evidence.md']:
     if story:
         story.append(PageBreak())
     lines = (root/filename).read_text(encoding='utf-8').splitlines()
@@ -42,9 +43,10 @@ for filename in ['README.md', 'video-frame-observations.md', 'improvement-candid
             table.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#e2ede9')), ('VALIGN',(0,0),(-1,-1),'TOP'), ('GRID',(0,0),(-1,-1),.25,colors.HexColor('#bbbbbb')), ('LEFTPADDING',(0,0),(-1,-1),4), ('RIGHTPADDING',(0,0),(-1,-1),4)]))
             story.extend([table, Spacer(1,8)])
             continue
-        match = re.match(r'!\[[^\]]*\]\(([^)]+)\)', line)
-        if match and (root/match[1]).exists():
-            image = Image(str(root/match[1]))
+        match = re.match(r'!\[([^\]]*)\]\(([^)]+)\)', line)
+        if match and (root/match[2]).exists():
+            story.append(Paragraph(formatted(match[1]), caption))
+            image = Image(str(root/match[2]))
             scale = min(503/image.imageWidth, 620/image.imageHeight)
             image.drawWidth = image.imageWidth*scale
             image.drawHeight = image.imageHeight*scale

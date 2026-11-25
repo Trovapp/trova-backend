@@ -55,6 +55,37 @@ if live:
     fig.savefig(root/'ui-live-distribution.png', dpi=150)
     plt.close(fig)
 
+delta_file = root/'server-deltas.json'
+if delta_file.exists():
+    windows = json.loads(delta_file.read_text(encoding='utf-8'))
+    selectors = [(1, 'GET', 'alternatives', '대안'), (2, 'POST', 'messages', '대화'),
+                 (3, 'GET', '/api/trips/{id}', '상세'), (4, 'PATCH', 'details', '메모'),
+                 (4, 'PATCH', 'order', '순서'), (5, 'PATCH', 'details', '공동 편집 쓰기'),
+                 (6, 'GET', 'gap-recommendations', '빈 시간')]
+    selected = []
+    for i, method, suffix, label in selectors:
+        h = next(x for x in windows[i]['http'] if x['method']==method and x['uri'].endswith(suffix) and x['status']=='200')
+        selected.append((label, h))
+    fig, ax = plt.subplots(figsize=(12,5), constrained_layout=True)
+    x = np.arange(len(selected))
+    ax.bar(x-.18, [h['meanSeconds'] for _,h in selected], .36, label='성공 HTTP 평균')
+    ax.bar(x+.18, [h['p95']['estimate'] for _,h in selected], .36, label='버킷 p95 보간')
+    ax.set_xticks(x, [f"{label}\nn={h['count']:.0f}" for label,h in selected])
+    ax.set(ylabel='초', title='현재 경로별 서버 시간: 영상 비동기·SSE 수명·화면 관찰 제외')
+    ax.legend(); ax.grid(axis='y', alpha=.2)
+    fig.savefig(root/'server-current.png', dpi=150); plt.close(fig)
+    fig, ax = plt.subplots(figsize=(12,5), constrained_layout=True)
+    for label,h in selected:
+        if label not in ['대안','대화','상세','빈 시간']:continue
+        finite = [b for b in h['buckets'] if b['le'] is not None and .01 <= b['le'] <= 10]
+        ax.step([b['le'] for b in finite], [100*b['count']/h['count'] for b in finite], where='post', label=f"{label} n={h['count']:.0f}")
+    ax.axhline(95, color='gray', ls='--', lw=1)
+    ax.set(xscale='log', xlabel='버킷 상한 (초, 로그 축)', ylabel='누적 요청 비율 (%)', title='Prometheus 버킷 차분 누적 분포: 개별 요청 시간을 복원한 그림이 아님')
+    ax.set_xticks([.01, .1, 1, 10], ['0.01', '0.1', '1', '10'])
+    ax.xaxis.set_minor_formatter(plt.NullFormatter())
+    ax.legend(); ax.grid(alpha=.2)
+    fig.savefig(root/'server-distribution.png', dpi=150); plt.close(fig)
+
 comparison = root/'server-comparison.json'
 if comparison.exists():
     data = json.loads(comparison.read_text(encoding='utf-8'))
