@@ -1,0 +1,147 @@
+{
+    "metrics": {
+        "http_req_receiving": {
+            "p(95)": 380.27134374999997,
+            "p(99)": 396.28276875,
+            "avg": 200.1428125,
+            "min": 0,
+            "med": 200.1428125,
+            "max": 400.285625
+        },
+        "measured_requests": {
+            "count": 2,
+            "rate": 0.05343560587113454
+        },
+        "http_req_duration": {
+            "max": 25001.87722,
+            "p(95)": 24272.6441523,
+            "p(99)": 24856.030606459997,
+            "avg": 17709.546543,
+            "min": 10417.215866,
+            "med": 17709.546543
+        },
+        "iteration_duration": {
+            "p(95)": 25279.1919349,
+            "p(99)": 25862.76713018,
+            "avg": 18713.970988,
+            "min": 11419.281047,
+            "med": 18713.970988,
+            "max": 26008.660929
+        },
+        "http_req_blocked": {
+            "max": 0.57325,
+            "p(95)": 0.5709000000000001,
+            "p(99)": 0.5727800000000001,
+            "avg": 0.54975,
+            "min": 0.52625,
+            "med": 0.54975
+        },
+        "http_req_duration{expected_response:true}": {
+            "avg": 10417.215866,
+            "min": 10417.215866,
+            "med": 10417.215866,
+            "max": 10417.215866,
+            "p(95)": 10417.215866,
+            "p(99)": 10417.215866
+        },
+        "http_reqs": {
+            "count": 2,
+            "rate": 0.05343560587113454
+        },
+        "measured_latency": {
+            "med": 17709.546543,
+            "max": 25001.87722,
+            "p(95)": 24272.6441523,
+            "p(99)": 24856.030606459997,
+            "avg": 17709.546543,
+            "min": 10417.215866
+        },
+        "data_received": {
+            "count": 749,
+            "rate": 20.011634398739883
+        },
+        "http_req_waiting": {
+            "avg": 17509.3522925,
+            "min": 10016.851657,
+            "med": 17509.3522925,
+            "max": 25001.852928,
+            "p(95)": 24252.60286445,
+            "p(99)": 24852.00291529
+        },
+        "http_req_failed": {
+            "passes": 1,
+            "fails": 1,
+            "value": 0.5
+        },
+        "measured_errors": {
+            "passes": 1,
+            "fails": 1,
+            "thresholds": {
+                "rate<0.01": true
+            },
+            "value": 0.5
+        },
+        "http_req_connecting": {
+            "p(99)": 0.35049441,
+            "avg": 0.2358545,
+            "min": 0.118875,
+            "med": 0.23585449999999997,
+            "max": 0.352834,
+            "p(95)": 0.34113604999999997
+        },
+        "data_sent": {
+            "count": 700,
+            "rate": 18.702462054897087
+        },
+        "vus_max": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+        },
+        "checks": {
+            "fails": 1,
+            "passes": 1,
+            "value": 0.5
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(95)": 0,
+            "p(99)": 0
+        },
+        "http_req_sending": {
+            "avg": 0.051438,
+            "min": 0.024292,
+            "med": 0.051438,
+            "max": 0.078584,
+            "p(95)": 0.0758694,
+            "p(99)": 0.07804108
+        },
+        "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+        },
+        "iterations": {
+            "count": 2,
+            "rate": 0.05343560587113454
+        }
+    },
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+            "successful response and content": {
+                "fails": 1,
+                "name": "successful response and content",
+                "path": "::successful response and content",
+                "id": "4ead82a8556325d3c050512e5d8dffc4",
+                "passes": 1
+            }
+        }
+    }
+}

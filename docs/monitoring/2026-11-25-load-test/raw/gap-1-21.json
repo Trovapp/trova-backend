@@ -1,0 +1,151 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+            "successful response and content": {
+                "name": "successful response and content",
+                "path": "::successful response and content",
+                "id": "4ead82a8556325d3c050512e5d8dffc4",
+                "passes": 4,
+                "fails": 0
+            }
+        }
+    },
+    "metrics": {
+        "http_req_receiving": {
+            "p(99)": 2.2284867700000004,
+            "avg": 1.3630105000000001,
+            "min": 0.449208,
+            "med": 1.3821255,
+            "max": 2.238583,
+            "p(95)": 2.1881018500000002
+        },
+        "http_reqs": {
+            "rate": 0.12029836444740342,
+            "count": 4
+        },
+        "http_req_sending": {
+            "max": 0.099042,
+            "p(95)": 0.0936045,
+            "p(99)": 0.0979545,
+            "avg": 0.0543335,
+            "min": 0.0225,
+            "med": 0.047896
+        },
+        "http_req_waiting": {
+            "avg": 5307.47201975,
+            "min": 1899.655959,
+            "med": 4593.5915855,
+            "max": 10143.048949,
+            "p(95)": 9670.9703821,
+            "p(99)": 10048.63323562
+        },
+        "measured_latency": {
+            "avg": 5308.8893637500005,
+            "min": 1900.204209,
+            "med": 4595.1898775,
+            "max": 10144.973491,
+            "p(95)": 9672.74052415,
+            "p(99)": 10050.526897630001
+        },
+        "measured_requests": {
+            "count": 4,
+            "rate": 0.12029836444740342
+        },
+        "vus": {
+            "min": 1,
+            "max": 1,
+            "value": 1
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 4,
+            "value": 0
+        },
+        "status_200": {
+            "count": 4,
+            "rate": 0.12029836444740342
+        },
+        "data_sent": {
+            "count": 1224,
+            "rate": 36.81129952090545
+        },
+        "iterations": {
+            "count": 4,
+            "rate": 0.12029836444740342
+        },
+        "http_req_tls_handshaking": {
+            "med": 0,
+            "max": 0,
+            "p(95)": 0,
+            "p(99)": 0,
+            "avg": 0,
+            "min": 0
+        },
+        "vus_max": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+        },
+        "http_req_connecting": {
+            "avg": 0.02990625,
+            "min": 0,
+            "med": 0,
+            "max": 0.119625,
+            "p(95)": 0.10168124999999999,
+            "p(99)": 0.11603625
+        },
+        "iteration_duration": {
+            "med": 7599.061482499999,
+            "max": 13149.390588,
+            "p(95)": 12677.0705754,
+            "p(99)": 13054.92658548,
+            "avg": 8312.516815750001,
+            "min": 4902.55371
+        },
+        "http_req_blocked": {
+            "max": 0.537,
+            "p(95)": 0.4599248999999999,
+            "p(99)": 0.52158498,
+            "avg": 0.146333,
+            "min": 0.004458,
+            "med": 0.021936999999999998
+        },
+        "checks": {
+            "passes": 4,
+            "fails": 0,
+            "value": 1
+        },
+        "data_received": {
+            "count": 127128,
+            "rate": 3823.3226188673757
+        },
+        "measured_errors": {
+            "passes": 0,
+            "fails": 4,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_duration": {
+            "med": 4595.1898775,
+            "max": 10144.973491,
+            "p(95)": 9672.74052415,
+            "p(99)": 10050.526897630001,
+            "avg": 5308.8893637500005,
+            "min": 1900.204209
+        },
+        "http_req_duration{expected_response:true}": {
+            "avg": 5308.8893637500005,
+            "min": 1900.204209,
+            "med": 4595.1898775,
+            "max": 10144.973491,
+            "p(95)": 9672.74052415,
+            "p(99)": 10050.526897630001
+        }
+    }
+}

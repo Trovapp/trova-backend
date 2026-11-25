@@ -1,0 +1,44 @@
+[
+  {
+    "label": "same-user-4",
+    "at": 1795591803.790399,
+    "results": [
+      {
+        "user": 1,
+        "status": 0,
+        "error": "ConnectionRefusedError",
+        "admission_ms": 2.9518604278564453
+      },
+      {
+        "user": 1,
+        "status": 0,
+        "error": "ConnectionRefusedError",
+        "admission_ms": 2.3157596588134766
+      },
+      {
+        "user": 1,
+        "status": 0,
+        "error": "ConnectionRefusedError",
+        "admission_ms": 0.8106231689453125
+      },
+      {
+        "user": 1,
+        "status": 0,
+        "error": "ConnectionRefusedError",
+        "admission_ms": 0.4737377166748047
+      }
+    ]
+  },
+  {
+    "label": "immediate-reopen-after-client-close",
+    "at": 1795591803.7911131,
+    "results": [
+      {
+        "user": 1,
+        "status": 0,
+        "error": "ConnectionRefusedError",
+        "admission_ms": 0.3409385681152344
+      }
+    ]
+  }
+]

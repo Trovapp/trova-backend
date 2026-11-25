@@ -1,0 +1,8 @@
+{
+  "at": 1795595457.497474,
+  "before_members": 64,
+  "after_members": 10,
+  "source": "TripMembershipService.java:46",
+  "preserved_phase": "domain-stress-64-members",
+  "setup": "10 shared-trip viewers + 54 separate-trip viewers"
+}
