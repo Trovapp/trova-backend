@@ -139,7 +139,7 @@ final class TripStream implements Runnable {
         missingAtPreviousHeartbeat = true;
     }
 
-    private boolean checkWriteTimeout() {
+    boolean checkWriteTimeout() {
         long started = writeStarted;
         if (!active() || (started != 0 && System.nanoTime() - started >= MAX_WRITE_NANOS)) {
             close();

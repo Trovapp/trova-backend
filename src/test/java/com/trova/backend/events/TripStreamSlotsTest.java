@@ -3,6 +3,7 @@ package com.trova.backend.events;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.io.IOException;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Map;
@@ -31,17 +32,98 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class TripStreamSlotsTest {
     private final SimpleMeterRegistry metrics = new SimpleMeterRegistry();
     private final Clock clock = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC);
-    private final TripStreams streams = new TripStreams(mock(TripAudience.class), clock, 3, 256, metrics);
+    private final TripStreams streams = new TripStreams(mock(TripAudience.class), clock, 3, 256, Duration.ofSeconds(30), metrics);
     private final StreamAuth auth = new StreamAuth(Instant.EPOCH.plusSeconds(3600), null);
 
     @AfterEach
     void 종료한다() { streams.shutdown(); }
 
     private double active() { return metrics.get("trova.trip-events.active").gauge().value(); }
+
+    @Test
+    void 교체_쿨다운_안의_두번째_교체는_429로_거절한다() {
+        streams.open(7, 5, auth);
+        streams.open(8, 5, auth);
+        streams.open(9, 5, auth);
+        streams.open(10, 5, auth);
+
+        assertThatThrownBy(() -> streams.open(11, 5, auth))
+                .isInstanceOfSatisfying(ResponseStatusException.class,
+                        error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS));
+        assertThat(active()).isEqualTo(3);
+        assertThat(metrics.get("trova.trip-events.replaced").counter().count()).isEqualTo(1);
+        // Another user's first replacement is independent of this cooldown.
+        for (int i = 0; i < 4; i++) streams.open(7, 6, auth);
+        assertThat(metrics.get("trova.trip-events.replaced").counter().count()).isEqualTo(2);
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(ints = {30, 7})
+    void 설정한_교체_쿨다운이_지나면_다시_교체한다(int seconds) {
+        Clock movingClock = mock(Clock.class);
+        when(movingClock.instant()).thenReturn(Instant.EPOCH);
+        SimpleMeterRegistry timedMetrics = new SimpleMeterRegistry();
+        TripStreams timed = new TripStreams(mock(TripAudience.class), movingClock, 3, 256, Duration.ofSeconds(seconds), timedMetrics);
+        try (MockedConstruction<SseEmitter> mocks = mockConstruction(SseEmitter.class)) {
+            timed.open(7, 5, auth);
+            TripStream second = timed.open(8, 5, auth);
+            timed.open(9, 5, auth);
+            timed.open(10, 5, auth);
+            when(movingClock.instant()).thenReturn(Instant.EPOCH.plusSeconds(seconds - 1));
+            assertThatThrownBy(() -> timed.open(11, 5, auth))
+                    .isInstanceOfSatisfying(ResponseStatusException.class,
+                            error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS));
+            when(movingClock.instant()).thenReturn(Instant.EPOCH.plusSeconds(seconds));
+            assertThat(timed.open(11, 5, auth).active()).isTrue();
+            second.ready(null);
+            verify(second.emitter, timeout(1000)).complete();
+            assertThat(second.active()).isFalse();
+            assertThat(timedMetrics.get("trova.trip-events.replaced").counter().count()).isEqualTo(2);
+        } finally { timed.shutdown(); }
+    }
+
+    @Test
+    void 교체된_연결도_writer_종료까지_쓰기_지연을_감시한다() throws Exception {
+        TripAudience audience = mock(TripAudience.class);
+        when(audience.snapshot(7)).thenReturn(new TripAudience.Snapshot(0, java.util.List.of(5L)));
+        SimpleMeterRegistry watchedMetrics = new SimpleMeterRegistry();
+        TripStreams watched = new TripStreams(audience, clock, 1, 4, Duration.ofSeconds(30), watchedMetrics);
+        CountDownLatch sending = new CountDownLatch(1);
+        Semaphore unblock = new Semaphore(0);
+        jakarta.servlet.AsyncContext transport = mock(jakarta.servlet.AsyncContext.class);
+        try (MockedConstruction<SseEmitter> mocks = mockConstruction(SseEmitter.class, (emitter, context) -> {
+            if (context.getCount() == 1) doAnswer(call -> {
+                sending.countDown();
+                unblock.acquireUninterruptibly();
+                return null;
+            }).when(emitter).send(any(SseEmitter.SseEventBuilder.class));
+        })) {
+            TripStream evicted = watched.open(7, 5, auth);
+            evicted.ready(transport);
+            assertThat(sending.await(1, TimeUnit.SECONDS)).isTrue();
+            watched.open(7, 5, auth);
+            assertThat(evicted.active()).isTrue();
+            org.springframework.test.util.ReflectionTestUtils.setField(evicted, "writeStarted",
+                    System.nanoTime() - Duration.ofSeconds(26).toNanos());
+
+            watched.heartbeat();
+
+            assertThat(evicted.active()).isFalse();
+            assertThat(watchedMetrics.get("trova.trip-events.active").gauge().value()).isEqualTo(1);
+            assertThat(watchedMetrics.get("trova.trip-events.writers").gauge().value()).isEqualTo(2);
+            verify(transport, timeout(1000)).complete();
+            verify(evicted.emitter, Mockito.never()).complete();
+            unblock.release();
+            verify(evicted.emitter, timeout(1000)).complete();
+            await().untilAsserted(() ->
+                    assertThat(watchedMetrics.get("trova.trip-events.writers").gauge().value()).isEqualTo(1));
+        } finally { unblock.release(); watched.shutdown(); }
+    }
 
     @Test
     void 네번째는_같은_사용자의_가장_오래된_다른_여행_연결을_교체한다() throws Exception {
@@ -85,7 +167,7 @@ class TripStreamSlotsTest {
     @Test
     void 반환한_슬롯의_writer가_계속_막혀도_무한히_추가하지_않는다() throws Exception {
         SimpleMeterRegistry limitedMetrics = new SimpleMeterRegistry();
-        TripStreams limited = new TripStreams(mock(TripAudience.class), clock, 3, 1, limitedMetrics);
+        TripStreams limited = new TripStreams(mock(TripAudience.class), clock, 3, 1, Duration.ofSeconds(30), limitedMetrics);
         Semaphore unblock = new Semaphore(0);
         Semaphore sending = new Semaphore(0);
         try (MockedConstruction<SseEmitter> mocks = mockConstruction(SseEmitter.class, (emitter, context) -> {
@@ -113,7 +195,7 @@ class TripStreamSlotsTest {
     @Test
     void 송신_실행기_거절은_슬롯을_반환하고_원래_예외를_전달한다() {
         SimpleMeterRegistry rejectedMetrics = new SimpleMeterRegistry();
-        TripStreams rejected = new TripStreams(mock(TripAudience.class), clock, 3, 1, rejectedMetrics);
+        TripStreams rejected = new TripStreams(mock(TripAudience.class), clock, 3, 1, Duration.ofSeconds(30), rejectedMetrics);
         rejected.shutdown();
         for (int attempt = 0; attempt < 3; attempt++) {
             assertThatThrownBy(() -> rejected.open(7, 5, auth))

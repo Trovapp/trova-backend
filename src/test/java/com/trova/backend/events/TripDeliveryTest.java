@@ -24,7 +24,7 @@ class TripDeliveryTest {
     final Clock clock = mock(Clock.class);
     final Instant now = Instant.EPOCH;
     final TripAudience members = mock(TripAudience.class);
-    final TripStreams streams = new TripStreams(members, clock, 1, 4, new SimpleMeterRegistry());
+    final TripStreams streams = new TripStreams(members, clock, 1, 4, Duration.ofSeconds(30), new SimpleMeterRegistry());
     final TripChangedEvent event = new TripChangedEvent(7, 3, 4, "민수", "MEMBER_REMOVED", "변경됐어요");
     TripDeliveryTest() { when(clock.instant()).thenReturn(now); }
 
