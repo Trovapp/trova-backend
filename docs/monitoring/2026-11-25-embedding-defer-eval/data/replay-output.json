@@ -1,0 +1,8104 @@
+[ {
+  "request_alias" : "R01",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.4km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.4km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.4km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.4km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.4km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.4km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.4km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R02",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 2km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 331m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 2km · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 331m · 평점 3.9"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C011",
+    "reason" : "원래 장소에서 직선 862m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 2km · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 331m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : "원래 장소에서 직선 862m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 2km · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 331m · 평점 3.9"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 2km · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 331m · 평점 3.9"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 331m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 2km · 평점 4"
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R03",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 561m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 729m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 561m · 평점 4.7"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 729m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 561m · 평점 4.7"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 729m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 808m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : "원래 장소에서 직선 551m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 561m · 평점 4.7"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 729m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 561m · 평점 4.7"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 729m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 808m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : "원래 장소에서 직선 551m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R04",
+  "A" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 70m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : "원래 장소에서 직선 503m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 49m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 70m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 49m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 70m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 49m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 70m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 49m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 70m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 49m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 70m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 49m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 70m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R05",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 854m · 같은 종류의 카페예요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 854m · 같은 종류의 카페예요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 854m · 같은 종류의 카페예요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 854m · 같은 종류의 카페예요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 854m · 같은 종류의 카페예요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 854m · 같은 종류의 카페예요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 854m · 같은 종류의 카페예요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R06",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 989m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 975m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 989m · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 975m · 평점 4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 989m · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 975m · 평점 4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 975m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 989m · 평점 4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 989m · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 975m · 평점 4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 989m · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 975m · 평점 4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 975m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 989m · 평점 4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R07",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 947m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 947m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 947m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 947m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 947m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 947m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 947m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R08",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 2km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.6"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 2km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.6"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 2km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 2km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.6"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 2km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.6"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 2km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 2km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R09",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 182m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 827m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 182m · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 827m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 182m · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 827m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 182m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : "원래 장소에서 직선 573m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 182m · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 827m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 182m · 평점 4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 827m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 182m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : "원래 장소에서 직선 573m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R10",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 366m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 264m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 366m · 평점 4.6"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 264m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 366m · 평점 4.6"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 264m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 366m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 264m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 366m · 평점 4.6"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 264m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 366m · 평점 4.6"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 264m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 366m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 264m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R11",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 66m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 477m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 66m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 477m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 66m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 477m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 66m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 477m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 66m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 477m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 66m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 477m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 66m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 477m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R12",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 190m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 7m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 190m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 7m · 평점 3.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 190m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 7m · 평점 3.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 190m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 7m · 평점 3.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 190m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 7m · 평점 3.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 190m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 7m · 평점 3.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 190m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 7m · 평점 3.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R13",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.3km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 425m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 3.8"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 425m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 3.8"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 425m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.3km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 425m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 3.8"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 425m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 3.8"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 425m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.3km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 425m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R14",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 714m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 3.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 714m"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 3.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 714m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 714m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 3.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 714m"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 3.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 714m"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 714m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R15",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 225m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 225m · 평점 4.6"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 225m · 평점 4.6"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 225m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 225m · 평점 4.6"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 225m · 평점 4.6"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 225m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R16",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 589m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 589m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.1"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 589m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.1"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 589m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 589m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.1"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 589m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.1km · 평점 4.1"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 589m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R17",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 619m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 619m · 평점 4.2"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 619m · 평점 4.2"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 619m · 평점 4.2"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 619m · 평점 4.2"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 1km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R18",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 292m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 292m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 292m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 292m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 292m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 292m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 292m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R19",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 869m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.8km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 869m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.8km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 869m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.8km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 869m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.8km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 869m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.8km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 869m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.8km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 869m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.8km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R20",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 898m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 898m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 898m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : "원래 장소에서 직선 1.2km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 898m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 898m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : "원래 장소에서 직선 1.2km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R21",
+  "A" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 642m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 89m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 4.7"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 89m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 4.7"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 89m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 89m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 4.7"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 89m · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 4.7"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 89m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R22",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.4km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 463m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.4km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 463m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.4km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 463m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.4km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 1.8km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.4km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 463m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.4km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 463m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.4km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 1.8km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R23",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 731m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 457m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 731m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 457m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 731m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 457m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 731m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 154m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 731m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 457m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 731m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 457m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 731m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 154m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R24",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 40m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 평점 3.9"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 40m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 평점 3.9"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 40m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 40m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 평점 3.9"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 40m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 평점 3.9"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 40m · 평점 3.8"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 40m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R25",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.5km · 평점 4.5"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.5km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R26",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 평점 4.2"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 평점 4.2"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 평점 4.2"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 평점 4.2"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 평점 4.2"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.7km · 평점 4.2"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.3km · 평점 4.3"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R27",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 481m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : "원래 장소에서 직선 958m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 481m · 평점 4.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 39m · 평점 4.7"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 481m · 평점 4.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 39m · 평점 4.7"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C008",
+    "reason" : "원래 장소에서 직선 840m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 39m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 481m · 평점 4.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 39m · 평점 4.7"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 481m · 평점 4.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 39m · 평점 4.7"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C008",
+    "reason" : "원래 장소에서 직선 840m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 39m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C001",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R28",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.6km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 4.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 3.9"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 4.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 3.9"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.6km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 4.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 3.9"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 평점 4.1"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.6km · 평점 3.9"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.9km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 1.6km · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R29",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 117m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 117m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 117m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : "원래 장소에서 직선 878m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 117m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 117m · 평점 4.3"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 1.1km · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : "원래 장소에서 직선 878m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C007",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C008",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C005",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C006",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C009",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C010",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C011",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C012",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C013",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C014",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C015",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C016",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C017",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C018",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C019",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C020",
+    "reason" : null
+  } ]
+}, {
+  "request_alias" : "R30",
+  "A" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 969m · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 4m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  } ],
+  "B1/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 969m · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 4m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  } ],
+  "B2/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 969m · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 4m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  } ],
+  "B3/mixed" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 969m · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 4m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  } ],
+  "B1/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 969m · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 4m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  } ],
+  "B2/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 969m · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 4m · 평점 4.4"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  } ],
+  "B3/all-new" : [ {
+    "candidate_alias" : "C001",
+    "reason" : "원래 장소에서 직선 969m · 같은 종류의 박물관이에요"
+  }, {
+    "candidate_alias" : "C002",
+    "reason" : "원래 장소에서 직선 4m · 취향과 비슷해요"
+  }, {
+    "candidate_alias" : "C003",
+    "reason" : null
+  }, {
+    "candidate_alias" : "C004",
+    "reason" : null
+  } ]
+} ]

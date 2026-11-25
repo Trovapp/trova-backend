@@ -1,0 +1,352 @@
+[
+  {
+    "request_alias": "R01",
+    "user_slot": 1,
+    "target_name": "서울식물원",
+    "region_alias": "서울",
+    "approx_lat": 37.56,
+    "approx_lon": 126.83,
+    "requested_at_kst": "2026-11-25 18:18:54.631",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R02",
+    "user_slot": 1,
+    "target_name": "인천 차이나타운",
+    "region_alias": "인천",
+    "approx_lat": 37.48,
+    "approx_lon": 126.62,
+    "requested_at_kst": "2026-11-25 18:22:03.765",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R03",
+    "user_slot": 1,
+    "target_name": "수원화성박물관",
+    "region_alias": "수원",
+    "approx_lat": 37.28,
+    "approx_lon": 127.02,
+    "requested_at_kst": "2026-11-25 18:23:49.133",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R04",
+    "user_slot": 1,
+    "target_name": "성심당 본점",
+    "region_alias": "대전",
+    "approx_lat": 36.33,
+    "approx_lon": 127.43,
+    "requested_at_kst": "2026-11-25 18:25:16.541",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R05",
+    "user_slot": 1,
+    "target_name": "감자밭",
+    "region_alias": "춘천",
+    "approx_lat": 37.93,
+    "approx_lon": 127.78,
+    "requested_at_kst": "2026-11-25 18:27:16.284",
+    "visible_candidate_names": [
+      "소울로스터리커피",
+      "어스17"
+    ]
+  },
+  {
+    "request_alias": "R06",
+    "user_slot": 1,
+    "target_name": "국립현대미술관 청주",
+    "region_alias": "청주",
+    "approx_lat": 36.66,
+    "approx_lon": 127.49,
+    "requested_at_kst": "2026-11-25 18:28:28.272",
+    "visible_candidate_names": [
+      "봉용불고기"
+    ]
+  },
+  {
+    "request_alias": "R07",
+    "user_slot": 1,
+    "target_name": "공산성",
+    "region_alias": "공주",
+    "approx_lat": 36.46,
+    "approx_lon": 127.13,
+    "requested_at_kst": "2026-11-25 18:29:39.690",
+    "visible_candidate_names": [
+      "국립공주박물관",
+      "己톄 와르"
+    ]
+  },
+  {
+    "request_alias": "R08",
+    "user_slot": 1,
+    "target_name": "부여 궁남지",
+    "region_alias": "부여",
+    "approx_lat": 36.27,
+    "approx_lon": 126.91,
+    "requested_at_kst": "2026-11-25 18:31:57.388",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R09",
+    "user_slot": 1,
+    "target_name": "맘모스베이커리",
+    "region_alias": "안동",
+    "approx_lat": 36.57,
+    "approx_lon": 128.73,
+    "requested_at_kst": "2026-11-25 18:33:15.410",
+    "visible_candidate_names": [
+      "스타벅스 안동시청점",
+      "스타벅스 안동강변DT점"
+    ]
+  },
+  {
+    "request_alias": "R10",
+    "user_slot": 1,
+    "target_name": "부석사",
+    "region_alias": "영주",
+    "approx_lat": 36.99,
+    "approx_lon": 128.69,
+    "requested_at_kst": "2026-11-25 18:34:08.914",
+    "visible_candidate_names": [
+      "부석사 일주문",
+      "영주 부석사 당간지주"
+    ]
+  },
+  {
+    "request_alias": "R11",
+    "user_slot": 1,
+    "target_name": "문경에코월드",
+    "region_alias": "문경",
+    "approx_lat": 36.69,
+    "approx_lon": 128.05,
+    "requested_at_kst": "2026-11-25 18:35:10.483",
+    "visible_candidate_names": [
+      "문경모노레일(주)",
+      "가은 아자개장터 벽화거리"
+    ]
+  },
+  {
+    "request_alias": "R12",
+    "user_slot": 1,
+    "target_name": "속초관광수산시장",
+    "region_alias": "속초",
+    "approx_lat": 38.2,
+    "approx_lon": 128.59,
+    "requested_at_kst": "2026-11-25 18:35:59.180",
+    "visible_candidate_names": [
+      "센텀마크",
+      "이레"
+    ]
+  },
+  {
+    "request_alias": "R13",
+    "user_slot": 1,
+    "target_name": "삼척해양레일바이크 용화정거장",
+    "region_alias": "삼척",
+    "approx_lat": 37.28,
+    "approx_lon": 129.32,
+    "requested_at_kst": "2026-11-25 18:37:36.218",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R14",
+    "user_slot": 1,
+    "target_name": "뮤지엄산",
+    "region_alias": "원주",
+    "approx_lat": 37.42,
+    "approx_lon": 127.82,
+    "requested_at_kst": "2026-11-25 18:38:53.069",
+    "visible_candidate_names": [
+      "소나타 오브 라이트",
+      "屯了LJ-`20)卞又"
+    ]
+  },
+  {
+    "request_alias": "R15",
+    "user_slot": 1,
+    "target_name": "중앙탑사적공원",
+    "region_alias": "충주",
+    "approx_lat": 37.03,
+    "approx_lon": 127.87,
+    "requested_at_kst": "2026-11-25 18:39:44.339",
+    "visible_candidate_names": [
+      "충주 고구려비 전시관",
+      "충주 탑평리 질층석탑"
+    ]
+  },
+  {
+    "request_alias": "R16",
+    "user_slot": 1,
+    "target_name": "청풍문화유산단지",
+    "region_alias": "제천",
+    "approx_lat": 37.0,
+    "approx_lon": 128.17,
+    "requested_at_kst": "2026-11-25 18:41:01.840",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R17",
+    "user_slot": 1,
+    "target_name": "서문시장",
+    "region_alias": "대구",
+    "approx_lat": 35.87,
+    "approx_lon": 128.58,
+    "requested_at_kst": "2026-11-25 18:42:16.554",
+    "visible_candidate_names": [
+      "C卜A레고우」",
+      "2•28기념중앙공원"
+    ]
+  },
+  {
+    "request_alias": "R18",
+    "user_slot": 1,
+    "target_name": "스페이스워크",
+    "region_alias": "포항",
+    "approx_lat": 36.05,
+    "approx_lon": 129.39,
+    "requested_at_kst": "2026-11-25 18:43:11.776",
+    "visible_candidate_names": [
+      "영일대해수욕장",
+      "환호공원"
+    ]
+  },
+  {
+    "request_alias": "R19",
+    "user_slot": 1,
+    "target_name": "대왕암공원",
+    "region_alias": "울산",
+    "approx_lat": 35.49,
+    "approx_lon": 129.44,
+    "requested_at_kst": "2026-11-25 18:44:13.380",
+    "visible_candidate_names": [
+      "일산해수욕장",
+      "대왕암"
+    ]
+  },
+  {
+    "request_alias": "R20",
+    "user_slot": 1,
+    "target_name": "황리단길",
+    "region_alias": "경주",
+    "approx_lat": 35.84,
+    "approx_lon": 129.21,
+    "requested_at_kst": "2026-11-25 18:45:05.638",
+    "visible_candidate_names": [
+      "동궁과 월지",
+      "첨성대"
+    ]
+  },
+  {
+    "request_alias": "R21",
+    "user_slot": 1,
+    "target_name": "진해루",
+    "region_alias": "창원",
+    "approx_lat": 35.14,
+    "approx_lon": 128.71,
+    "requested_at_kst": "2026-11-25 18:46:14.207",
+    "visible_candidate_names": [
+      "경화역 벚꽃길",
+      "소죽도공원"
+    ]
+  },
+  {
+    "request_alias": "R22",
+    "user_slot": 1,
+    "target_name": "동피랑 벽화마을",
+    "region_alias": "통영",
+    "approx_lat": 34.85,
+    "approx_lon": 128.43,
+    "requested_at_kst": "2026-11-25 18:47:19.350",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R23",
+    "user_slot": 1,
+    "target_name": "바람의언덕",
+    "region_alias": "거제",
+    "approx_lat": 34.74,
+    "approx_lon": 128.66,
+    "requested_at_kst": "2026-11-25 18:48:35.577",
+    "visible_candidate_names": [
+      "신선대",
+      "우제봉 전망대"
+    ]
+  },
+  {
+    "request_alias": "R24",
+    "user_slot": 1,
+    "target_name": "남해독일마을",
+    "region_alias": "남해",
+    "approx_lat": 34.8,
+    "approx_lon": 128.04,
+    "requested_at_kst": "2026-11-25 18:49:29.679",
+    "visible_candidate_names": [
+      "물건리 방조어부림",
+      "남해양떼목장 양마르뜨언 덕"
+    ]
+  },
+  {
+    "request_alias": "R25",
+    "user_slot": 1,
+    "target_name": "순천만국가정원",
+    "region_alias": "순천",
+    "approx_lat": 34.93,
+    "approx_lon": 127.51,
+    "requested_at_kst": "2026-11-25 18:50:28.084",
+    "visible_candidate_names": [
+      "풍미통닭",
+      "나눌터"
+    ]
+  },
+  {
+    "request_alias": "R26",
+    "user_slot": 2,
+    "target_name": "오동도",
+    "region_alias": "여수",
+    "approx_lat": 34.74,
+    "approx_lon": 127.77,
+    "requested_at_kst": "2026-11-25 18:58:02.538",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R27",
+    "user_slot": 2,
+    "target_name": "국립아시아문화전당",
+    "region_alias": "광주",
+    "approx_lat": 35.15,
+    "approx_lon": 126.92,
+    "requested_at_kst": "2026-11-25 19:00:00.981",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R28",
+    "user_slot": 2,
+    "target_name": "죽녹원",
+    "region_alias": "담양",
+    "approx_lat": 35.33,
+    "approx_lon": 126.99,
+    "requested_at_kst": "2026-11-25 19:01:45.017",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R29",
+    "user_slot": 2,
+    "target_name": "목포 근대역사관 1관",
+    "region_alias": "목포",
+    "approx_lat": 34.79,
+    "approx_lon": 126.38,
+    "requested_at_kst": "2026-11-25 19:03:01.548",
+    "visible_candidate_names": []
+  },
+  {
+    "request_alias": "R30",
+    "user_slot": 2,
+    "target_name": "오설록 티 뮤지엄",
+    "region_alias": "제주",
+    "approx_lat": 33.31,
+    "approx_lon": 126.29,
+    "requested_at_kst": "2026-11-25 19:04:23.802",
+    "visible_candidate_names": []
+  }
+]
