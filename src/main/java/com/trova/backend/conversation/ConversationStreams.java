@@ -132,7 +132,9 @@ public class ConversationStreams {
                 ConversationService.TurnResult result = service.sendMessage(user, state, message, candidates -> {
                     if (send("cards", new Cards(candidates.stream().map(CandidateResponse::from).toList()))) {
                         elapsed.stop(meters.timer("conversation.stream.cards"));
+                        return true;
                     }
+                    return false;
                 });
                 // 서비스는 히스토리·후보 ID·턴수 저장을 마친 다음 반환한다.
                 send("reply", new Reply(result.reply(), result.turnCount(), result.turnLimitReached()));
