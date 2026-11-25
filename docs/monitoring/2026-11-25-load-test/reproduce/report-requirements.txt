@@ -1,0 +1,5 @@
+matplotlib==3.11.2
+reportlab==5.1.1
+pypdf==7.1.1
+PyMuPDF==2.1
+websocket-client==1.9.2

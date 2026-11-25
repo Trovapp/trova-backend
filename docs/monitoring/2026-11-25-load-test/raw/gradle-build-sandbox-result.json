@@ -1,0 +1,9 @@
+{
+  "start": 1795595590.2975008,
+  "end": 1795595771.451481,
+  "exit": 1,
+  "max_workers": 1,
+  "gradle_heap_mib": 768,
+  "test_heap_mib": 1024,
+  "active_processor_count": 2
+}

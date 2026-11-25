@@ -1,0 +1,10 @@
+{
+  "provider": "kakao",
+  "operation": "keyword_search",
+  "requests": 1,
+  "started": 1795592557.0868282,
+  "scope": "one dependency probe inside isolated app; separate from application counters",
+  "status": 200,
+  "documents": 1,
+  "duration_ms": 174.8507022857666
+}

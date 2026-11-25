@@ -1,0 +1,92 @@
+{
+  "ledger": {
+    "places": 1021,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 1021,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  "operations": [
+    {
+      "provider": "gemini",
+      "operation": "conversation-query-embedding",
+      "success": true,
+      "metric_units": 5,
+      "attempt_units": 5,
+      "distinct_record_times": 5,
+      "min_ms": 380,
+      "max_ms": 607,
+      "sum_ms": 2167
+    },
+    {
+      "provider": "gemini",
+      "operation": "conversation-turn",
+      "success": false,
+      "metric_units": 1,
+      "attempt_units": 1,
+      "distinct_record_times": 1,
+      "min_ms": 328,
+      "max_ms": 328,
+      "sum_ms": 328
+    },
+    {
+      "provider": "gemini",
+      "operation": "conversation-turn",
+      "success": true,
+      "metric_units": 22,
+      "attempt_units": 22,
+      "distinct_record_times": 22,
+      "min_ms": 893,
+      "max_ms": 7249,
+      "sum_ms": 65639
+    },
+    {
+      "provider": "gemini",
+      "operation": "place-embedding-batch",
+      "success": true,
+      "metric_units": 80,
+      "attempt_units": 80,
+      "distinct_record_times": 7,
+      "min_ms": 470,
+      "max_ms": 3503,
+      "sum_ms": 180846
+    },
+    {
+      "provider": "google-places",
+      "operation": "nearby-search-alternative",
+      "success": true,
+      "metric_units": 1021,
+      "attempt_units": 1021,
+      "distinct_record_times": 1015,
+      "min_ms": 84,
+      "max_ms": 14202,
+      "sum_ms": 956085
+    },
+    {
+      "provider": "internal",
+      "operation": "conversation-tool-find_alternatives",
+      "success": true,
+      "metric_units": 11,
+      "attempt_units": 11,
+      "distinct_record_times": 11,
+      "min_ms": 199,
+      "max_ms": 4791,
+      "sum_ms": 15134
+    }
+  ],
+  "gemini_batch_http_calls": 7,
+  "gemini_other_attempts": 28,
+  "gemini_http_attempts": 35,
+  "method": "batch record created_at deduplication (ApiCallLogJdbcRepository uses one Timestamp), others sum coalesce(attempts,1); compare app logs",
+  "kakao_confirmed_dependency_calls": 1,
+  "kakao_additional_interrupted_attempts_range": [
+    0,
+    1
+  ]
+}

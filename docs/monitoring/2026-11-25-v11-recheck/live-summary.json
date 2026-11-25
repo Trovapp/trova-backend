@@ -1,0 +1,19 @@
+{
+  "n": 15,
+  "statistics": {
+    "firstChangedSeconds": {
+      "mean": 2.4274,
+      "min": 1.827,
+      "max": 2.928
+    },
+    "observedSeconds": {
+      "mean": 3.399,
+      "min": 2.748,
+      "max": 4.033
+    }
+  },
+  "excluded": [
+    "live-01: partial redraw",
+    "live-02: detector threshold missed, visually delivered"
+  ]
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "route": "영상 분석",
+    "uiSamples": 5,
+    "start": "2026-11-25T12:38:36.558+09:00",
+    "end": "2026-11-25T12:47:09.055+09:00",
+    "panel": "분석 execution/stage, POST /api/shares는 접수만"
+  },
+  {
+    "route": "대안 찾기",
+    "uiSamples": 30,
+    "start": "2026-11-25T12:52:03.368+09:00",
+    "end": "2026-11-25T13:00:44.962+09:00",
+    "panel": "GET /api/trip-places/{id}/alternatives"
+  },
+  {
+    "route": "말로 바꾸기",
+    "uiSamples": 30,
+    "start": "2026-11-25T13:00:46.746+09:00",
+    "end": "2026-11-25T13:21:23.709+09:00",
+    "panel": "POST /api/conversations/{sessionId}/messages"
+  },
+  {
+    "route": "여행 상세",
+    "uiSamples": 30,
+    "start": "2026-11-25T13:22:30.247+09:00",
+    "end": "2026-11-25T13:31:46.047+09:00",
+    "panel": "GET /api/trips/{id}; 동반 요청 별도"
+  },
+  {
+    "route": "메모·순서 수정",
+    "uiSamples": 30,
+    "start": "2026-11-25T13:33:26.123+09:00",
+    "end": "2026-11-25T13:47:37.895+09:00",
+    "panel": "PATCH /api/trip-places/{id}/details 및 /order"
+  },
+  {
+    "route": "같이 고치기",
+    "uiSamples": 17,
+    "start": "2026-11-25T13:51:45.456+09:00",
+    "end": "2026-11-25T13:57:50.619+09:00",
+    "panel": "SSE 활성 수(있는 경우), trip-events fallback, Kafka lag"
+  },
+  {
+    "route": "빈 시간 추천",
+    "uiSamples": 30,
+    "start": "2026-11-25T13:58:50.870+09:00",
+    "end": "2026-11-25T14:09:56.976+09:00",
+    "panel": "GET /api/trips/{tripId}/days/{day}/gap-recommendations"
+  },
+  {
+    "route": "읽기 전용 오류",
+    "uiSamples": 4,
+    "start": "2026-11-25T14:09:57.148+09:00",
+    "end": "2026-11-25T14:10:30.633+09:00",
+    "panel": "HTTP status=401/404; traceId journal 대조"
+  }
+]

@@ -1,0 +1,40 @@
+[
+  {
+    "source": "rules-trova-http.json",
+    "title": "HighHttp5xxErrorRate",
+    "for": "2m",
+    "noDataState": "OK",
+    "queries": [
+      "100 * (sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*\", status=~\"5..\"}[5m])) or vector(0))\n  / sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*\"}[5m]))\nand on()\n  sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*\"}[5m])) >= 20",
+      "sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*\"}[5m]))"
+    ]
+  },
+  {
+    "source": "rules-trova-http.json",
+    "title": "HighHttpLatencyP95",
+    "for": "5m",
+    "noDataState": "OK",
+    "queries": [
+      "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"trova-prod\", uri!~\"/actuator.*|/api/shares\"}[5m])))\nand on()\n  sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*|/api/shares\"}[5m])) >= 20",
+      "sum(increase(http_server_requests_seconds_count{job=\"trova-prod\", uri!~\"/actuator.*|/api/shares\"}[5m]))"
+    ]
+  },
+  {
+    "source": "rules-trova-kafka.json",
+    "title": "TrovaKafkaConsumerLag",
+    "for": "15m",
+    "noDataState": "OK",
+    "queries": [
+      "sum by (topic) (kafka_consumer_fetch_manager_records_lag{job=\"trova-prod\", topic=~\"trova\\\\.[a-z-]+\"})"
+    ]
+  },
+  {
+    "source": "rules-trova-kafka.json",
+    "title": "TrovaKafkaDeadLetter",
+    "for": null,
+    "noDataState": "OK",
+    "queries": [
+      "sum by (topic) (increase(trova_queue_dead_letter_total{job=\"trova-prod\"}[15m]))"
+    ]
+  }
+]

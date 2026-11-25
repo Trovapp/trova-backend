@@ -1,0 +1,9 @@
+{
+  "changed_at": 1795592888.443189,
+  "before_mib": 520,
+  "after_mib": 768,
+  "cpu": 0.125,
+  "heap_mib": 144,
+  "scrape_seconds": 3,
+  "reason": "520MiB near native RSS cap, 1VU latency/timeouts and observer unavailable; memory-only rescue on same JVM"
+}
