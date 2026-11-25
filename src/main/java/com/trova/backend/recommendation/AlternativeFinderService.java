@@ -11,6 +11,9 @@ import com.trova.backend.entity.User;
 import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
 import com.trova.backend.repository.TripPlaceRepository;
+import com.trova.backend.repository.PlaceRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
 import com.trova.backend.service.ApiCallLogService;
 import org.slf4j.Logger;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -75,6 +79,8 @@ public class AlternativeFinderService {
     private final PlaceCatalogService placeCatalogService;
     private final TripPlaceRepository tripPlaceRepository;
     private final PlaceTaggingRunner placeTaggingRunner;
+    private final PlaceRepository placeRepository;
+    private final Counter taggingCalls;
     private final SeoulCongestionApiClient seoulCongestionApiClient;
     private final ApiCallLogService apiCallLogService;
     private final PlaceEmbeddingService placeEmbeddingService;
@@ -88,7 +94,9 @@ public class AlternativeFinderService {
             SeoulCongestionApiClient seoulCongestionApiClient,
             ApiCallLogService apiCallLogService,
             PlaceEmbeddingService placeEmbeddingService,
-            PersonalizationService personalizationService
+            PersonalizationService personalizationService,
+            PlaceRepository placeRepository,
+            MeterRegistry meterRegistry
     ) {
         this.googlePlacesApiClient = googlePlacesApiClient;
         this.placeCatalogService = placeCatalogService;
@@ -98,6 +106,8 @@ public class AlternativeFinderService {
         this.apiCallLogService = apiCallLogService;
         this.placeEmbeddingService = placeEmbeddingService;
         this.personalizationService = personalizationService;
+        this.placeRepository = placeRepository;
+        this.taggingCalls = meterRegistry.counter("trova.alternatives.space_tagging.calls");
     }
 
     private static final LocalTime MORNING_UNTIL = LocalTime.of(10, 30);
@@ -187,8 +197,10 @@ public class AlternativeFinderService {
         }
 
         long tagStart = System.currentTimeMillis();
+        IndoorResult indoorResult = new IndoorResult(candidates, 0, 0);
         if (Boolean.TRUE.equals(filter.indoorOnly())) {
-            candidates = filterIndoor(candidates);
+            indoorResult = filterIndoor(candidates);
+            candidates = indoorResult.places();
         }
         long tagMs = System.currentTimeMillis() - tagStart;
 
@@ -327,9 +339,9 @@ public class AlternativeFinderService {
         }
         // 처음 보는 지역의 첫 대화가 느린 구간을 찾으려고 요청마다 구간별 시간을 한 줄로 남긴다(#77).
         // 임베딩 구간의 요청/저장 세부는 PlaceEmbeddingService가 따로 남긴다.
-        log.info("대안 찾기 구간별 시간: 검색={}ms 카탈로그저장={}ms({}곳) 실내태그={}ms 임베딩={}ms 혼잡도={}ms 개인화조회={}ms({}곳) 추천이유={}ms",
+        log.info("대안 찾기 구간별 시간: 검색={}ms 카탈로그저장={}ms({}곳) 실내태그={}ms(재사용 {}·신규 {}) 임베딩={}ms 혼잡도={}ms 개인화조회={}ms({}곳) 추천이유={}ms",
                 searchMs,
-                upsertMs, raw.size(), tagMs, embeddingMs, congestionMs, personalizationMs, result.size(),
+                upsertMs, raw.size(), tagMs, indoorResult.reused(), indoorResult.tagged(), embeddingMs, congestionMs, personalizationMs, result.size(),
                 System.currentTimeMillis() - explanationStart);
         return Optional.of(withReasons);
     }
@@ -386,8 +398,14 @@ public class AlternativeFinderService {
         return null;
     }
 
-    private List<Place> filterIndoor(List<Place> candidates) {
-        List<Place> needsTagging = candidates.stream().filter(p -> p.getSpace() == null).toList();
+    private record IndoorResult(List<Place> places, int reused, int tagged) {
+    }
+
+    private IndoorResult filterIndoor(List<Place> candidates) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Place> needsTagging = candidates.stream().filter(p -> !p.hasFreshSpaceTag(now)).toList();
+        int reused = candidates.size() - needsTagging.size();
+        int tagged = 0;
         if (!needsTagging.isEmpty()) {
             List<PlaceTaggingRunner.TagCandidate> tagCandidates = new ArrayList<>();
             for (int i = 0; i < needsTagging.size(); i++) {
@@ -398,22 +416,31 @@ public class AlternativeFinderService {
             // 태깅 서브프로세스 실패(무료 티어 429, 스크립트 부재, 2분 타임아웃 등,
             // PlaceTaggingRunner.run이 던지는 PipelineException)를 500으로 흘려보내지
             // 않는다 — searchNearby 가드와 같은 원칙("대안 찾기는 실패해도 화면이
-            // 죽으면 안 된다"). 실패하면 그냥 태깅 전 상태(space=null)로 두고 계속
-            // 진행한다 — 이 온디맨드 태깅은 필터 보강일 뿐 검색 자체의 필수 조건이 아니다.
+            // 죽으면 안 된다"). 실패하면 기존 태그/시각을 유지하고 다음 요청에 재시도한다.
+            // 계속 진행한다 — 이 온디맨드 태깅은 필터 보강일 뿐 검색 자체의 필수 조건이 아니다.
             try {
+                taggingCalls.increment();
                 List<PlaceTag> tags = placeTaggingRunner.run(tagCandidates, System.nanoTime());
                 Map<Integer, PlaceTag> tagByIndex = tags.stream().collect(Collectors.toMap(PlaceTag::index, t -> t));
                 for (int i = 0; i < needsTagging.size(); i++) {
                     PlaceTag tag = tagByIndex.get(i);
-                    if (tag != null) {
-                        needsTagging.get(i).applySpaceTag(tag.space());
+                    if (tag != null && tag.space() != null && !tag.space().isBlank()) {
+                        Place place = needsTagging.get(i);
+                        place.applySpaceTag(tag.space());
+                        try {
+                            placeRepository.updateSpaceTag(place.getId(), place.getSpace(), place.getSpaceTaggedAt());
+                            tagged++;
+                        } catch (Exception e) {
+                            // 응답에는 얻은 태그를 쓰되, 저장 실패는 다른 후보의 저장을 막지 않는다.
+                            log.warn("대안 찾기 공간 태그 저장 실패(placeId={}) — 다음 요청에서 재시도합니다", place.getId(), e);
+                        }
                     }
                 }
             } catch (Exception e) {
                 log.warn("대안 찾기 실내외 온디맨드 태깅 실패 — 태깅 없이 진행합니다", e);
             }
         }
-        return candidates.stream().filter(p -> "INDOOR".equals(p.getSpace())).toList();
+        return new IndoorResult(candidates.stream().filter(p -> "INDOOR".equals(p.getSpace())).toList(), reused, tagged);
     }
 
     private boolean containsIgnoreCase(String haystack, String needle) {
