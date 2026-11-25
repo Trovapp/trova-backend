@@ -35,3 +35,35 @@ Gradle의 기존 공유 daemon은 이 워크트리 쓰기 권한이 없어 캐�
 `./gradlew --no-daemon build` 성공(2분 22초). 233개 테스트 클래스, 총 1,535개 중 1,529개 통과·6개 조건부 건너뜀·실패 0·오류 0. 건너뛴 테스트는 KafkaShareJobQueueTest, RouteOptimizerBenchTest, PlaceListPerformanceTest, ShareJobProcessRecoveryTest, ShareJobKafkaRoundTripTest, PlaceListPostgresHttpTest의 각 1개로 기존 실행 조건에 따른다. 테스트 제외 옵션은 사용하지 않았다.
 
 최초 sandbox 전체 실행에서는 프로세스 수명 테스트가 macOS 프로세스 조회 `sysctl` 차단(`Operation not permitted`)으로 실패했다. 해당 실행을 중단하고 정상 권한의 단일 실행 daemon으로 전체 빌드를 다시 실행해 위 결과를 얻었다.
+
+## PR #546 교차 리뷰 수정 검증
+
+기준 커밋 `2f537cb`, 최신 `origin/main`은 `e3a737e`이며 `git fetch origin` 후 `git merge origin/main` 결과 이미 최신이었다.
+
+수정 전에 기존 진입점을 사용하는 회귀 테스트부터 추가했다. 첫 실행은 28개 중 5개 실패로 종료 이벤트 누락, 종료 중 스트림 재교체, 닫힌 슬롯 뒤 writer 누적, 대화 도구의 불필요한 검색과 한도 안내 유실을 재현했다. 새 서비스 메서드가 없어 생긴 컴파일 실패를 재현 근거로 사용하지 않았다.
+
+- `replaced` 이벤트를 FIFO writer에서 전송한 뒤 종료한다. 테스트는 이벤트 이름과 `{"reason":"connection_limit"}` 본문, emitter 완료, 다른 사용자·나머지 연결 보존을 확인한다.
+- 종료 이벤트를 기다리는 연결을 교체에서 제외한다. 예약은 원자적으로 처리하며 servlet I/O는 등록 모니터 밖에서 수행한다.
+- 슬롯은 즉시 반환하면서 writer 예약은 emitter 완료의 finally까지 유지한다. 전체 writer 수는 슬롯 한도의 두 배(기본 512)로 제한한다. 인터럽트를 무시하는 송신 두 개를 막아 둔 작은 풀에서 추가 연결 429와 활성 슬롯 0·writer 2를 확인하고, 송신을 풀면 writer 0과 새 연결 수락을 확인한다.
+- 종료된 실행기의 `RejectedExecutionException`을 그대로 전달하며 슬롯·writer 예약을 반환한다. 작은 풀에서 세 번 반복해 예약 누수도 확인한다.
+- 대화 도구는 실제 `GapRecommendationService`와 실제 `DailyQuotaService`를 연결해 장소 사이·하루 끝의 선택된 빈 시간만 한 번 검색/차감하는지, 이미 소진된 한도 메시지를 그대로 안내하는지 네 조합으로 확인한다.
+- HTTP로 빈 시간 두 개·남은 한도 하나일 때 첫 검색만 호출하고 429인지 확인한다. 남의 여행 403, 없는 여행/일차 404 및 미인증 401 뒤에도 실제 한도가 남아 정상 요청이 성공하는지 확인한다.
+- ADR 0036의 상태는 확정으로 유지하고 차감 위치 문장 옆에 ADR 0057 대체 표시를 추가했다. ADR 0057과 API 문서에 이벤트·앱 자동 재접속 중지 계약·writer 상한을 기록했다. 앱 구현은 별도 작업이다.
+
+전체 빌드 재실행 중 SSE HTTP 테스트에서 `MockHttpServletResponse`의 비동기 헤더 쓰기와 MockMvc 기본 응답 출력의 `HeaderValueHolder.getStringValues()` 순회가 겹쳐 NPE가 발생했다. 이 클래스의 자동 응답 출력을 `MockMvcPrint.NONE`으로 끄고, 완료된 첫 응답의 실제 본문에 `event:replaced`와 reason이 있는지 직접 단언하도록 보강했다. HTTP 상태·인증·본문 검증은 유지한다.
+
+최종 전체 빌드 `./gradlew --no-daemon build`는 2분 25초에 성공했다. 233개 클래스, 1,543개 중 통과 1,537·조건부 건너뜀 6·실패/오류 0이다. 새 실행 사례는 8개(대화 4·SSE 3·HTTP 1)이며 기존 교체 이벤트·권한 테스트의 단언도 강화했다. 최초 sandbox 빌드는 기존 프로세스 조회 제한으로 실패했으므로, 최종 빌드는 해당 조회를 허용한 환경에서 테스트 제외 없이 실행했다.
+
+전체 빌드 이후 수정 1·2·3과 종료 중 연결 제외를 각각 되돌려 실제 테스트 실패로 **5/5 검출**했다. 각 변형은 실행 직후 finally에서 원복했다.
+
+| 리뷰 항목·변형 | 검출 결과 |
+|---|---|
+| 1: 교체 시 `replaced()` 대신 종전 `close()` | 교체 이벤트 send 검증 실패 1개 |
+| 2a: 대화 단건 경로를 종전 그날 전체 조회·후필터로 복구 | 남은 한도 1·장소 사이/하루 끝 두 경우 실패 |
+| 2b: `QuotaExceededException` 전용 catch 제거 | 소진된 한도·장소 사이/하루 끝의 안내 문구 두 경우 실패 |
+| 3: writer 수에 따른 admission 상한 제거 | 막힌 writer 누적 후 429 검증 실패 1개 |
+| 4: 종료 중 연결을 사용자 연결 수에 포함 | 불필요한 재교체 counter 검증 실패 1개 |
+
+컴파일 실패를 검출로 세지 않았다. 실패는 각 실행의 JUnit assertion 또는 Mockito 송신 검증으로 확인했다.
+
+변형 원복 뒤 `./gradlew test --tests '*TripStreamSlotsTest' --tests '*ConversationToolExecutorTest' --tests '*GapRecommendationServiceTest' --tests '*GapRecommendationQueryCountTest' --tests '*TripEventsHttpTest'`를 실행해 113개 모두 통과했다(9초). `git diff --check`도 통과했다.

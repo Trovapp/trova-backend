@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Component
 class TripStreams {
     private final Set<TripStream> streams = new LinkedHashSet<>();
+    private final Set<TripStream> writers = new LinkedHashSet<>();
     private final ExecutorService senders = Executors.newThreadPerTaskExecutor(
             Thread.ofVirtual().name("trip-sse-", 0).factory());
     private final TripAudience audience;
@@ -35,6 +36,7 @@ class TripStreams {
         this.perUser = perUser;
         this.total = total;
         metrics.gauge("trova.trip-events.active", this, TripStreams::connectionCount);
+        metrics.gauge("trova.trip-events.writers", this, TripStreams::writerCount);
         this.replaced = metrics.counter("trova.trip-events.replaced");
     }
 
@@ -42,12 +44,13 @@ class TripStreams {
         long version = audience.version(trip, user);
         Registration registration = register(trip, user, auth, version);
         // Termination can touch the servlet transport; keep it outside the admission monitor.
-        if (registration.evicted() != null) registration.evicted().close();
+        if (registration.evicted() != null) registration.evicted().replaced();
         TripStream stream = registration.stream();
         try {
             senders.execute(stream);
         } catch (java.util.concurrent.RejectedExecutionException stopped) {
             stream.close();
+            writerFinished(stream);
             throw stopped;
         }
         return stream;
@@ -57,20 +60,32 @@ class TripStreams {
         long timeout = Duration.between(clock.instant(), auth.end()).toMillis();
         if (timeout <= 0 || !auth.validAt(clock.instant())) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         List<TripStream> owned = streams.stream().filter(s -> s.user == user).toList();
-        TripStream evicted = perUser > 0 && owned.size() >= perUser ? owned.getFirst() : null;
-        // A replacement does not add a slot, even when the global pool is full.
-        if (perUser <= 0 || (evicted == null && streams.size() >= total))
+        // Bound all admitted writer tasks, including closed transports still unwinding.
+        if (writers.size() >= 2L * total || perUser <= 0)
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS);
-        TripStream stream = new TripStream(trip, user, version, auth, clock, timeout, senders, this::release);
+        TripStream evicted = null;
+        long openOwned = owned.stream().filter(TripStream::replaceable).count();
+        if (openOwned >= perUser) {
+            evicted = owned.stream().filter(TripStream::reserveReplacement).findFirst().orElse(null);
+        }
+        // A replacement does not add a slot, even when the global pool is full.
+        if (evicted == null && streams.size() >= total)
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS);
+        TripStream stream = new TripStream(trip, user, version, auth, clock, timeout, senders, this::release, this::writerFinished);
         if (evicted != null) {
             streams.remove(evicted);
             replaced.increment();
         }
         streams.add(stream);
+        writers.add(stream);
         return new Registration(stream, evicted);
     }
 
     private synchronized void release(TripStream stream) { streams.remove(stream); }
+
+    private synchronized void writerFinished(TripStream stream) { writers.remove(stream); }
+
+    private synchronized int writerCount() { return writers.size(); }
 
     private synchronized int connectionCount() { return streams.size(); }
 

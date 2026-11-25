@@ -76,6 +76,16 @@ public class GapRecommendationService {
      * 여행·일차·장소 엔티티와 기본 EAGER 연관(일차의 여행, 장소의 일차)을 따로 읽어 SQL이 5~6번이었다.
      */
     public Optional<List<Gap>> findGaps(Long userId, Long tripId, int day) {
+        return findGaps(userId, tripId, day, null);
+    }
+
+    /** 대화에서 선택한 빈 시간만 검색하고 차감한다. */
+    public Optional<Gap> findGap(User user, Long tripId, int day, Long beforePlaceId) {
+        return findGaps(user.getId(), tripId, day, beforePlaceId)
+                .flatMap(gaps -> gaps.stream().findFirst());
+    }
+
+    private Optional<List<Gap>> findGaps(Long userId, Long tripId, int day, Long beforePlaceId) {
         List<GapPlaceRow> rows = tripPlaceRepository.findGapPlaceRows(tripId, userId, day);
         if (rows.isEmpty()) {
             return Optional.empty();
@@ -86,15 +96,16 @@ public class GapRecommendationService {
             throw new IncorrectResultSizeDataAccessException(1, (int) itineraryCount);
         }
         List<GapPlaceRow> places = rows.stream().filter(row -> row.placeId() != null).toList();
-        return Optional.of(computeGaps(places, userId));
+        return Optional.of(computeGaps(places, userId, beforePlaceId));
     }
 
-    private List<Gap> computeGaps(List<GapPlaceRow> places, Long userId) {
+    private List<Gap> computeGaps(List<GapPlaceRow> places, Long userId, Long beforePlaceId) {
         List<Gap> gaps = new ArrayList<>();
 
         for (int i = 0; i < places.size() - 1; i++) {
             GapPlaceRow before = places.get(i);
             GapPlaceRow after = places.get(i + 1);
+            if (beforePlaceId != null && !beforePlaceId.equals(before.placeId())) continue;
             LocalTime endTime = before.visitEndTime();
             LocalTime startTime = after.visitStartTime();
             if (endTime == null || startTime == null) {
@@ -120,7 +131,8 @@ public class GapRecommendationService {
         if (!places.isEmpty()) {
             GapPlaceRow last = places.get(places.size() - 1);
             LocalTime endTime = last.visitEndTime();
-            if (endTime != null && endTime.isBefore(DAY_END) && last.latitude() != null && last.longitude() != null) {
+            if ((beforePlaceId == null || beforePlaceId.equals(last.placeId()))
+                    && endTime != null && endTime.isBefore(DAY_END) && last.latitude() != null && last.longitude() != null) {
                 Duration gap = Duration.between(endTime, DAY_END);
                 if (gap.compareTo(GAP_THRESHOLD) > 0) {
                     gaps.add(new Gap(last.placeId(), null, (int) gap.toMinutes(),
