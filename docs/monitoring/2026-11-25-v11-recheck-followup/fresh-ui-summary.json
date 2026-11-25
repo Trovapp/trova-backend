@@ -1,0 +1,12 @@
+{
+  "count": 30,
+  "uniquePlaces": 30,
+  "start": "2026-11-25T18:18:54.631+09:00",
+  "end": "2026-11-25T19:04:27.236+09:00",
+  "meanObservedSeconds": 4.258,
+  "medianObservedSeconds": 4.115,
+  "minObservedSeconds": 1.8,
+  "maxObservedSeconds": 7.605,
+  "readyCount": 30,
+  "note": "UI observation includes ADB/capture overhead; HTTP statistics must come from server"
+}

@@ -1,0 +1,4 @@
+table_name,column_name,data_type
+places,last_synced_at,timestamp without time zone
+places,embedding,USER-DEFINED
+user_preference_signals,created_at,timestamp without time zone

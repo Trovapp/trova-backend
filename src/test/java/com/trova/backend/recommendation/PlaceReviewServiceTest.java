@@ -17,8 +17,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PlaceReviewServiceTest {
@@ -90,7 +95,7 @@ class PlaceReviewServiceTest {
         assertThat(result.get().snippets()).containsExactly("좋아요", "친절해요");
         assertThat(place.getReviewSnippets()).containsExactly("좋아요", "친절해요");
         assertThat(MAPPER.readValue(place.getReviewSummary(), ReviewSummary.class)).isEqualTo(generated);
-        verify(placeRepository).save(place);
+        verify(placeRepository).updateReviewCache(place);
     }
 
     @Test
@@ -125,7 +130,7 @@ class PlaceReviewServiceTest {
         verify(reviewSummaryRunner, never()).run(any(), anyLong());
         // 리뷰가 없다는 사실 자체도 캐시해야, 이후 요청에서 유료 Details API를
         // 다시 부르지 않는다 — 최종 리뷰에서 지적된 캐시 미스 버그 수정.
-        verify(placeRepository).save(place);
+        verify(placeRepository).updateReviewCache(place);
         assertThat(MAPPER.readValue(place.getReviewSummary(), ReviewSummary.class).highlights())
                 .isEqualTo("리뷰 정보가 없어요.");
     }
@@ -140,7 +145,7 @@ class PlaceReviewServiceTest {
 
         assertThat(result.get().summary().highlights()).isEqualTo("리뷰를 불러오지 못했어요.");
         assertThat(place.getReviewSummary()).isNull();
-        verify(placeRepository, never()).save(any());
+        verify(placeRepository, never()).updateReviewCache(any());
     }
 
     @Test
@@ -156,7 +161,7 @@ class PlaceReviewServiceTest {
 
         assertThat(result.get().summary().highlights()).isEqualTo("리뷰를 불러오지 못했어요.");
         assertThat(place.getReviewSummary()).isNull();
-        verify(placeRepository, never()).save(any());
+        verify(placeRepository, never()).updateReviewCache(any());
     }
 
     @Test
@@ -234,7 +239,7 @@ class PlaceReviewServiceTest {
         assertThat(second.get().phone()).isEqualTo("032-987-6543");
         verify(googlePlacesApiClient, times(1)).getPhone("g1"); // 두 번째부터는 저장된 번호
         verify(googlePlacesApiClient, never()).getDetails(any()); // 리뷰는 다시 받지 않는다
-        verify(placeRepository).save(place);
+        verify(placeRepository).updatePhone(place);
     }
 
     @Test

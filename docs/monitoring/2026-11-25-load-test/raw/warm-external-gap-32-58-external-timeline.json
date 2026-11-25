@@ -1,0 +1,184 @@
+[
+  {
+    "at": 1795595347.658867,
+    "places": 642,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 642,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595349.998136,
+    "places": 642,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 642,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595352.2207518,
+    "places": 657,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 657,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595354.524034,
+    "places": 676,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 676,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595356.730668,
+    "places": 694,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 694,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595359.799105,
+    "places": 723,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 723,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595362.0427678,
+    "places": 741,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 741,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595364.2697039,
+    "places": 761,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 761,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595366.507522,
+    "places": 780,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 780,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595369.69974,
+    "places": 808,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 808,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595371.958391,
+    "places": 825,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 825,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595374.2109241,
+    "places": 845,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 845,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595376.418615,
+    "places": 855,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 855,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  }
+]

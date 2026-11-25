@@ -3,6 +3,10 @@ package com.trova.backend.events;
 import com.trova.backend.push.ExpoPushService;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.time.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import com.trova.backend.push.PushNotificationService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -12,6 +16,11 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class TripDeliveryTest {
+    final org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor kafkaSender =
+            (org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor) new com.trova.backend.config.AsyncConfig().tripKafkaSender();
+    { kafkaSender.initialize(); }
+    @org.junit.jupiter.api.AfterEach void closeSender() { kafkaSender.shutdown(); }
+
     final Clock clock = mock(Clock.class);
     final Instant now = Instant.EPOCH;
     final TripAudience members = mock(TripAudience.class);
@@ -48,14 +57,24 @@ class TripDeliveryTest {
         open(7, 5, now.plusSeconds(10));
         assertThatThrownBy(() -> open(7, 5, now.plusSeconds(10))).isInstanceOf(ResponseStatusException.class);
     }
-    @Test void expiredCredentialsCloseStream() {
-        when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(0, List.of(5L)));
-        open(7, 5, now.plusSeconds(1));
-        when(clock.instant()).thenReturn(now.plusSeconds(1));
-        streams.heartbeat();
-        assertThat(streams.viewing(7, 5)).isFalse();
-        org.awaitility.Awaitility.await().untilAsserted(() ->
-                assertThatCode(() -> open(7, 5, now.plusSeconds(10))).doesNotThrowAnyException());
+    @Test void JWT가_만료되면_열려_있던_연결을_닫고_다시_접속할_수_있다() {
+        try (var mocks = mockConstruction(SseEmitter.class)) {
+            var request = new org.springframework.mock.web.MockHttpServletRequest();
+            request.setAttribute("trova.jwt.expiresAt", now.plusSeconds(1));
+            var users = mock(com.trova.backend.service.CurrentUserService.class);
+            var auth = mock(org.springframework.security.core.Authentication.class);
+            when(users.resolveUserId(auth)).thenReturn(5L);
+            when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(0, List.of(5L)));
+            var controller = new TripEventsController(streams, members, null, users, clock);
+            SseEmitter emitter = controller.open(7, null, auth, request).getBody();
+            ((TripStream) request.getAttribute(TripSseMvc.STREAM)).ready(null);
+            assertThat(streams.viewing(7, 5)).isTrue();
+            when(clock.instant()).thenReturn(now.plusSeconds(1));
+            streams.heartbeat();
+            verify(emitter, timeout(1000)).complete();
+            org.awaitility.Awaitility.await().untilAsserted(() ->
+                    assertThatCode(() -> open(7, 5, now.plusSeconds(10))).doesNotThrowAnyException());
+        }
     }
 
     @Test void missedVersionReconnectsOnlyStaleSubscriberAfterGraceInterval() throws Exception {
@@ -117,12 +136,123 @@ class TripDeliveryTest {
         } finally { release.countDown(); }
     }
 
+    @Test void 브로커가_응답하지_않아도_다른_발행은_로컬에_즉시_전달된다() throws Exception {
+        KafkaTemplate<String, String> kafka = mock(KafkaTemplate.class);
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        when(kafka.send(anyString(), anyString(), anyString())).thenAnswer(call -> {
+            started.countDown();
+            release.await(5, TimeUnit.SECONDS);
+            throw new IllegalStateException();
+        });
+        TripStreams local = mock(TripStreams.class);
+        KafkaTripEventBus bus = new KafkaTripEventBus(kafka, local, new SimpleMeterRegistry(), clock, kafkaSender, "test");
+        try (var pool = Executors.newVirtualThreadPerTaskExecutor()) {
+            var first = pool.submit(() -> bus.publish(event));
+            try {
+                assertThat(started.await(2, TimeUnit.SECONDS)).isTrue();
+                first.get(1, TimeUnit.SECONDS);
+                pool.submit(() -> bus.publish(event)).get(1, TimeUnit.SECONDS);
+                verify(local, times(2)).deliver(event);
+            } finally {
+                release.countDown();
+            }
+            first.get(2, TimeUnit.SECONDS);
+            verify(kafka).send(anyString(), anyString(), anyString());
+        }
+    }
+
+    @Test void 동시에_도착한_변경도_브로커가_정상이면_모두_발송한다() throws Exception {
+        KafkaTemplate<String, String> kafka = mock(KafkaTemplate.class);
+        CountDownLatch started = new CountDownLatch(1);
+        var firstSend = new java.util.concurrent.CompletableFuture<org.springframework.kafka.support.SendResult<String, String>>();
+        when(kafka.send(anyString(), anyString(), anyString())).thenAnswer(call -> {
+            started.countDown();
+            return firstSend;
+        });
+        KafkaTripEventBus bus = new KafkaTripEventBus(kafka, mock(TripStreams.class), new SimpleMeterRegistry(), clock, kafkaSender, "test");
+        try (var pool = Executors.newVirtualThreadPerTaskExecutor()) {
+            var first = pool.submit(() -> bus.publish(event));
+            try {
+                assertThat(started.await(2, TimeUnit.SECONDS)).isTrue();
+                bus.publish(new TripChangedEvent(8, 1, 4, "민수", "TRIP_TITLE", "변경"));
+            } finally {
+                firstSend.complete(null);
+            }
+            first.get(2, TimeUnit.SECONDS);
+            verify(kafka).send(anyString(), eq("7"), anyString());
+            verify(kafka, timeout(1000)).send(anyString(), eq("8"), anyString());
+        }
+    }
+
+    @Test void 전송_작업이_Error로_끝나도_다음_변경을_발송한다() {
+        KafkaTemplate<String, String> kafka = mock(KafkaTemplate.class);
+        when(kafka.send(anyString(), anyString(), anyString())).thenThrow(new AssertionError("test"))
+                .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(null));
+        KafkaTripEventBus bus = new KafkaTripEventBus(kafka, mock(TripStreams.class), new SimpleMeterRegistry(),
+                clock, kafkaSender, "test");
+        bus.publish(event);
+        bus.publish(new TripChangedEvent(8, 1, 4, "민수", "TRIP_TITLE", "변경"));
+        verify(kafka, timeout(2000)).send(anyString(), eq("8"), anyString());
+    }
+
+    @Test void 가입_확인이_느려도_기존_연결에_전달한다() throws Exception {
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(3, List.of(5L)));
+        when(members.version(8, 6)).thenAnswer(call -> {
+            started.countDown();
+            release.await(5, TimeUnit.SECONDS);
+            return 0L;
+        });
+        try (var mocks = mockConstruction(SseEmitter.class); var pool = Executors.newVirtualThreadPerTaskExecutor()) {
+            SseEmitter current = open(7, 5, now.plusSeconds(60));
+            pool.submit(() -> open(8, 6, now.plusSeconds(60)));
+            try {
+                assertThat(started.await(2, TimeUnit.SECONDS)).isTrue();
+                pool.submit(() -> streams.deliver(event)).get(1, TimeUnit.SECONDS);
+                verify(current, timeout(1000).times(2)).send(any(SseEmitter.SseEventBuilder.class));
+            } finally {
+                release.countDown();
+            }
+        }
+    }
+
+    @Test void 조회와_등록_사이에_추방되면_첫_하트비트가_연결을_닫는다() {
+        when(members.version(7, 5)).thenAnswer(call -> {
+            // Membership was visible to the query, then revoked before registration.
+            streams.membershipChanged(event);
+            return 2L;
+        });
+        when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(3, List.of(6L)));
+        try (var mocks = mockConstruction(SseEmitter.class)) {
+            SseEmitter emitter = open(7, 5, now.plusSeconds(60));
+            assertThat(streams.viewing(7, 5)).isTrue();
+            when(clock.instant()).thenReturn(now.plusSeconds(25));
+            streams.heartbeat();
+            verify(emitter, timeout(1000)).complete();
+            assertThat(streams.viewing(7, 5)).isFalse();
+        }
+    }
+
+    @Test void 푸시에_실패하면_다음_변경은_바로_알린다() {
+        ExpoPushService expo = mock(ExpoPushService.class);
+        when(members.members(7)).thenReturn(List.of(6L));
+        when(expo.sendToUser(eq(6L), eq("trip-change"), any()))
+                .thenReturn(new PushNotificationService.Result(0, 0, 1), new PushNotificationService.Result(1, 0, 0));
+        TripChangePush push = new TripChangePush(members, streams, expo, clock, Runnable::run, Runnable::run, new SimpleMeterRegistry());
+        push.changed(event);
+        push.changed(event);
+        push.changed(event);
+        verify(expo, times(2)).sendToUser(eq(6L), eq("trip-change"), any());
+    }
+
     @Test void localFailureStillPublishesToKafka() {
         KafkaTemplate<String, String> kafka = mock(KafkaTemplate.class);
         when(kafka.send(anyString(), anyString(), anyString())).thenReturn(java.util.concurrent.CompletableFuture.completedFuture(null));
         var local = mock(TripStreams.class);
         doThrow(new IllegalStateException("local delivery")).when(local).deliver(event);
-        var bus = new KafkaTripEventBus(kafka, local, new SimpleMeterRegistry(), clock);
+        var bus = new KafkaTripEventBus(kafka, local, new SimpleMeterRegistry(), clock, Runnable::run, "test");
         bus.publish(event);
         verify(kafka).send(eq(KafkaTripEventBus.TOPIC), eq("7"), anyString());
     }
@@ -149,32 +279,95 @@ class TripDeliveryTest {
         verifyNoMoreInteractions(bus);
     }
 
-    @Test void editPushHasAnIndependentExecutor() throws Exception {
-        var async = TripChangePush.class.getMethod("changed", TripChangedEvent.class)
-                .getAnnotation(org.springframework.scheduling.annotation.Async.class);
-        assertThat(async.value()).isEqualTo("tripPushExecutor");
+    @Test void 푸시_대기열이_차면_일반_알림은_집계하고_삭제는_발송한다() throws Exception {
+        ExpoPushService expo = mock(ExpoPushService.class);
+        SimpleMeterRegistry metrics = new SimpleMeterRegistry();
+        var config = new com.trova.backend.config.AsyncConfig();
+        var executor = (org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor) config.tripPushExecutor();
+        var deletionExecutor = config.tripDeletionPushExecutor();
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        try {
+            executor.execute(() -> {
+                started.countDown();
+                try {
+                    release.await();
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+            assertThat(started.await(2, TimeUnit.SECONDS)).isTrue();
+            int capacity = executor.getThreadPoolExecutor().getQueue().remainingCapacity();
+            for (int i = 0; i < capacity; i++) executor.execute(() -> {});
+            TripChangePush push = new TripChangePush(members, streams, expo, clock, executor, deletionExecutor, metrics);
+            push.changed(event);
+            doAnswer(call -> {
+                release.await(5, TimeUnit.SECONDS);
+                return new PushNotificationService.Result(1, 0, 0);
+            }).when(expo).sendToUser(eq(6L), eq("trip-deleted"), any());
+            try (var caller = Executors.newVirtualThreadPerTaskExecutor()) {
+                caller.submit(() -> push.changed(new TripChangedEvent(7, 4, 4, "민수", "TRIP_DELETED",
+                        "삭제", List.of(4L, 6L)))).get(1, TimeUnit.SECONDS);
+            }
+            assertThat(metrics.get("trova.trip-push.discarded").counter().count()).isOne();
+            verify(expo, timeout(1000)).sendToUser(eq(6L), eq("trip-deleted"), any());
+        } finally {
+            release.countDown();
+            executor.shutdown();
+            deletionExecutor.close();
+        }
     }
 
-    @Test void fallbackSkipsBrokerForOneMinute() {
+    @Test void 다른_서버의_추방_이벤트는_해당_사용자의_연결을_닫는다() throws Exception {
+        try (var mocks = mockConstruction(SseEmitter.class)) {
+            SseEmitter removed = open(7, 5, now.plusSeconds(60));
+            open(7, 6, now.plusSeconds(60));
+            when(members.snapshot(7)).thenReturn(new TripAudience.Snapshot(3, List.of(6L)));
+            KafkaTripEventBus bus = new KafkaTripEventBus(mock(KafkaTemplate.class), streams, new SimpleMeterRegistry(), clock, Runnable::run, "test");
+            bus.receive(new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(
+                    new KafkaTripEventBus.Envelope("remote", event)));
+            verify(removed, timeout(1000)).complete();
+            assertThat(streams.viewing(7, 6)).isTrue();
+        }
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(booleans = {true, false})
+    void 연결이_끝나거나_시간이_지나면_사용자_접속_자리를_돌려준다(boolean timedOut) {
+        try (var mocks = mockConstruction(SseEmitter.class)) {
+            SseEmitter emitter = open(7, 5, now.plusSeconds(60));
+            var callback = org.mockito.ArgumentCaptor.forClass(Runnable.class);
+            if (timedOut) verify(emitter).onTimeout(callback.capture());
+            else verify(emitter).onCompletion(callback.capture());
+            callback.getValue().run();
+            org.awaitility.Awaitility.await().untilAsserted(() ->
+                    assertThatCode(() -> open(7, 5, now.plusSeconds(60))).doesNotThrowAnyException());
+        }
+    }
+
+    @Test void 브로커가_복구되면_일분_뒤부터_연속해서_전송한다() {
         KafkaTemplate<String, String> kafka = mock(KafkaTemplate.class);
-        when(kafka.send(anyString(), anyString(), anyString())).thenThrow(new IllegalStateException());
+        when(kafka.send(anyString(), anyString(), anyString())).thenThrow(new IllegalStateException())
+                .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(null));
         var metrics = new SimpleMeterRegistry();
         var local = mock(TripStreams.class);
-        var bus = new KafkaTripEventBus(kafka, local, metrics, clock);
+        var bus = new KafkaTripEventBus(kafka, local, metrics, clock, Runnable::run, "test");
         bus.publish(event);
         bus.publish(event);
         when(clock.instant()).thenReturn(now.plusSeconds(60));
         bus.publish(event);
-        verify(kafka, times(2)).send(eq("trova.trip-events"), eq("7"), anyString());
-        verify(local, times(3)).deliver(event);
-        assertThat(metrics.counter("trova.trip-events.fallback").count()).isEqualTo(3);
+        bus.publish(event);
+        verify(kafka, times(3)).send(eq("trova.trip-events"), eq("7"), anyString());
+        verify(local, times(4)).deliver(event);
+        assertThat(metrics.counter("trova.trip-events.fallback").count()).isEqualTo(2);
     }
 
     @Test void pushOnlyOncePerFiveMinutesToOfflineMembers() {
         var expo = mock(ExpoPushService.class);
+        when(expo.sendToUser(anyLong(), anyString(), any())).thenReturn(new PushNotificationService.Result(1, 0, 0));
         open(7, 5, now.plusSeconds(600));
         when(members.members(7)).thenReturn(List.of(4L, 5L, 6L));
-        var push = new TripChangePush(members, streams, expo, clock);
+        var push = new TripChangePush(members, streams, expo, clock, Runnable::run, Runnable::run, new SimpleMeterRegistry());
         push.changed(event);
         push.changed(event);
         when(clock.instant()).thenReturn(now.plusSeconds(300));

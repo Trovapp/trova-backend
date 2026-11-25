@@ -16,6 +16,16 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
+from threading import Lock
+
+# 제목 조회와 모델 호출이 동시에 stderr를 사용한다. 진행·API 표식을 완전한 한 줄로 남긴다.
+_log_lock = Lock()
+
+
+def log_line(message: str) -> None:
+    with _log_lock:
+        print(message, file=sys.stderr, flush=True)
+
 
 # 요청 준비에 쓴 시간(#311). Rust 비교 대상(build_parts)과 요청 JSON 만들기의 실제 비용을 운영에서 재려고 둔다.
 # 텍스트만 있는 호출은 1ms보다 짧아 마이크로초(us)로 쌓는다. run_pipeline이 결과 JSON의 resources로 내보낸다.
@@ -288,7 +298,7 @@ def _log_api_call(
         entry["thoughtsTokens"] = usage.get("thoughtsTokenCount")
         entry["cachedTokens"] = usage.get("cachedContentTokenCount")
         entry["videoTokens"] = _modality_tokens(usage.get("promptTokensDetails"), "VIDEO")
-    print(f"{API_LOG_MARKER}{json.dumps(entry, ensure_ascii=False)}", file=sys.stderr)
+    log_line(f"{API_LOG_MARKER}{json.dumps(entry, ensure_ascii=False)}")
 
 
 def _modality_tokens(details, modality: str) -> int | None:
@@ -376,10 +386,9 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
                     delay = suggested
                 else:
                     delay = min(MAX_RETRY_DELAY, RETRY_BASE_DELAY * (2 ** attempt))
-                print(
+                log_line(
                     f"[extract_places] Gemini {exc.code} — {delay:.0f}초 대기 후 재시도 "
-                    f"({attempt + 2}/{MAX_ATTEMPTS})",
-                    file=sys.stderr,
+                    f"({attempt + 2}/{MAX_ATTEMPTS})"
                 )
                 waited_ms += round(delay * 1000)
                 time.sleep(delay)
@@ -387,10 +396,9 @@ def call_gemini(parts: list[dict], model: str, api_key: str, operation: str) -> 
             last_detail = str(exc)
             if attempt < MAX_ATTEMPTS - 1:
                 delay = RETRY_BASE_DELAY * (attempt + 1)
-                print(
+                log_line(
                     f"[extract_places] 네트워크 오류({exc}) — {delay:.0f}초 대기 후 재시도 "
-                    f"({attempt + 2}/{MAX_ATTEMPTS})",
-                    file=sys.stderr,
+                    f"({attempt + 2}/{MAX_ATTEMPTS})"
                 )
                 waited_ms += round(delay * 1000)
                 time.sleep(delay)
@@ -532,8 +540,8 @@ def parse_filter(text: str, candidate_count: int, audit: bool) -> list[dict]:
 def emit_trace(stage: str, **fields) -> None:
     """평가용 opt-in 진단. 전체 자막·미디어·키는 기록하지 않는다."""
     if os.environ.get("PIPELINE_TRACE") == "1":
-        print("TROVA_EXTRACTION_TRACE:" + json.dumps(
-            {"stage": stage, **fields}, ensure_ascii=False), file=sys.stderr)
+        log_line("TROVA_EXTRACTION_TRACE:" + json.dumps(
+            {"stage": stage, **fields}, ensure_ascii=False))
 
 
 def trace_selection(candidates: list, places: list[dict], audit: bool = False) -> None:
@@ -613,7 +621,7 @@ def extract_places(
         and (transcript or post_description) and (audio_path or frame_paths)
     )
     if text_only:
-        print("[extract_places] 선별 호출은 자막·설명·1차 후보만으로 (PIPELINE_FILTER_TEXT_ONLY=1)", file=sys.stderr)
+        log_line("[extract_places] 선별 호출은 자막·설명·1차 후보만으로 (PIPELINE_FILTER_TEXT_ONLY=1)")
     parts = build_parts(
         transcript, None if text_only else audio_path, None if text_only else frame_paths, prompt=FILTER_PROMPT + (FILTER_AUDIT_PROMPT if audit else ""),
         candidates=candidates, video_uri=video_uri, post_description=post_description, photo_post=photo_post,

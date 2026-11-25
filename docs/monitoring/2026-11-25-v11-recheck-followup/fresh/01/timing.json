@@ -1,0 +1,28 @@
+{
+  "sample": 1,
+  "place": "서울식물원",
+  "start": "2026-11-25T18:18:54.631+09:00",
+  "end": "2026-11-25T18:18:59.419+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 4.787,
+  "observations": [
+    {
+      "seconds": 1.162,
+      "changed": 0.10143
+    },
+    {
+      "seconds": 2.537,
+      "changed": 0.10572
+    },
+    {
+      "seconds": 3.909,
+      "changed": 0.11015
+    },
+    {
+      "seconds": 4.787,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

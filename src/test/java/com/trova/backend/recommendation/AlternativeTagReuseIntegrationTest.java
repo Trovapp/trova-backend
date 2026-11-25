@@ -132,13 +132,16 @@ class AlternativeTagReuseIntegrationTest {
 
     @Test
     void 태깅_실패는_저장하지_않고_다음_요청에서_재시도한다() {
+        double before = metrics.get("trova.alternatives.space_tagging.calls").counter().count();
         when(runner.run(anyList(), anyLong())).thenThrow(new RuntimeException("429"))
                 .thenReturn(List.of(new PlaceTag(0, "조용한", "INDOOR")));
         assertThat(finder.findAlternatives(owner, 902L,
                 new AlternativeFilter("카페", true, null, null, null), false).orElseThrow()).isEmpty();
         assertThat(places.findById(placeId).orElseThrow().getSpace()).isNull();
+        assertThat(metrics.get("trova.alternatives.space_tagging.calls").counter().count() - before).isEqualTo(1);
         찾기();
         verify(runner, times(2)).run(anyList(), anyLong());
+        assertThat(metrics.get("trova.alternatives.space_tagging.calls").counter().count() - before).isEqualTo(2);
     }
 
     @Test

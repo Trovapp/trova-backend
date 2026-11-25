@@ -1,0 +1,74 @@
+[
+  {
+    "route": "영상 분석",
+    "windowStart": "2026-11-25T12:38:36.558+09:00",
+    "windowEnd": "2026-11-25T12:47:09.055+09:00",
+    "beforeSnapshotKST": "2026-11-25T12:38:08+09:00",
+    "afterSnapshotKST": "2026-11-25T12:47:25+09:00",
+    "beforeFile": "prom/01-video-before-20261125T123808.prom.gz",
+    "afterFile": "prom/01-video-after-20261125T124725.prom.gz"
+  },
+  {
+    "route": "대안 찾기",
+    "windowStart": "2026-11-25T12:52:03.368+09:00",
+    "windowEnd": "2026-11-25T13:00:44.962+09:00",
+    "beforeSnapshotKST": "2026-11-25T12:51:45+09:00",
+    "afterSnapshotKST": "2026-11-25T13:00:57+09:00",
+    "beforeFile": "prom/02-alternatives-before-20261125T125145.prom.gz",
+    "afterFile": "prom/02-alternatives-after-20261125T130057.prom.gz"
+  },
+  {
+    "route": "말로 바꾸기",
+    "windowStart": "2026-11-25T13:00:46.746+09:00",
+    "windowEnd": "2026-11-25T13:21:23.709+09:00",
+    "beforeSnapshotKST": "2026-11-25T13:00:25+09:00",
+    "afterSnapshotKST": "2026-11-25T13:21:40+09:00",
+    "beforeFile": "prom/03-conversation-before-20261125T130025.prom.gz",
+    "afterFile": "prom/03-conversation-after-20261125T132140.prom.gz"
+  },
+  {
+    "route": "여행 상세",
+    "windowStart": "2026-11-25T13:22:30.247+09:00",
+    "windowEnd": "2026-11-25T13:31:46.047+09:00",
+    "beforeSnapshotKST": "2026-11-25T13:22:13+09:00",
+    "afterSnapshotKST": "2026-11-25T13:32:12+09:00",
+    "beforeFile": "prom/04-detail-before-20261125T132213.prom.gz",
+    "afterFile": "prom/04-detail-after-20261125T133212.prom.gz"
+  },
+  {
+    "route": "메모·순서 수정",
+    "windowStart": "2026-11-25T13:33:26.123+09:00",
+    "windowEnd": "2026-11-25T13:47:37.895+09:00",
+    "beforeSnapshotKST": "2026-11-25T13:33:18+09:00",
+    "afterSnapshotKST": "2026-11-25T13:47:55+09:00",
+    "beforeFile": "prom/05-edit-before-20261125T133318.prom.gz",
+    "afterFile": "prom/05-edit-after-20261125T134755.prom.gz"
+  },
+  {
+    "route": "같이 고치기",
+    "windowStart": "2026-11-25T13:51:45.456+09:00",
+    "windowEnd": "2026-11-25T13:57:50.619+09:00",
+    "beforeSnapshotKST": "2026-11-25T13:51:45+09:00",
+    "afterSnapshotKST": "2026-11-25T13:58:15+09:00",
+    "beforeFile": "prom/06-live-before-20261125T135145.prom.gz",
+    "afterFile": "prom/06-live-after-20261125T135815.prom.gz"
+  },
+  {
+    "route": "빈 시간 추천",
+    "windowStart": "2026-11-25T13:58:50.870+09:00",
+    "windowEnd": "2026-11-25T14:09:56.976+09:00",
+    "beforeSnapshotKST": "2026-11-25T13:58:46+09:00",
+    "afterSnapshotKST": "2026-11-25T14:10:15+09:00",
+    "beforeFile": "prom/07-gap-before-20261125T135846.prom.gz",
+    "afterFile": "prom/07-gap-after-20261125T141015.prom.gz"
+  },
+  {
+    "route": "읽기 전용 오류",
+    "windowStart": "2026-11-25T14:09:57.148+09:00",
+    "windowEnd": "2026-11-25T14:10:30.633+09:00",
+    "beforeSnapshotKST": "2026-11-25T14:09:41+09:00",
+    "afterSnapshotKST": "2026-11-25T14:10:47+09:00",
+    "beforeFile": "prom/08-errors-before-20261125T140941.prom.gz",
+    "afterFile": "prom/08-errors-after-20261125T141047.prom.gz"
+  }
+]

@@ -1,0 +1,151 @@
+{
+    "metrics": {
+        "http_req_waiting": {
+            "max": 2566.205334,
+            "p(95)": 2386.1622436,
+            "p(99)": 2511.71413752,
+            "avg": 730.9939382280703,
+            "min": 99.285625,
+            "med": 489.227459
+        },
+        "measured_requests": {
+            "count": 57,
+            "rate": 2.030637965878511
+        },
+        "http_req_duration{expected_response:true}": {
+            "max": 2566.403752,
+            "p(95)": 2386.3072015999996,
+            "p(99)": 2511.9037120000003,
+            "avg": 744.5731055964912,
+            "min": 99.4815,
+            "med": 494.085751
+        },
+        "http_req_blocked": {
+            "min": 0.002792,
+            "med": 0.011625,
+            "max": 0.933458,
+            "p(95)": 0.649933,
+            "p(99)": 0.8019285599999999,
+            "avg": 0.09910091228070175
+        },
+        "measured_errors": {
+            "passes": 0,
+            "fails": 57,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_reqs": {
+            "count": 57,
+            "rate": 2.030637965878511
+        },
+        "http_req_receiving": {
+            "p(95)": 99.1445,
+            "p(99)": 199.00179648,
+            "avg": 13.547535035087721,
+            "min": 0.071125,
+            "med": 0.246959,
+            "max": 203.375
+        },
+        "measured_latency": {
+            "max": 2566.403752,
+            "p(95)": 2386.3072015999996,
+            "p(99)": 2511.9037120000003,
+            "avg": 744.5731055964912,
+            "min": 99.4815,
+            "med": 494.085751
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 57,
+            "value": 0
+        },
+        "checks": {
+            "passes": 57,
+            "fails": 0,
+            "value": 1
+        },
+        "data_sent": {
+            "count": 17442,
+            "rate": 621.3752175588244
+        },
+        "http_req_connecting": {
+            "avg": 0.012241210526315792,
+            "min": 0,
+            "med": 0,
+            "max": 0.217208,
+            "p(95)": 0.07531639999999996,
+            "p(99)": 0.19266151999999998
+        },
+        "iteration_duration": {
+            "avg": 3746.8432684912277,
+            "min": 3100.349168,
+            "med": 3497.136293,
+            "max": 5567.52392,
+            "p(95)": 5387.7232692,
+            "p(99)": 5513.13723296
+        },
+        "data_received": {
+            "count": 484017,
+            "rate": 17243.215725098584
+        },
+        "http_req_duration": {
+            "avg": 744.5731055964912,
+            "min": 99.4815,
+            "med": 494.085751,
+            "max": 2566.403752,
+            "p(95)": 2386.3072015999996,
+            "p(99)": 2511.9037120000003
+        },
+        "iterations": {
+            "count": 57,
+            "rate": 2.030637965878511
+        },
+        "status_200": {
+            "count": 57,
+            "rate": 2.030637965878511
+        },
+        "http_req_sending": {
+            "min": 0.008625,
+            "med": 0.029958,
+            "max": 0.112291,
+            "p(95)": 0.0583828,
+            "p(99)": 0.08340507999999998,
+            "avg": 0.03163233333333334
+        },
+        "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 8
+        },
+        "vus_max": {
+            "value": 8,
+            "min": 8,
+            "max": 8
+        },
+        "http_req_tls_handshaking": {
+            "max": 0,
+            "p(95)": 0,
+            "p(99)": 0,
+            "avg": 0,
+            "min": 0,
+            "med": 0
+        }
+    },
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+            "successful response and content": {
+                "passes": 57,
+                "fails": 0,
+                "name": "successful response and content",
+                "path": "::successful response and content",
+                "id": "4ead82a8556325d3c050512e5d8dffc4"
+            }
+        }
+    }
+}

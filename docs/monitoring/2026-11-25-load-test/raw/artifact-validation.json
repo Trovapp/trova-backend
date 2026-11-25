@@ -1,0 +1,40 @@
+{
+  "at": 1795596727.265951,
+  "counts": {
+    "json": 184,
+    "gzip": 214,
+    "python": 28,
+    "markdown_links": 24
+  },
+  "errors": [],
+  "secret_pattern_flags": [],
+  "application_source_unchanged": true,
+  "measured_jar_hash_unchanged": true,
+  "pdf_sha256": "e55574bf3c6593e2c653fc58ae9dab2705cde777a2129ade083525afa00fbc9a",
+  "key_file_mode_600": true,
+  "pdf_pages": 13,
+  "pdf_text_chars": 21590,
+  "pdf_required_text": {
+    "1,021": true,
+    "1,489": true,
+    "35": true,
+    "RESOURCE_EXHAUSTED": true,
+    "0.125": true,
+    "257": true,
+    "100": true,
+    "64": true
+  },
+  "pdf_outside_page_blocks": [],
+  "pdf_sample_pages_visually_reviewed": [
+    1,
+    2,
+    5,
+    13
+  ],
+  "final_pdf_sample_pages_rendered": [
+    1,
+    5,
+    13
+  ],
+  "log_archives_verified": 78
+}

@@ -162,6 +162,8 @@ class TripShareLinkControllerTest {
     void 기존_여행_OWNER는_재시작해도_한_명이다() {
         Trip trip = trip(owner(), 1);
         tripRepository.flush();
+        assertThat(jdbc.queryForList("select role from trip_members where trip_id=? and user_id=?",
+                String.class, trip.getId(), trip.getUser().getId())).containsExactly("OWNER");
         jdbc.update("delete from trip_members where trip_id=?", trip.getId());
         backfill.afterSingletonsInstantiated();
         backfill.afterSingletonsInstantiated();
@@ -213,6 +215,11 @@ class TripShareLinkControllerTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.startDate").value("2026-12-01"));
         mockMvc.perform(delete(link).with(editor)).andExpect(status().isForbidden());
         mockMvc.perform(post(link + "/rotate").with(editor)).andExpect(status().isForbidden());
+        User other = userRepository.save(new User("google", "other-editor", "editor", null));
+        mockMvc.perform(post(join).with(fromIp("192.0.2.174")).with(loginAs("other-editor", "editor")))
+                .andExpect(status().isOk());
+        mockMvc.perform(delete(prefix + "/members/" + other.getId()).with(editor)).andExpect(status().isForbidden());
+        mockMvc.perform(delete(prefix + "/members/" + other.getId()).with(owner)).andExpect(status().isNoContent());
         mockMvc.perform(post(link + "/rotate").with(owner)).andExpect(status().isOk());
         mockMvc.perform(post(join).with(fromIp("192.0.2.172")).with(editor)).andExpect(status().isNotFound());
         mockMvc.perform(get("/api/public/trips/" + token).with(fromIp("192.0.2.173"))).andExpect(status().isNotFound());
@@ -225,6 +232,16 @@ class TripShareLinkControllerTest {
         mockMvc.perform(delete(prefix + "/members/" + friend.getId()).with(owner)).andExpect(status().isNoContent());
         mockMvc.perform(get(prefix).with(editor)).andExpect(status().isForbidden());
         mockMvc.perform(get("/api/trips").with(editor)).andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void If_Match를_생략해도_구버전_앱의_장소_수정을_허용한다() throws Exception {
+        TripPlace item = place(trip(owner(), 1));
+        tripRepository.flush();
+        mockMvc.perform(patch("/api/trip-places/{id}/details", item.getId()).with(loginAs("trip-share-owner", "owner"))
+                        .contentType("application/json").content("{\"memo\":\"legacy\"}"))
+                .andExpect(status().isOk());
+        assertThat(tripPlaceRepository.findById(item.getId()).orElseThrow().getMemo()).isEqualTo("legacy");
     }
 
     @Test

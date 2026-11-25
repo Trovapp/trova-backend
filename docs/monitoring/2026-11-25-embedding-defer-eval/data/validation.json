@@ -1,0 +1,33 @@
+{
+  "source_commit": "acfed70",
+  "evidence_commit": "bf19482f3b566d6a82b1cbceedbfcd6e745f60cc",
+  "observation_commit": "16b6180",
+  "jdk": "Temurin 21",
+  "tests": [
+    {
+      "name": "com.trova.backend.recommendation.PersonalizationServiceTest",
+      "tests": "14",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.trova.backend.recommendation.AlternativeFinderServiceTest",
+      "tests": "30",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.trova.backend.recommendation.EmbeddingDeferReplayTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "metric_self_test": "passed",
+  "pdf_pages": 2,
+  "new_external_api_calls": 0,
+  "production_changes": false
+}

@@ -1,0 +1,151 @@
+{
+    "metrics": {
+        "http_reqs": {
+            "count": 24,
+            "rate": 0.6713929672057499
+        },
+        "vus_max": {
+            "min": 1,
+            "max": 1,
+            "value": 1
+        },
+        "data_sent": {
+            "count": 7968,
+            "rate": 222.902465112309
+        },
+        "data_received": {
+            "count": 18048,
+            "rate": 504.887511338724
+        },
+        "http_req_duration{expected_response:true}": {
+            "p(99)": 1931.2200720199999,
+            "avg": 486.7485533750001,
+            "min": 14.981875,
+            "med": 203.133792,
+            "max": 2001.276376,
+            "p(95)": 1666.5479999999998
+        },
+        "http_req_sending": {
+            "avg": 0.05749829166666667,
+            "min": 0.019083,
+            "med": 0.045542,
+            "max": 0.200833,
+            "p(95)": 0.12588574999999996,
+            "p(99)": 0.18409107
+        },
+        "measured_requests": {
+            "count": 17,
+            "rate": 0.4755700184374062
+        },
+        "http_req_blocked": {
+            "max": 1.172416,
+            "p(95)": 0.07801429999999998,
+            "p(99)": 0.9216681599999996,
+            "avg": 0.06484204166666666,
+            "min": 0.00425,
+            "med": 0.011854
+        },
+        "http_req_connecting": {
+            "max": 0.21675,
+            "p(95)": 0,
+            "p(99)": 0.16689749999999995,
+            "avg": 0.00903125,
+            "min": 0,
+            "med": 0
+        },
+        "measured_errors": {
+            "passes": 0,
+            "fails": 17,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_duration": {
+            "avg": 486.7485533750001,
+            "min": 14.981875,
+            "med": 203.133792,
+            "max": 2001.276376,
+            "p(95)": 1666.5479999999998,
+            "p(99)": 1931.2200720199999
+        },
+        "http_req_receiving": {
+            "med": 0.5142085000000001,
+            "max": 203.541,
+            "p(95)": 178.8432168999999,
+            "p(99)": 201.00669716,
+            "avg": 25.088067624999994,
+            "min": 0.208125
+        },
+        "http_req_waiting": {
+            "avg": 461.6029874583334,
+            "min": 14.74825,
+            "med": 202.455146,
+            "max": 1999.804417,
+            "p(95)": 1549.8327357499995,
+            "p(99)": 1906.7687557499999
+        },
+        "http_req_tls_handshaking": {
+            "p(95)": 0,
+            "p(99)": 0,
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0
+        },
+        "iteration_duration": {
+            "min": 1015.914584,
+            "med": 1208.110438,
+            "max": 3003.008334,
+            "p(95)": 2668.0225822499997,
+            "p(99)": 2932.89520116,
+            "avg": 1489.352656833333
+        },
+        "checks": {
+            "passes": 24,
+            "fails": 0,
+            "value": 1
+        },
+        "iterations": {
+            "count": 24,
+            "rate": 0.6713929672057499
+        },
+        "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 24,
+            "value": 0
+        },
+        "status_200": {
+            "count": 24,
+            "rate": 0.6713929672057499
+        },
+        "measured_latency": {
+            "avg": 491.4399634117647,
+            "min": 14.981875,
+            "med": 204.736917,
+            "max": 2001.276376,
+            "p(95)": 1596.8782751999995,
+            "p(99)": 1920.39675584
+        }
+    },
+    "root_group": {
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+            "successful response and content": {
+                "fails": 0,
+                "name": "successful response and content",
+                "path": "::successful response and content",
+                "id": "4ead82a8556325d3c050512e5d8dffc4",
+                "passes": 24
+            }
+        },
+        "name": ""
+    }
+}

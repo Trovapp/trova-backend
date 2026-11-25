@@ -19,11 +19,12 @@ import subprocess
 import sys
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import download
 import frames as frames_mod
-from extract_places import REQUEST_PREP_STATS, extract_places
+from extract_places import REQUEST_PREP_STATS, extract_places, log_line
 from post_images import download_images, post_image_urls
 from stage_timer import StageTimer
 
@@ -54,7 +55,7 @@ def has_audio_stream(video_path: Path) -> bool:
 
 def emit_progress(**fields) -> None:
     """서버(PipelineRunner)가 실행 중에 읽어 가는 중간 결과 — 앱 분석 화면에 제목·찾은 장소를 먼저 보여준다(#51)."""
-    print(f"TROVA_PROGRESS:{json.dumps(fields, ensure_ascii=False)}", file=sys.stderr, flush=True)
+    log_line(f"TROVA_PROGRESS:{json.dumps(fields, ensure_ascii=False)}")
 
 
 INSTAGRAM_URL = re.compile(r"^https?://(?:www\.|m\.)?instagram\.com/", re.IGNORECASE)
@@ -71,7 +72,7 @@ def youtube_title(url: str) -> str | None:
         ) as response:
             return json.loads(response.read()).get("title")
     except Exception as exc:  # 제목은 보여주기용이라 실패해도 분석은 계속한다
-        print(f"[pipeline] 제목 조회 실패: {exc}", file=sys.stderr)
+        log_line(f"[pipeline] 제목 조회 실패: {exc}")
     # oEmbed가 막힌 영상(퍼가기 금지 등)은 공개 페이지의 og:title로 한 번 더 — 키·비용 없음.
     # 안드로이드 사용성 테스트(2026-11-12)에서 한 쇼츠만 다시 분석해도 계속 "제목 없음"이었다(#414).
     try:
@@ -79,7 +80,7 @@ def youtube_title(url: str) -> str | None:
         with urllib.request.urlopen(request, timeout=15) as response:
             return title_from_stream(response)
     except Exception as exc:
-        print(f"[pipeline] 페이지 제목 조회 실패: {exc}", file=sys.stderr)
+        log_line(f"[pipeline] 페이지 제목 조회 실패: {exc}")
         return None
 
 
@@ -232,24 +233,32 @@ def is_title_like(line: str) -> bool:
     return len(re.sub(r"[^0-9A-Za-z가-힣]", "", re.sub(r"#\S+", "", line))) >= 2
 
 
+def fetch_youtube_title_and_report(url: str) -> str | None:
+    title = youtube_title(url)
+    log_line(f"[pipeline] 제목: {title!r}")
+    if title:
+        emit_progress(title=title)
+    return title
+
+
 def run(url: str, work_dir: Path, timer: StageTimer | None = None) -> dict:
     timer = timer or StageTimer()
     # 유튜브는 Gemini가 링크를 직접 본다(#57). 운영 서버(데이터센터 IP)에서는 yt-dlp 다운로드가 봇으로 막혔다.
     if YOUTUBE_URL.match(url):
-        title = youtube_title(url)
-        print(f"[pipeline] 제목: {title!r}", file=sys.stderr)
-        if title:
-            emit_progress(title=title)
-        print("[pipeline] Gemini 호출(유튜브 링크 직접)", file=sys.stderr)
-        try:
-            with timer.stage("gemini"):
-                places = extract_places(video_uri=url)
-        except SystemExit as exc:
-            if not str(exc).startswith(VIDEO_ACCESS_ERRORS):
-                raise
-            print(f"[pipeline] Gemini가 영상에 접근하지 못함 — 다운로드 방식으로 다시 시도: {str(exc)[:120]}", file=sys.stderr)
-            return run_download(url, work_dir, title, timer)
-        emit_progress(placeNames=[p["name"] for p in places if p.get("name")])
+        # 제목은 표시용이고 모델 입력은 URL뿐이다. 둘을 함께 시작하되 폴백에도 같은 제목을 넘긴다.
+        log_line("[pipeline] Gemini 호출(유튜브 링크 직접)")
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            title_future = pool.submit(fetch_youtube_title_and_report, url)
+            try:
+                with timer.stage("gemini"):
+                    places = extract_places(video_uri=url)
+            except SystemExit as exc:
+                if not str(exc).startswith(VIDEO_ACCESS_ERRORS):
+                    raise
+                log_line(f"[pipeline] Gemini가 영상에 접근하지 못함 — 다운로드 방식으로 다시 시도: {str(exc)[:120]}")
+                return run_download(url, work_dir, title_future.result(), timer)
+            emit_progress(placeNames=[p["name"] for p in places if p.get("name")])
+            title = title_future.result()
         return {"title": title, "places": places, "timings": timer.as_dict()}
     return run_download(url, work_dir, timer=timer)
 

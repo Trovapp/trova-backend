@@ -1,0 +1,181 @@
+{
+  "uid": "isolated534",
+  "title": "Trova 격리 부하 측정 #534",
+  "schemaVersion": 40,
+  "version": 1,
+  "timezone": "Asia/Seoul",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "앱 CPU",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "isolated534"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "process_cpu_usage",
+          "legendFormat": "{{uri}}{{operation}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "JVM 힙",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "isolated534"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(jvm_memory_used_bytes{area=\"heap\"})",
+          "legendFormat": "{{uri}}{{operation}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "DB 연결 대기",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "isolated534"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "hikaricp_connections_pending",
+          "legendFormat": "{{uri}}{{operation}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "GC 최대 멈춤",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "isolated534"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(jvm_gc_pause_seconds_max)",
+          "legendFormat": "{{uri}}{{operation}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "외부 API 누적 호출 (batch는 문장 단위)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "isolated534"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "trova_api_call_seconds_count",
+          "legendFormat": "{{uri}}{{operation}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "HTTP RPS (SSE 제외)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "isolated534"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(uri)(rate(http_server_requests_seconds_count{uri!=\"/api/trips/{id}/events\"}[1m]))",
+          "legendFormat": "{{uri}}{{operation}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      }
+    }
+  ],
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  }
+}

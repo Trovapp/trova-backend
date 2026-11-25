@@ -8,8 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import com.trova.backend.controller.ApiErrors;
+import java.util.Map;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -48,11 +48,8 @@ public class IpRateLimitFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
         response.setHeader("Retry-After", "60");
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"message\":\"요청이 너무 많아요. 1분 뒤 다시 시도해 주세요.\"}");
+        ApiErrors.write(response, 429, Map.of("message", "요청이 너무 많아요. 1분 뒤 다시 시도해 주세요."));
     }
 
     private static boolean isLoopback(String address) {

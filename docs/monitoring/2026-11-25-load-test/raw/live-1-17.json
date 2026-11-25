@@ -1,0 +1,151 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+            "successful response and content": {
+                "passes": 21,
+                "fails": 0,
+                "name": "successful response and content",
+                "path": "::successful response and content",
+                "id": "4ead82a8556325d3c050512e5d8dffc4"
+            }
+        }
+    },
+    "metrics": {
+        "http_req_waiting": {
+            "avg": 724.3836544285713,
+            "min": 291.6285,
+            "med": 592.305667,
+            "max": 2148.584376,
+            "p(95)": 1798.495209,
+            "p(99)": 2078.5665425999996
+        },
+        "measured_latency": {
+            "min": 298.254375,
+            "med": 591.477729,
+            "max": 1397.213584,
+            "p(95)": 1099.2047087499998,
+            "p(99)": 1337.61180895,
+            "avg": 616.50632225
+        },
+        "http_req_duration{expected_response:true}": {
+            "p(95)": 1897.728834,
+            "p(99)": 2098.9476676,
+            "avg": 743.2501305714286,
+            "min": 292.083584,
+            "med": 593.599236,
+            "max": 2149.252376
+        },
+        "http_req_duration": {
+            "avg": 743.2501305714286,
+            "min": 292.083584,
+            "med": 593.599236,
+            "max": 2149.252376,
+            "p(95)": 1897.728834,
+            "p(99)": 2098.9476676
+        },
+        "status_200": {
+            "rate": 0.5728994992955386,
+            "count": 21
+        },
+        "measured_errors": {
+            "passes": 0,
+            "fails": 16,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "data_sent": {
+            "count": 7424,
+            "rate": 202.53361346524187
+        },
+        "vus_max": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+        },
+        "http_req_receiving": {
+            "p(99)": 99.0217336,
+            "avg": 18.812033714285715,
+            "min": 0.147042,
+            "med": 0.614,
+            "max": 99.200417,
+            "p(95)": 98.307
+        },
+        "checks": {
+            "passes": 21,
+            "fails": 0,
+            "value": 1
+        },
+        "iterations": {
+            "count": 21,
+            "rate": 0.5728994992955386
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(95)": 0,
+            "p(99)": 0
+        },
+        "data_received": {
+            "rate": 431.775255969071,
+            "count": 15827
+        },
+        "iteration_duration": {
+            "p(99)": 3103.7971012,
+            "avg": 1745.420413380952,
+            "min": 1294.136834,
+            "med": 1595.581959,
+            "max": 3154.750126,
+            "p(95)": 2899.985002
+        },
+        "measured_requests": {
+            "count": 16,
+            "rate": 0.4364948566061247
+        },
+        "http_req_blocked": {
+            "avg": 0.15267471428571425,
+            "min": 0.004083,
+            "med": 0.009334,
+            "max": 2.96425,
+            "p(95)": 0.033834,
+            "p(99)": 2.3781667999999994
+        },
+        "http_req_sending": {
+            "med": 0.037875,
+            "max": 0.183167,
+            "p(95)": 0.175291,
+            "p(99)": 0.1815918,
+            "avg": 0.054442428571428586,
+            "min": 0.020541
+        },
+        "http_reqs": {
+            "rate": 0.5728994992955386,
+            "count": 21
+        },
+        "http_req_connecting": {
+            "max": 0.657292,
+            "p(95)": 0,
+            "p(99)": 0.5258335999999999,
+            "avg": 0.03129961904761905,
+            "min": 0,
+            "med": 0
+        },
+        "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 1
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 21,
+            "value": 0
+        }
+    }
+}

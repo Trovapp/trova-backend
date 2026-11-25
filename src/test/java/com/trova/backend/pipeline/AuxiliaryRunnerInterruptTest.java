@@ -1,10 +1,11 @@
 package com.trova.backend.pipeline;
 
 import com.trova.backend.service.ApiCallLogService;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,9 +47,40 @@ class AuxiliaryRunnerInterruptTest {
         return ids.stream().map(Long::parseLong).map(id -> ProcessHandle.of(id).orElseThrow()).toList();
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"review-summary", "tag", "select", "verify", "itinerary"})
-    void 인터럽트시_각_실행기는_부모와_자식을_정리한뒤_파일을_삭제한다(String kind) throws Exception {
+    @Test
+    void 인터럽트시_리뷰요약_실행기는_부모와_자식을_정리한뒤_파일을_삭제한다() throws Exception {
+        assertInterruptedRunnerCleanup("review-summary");
+    }
+
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void 인터럽트시_태깅_실행기는_부모와_자식을_정리한뒤_파일을_삭제한다() throws Exception {
+        assertInterruptedRunnerCleanup("tag");
+    }
+
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void 인터럽트시_장소선택_실행기는_부모와_자식을_정리한뒤_파일을_삭제한다() throws Exception {
+        assertInterruptedRunnerCleanup("select");
+    }
+
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void 인터럽트시_장소검증_실행기는_부모와_자식을_정리한뒤_파일을_삭제한다() throws Exception {
+        assertInterruptedRunnerCleanup("verify");
+    }
+
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void 인터럽트시_일정_실행기는_부모와_자식을_정리한뒤_파일을_삭제한다() throws Exception {
+        assertInterruptedRunnerCleanup("itinerary");
+    }
+
+    private void assertInterruptedRunnerCleanup(String kind) throws Exception {
         Path script = root.resolve("fixture.py");
         Files.writeString(script, """
                 import os, pathlib, subprocess, sys, time

@@ -132,7 +132,7 @@ public class ConversationToolExecutor {
      * 가중합한다 — 정확한 원 점수를 재요청하지 않고도 두 신호를 함께 반영할 수 있다.
      */
     private List<AlternativeCandidate> rerankByQuerySimilarity(String message, List<AlternativeCandidate> candidates) {
-        if (candidates.isEmpty()) {
+        if (candidates.size() < 2) {
             return candidates;
         }
         List<Long> ids = candidates.stream().map(AlternativeCandidate::placeId).toList();

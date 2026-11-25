@@ -1,0 +1,28 @@
+{
+  "sample": 24,
+  "place": "남해독일마을",
+  "start": "2026-11-25T18:49:29.679+09:00",
+  "end": "2026-11-25T18:49:34.111+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 4.431,
+  "observations": [
+    {
+      "seconds": 1.372,
+      "changed": 0.10143
+    },
+    {
+      "seconds": 2.715,
+      "changed": 0.10972
+    },
+    {
+      "seconds": 3.642,
+      "changed": 0.10942
+    },
+    {
+      "seconds": 4.431,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

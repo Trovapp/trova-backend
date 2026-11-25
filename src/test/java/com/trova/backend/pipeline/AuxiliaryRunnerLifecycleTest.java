@@ -4,6 +4,8 @@ import com.trova.backend.entity.SavedPlace;
 import com.trova.backend.service.ApiCallLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -121,9 +123,42 @@ class AuxiliaryRunnerLifecycleTest {
         for (ProcessHandle handle : owned) if (handle.isAlive()) handle.destroyForcibly();
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"review-summary", "tag", "select", "verify", "itinerary"})
-    void 시간초과는_각_실행기의_소유_부모와_자식을_종료한다(String kind) throws Exception {
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void 시간초과는_리뷰요약_실행기의_소유_부모와_자식을_종료한다() throws Exception {
+        assertTimedOutRunnerCleanup("review-summary");
+    }
+
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void 시간초과는_태깅_실행기의_소유_부모와_자식을_종료한다() throws Exception {
+        assertTimedOutRunnerCleanup("tag");
+    }
+
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void 시간초과는_장소선택_실행기의_소유_부모와_자식을_종료한다() throws Exception {
+        assertTimedOutRunnerCleanup("select");
+    }
+
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void 시간초과는_장소검증_실행기의_소유_부모와_자식을_종료한다() throws Exception {
+        assertTimedOutRunnerCleanup("verify");
+    }
+
+    // 운영은 리눅스, 프로세스 그룹/nice 전제
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void 시간초과는_일정_실행기의_소유_부모와_자식을_종료한다() throws Exception {
+        assertTimedOutRunnerCleanup("itinerary");
+    }
+
+    private void assertTimedOutRunnerCleanup(String kind) throws Exception {
         Path script = parentChild(false);
         AtomicReference<Throwable> error = new AtomicReference<>();
         Thread worker = new Thread(() -> {

@@ -52,4 +52,21 @@ class ProcessingJobRepositoryTest {
 
         assertThat(active).extracting(ProcessingJob::getId).containsExactly(pending.getId());
     }
+
+    @Test
+    void 영상_분석이_끝난_뒤_일정을_만드는_작업은_세지_않는다() {
+        User user = userRepository.save(new User("google", "3", "테스트유저", null));
+        ProcessingJob pending = new ProcessingJob(user, "https://youtu.be/pending", SourcePlatform.YOUTUBE);
+        ProcessingJob running = new ProcessingJob(user, "https://youtu.be/running", SourcePlatform.YOUTUBE);
+        ProcessingJob itinerary = new ProcessingJob(user, "https://youtu.be/itinerary", SourcePlatform.YOUTUBE);
+        ProcessingJob failed = new ProcessingJob(user, "https://youtu.be/failed", SourcePlatform.YOUTUBE);
+        running.markProcessing();
+        itinerary.markAnalysisDone();
+        itinerary.markProcessing();
+        failed.markFailed("failed");
+        processingJobRepository.saveAll(List.of(pending, running, itinerary, failed));
+
+        assertThat(processingJobRepository.countByAnalysisFinishedAtIsNullAndStatusIn(
+                List.of(JobStatus.PENDING, JobStatus.PROCESSING))).isEqualTo(2);
+    }
 }

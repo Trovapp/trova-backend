@@ -1,0 +1,9 @@
+allprojects {
+    plugins.withId('java') {
+        sourceSets.test.java.srcDir('docs/monitoring/scripts/java')
+        tasks.named('test') {
+            systemProperty 't45.input', System.getProperty('t45.input', 'docs/monitoring/2026-11-25-embedding-defer-eval/data/replay-input.json')
+            systemProperty 't45.output', System.getProperty('t45.output', 'docs/monitoring/2026-11-25-embedding-defer-eval/data/replay-output.json')
+        }
+    }
+}

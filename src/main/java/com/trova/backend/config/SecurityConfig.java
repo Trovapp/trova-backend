@@ -1,5 +1,6 @@
 package com.trova.backend.config;
 
+import com.trova.backend.controller.ApiErrors;
 import com.trova.backend.security.CustomOAuth2UserService;
 import com.trova.backend.security.JwtAuthenticationFilter;
 import com.trova.backend.security.JwtSkippingSecurityContextRepository;
@@ -18,15 +19,20 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import com.trova.backend.service.TripChanges;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.DefaultCorsProcessor;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpResponse;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 public class SecurityConfig {
@@ -45,9 +51,12 @@ public class SecurityConfig {
     @Value("${app.admin-web-url:}")
     private String adminWebUrl;
 
-    // PWA 웹앱(Cloudflare Pages, #165). 비어 있으면 CORS에 더하지 않는다.
+    // 공유 링크와 로그인 콜백에 쓰는 PWA 주소.
     @Value("${app.web-app-url:}")
     private String webAppUrl;
+
+    @Value("${app.web-app-legacy-origin:}")
+    private String webAppLegacyOrigin;
 
     // API 문서(#149)를 켰을 때만 문서 경로를 로그인 없이 연다. 꺼져 있으면 다른 경로와 똑같이 로그인이 필요하다.
     @Value("${springdoc.api-docs.enabled:false}")
@@ -69,6 +78,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        CorsFilter corsFilter = new CorsFilter(corsConfigurationSource());
+        corsFilter.setCorsProcessor(new DefaultCorsProcessor() {
+            @Override
+            protected void rejectRequest(ServerHttpResponse response) throws IOException {
+                ApiErrors.write(((ServletServerHttpResponse) response).getServletResponse(), 403,
+                        Map.of("error", "Invalid CORS request"));
+            }
+        });
         http
                 // 세션 쿠키 기반 API + 별도 origin 프론트 조합이라 CSRF는 비활성화한 상태다.
                 // 단, CSRF 설정자가 없으면 LogoutConfigurer가 로그아웃 매처를 POST뿐 아니라
@@ -84,7 +101,8 @@ public class SecurityConfig {
                 // 상황(임베드/크로스사이트 쿠키 요구 등)이 생기면 이 판단은 무효이므로
                 // 그때 반드시 다시 검토할 것.
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.disable())
+                .addFilterAt(corsFilter, CorsFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 // 세션은 웹 프론트의 OAuth2 로그인에만 쓴다 — 앱(JWT) 요청과 비로그인 API 요청이 요청마다 세션을
                 // 만들어 메모리에 쌓이던 문제(#45). 로그인 성공 후엔 항상 프론트로 보내므로 "돌아갈 요청" 저장도 필요 없다.
@@ -122,7 +140,7 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exception -> exception
                         .defaultAuthenticationEntryPointFor(
-                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+                                (request, response, cause) -> ApiErrors.write(response, 401, Map.of()),
                                 PathPatternRequestMatcher.pathPattern("/api/**")
                         )
                 )
@@ -168,7 +186,11 @@ public class SecurityConfig {
         String adminOrigin = origin(adminWebUrl);
         String webAppOrigin = origin(webAppUrl);
         CorsConfiguration adminWeb = adminOrigin == null ? null : corsFor(adminOrigin, false);
+        String legacyOrigin = origin(webAppLegacyOrigin);
         CorsConfiguration webApp = webAppOrigin == null ? null : corsFor(webAppOrigin, false);
+        if (webApp != null && legacyOrigin != null) {
+            webApp.addAllowedOrigin(legacyOrigin);
+        }
         // 요청을 보낸 주소(Origin)로 설정을 고른다. 쿠키를 싣는 일반 API는 frontendUrl 하나만이라는 CSRF 판단 전제를 지키고,
         // Bearer 토큰만 쓰는 관리자 웹(#163)과 PWA 웹앱(#165)은 쿠키 없이 연다. 관리자 웹은 관리자 API와 교환에만,
         // 웹앱은 관리자 API를 뺀 /api 전체에. 그 밖의 경우는 기본 설정(frontendUrl만 허용)이 다른 주소를 막는다.
@@ -179,7 +201,8 @@ public class SecurityConfig {
                     && (path.startsWith("/api/admin/") || path.equals("/api/auth/exchange"))) {
                 return adminWeb;
             }
-            if (webApp != null && webAppOrigin.equals(origin) && path.startsWith("/api/") && !path.startsWith("/api/admin/")) {
+            if (webApp != null && webApp.getAllowedOrigins().contains(origin)
+                    && path.startsWith("/api/") && !path.startsWith("/api/admin/")) {
                 return webApp;
             }
             return cookieWeb;
