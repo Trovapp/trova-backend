@@ -1,0 +1,722 @@
+[
+  {
+    "sample": "memo-01",
+    "a": "2026-11-25T16:10:09.132+09:00",
+    "b": "2026-11-25T16:10:09.132+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-memo-01",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:10:10.420+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 2.241
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "memo-02",
+    "a": "2026-11-25T16:11:14.788+09:00",
+    "b": "2026-11-25T16:11:14.788+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-memo-02",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:11:16.065+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 3.609
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "memo-03",
+    "a": "2026-11-25T16:12:24.524+09:00",
+    "b": "2026-11-25T16:12:24.524+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-memo-03",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:12:25.453+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 1.979
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "memo-04",
+    "a": "2026-11-25T16:13:37.001+09:00",
+    "b": "2026-11-25T16:13:37.001+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-memo-04",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:13:37.914+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 2.038
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "memo-05",
+    "a": "2026-11-25T16:14:23.154+09:00",
+    "b": "2026-11-25T16:14:23.154+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-memo-05",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:14:24.026+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 1.982
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "memo-06",
+    "a": "2026-11-25T16:15:05.369+09:00",
+    "b": "2026-11-25T16:15:05.369+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "A-memo-06",
+    "statusInferredAB": "200/409",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:15:06.137+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 1.851
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "memo-07",
+    "a": "2026-11-25T16:16:52.676+09:00",
+    "b": "2026-11-25T16:16:52.676+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-memo-07",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:16:53.963+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 3.812
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "memo-08",
+    "a": "2026-11-25T16:17:48.544+09:00",
+    "b": "2026-11-25T16:17:48.544+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-memo-08",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:17:49.378+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 2.099
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "memo-09",
+    "a": "2026-11-25T16:18:41.720+09:00",
+    "b": "2026-11-25T16:18:41.720+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-memo-09",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:18:42.742+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 3.817
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "memo-10",
+    "a": "2026-11-25T16:19:31.000+09:00",
+    "b": "2026-11-25T16:19:31.000+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-memo-10",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:19:32.106+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 2.339
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "order-01",
+    "a": "2026-11-25T16:20:46.660+09:00",
+    "b": "2026-11-25T16:20:46.659+09:00",
+    "dispatchSkewMs": 1.0,
+    "final": "T,B,L",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:20:48.062+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 2.492
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "order-02",
+    "a": "2026-11-25T16:21:44.560+09:00",
+    "b": "2026-11-25T16:21:44.560+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "T,L,B",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:21:46.202+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 2.76
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "order-03",
+    "a": "2026-11-25T16:22:28.295+09:00",
+    "b": "2026-11-25T16:22:28.295+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "L,T,B",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:22:29.929+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 2.707
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "order-04",
+    "a": "2026-11-25T16:23:16.388+09:00",
+    "b": "2026-11-25T16:23:16.388+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "T,L,B",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:23:17.401+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 1.915
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "order-05",
+    "a": "2026-11-25T16:24:20.117+09:00",
+    "b": "2026-11-25T16:24:20.117+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "T,B,L",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:24:21.130+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 2.237
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "order-06",
+    "a": "2026-11-25T16:24:57.752+09:00",
+    "b": "2026-11-25T16:24:57.752+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "T,L,B",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:24:58.927+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 2.291
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "order-07",
+    "a": "2026-11-25T16:26:01.622+09:00",
+    "b": "2026-11-25T16:26:01.621+09:00",
+    "dispatchSkewMs": 1.0,
+    "final": "T,B,L",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:26:02.725+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 3.704
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "order-08",
+    "a": "2026-11-25T16:26:40.875+09:00",
+    "b": "2026-11-25T16:26:40.875+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "T,L,B",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:26:42.617+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 3.06
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "order-09",
+    "a": "2026-11-25T16:27:32.920+09:00",
+    "b": "2026-11-25T16:27:32.920+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "T,B,L",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:27:34.340+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-01s",
+      "upperSeconds": 2.684
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "order-10",
+    "a": "2026-11-25T16:28:15.018+09:00",
+    "b": "2026-11-25T16:28:15.018+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "T,L,B",
+    "statusInferredAB": "409/200",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:28:16.598+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 3.643
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "delete-01",
+    "a": "2026-11-25T16:30:58.253+09:00",
+    "b": "2026-11-25T16:30:58.253+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "장소 삭제",
+    "statusInferredAB": "404/204",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:30:59.219+09:00",
+        "status": 404
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 3.966
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "delete-02",
+    "a": "2026-11-25T16:32:47.230+09:00",
+    "b": "2026-11-25T16:32:47.230+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "장소 삭제",
+    "statusInferredAB": "404/204",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:32:48.271+09:00",
+        "status": 404
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 4.133
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "delete-03",
+    "a": "2026-11-25T16:34:08.013+09:00",
+    "b": "2026-11-25T16:34:08.013+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "장소 삭제",
+    "statusInferredAB": "404/204",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:34:09.195+09:00",
+        "status": 404
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 4.139
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "delete-04",
+    "a": "2026-11-25T16:35:34.148+09:00",
+    "b": "2026-11-25T16:35:34.148+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "장소 삭제",
+    "statusInferredAB": "404/204",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:35:35.174+09:00",
+        "status": 404
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 4.091
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "delete-05",
+    "a": "2026-11-25T16:36:56.471+09:00",
+    "b": "2026-11-25T16:36:56.471+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "A-delete-05; 장소 유지",
+    "statusInferredAB": "200/409",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:36:57.340+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 3.736
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "delete-06",
+    "a": "2026-11-25T16:38:26.479+09:00",
+    "b": "2026-11-25T16:38:26.479+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "장소 삭제",
+    "statusInferredAB": "404/204",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:38:27.403+09:00",
+        "status": 404
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 5.002
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "delete-07",
+    "a": "2026-11-25T16:42:34.190+09:00",
+    "b": "2026-11-25T16:42:34.190+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "장소 삭제",
+    "statusInferredAB": "404/204",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:42:35.413+09:00",
+        "status": 404
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 4.246
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "delete-08",
+    "a": "2026-11-25T16:44:29.228+09:00",
+    "b": "2026-11-25T16:44:29.228+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "A-delete-08; 장소 유지",
+    "statusInferredAB": "200/409",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:44:31.096+09:00",
+        "status": 409
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 4.118
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "delete-09",
+    "a": "2026-11-25T16:45:23.080+09:00",
+    "b": "2026-11-25T16:45:23.080+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "장소 삭제",
+    "statusInferredAB": "404/204",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:45:24.104+09:00",
+        "status": 404
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 4.136
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "delete-10",
+    "a": "2026-11-25T16:46:49.685+09:00",
+    "b": "2026-11-25T16:46:49.685+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "장소 삭제",
+    "statusInferredAB": "404/204",
+    "errorJournalWithin5s": [
+      {
+        "time": "2026-11-25T16:46:50.551+09:00",
+        "status": 404
+      }
+    ],
+    "convergence": {
+      "phase": "after-03s",
+      "upperSeconds": 3.908
+    },
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "offline-01",
+    "a": "2026-11-25T16:48:39.638+09:00",
+    "b": "2026-11-25T16:48:39.638+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-offline-01; A 초안 유지",
+    "statusInferredAB": "오프라인 실패→수동409 / 200",
+    "errorJournalWithin5s": [],
+    "convergence": null,
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "offline-02",
+    "a": "2026-11-25T16:51:03.437+09:00",
+    "b": "2026-11-25T16:51:03.437+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-offline-02; A 초안 유지",
+    "statusInferredAB": "오프라인 실패→수동409 / 200",
+    "errorJournalWithin5s": [],
+    "convergence": null,
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "offline-03",
+    "a": "2026-11-25T16:52:54.731+09:00",
+    "b": "2026-11-25T16:52:54.731+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-offline-03; A 초안 유지",
+    "statusInferredAB": "오프라인 실패→수동409 / 200",
+    "errorJournalWithin5s": [],
+    "convergence": null,
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "offline-04",
+    "a": "2026-11-25T16:54:37.665+09:00",
+    "b": "2026-11-25T16:54:37.665+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-offline-04; A 초안 유지",
+    "statusInferredAB": "오프라인 실패→수동409 / 200",
+    "errorJournalWithin5s": [],
+    "convergence": null,
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "offline-05",
+    "a": "2026-11-25T16:56:30.108+09:00",
+    "b": "2026-11-25T16:56:30.108+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-offline-05; A 초안 유지",
+    "statusInferredAB": "오프라인 실패→수동409 / 200",
+    "errorJournalWithin5s": [],
+    "convergence": null,
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "offline-06",
+    "a": "2026-11-25T16:58:30.002+09:00",
+    "b": "2026-11-25T16:58:30.002+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-offline-06; A 초안 유지",
+    "statusInferredAB": "오프라인 실패→수동409 / 200",
+    "errorJournalWithin5s": [],
+    "convergence": null,
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "offline-07",
+    "a": "2026-11-25T17:00:13.743+09:00",
+    "b": "2026-11-25T17:00:13.743+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-offline-07; A 초안 유지",
+    "statusInferredAB": "오프라인 실패→수동409 / 200",
+    "errorJournalWithin5s": [],
+    "convergence": null,
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "offline-08",
+    "a": "2026-11-25T17:02:31.229+09:00",
+    "b": "2026-11-25T17:02:31.229+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-offline-08; A 초안 유지",
+    "statusInferredAB": "오프라인 실패→수동409 / 200",
+    "errorJournalWithin5s": [],
+    "convergence": null,
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "offline-09",
+    "a": "2026-11-25T17:04:32.644+09:00",
+    "b": "2026-11-25T17:04:32.644+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-offline-09; A 초안 유지",
+    "statusInferredAB": "오프라인 실패→수동409 / 200",
+    "errorJournalWithin5s": [],
+    "convergence": null,
+    "version": "미확인",
+    "activity": "미확인"
+  },
+  {
+    "sample": "offline-10",
+    "a": "2026-11-25T17:06:13.333+09:00",
+    "b": "2026-11-25T17:06:13.333+09:00",
+    "dispatchSkewMs": 0.0,
+    "final": "B-offline-10; A 초안 유지",
+    "statusInferredAB": "오프라인 실패→수동409 / 200",
+    "errorJournalWithin5s": [],
+    "convergence": null,
+    "version": "미확인",
+    "activity": "미확인"
+  }
+]

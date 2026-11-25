@@ -1,0 +1,15 @@
+{
+  "heapMiB": [
+    134.62,
+    77.07
+  ],
+  "gcCountDelta": 79.0,
+  "gcSecondsDelta": 1.798,
+  "externalCallCounterDelta": {
+    "kakao": 0.0,
+    "gemini": 0.0,
+    "internal": 0.0,
+    "google-places": 0.0
+  },
+  "authBurstCount": 169
+}
