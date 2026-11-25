@@ -1,0 +1,24 @@
+{
+  "sample": 6,
+  "place": "국립현대미술관 청주",
+  "start": "2026-11-25T18:28:28.272+09:00",
+  "end": "2026-11-25T18:28:32.058+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 3.784,
+  "observations": [
+    {
+      "seconds": 1.22,
+      "changed": 0.09692
+    },
+    {
+      "seconds": 2.683,
+      "changed": 0.10753
+    },
+    {
+      "seconds": 3.784,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

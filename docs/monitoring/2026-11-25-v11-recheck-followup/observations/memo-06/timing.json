@@ -1,0 +1,92 @@
+{
+  "sample": "memo-06",
+  "actions": [
+    {
+      "device": "5584",
+      "dispatch": "2026-11-25T16:15:05.369+09:00",
+      "completed": "2026-11-25T16:15:05.464+09:00",
+      "elapsed": 0.09469689999241382,
+      "command": [
+        "tap",
+        "910",
+        "1750"
+      ]
+    },
+    {
+      "device": "5586",
+      "dispatch": "2026-11-25T16:15:05.369+09:00",
+      "completed": "2026-11-25T16:15:05.477+09:00",
+      "elapsed": 0.10828920011408627,
+      "command": [
+        "tap",
+        "900",
+        "834"
+      ]
+    }
+  ],
+  "before": [
+    {
+      "device": "5584",
+      "phase": "before",
+      "captureStart": "2026-11-25T16:15:04.703+09:00",
+      "captureEnd": "2026-11-25T16:15:05.368+09:00"
+    },
+    {
+      "device": "5586",
+      "phase": "before",
+      "captureStart": "2026-11-25T16:15:04.703+09:00",
+      "captureEnd": "2026-11-25T16:15:05.174+09:00"
+    }
+  ],
+  "observations": [
+    {
+      "device": "5584",
+      "phase": "after-01s",
+      "captureStart": "2026-11-25T16:15:06.478+09:00",
+      "captureEnd": "2026-11-25T16:15:07.220+09:00"
+    },
+    {
+      "device": "5586",
+      "phase": "after-01s",
+      "captureStart": "2026-11-25T16:15:06.478+09:00",
+      "captureEnd": "2026-11-25T16:15:07.023+09:00"
+    },
+    {
+      "device": "5584",
+      "phase": "after-03s",
+      "captureStart": "2026-11-25T16:15:08.478+09:00",
+      "captureEnd": "2026-11-25T16:15:08.964+09:00"
+    },
+    {
+      "device": "5586",
+      "phase": "after-03s",
+      "captureStart": "2026-11-25T16:15:08.478+09:00",
+      "captureEnd": "2026-11-25T16:15:08.851+09:00"
+    },
+    {
+      "device": "5584",
+      "phase": "after-06s",
+      "captureStart": "2026-11-25T16:15:11.478+09:00",
+      "captureEnd": "2026-11-25T16:15:11.929+09:00"
+    },
+    {
+      "device": "5586",
+      "phase": "after-06s",
+      "captureStart": "2026-11-25T16:15:11.478+09:00",
+      "captureEnd": "2026-11-25T16:15:11.840+09:00"
+    },
+    {
+      "device": "5584",
+      "phase": "after-10s",
+      "captureStart": "2026-11-25T16:15:15.478+09:00",
+      "captureEnd": "2026-11-25T16:15:15.955+09:00"
+    },
+    {
+      "device": "5586",
+      "phase": "after-10s",
+      "captureStart": "2026-11-25T16:15:15.478+09:00",
+      "captureEnd": "2026-11-25T16:15:15.883+09:00"
+    }
+  ],
+  "httpStatus": "pending server journal correlation"
+}

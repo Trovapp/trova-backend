@@ -1,0 +1,17 @@
+{
+  "sample": 29,
+  "place": "목포 근대역사관 1관",
+  "device": "5584",
+  "start": "2026-11-25T19:03:01.548+09:00",
+  "end": "2026-11-25T19:03:03.354+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": false,
+  "observedSeconds": 1.8,
+  "observations": [
+    {
+      "seconds": 1.8,
+      "changed": 0.00256
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

@@ -1,0 +1,28 @@
+{
+  "sample": 13,
+  "place": "삼척해양레일바이크 용화정거장",
+  "start": "2026-11-25T18:37:36.218+09:00",
+  "end": "2026-11-25T18:37:39.908+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 3.688,
+  "observations": [
+    {
+      "seconds": 0.701,
+      "changed": 0.09924
+    },
+    {
+      "seconds": 1.764,
+      "changed": 0.10435
+    },
+    {
+      "seconds": 2.793,
+      "changed": 0.11061
+    },
+    {
+      "seconds": 3.688,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

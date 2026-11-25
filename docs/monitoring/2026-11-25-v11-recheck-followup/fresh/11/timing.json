@@ -1,0 +1,24 @@
+{
+  "sample": 11,
+  "place": "문경에코월드",
+  "start": "2026-11-25T18:35:10.483+09:00",
+  "end": "2026-11-25T18:35:13.030+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 2.546,
+  "observations": [
+    {
+      "seconds": 0.779,
+      "changed": 0.10143
+    },
+    {
+      "seconds": 1.654,
+      "changed": 0.10443
+    },
+    {
+      "seconds": 2.546,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

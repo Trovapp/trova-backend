@@ -1,0 +1,24 @@
+{
+  "sample": 20,
+  "place": "황리단길",
+  "start": "2026-11-25T18:45:05.638+09:00",
+  "end": "2026-11-25T18:45:12.156+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 6.516,
+  "observations": [
+    {
+      "seconds": 2.534,
+      "changed": 0.10084
+    },
+    {
+      "seconds": 5.193,
+      "changed": 0.10904
+    },
+    {
+      "seconds": 6.516,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}
