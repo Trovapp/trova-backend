@@ -1,0 +1,11 @@
+## HTTP alternatives (method GET)
+status=200 count=30 avg=2.458s
+p95(200, 선형보간)=3.191s n=30
+## SQL per request (alternatives)
+method="GET",uri="/api/trip-places/{id}/alternatives" count=30 avgSQL=35.77
+## 전체 창 HTTP 429
+/api/places/search 2
+/api/trips/{tripId}/days/{day}/gap-recommendations 1
+## 외부 API (trova_api_call_seconds) count / avg
+operation="nearby-search-alternative",provider="google-places",success="true" count=30 avg=0.168s
+operation="place-embedding-batch",provider="gemini",success="true" count=428 avg=1.240s
