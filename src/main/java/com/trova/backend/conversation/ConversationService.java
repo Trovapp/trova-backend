@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * 대화형 비서 한 턴을 오케스트레이션한다: 턴 상한 확인 → Gemini 호출 → functionCall이면
@@ -40,6 +41,19 @@ public class ConversationService {
     }
 
     public TurnResult sendMessage(User user, ConversationState state, String message) {
+        return sendMessage(user, state, message, candidates -> {});
+    }
+
+    /** 콜백은 도구 직후, Gemini 2차 호출 전에 실행된다. 전송 실패는 전송 계층에서 격리한다. */
+    public TurnResult sendMessage(User user, ConversationState state, String message,
+                                  Consumer<List<AlternativeCandidate>> onCards) {
+        synchronized (state) {
+            return processTurn(user, state, message, onCards);
+        }
+    }
+
+    private TurnResult processTurn(User user, ConversationState state, String message,
+                                  Consumer<List<AlternativeCandidate>> onCards) {
         if (state.getTurnCount() >= MAX_TURNS) {
             return new TurnResult(null, null, state.getTurnCount(), true);
         }
@@ -51,6 +65,7 @@ public class ConversationService {
 
         String reply;
         List<AlternativeCandidate> candidates = null;
+        List<AlternativeCandidate> shownCandidates = null;
 
         if (first.functionCall() != null) {
             // sendMessage와 sendFunctionResult는 각각 별도의 Gemini generateContent
@@ -61,6 +76,10 @@ public class ConversationService {
 
             ConversationToolExecutor.ToolExecutionResult toolResult = toolExecutor.execute(user, state, first.functionCall(), message);
 
+            if (toolResult.candidates() != null) {
+                shownCandidates = toolResult.candidates();
+                onCards.accept(shownCandidates);
+            }
             long secondStart = System.currentTimeMillis();
             GeminiChatClient.ChatResult second = geminiChatClient.sendFunctionResult(
                     state.getHistory(), message, first.functionCall(), toolResult.responseForGemini(), tools);
@@ -91,19 +110,19 @@ public class ConversationService {
         // 지시문으로도 막지만 모델이 가끔 대시·글머리·따옴표를 섞어서 보내기 직전에 한 번 더 정리한다(#53).
         reply = AiTextSanitizer.clean(reply);
         state.appendTurn(ConversationState.ROLE_MODEL, reply);
-        if (candidates != null && !candidates.isEmpty()) {
+        if (shownCandidates != null && !shownCandidates.isEmpty()) {
             // functionCall/functionResponse 왕복 자체는 히스토리에 남기지 않으므로,
             // 다음 턴에서 Gemini가 note_preference를 부를 수 있게 placeId를 텍스트
             // 턴으로 요약해 남긴다 — 없으면 "그거 좋다" 같은 후속 발화에서 Gemini가
             // 어떤 placeId를 가리키는지 알 방법이 없다.
-            String summary = "표시한 후보: " + candidates.stream()
+            String summary = "표시한 후보: " + shownCandidates.stream()
                     .map(c -> c.placeId() + "=" + c.name())
                     .collect(java.util.stream.Collectors.joining(", "));
             state.appendTurn(ConversationState.ROLE_MODEL, summary);
         }
         state.incrementTurnCount();
-        if (candidates != null) {
-            state.addShownCandidateIds(candidates.stream().map(AlternativeCandidate::placeId).toList());
+        if (shownCandidates != null) {
+            state.addShownCandidateIds(shownCandidates.stream().map(AlternativeCandidate::placeId).toList());
         }
 
         return new TurnResult(reply, candidates, state.getTurnCount(), false);

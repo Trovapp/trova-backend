@@ -3,6 +3,12 @@ package com.trova.backend.controller;
 import com.trova.backend.service.TripAccess;
 import com.trova.backend.entity.Trip;
 import com.trova.backend.conversation.ConversationService;
+import com.trova.backend.conversation.ConversationStreams;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.CacheControl;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import io.swagger.v3.oas.annotations.Operation;
 import com.trova.backend.conversation.ConversationSessionStore;
 import com.trova.backend.conversation.ConversationState;
 import com.trova.backend.entity.User;
@@ -25,6 +31,7 @@ public class ConversationController {
     private final CurrentUserService currentUserService;
     private final ConversationSessionStore sessionStore;
     private final ConversationService conversationService;
+    private final ConversationStreams streams;
     private final TripPlaceRepository tripPlaceRepository;
     private final TripRepository tripRepository;
     private final ItineraryRepository itineraryRepository;
@@ -35,8 +42,10 @@ public class ConversationController {
             ConversationService conversationService,
             TripPlaceRepository tripPlaceRepository,
             TripRepository tripRepository,
-            ItineraryRepository itineraryRepository
+            ItineraryRepository itineraryRepository,
+            ConversationStreams streams
     ) {
+        this.streams = streams;
         this.currentUserService = currentUserService;
         this.sessionStore = sessionStore;
         this.conversationService = conversationService;
@@ -56,7 +65,7 @@ public class ConversationController {
             Double distanceToNextKm, Integer estimatedTravelMinutes,
             Boolean isCongestionAvailable, String congestionLevel, String recommendationReason
     ) {
-        static CandidateResponse from(AlternativeCandidate c) {
+        public static CandidateResponse from(AlternativeCandidate c) {
             return new CandidateResponse(
                     c.placeId(), c.googlePlaceId(), c.name(), c.category(), c.rating(), c.userRatingCount(),
                     c.latitude(), c.longitude(), c.address(), c.distanceToNextKm(), c.estimatedTravelMinutes(),
@@ -76,6 +85,39 @@ public class ConversationController {
     ) {
         User user = currentUserService.resolve(authentication);
 
+        ResponseEntity<ConversationState> prepared = prepareSession(user, sessionId, request);
+        if (!prepared.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.status(prepared.getStatusCode()).build();
+        }
+        ConversationState state = prepared.getBody();
+
+        ConversationService.TurnResult result = conversationService.sendMessage(user, state, request.message());
+        List<CandidateResponse> candidateResponses = result.candidates() == null
+                ? null
+                : result.candidates().stream().map(CandidateResponse::from).toList();
+        return ResponseEntity.ok(new ConversationMessageResponse(
+                result.reply(), candidateResponses, result.turnCount(), result.turnLimitReached()));
+    }
+
+    @Operation(summary = "장소 카드를 먼저 보내는 대화 SSE",
+            description = "인증된 POST. cards {candidates:[기존 CandidateResponse]}, reply {reply,turnCount,turnLimitReached}, done {turnCount,turnLimitReached} 순서. "
+                    + "도구/후보가 없으면 reply,done. 시작 후 실패는 error {timestamp,status,error,code,message,path,traceId} 후 종료(done 없음). "
+                    + "상세 계약: docs/api/conversation-stream.md. 자동 재연결·재전송 금지.")
+    @PostMapping(value = "/api/conversations/{sessionId}/messages/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public ResponseEntity<SseEmitter> streamMessage(Authentication authentication, @PathVariable String sessionId,
+            @RequestBody ConversationMessageRequest request, HttpServletRequest servletRequest) {
+        User user = currentUserService.resolve(authentication);
+        ResponseEntity<ConversationState> prepared = prepareSession(user, sessionId, request);
+        if (!prepared.getStatusCode().is2xxSuccessful()) {
+            throw new org.springframework.web.server.ResponseStatusException(prepared.getStatusCode());
+        }
+        ConversationStreams.Pending pending = streams.prepare(user, prepared.getBody(), request.message(), servletRequest);
+        servletRequest.setAttribute(ConversationStreams.PENDING, pending);
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore())
+                .header("X-Accel-Buffering", "no").header("X-Trace-Id", pending.traceId()).body(pending.emitter());
+    }
+
+    private ResponseEntity<ConversationState> prepareSession(User user, String sessionId, ConversationMessageRequest request) {
         if (request.message() == null || request.message().isBlank()
                 || request.message().length() > MAX_MESSAGE_LENGTH) {
             return ResponseEntity.badRequest().build();
@@ -108,12 +150,7 @@ public class ConversationController {
             }
         }
 
-        ConversationService.TurnResult result = conversationService.sendMessage(user, state, request.message());
-        List<CandidateResponse> candidateResponses = result.candidates() == null
-                ? null
-                : result.candidates().stream().map(CandidateResponse::from).toList();
-        return ResponseEntity.ok(new ConversationMessageResponse(
-                result.reply(), candidateResponses, result.turnCount(), result.turnLimitReached()));
+        return ResponseEntity.ok(state);
     }
 
     @DeleteMapping("/api/conversations/{sessionId}")
