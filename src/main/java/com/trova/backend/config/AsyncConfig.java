@@ -21,6 +21,22 @@ public class AsyncConfig {
         return executor;
     }
 
+    @Bean("tripKafkaSender")
+    public Executor tripKafkaSender() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(1);
+        executor.setQueueCapacity(256);
+        executor.setThreadNamePrefix("trip-kafka-");
+        applyGracefulShutdown(executor);
+        return executor;
+    }
+
+    @Bean("tripDeletionPushExecutor")
+    public java.util.concurrent.ExecutorService tripDeletionPushExecutor() {
+        return java.util.concurrent.Executors.newSingleThreadExecutor(Thread.ofVirtual().name("trip-deletion-push-", 0).factory());
+    }
+
     @Bean("pipelineTaskExecutor")
     public Executor pipelineTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -61,23 +77,22 @@ public class AsyncConfig {
     // 웹 푸시 발송(#185). 알림 하나에 기기 몇 개라 짧은 HTTP 요청뿐 — 작은 풀, 쉬면 스레드를 내린다(운영 956MB).
     @Bean("tripPushExecutor")
     public Executor tripPushExecutor() {
-        return pushExecutor("trip-push-");
+        return pushExecutor("trip-push-", new ThreadPoolExecutor.AbortPolicy());
     }
 
     @Bean("pushTaskExecutor")
     public Executor pushTaskExecutor() {
-        return pushExecutor("push-");
+        return pushExecutor("push-", new ThreadPoolExecutor.DiscardOldestPolicy());
     }
 
-    private Executor pushExecutor(String threadPrefix) {
+    private Executor pushExecutor(String threadPrefix, java.util.concurrent.RejectedExecutionHandler onFull) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(1);
         executor.setMaxPoolSize(1);
         executor.setAllowCoreThreadTimeOut(true);
         executor.setQueueCapacity(100);
         executor.setThreadNamePrefix(threadPrefix);
-        // 대기열이 차면 가장 오래 기다린 알림을 버린다 — 예외를 던지면 알림을 맡긴 초안·날씨 처리까지 실패로 번진다.
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
+        executor.setRejectedExecutionHandler(onFull);
         applyGracefulShutdown(executor);
         executor.initialize();
         return executor;

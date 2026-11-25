@@ -8,11 +8,13 @@ import com.trova.backend.entity.User;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.SavedPlaceListRow;
+import com.trova.backend.repository.VideoHistoryRow;
 import com.trova.backend.service.CurrentUserService;
 import com.trova.backend.service.FoundPlaceNameStore;
 import com.trova.backend.service.ItineraryEditService;
 import com.trova.backend.service.ItineraryGenerationService;
 import com.trova.backend.service.PlaceRelocateService;
+import com.trova.backend.service.VideoKey;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -73,6 +75,10 @@ public class PlacesController {
             // 다른 지점일 수 있을 때 영상 근처의 같은 가게 지점 이름(#414). 없으면 null.
             String nearbyBranchName
     ) {
+        public String getAddressSource() {
+            return address == null && roadAddress == null ? null : "ANALYSIS_RESULT";
+        }
+
         static PlaceResponse from(SavedPlaceListRow place) {
             return new PlaceResponse(
                     place.id(), place.jobId(), place.placeName(), place.region(), place.category(),
@@ -142,6 +148,29 @@ public class PlacesController {
         return VideoResults.latestRows(places).stream()
                 .map(PlaceResponse::from)
                 .toList();
+    }
+
+    @GetMapping("/videos/{jobId}/history")
+    public ResponseEntity<List<VideoHistoryRow>> history(Authentication authentication, @PathVariable Long jobId) {
+        User user = currentUserService.resolve(authentication);
+        return processingJobRepository.findByIdAndUser(jobId, user)
+                .map(anchor -> ResponseEntity.ok(savedPlaceRepository.findVideoHistory(user.getId(),
+                        VideoKey.of(anchor.getSourceUrl()), VideoKey.YOUTUBE, VideoKey.INSTAGRAM)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/videos/{jobId}/history/{resultId}")
+    public ResponseEntity<List<PlaceResponse>> historyResult(
+            Authentication authentication, @PathVariable Long jobId, @PathVariable Long resultId) {
+        User user = currentUserService.resolve(authentication);
+        return processingJobRepository.findByIdAndUser(jobId, user).map(anchor -> {
+            List<SavedPlaceListRow> rows = savedPlaceRepository.findListRowsByUserIdAndJobId(user.getId(), resultId);
+            if (rows.isEmpty() || !ShareUrl.videoKey(anchor.getSourceUrl())
+                    .equals(ShareUrl.videoKey(rows.getFirst().jobSourceUrl()))) {
+                return ResponseEntity.notFound().<List<PlaceResponse>>build();
+            }
+            return ResponseEntity.ok(rows.stream().map(PlaceResponse::from).toList());
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/pending")

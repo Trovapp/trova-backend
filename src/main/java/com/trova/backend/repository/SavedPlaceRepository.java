@@ -17,16 +17,42 @@ public interface SavedPlaceRepository extends JpaRepository<SavedPlace, Long> {
     @EntityGraph(attributePaths = {"processingJob", "processingJob.user", "user"})
     List<SavedPlace> findByUserOrderByCreatedAtDescIdDesc(User user);
 
+    record KakaoCategoryRow(String googlePlaceId, String category) {}
+
     @Query("""
+            select distinct new com.trova.backend.repository.SavedPlaceRepository$KakaoCategoryRow(
+                p.googlePlaceId, p.kakaoCategoryName)
+            from SavedPlace p
+            where p.user.id = :userId and p.googlePlaceId in :googleIds and p.kakaoCategoryName is not null
+            """)
+    List<KakaoCategoryRow> findKakaoCategories(Long userId, List<String> googleIds);
+
+    String LIST_ROWS = """
             select new com.trova.backend.repository.SavedPlaceListRow(
                 p.id, j.id, j.sourceUrl, p.placeName, p.region, p.category, p.latitude, p.longitude,
                 p.sourceUrl, p.title, p.sourcePlatform, p.createdAt, p.dayNumber, p.orderInDay,
                 p.phone, p.address, p.roadAddress, p.kakaoCategoryName, p.kakaoPlaceUrl, p.videoNotes, p.nearbyBranchName)
             from SavedPlace p join p.processingJob j
             where p.user.id = :userId
-            order by p.createdAt desc, p.id desc
-            """)
+            """;
+
+    @Query(LIST_ROWS + " order by p.createdAt desc, p.id desc")
     List<SavedPlaceListRow> findListRowsByUserId(Long userId);
+
+    @Query(LIST_ROWS + " and j.id = :jobId order by p.createdAt desc, p.id desc")
+    List<SavedPlaceListRow> findListRowsByUserIdAndJobId(Long userId, Long jobId);
+
+    @Query("""
+            select new com.trova.backend.repository.VideoHistoryRow(j.id, j.createdAt, count(p))
+            from SavedPlace p join p.processingJob j
+            where p.user.id = :userId and coalesce(
+                'yt:' || cast(function('regexp_substr', j.sourceUrl, :youtube, 1, 1, 'i', 1) as String),
+                'ig:' || cast(function('regexp_substr', j.sourceUrl, :instagram, 1, 1, 'i', 1) as String),
+                trim(j.sourceUrl)) = :videoKey
+            group by j.id, j.createdAt
+            order by j.id desc
+            """)
+    List<VideoHistoryRow> findVideoHistory(Long userId, String videoKey, String youtube, String instagram);
 
     // 초안 상세의 현재 번호 계산용(#473) — 장소가 하나라도 남은 작업의 번호·주소만, 작업마다 한 행. 상태는 보지 않는다.
     @Query("""

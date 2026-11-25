@@ -335,21 +335,29 @@ public class TripService {
     /**
      * 영상 장소를 Place 카탈로그(구글 장소)에 연결한다(찜하기 #125 — 찜은 카탈로그 장소를 가리킨다).
      * 영업시간 조회로 구글 id가 이미 있으면 그것을, 없으면 여행 장소 상세(#101)와 같은 규칙으로 지역을 붙여 검색해
-     * 영상 장소 좌표 3km 안의 결과만 쓴다. 본인 장소가 아니면 비우고, 연결하지 못하면 NOT_MATCHED.
+     * 이름과 거리, 장소 분류로 검색 후보를 판정한다. 본인 장소가 아니면 비우고, 연결하지 못하면 NOT_MATCHED.
      */
     @Transactional
     public Optional<SavedPlaceMatch> resolveSavedPlace(User user, Long savedPlaceId) {
-        return savedPlaceRepository.findById(savedPlaceId)
-                .filter(p -> p.getUser().getId().equals(user.getId()))
+        return resolveSavedPlace(user, savedPlaceId, true);
+    }
+
+    @Transactional
+    public Optional<SavedPlaceMatch> resolveSavedPlaceForDetails(User user, Long savedPlaceId) {
+        return resolveSavedPlace(user, savedPlaceId, false);
+    }
+
+    private Optional<SavedPlaceMatch> resolveSavedPlace(User user, Long savedPlaceId, boolean forBookmark) {
+        return savedPlaceRepository.findByIdAndUser(savedPlaceId, user)
                 .map(saved -> {
-                    if (saved.getGooglePlaceId() != null) {
-                        Optional<Place> known = placeRepository.findByGooglePlaceId(saved.getGooglePlaceId());
-                        if (known.isPresent()) {
-                            return new SavedPlaceMatch(known);
-                        }
+                    Optional<Place> known = Optional.ofNullable(saved.getGooglePlaceId())
+                            .filter(id -> !id.isBlank()).flatMap(placeRepository::findByGooglePlaceId);
+                    if (known.isPresent() && (!forBookmark || hasCoordinates(known.get()))) {
+                        return new SavedPlaceMatch(known);
                     }
                     List<Place> candidates = placeSearchService.search(detailsSearchQuery(saved.getPlaceName(), saved.getRegion()));
-                    Optional<Place> match = pickMatch(saved.getPlaceName(), saved.getLatitude(), saved.getLongitude(), candidates);
+                    Optional<Place> match = forBookmark ? bookmarkMatch(saved, known, candidates)
+                            : pickMatch(saved.getPlaceName(), saved.getLatitude(), saved.getLongitude(), candidates);
                     if (match.isEmpty()) {
                         log.info("영상 장소 찜 연결 실패 — 근처 검색 결과 없음(savedPlaceId={}, name={}, 후보 {}곳)",
                                 saved.getId(), saved.getPlaceName(), candidates.size());
@@ -357,6 +365,49 @@ public class TripService {
                     match.ifPresent(m -> userPreferenceSignalRepository.save(new UserPreferenceSignal(user, m, SignalType.VIDEO_PLACE_MATCHED)));
                     return new SavedPlaceMatch(match);
                 });
+    }
+
+    private static Optional<Place> bookmarkMatch(SavedPlace saved, Optional<Place> known, List<Place> candidates) {
+        // 좌표가 비어 재검색한 경우에도 같은 Google ID가 최우선이다.
+        if (known.isPresent()) {
+            return known;
+        }
+        String id = saved.getGooglePlaceId();
+        if (id != null && !id.isBlank()) {
+            Optional<Place> exact = candidates.stream().filter(p -> id.equals(p.getGooglePlaceId())).findFirst();
+            if (exact.isPresent()) {
+                return exact;
+            }
+        }
+        if (saved.getLatitude() == null || saved.getLongitude() == null) {
+            return Optional.empty();
+        }
+        List<Place> plausible = candidates.stream().distinct().filter(TripService::hasCoordinates)
+                .filter(p -> PlaceNameMatch.sameCatalogName(saved.getPlaceName(), p.getName()))
+                .filter(p -> matchDistanceKm(saved, p) <= (isWidePlace(saved, p) ? 0.3 : 0.05))
+                .sorted(Comparator.comparingDouble((Place p) -> matchDistanceKm(saved, p)).thenComparing(Place::getId))
+                .toList();
+        if (plausible.size() > 1 && !plausible.stream().allMatch(p -> isWidePlace(saved, p))) {
+            return Optional.empty();
+        }
+        return plausible.stream().findFirst();
+    }
+
+    private static final Set<String> WIDE_CATEGORIES = Set.of("attraction", "tourist_attraction", "natural_feature",
+            "park", "national_park", "lake", "beach", "mountain");
+
+    private static boolean isWidePlace(SavedPlace saved, Place candidate) {
+        return saved.getCategory() != null && WIDE_CATEGORIES.contains(saved.getCategory())
+                && candidate.getCategory() != null && WIDE_CATEGORIES.contains(candidate.getCategory());
+    }
+
+    private static boolean hasCoordinates(Place place) {
+        return place.getLatitude() != null && place.getLongitude() != null;
+    }
+
+    private static double matchDistanceKm(SavedPlace saved, Place candidate) {
+        return GeoUtils.haversineKm(saved.getLatitude(), saved.getLongitude(),
+                candidate.getLatitude(), candidate.getLongitude());
     }
 
     /** 본인 영상 장소였을 때의 연결 결과 — place가 비면 지도에서 찾지 못한 것. */

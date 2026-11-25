@@ -1,0 +1,8 @@
+{
+  "start": 1795595845.7158191,
+  "end": 1795595950.16849,
+  "exit": 0,
+  "reason": "retry with approved process enumeration access after sysctl sandbox denial",
+  "max_workers": 1,
+  "active_processor_count": 2
+}

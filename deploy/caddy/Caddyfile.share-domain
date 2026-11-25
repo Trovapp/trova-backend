@@ -1,0 +1,39 @@
+# 2026-11-23 운영 설정을 기준으로 작성한 전환안. 승인 후 두 웹 주소를 검증하고 적용한다.
+193-123-161-217.sslip.io {
+	@webLink {
+		method GET HEAD
+		path / /t/*
+	}
+	redir @webLink https://trova.duckdns.org{uri} 301
+	@actuator {
+		path /actuator /actuator/*
+		not path /actuator/health /actuator/health/*
+	}
+	respond @actuator 404
+	reverse_proxy localhost:8080
+}
+
+trova.duckdns.org {
+	root * /srv/trova-app/dist
+	encode zstd gzip
+	import /srv/trova-app/headers.caddy
+	@immutable path /_expo/static/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+	@entry path / /index.html /manifest.json
+	header @entry Cache-Control "no-cache"
+	try_files {path} {path}/index.html /index.html
+	file_server {
+		precompressed br gzip
+	}
+}
+
+app.193-123-161-217.sslip.io {
+	# 이미 설치된 Android가 예전 도메인을 재검증할 때 JSON을 직접 받아야 한다.
+	handle /.well-known/assetlinks.json {
+		root * /srv/trova-app/dist
+		file_server
+	}
+	handle {
+		redir https://trova.duckdns.org{uri} 301
+	}
+}

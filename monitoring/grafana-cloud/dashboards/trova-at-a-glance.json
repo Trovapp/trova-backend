@@ -1,0 +1,1089 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "앱에서 누른 기능을 기준으로 서버 상태와 대기 시간을 봅니다. 회색은 요청 없음 또는 미수집이며, 자세한 기준은 각 패널 설명에 있습니다.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "서울에서 서버에 “열려 있나요?” 하고 1분마다 물어요. 최근 5분 실패 횟수예요. 초록 0회, 노랑 1~2회, 빨강 3회 이상(기존 외부 점검 경보). 점검 기록 3개 미만은 회색이에요. 실패가 이어지면 앱 화면을 열기 어려워요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "options": {
+                "-1": {
+                  "color": "#697782",
+                  "index": 0,
+                  "text": "미수집"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "미수집",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 3
+              }
+            ]
+          },
+          "unit": "suffix:회 실패"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "(max((count_over_time(probe_success{job=\"trova-health\"}[5m])-sum_over_time(probe_success{job=\"trova-health\"}[5m])) and (count_over_time(probe_success{job=\"trova-health\"}[5m])>=3) and probe_success{job=\"trova-health\"})) or vector(-1)",
+          "instant": true,
+          "legendFormat": "",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "서버 상태",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "앱이 보낸 일 중 서버가 처리하지 못한 비율이에요. 반송된 편지처럼 결과를 못 받아요. 최근 5분 0%는 초록, 실패가 있으면 노랑, 10%부터 빨강. 기존 알림은 5분 요청 20건 이상에서 10% 초과가 2분 이어질 때 울려요. 근거: 2026-11-16 17:00~11-23 17:00 한국 시각, 5분 간격 7일 표본. 실패율 표본 362개 중 99% 지점은 0%예요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "-1": {
+                  "color": "#697782",
+                  "index": 0,
+                  "text": "미수집"
+                },
+                "-2": {
+                  "color": "#697782",
+                  "index": 1,
+                  "text": "요청 없음"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "미수집",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1e-09
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "(100*(sum(increase(http_server_requests_seconds_count{job=\"trova-prod\",uri!~\"/actuator.*\",status=~\"5..\"}[5m])) or vector(0))/(sum(increase(http_server_requests_seconds_count{job=\"trova-prod\",uri!~\"/actuator.*\"}[5m]))>0) or (-2 + 0 * (sum(increase(http_server_requests_seconds_count{job=\"trova-prod\",uri!~\"/actuator.*\"}[5m])) == 0))) or vector(-1)",
+          "instant": true,
+          "legendFormat": "",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "실패율",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "앱에서 보낸 부탁을 받아 서버가 답을 내기까지의 최근 5분 평균이에요. 길어지면 화면을 더 기다려요. 상태 점검과 계속 열어 두는 친구 알림 연결은 제외해요. 근거: 2026-11-16 17:00~11-23 17:00 한국 시각, 5분 간격 7일 표본. 요청이 있는 361개 중 아래에서 95% 값 0.315초·99% 값 0.707초를 반올림해 0.32초부터 노랑, 0.71초부터 빨강. 기존 2초 경보는 느린 쪽 5% 경계라 이 평균과 기준이 달라요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "-1": {
+                  "color": "#697782",
+                  "index": 0,
+                  "text": "미수집"
+                },
+                "-2": {
+                  "color": "#697782",
+                  "index": 1,
+                  "text": "요청 없음"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "미수집",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 0.32
+              },
+              {
+                "color": "red",
+                "value": 0.71
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "(sum(rate(http_server_requests_seconds_sum{job=\"trova-prod\",uri!~\"/actuator.*|/api/trips/[^/]+/events\"}[5m]))/(sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",uri!~\"/actuator.*|/api/trips/[^/]+/events\"}[5m]))>0) or (-2 + 0 * (sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",uri!~\"/actuator.*|/api/trips/[^/]+/events\"}[5m])) == 0))) or vector(-1)",
+          "instant": true,
+          "legendFormat": "",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "응답 시간",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "링크를 접수한 뒤 영상 분석이 끝나지 않은 작업 수예요. 한 줄에 선 손님과 창구에서 처리 중인 손님을 함께 세요. 커지면 다음 영상의 완료가 늦어질 수 있어요. 최근 7일 같은 기간의 작업 기록 4건은 동시 최대 1건. 초록 0~1건, 노랑 2건, 빨강 3건 이상(관측 최대보다 각각 1·2건 많음). 코드 배포 뒤 1분마다 집계하며, 회색은 미수집이에요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "options": {
+                "-1": {
+                  "color": "#697782",
+                  "index": 0,
+                  "text": "미수집"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "미수집",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 3
+              }
+            ]
+          },
+          "unit": "suffix:건"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "(max(trova_analysis_outstanding{job=\"trova-prod\"} >= 0)) or vector(-1)",
+          "instant": true,
+          "legendFormat": "",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "영상 분석",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "메모리는 서버가 일을 펼쳐 놓는 작업대예요. 남은 자리가 적으면 자료를 디스크 서랍과 주고받아 앱이 느려질 수 있어요. 근거: 2026-11-16 17:00~11-23 17:00 한국 시각, 5분 간격 7일 표본. 2,017개 중 낮은 쪽 1%는 146.2, 5%는 152.5 MiB(메모리 크기 단위). 정수로 약 146·153을 사용해 146 미만 빨강, 153 미만 노랑, 그 이상 초록. 기존 메모리 경보는 멈춘 시간을 재요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "options": {
+                "-1": {
+                  "color": "#697782",
+                  "index": 0,
+                  "text": "미수집"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "미수집",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "yellow",
+                "value": 146
+              },
+              {
+                "color": "green",
+                "value": 153
+              }
+            ]
+          },
+          "unit": "suffix: MiB"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "(min(host_memory_available_bytes{job=\"trova-prod\"}) / 1048576) or vector(-1)",
+          "instant": true,
+          "legendFormat": "",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "메모리 여유",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "CPU는 중앙 처리 장치(Central Processing Unit)예요. 주방장이 주문을 요리하듯 서버가 앱의 부탁을 계산해요. 오래 바쁘면 장소·일정 응답이 늦어질 수 있어요. 근거: 2026-11-16 17:00~11-23 17:00 한국 시각, 5분 간격 7일 표본. 서버 전체 2,017개 중 95% 값 1.99%, 99% 값 5.97%를 반올림해 2%부터 노랑·6%부터 빨강. 빨강은 이 서버의 평소보다 바쁘다는 뜻이에요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "-1": {
+                  "color": "#697782",
+                  "index": 0,
+                  "text": "미수집"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "미수집",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 6
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "(100*avg(system_cpu_usage{job=\"trova-prod\"})) or vector(-1)",
+          "instant": true,
+          "legendFormat": "",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "CPU",
+      "type": "stat"
+    },
+    {
+      "description": "가운데 서버에서 기능 색을 따라 좌우로 읽어요. 바깥 점은 설명용 색이고 실제 상태는 위 숫자가 알려줘요.",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "id": 7,
+      "options": {
+        "content": "<div style=\"text-align:center\"><img alt=\"트루바 앱 기능과 자원, 그래프 연결도\" height=\"228\" width=\"718\" style=\"max-width:100%;vertical-align:top;\" src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNDAwIDQ0NSIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSLtirjro6jrsJQg7ISc67KE66W8IOykkeyLrOycvOuhnCDslbEg6riw64qlLCDtlajqu5gg7JOw64qUIOyekOybkOqzvCDsp4DtkZzrpbwg7Jew6rKw7ZWcIO2dkOumhOuPhCI+PHJlY3Qgd2lkdGg9IjE0MDAiIGhlaWdodD0iNDQ1IiBmaWxsPSIjZjZmYWY4Ii8+PHRleHQgeD0iMTEwIiB5PSIzMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiM1YjczNmMiPu2ZleyduO2VoCDqt7jrnpjtlIQ8L3RleHQ+PHRleHQgeD0iMjk1IiB5PSIzMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiM1YjczNmMiPuydvO2VmOuKlCDqs7M8L3RleHQ+PHRleHQgeD0iNTAwIiB5PSIzMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiM1YjczNmMiPuyVseyXkOyEnCDriITrpbgg6riw64qlPC90ZXh0Pjx0ZXh0IHg9IjkwMCIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjNWI3MzZjIj7slbHsl5DshJwg64iE66W4IOq4sOuKpTwvdGV4dD48dGV4dCB4PSIxMTAyIiB5PSIzMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiM1YjczNmMiPuydvO2VmOuKlCDqs7M8L3RleHQ+PHRleHQgeD0iMTI5NCIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjNWI3MzZjIj7tmZXsnbjtlaAg6re4656Y7ZSEPC90ZXh0PjxwYXRoIGQ9Ik02MjAgMjE3IEM2MDAuMCAyMTcgNjAwLjAgMTMwIDU4MCAxMzAiIHN0cm9rZT0iIzgwNTJBMCIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik01ODAgMTMwIGw2IC0zLjEgdjYuMiB6IiBmaWxsPSIjODA1MkEwIi8+PHBhdGggZD0iTTQyMCAxMzAgQzM5OC41IDEzMCAzOTguNSA4MCAzNzcgODAiIHN0cm9rZT0iIzgwNTJBMCIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0zNzcgODAgbDYgLTMuMSB2Ni4yIHoiIGZpbGw9IiM4MDUyQTAiLz48cGF0aCBkPSJNNDIwIDEzMCBDMzk4LjUgMTMwIDM5OC41IDE1MiAzNzcgMTUyIiBzdHJva2U9IiM4MDUyQTAiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIuNzciIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMzc3IDE1MiBsNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzgwNTJBMCIvPjxwYXRoIGQ9Ik00MjAgMTMwIEMzOTguNSAxMzAgMzk4LjUgMjIyIDM3NyAyMjIiIHN0cm9rZT0iIzgwNTJBMCIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0zNzcgMjIyIGw2IC0zLjEgdjYuMiB6IiBmaWxsPSIjODA1MkEwIi8+PHBhdGggZD0iTTQyMCAxMzAgQzM5OC41IDEzMCAzOTguNSAzNjkgMzc3IDM2OSIgc3Ryb2tlPSIjODA1MkEwIiBzdHJva2Utd2lkdGg9IjIuMSIgb3BhY2l0eT0iLjc3IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTM3NyAzNjkgbDYgLTMuMSB2Ni4yIHoiIGZpbGw9IiM4MDUyQTAiLz48cGF0aCBkPSJNNjIwIDIxNyBDNjAwLjAgMjE3IDYwMC4wIDI5NCA1ODAgMjk0IiBzdHJva2U9IiNCNjUzNDIiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIuNzciIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNNTgwIDI5NCBsNiAtMy4xIHY2LjIgeiIgZmlsbD0iI0I2NTM0MiIvPjxwYXRoIGQ9Ik00MjAgMjk0IEMzOTguNSAyOTQgMzk4LjUgMTUyIDM3NyAxNTIiIHN0cm9rZT0iI0I2NTM0MiIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0zNzcgMTUyIGw2IC0zLjEgdjYuMiB6IiBmaWxsPSIjQjY1MzQyIi8+PHBhdGggZD0iTTQyMCAyOTQgQzM5OC41IDI5NCAzOTguNSAyMjIgMzc3IDIyMiIgc3Ryb2tlPSIjQjY1MzQyIiBzdHJva2Utd2lkdGg9IjIuMSIgb3BhY2l0eT0iLjc3IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTM3NyAyMjIgbDYgLTMuMSB2Ni4yIHoiIGZpbGw9IiNCNjUzNDIiLz48cGF0aCBkPSJNNDIwIDI5NCBDMzk4LjUgMjk0IDM5OC41IDM2OSAzNzcgMzY5IiBzdHJva2U9IiNCNjUzNDIiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIuNzciIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMzc3IDM2OSBsNiAtMy4xIHY2LjIgeiIgZmlsbD0iI0I2NTM0MiIvPjxwYXRoIGQ9Ik03ODAgMjE3IEM4MDAuMCAyMTcgODAwLjAgOTUgODIwIDk1IiBzdHJva2U9IiMxNDc5QUMiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIuNzciIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNODIwIDk1IGwtNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzE0NzlBQyIvPjxwYXRoIGQ9Ik05ODAgOTUgQzk5OS4wIDk1IDk5OS4wIDc3IDEwMTggNzciIHN0cm9rZT0iIzE0NzlBQyIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xMDE4IDc3IGwtNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzE0NzlBQyIvPjxwYXRoIGQ9Ik05ODAgOTUgQzk5OS4wIDk1IDk5OS4wIDE0NiAxMDE4IDE0NiIgc3Ryb2tlPSIjMTQ3OUFDIiBzdHJva2Utd2lkdGg9IjIuMSIgb3BhY2l0eT0iLjc3IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEwMTggMTQ2IGwtNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzE0NzlBQyIvPjxwYXRoIGQ9Ik03ODAgMjE3IEM4MDAuMCAyMTcgODAwLjAgMjMxIDgyMCAyMzEiIHN0cm9rZT0iIzMzN0U1OCIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik04MjAgMjMxIGwtNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzMzN0U1OCIvPjxwYXRoIGQ9Ik05ODAgMjMxIEM5OTkuMCAyMzEgOTk5LjAgMTQ2IDEwMTggMTQ2IiBzdHJva2U9IiMzMzdFNTgiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIuNzciIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTAxOCAxNDYgbC02IC0zLjEgdjYuMiB6IiBmaWxsPSIjMzM3RTU4Ii8+PHBhdGggZD0iTTk4MCAyMzEgQzk5OS4wIDIzMSA5OTkuMCAyMjIgMTAxOCAyMjIiIHN0cm9rZT0iIzMzN0U1OCIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xMDE4IDIyMiBsLTYgLTMuMSB2Ni4yIHoiIGZpbGw9IiMzMzdFNTgiLz48cGF0aCBkPSJNOTgwIDIzMSBDOTk5LjAgMjMxIDk5OS4wIDI5NSAxMDE4IDI5NSIgc3Ryb2tlPSIjMzM3RTU4IiBzdHJva2Utd2lkdGg9IjIuMSIgb3BhY2l0eT0iLjc3IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEwMTggMjk1IGwtNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzMzN0U1OCIvPjxwYXRoIGQ9Ik03ODAgMjE3IEM4MDAuMCAyMTcgODAwLjAgMzU5IDgyMCAzNTkiIHN0cm9rZT0iIzlCNkIxNiIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik04MjAgMzU5IGwtNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzlCNkIxNiIvPjxwYXRoIGQ9Ik05ODAgMzU5IEM5OTkuMCAzNTkgOTk5LjAgMTQ2IDEwMTggMTQ2IiBzdHJva2U9IiM5QjZCMTYiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIuNzciIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTAxOCAxNDYgbC02IC0zLjEgdjYuMiB6IiBmaWxsPSIjOUI2QjE2Ii8+PHBhdGggZD0iTTk4MCAzNTkgQzk5OS4wIDM1OSA5OTkuMCAzNzAgMTAxOCAzNzAiIHN0cm9rZT0iIzlCNkIxNiIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xMDE4IDM3MCBsLTYgLTMuMSB2Ni4yIHoiIGZpbGw9IiM5QjZCMTYiLz48cGF0aCBkPSJNMjk0IDI0MCBWMjc1IiBmaWxsPSJub25lIiBzdHJva2U9IiM3Mjg1ODAiIHN0cm9rZS13aWR0aD0iMiIvPjxwYXRoIGQ9Ik0yOTAgMjY5IEwyOTQgMjc2IEwyOTggMjY5IiBmaWxsPSJub25lIiBzdHJva2U9IiM3Mjg1ODAiIHN0cm9rZS13aWR0aD0iMiIvPjxwYXRoIGQ9Ik0yMTEgODAgQzIwNS41IDgwIDIwNS41IDgwIDIwMCA4MCIgc3Ryb2tlPSIjNzU4OTg0IiBzdHJva2Utd2lkdGg9IjIuMSIgb3BhY2l0eT0iLjc3IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTIwMCA4MCBsNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzc1ODk4NCIvPjxwYXRoIGQ9Ik0yMTEgMTUyIEMyMDUuNSAxNTIgMjA1LjUgMTUyIDIwMCAxNTIiIHN0cm9rZT0iIzc1ODk4NCIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0yMDAgMTUyIGw2IC0zLjEgdjYuMiB6IiBmaWxsPSIjNzU4OTg0Ii8+PHBhdGggZD0iTTIxMSAyMjIgQzIwNS41IDIyMiAyMDUuNSAyMjIgMjAwIDIyMiIgc3Ryb2tlPSIjNzU4OTg0IiBzdHJva2Utd2lkdGg9IjIuMSIgb3BhY2l0eT0iLjc3IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTIwMCAyMjIgbDYgLTMuMSB2Ni4yIHoiIGZpbGw9IiM3NTg5ODQiLz48cGF0aCBkPSJNMjExIDI5NiBDMjA1LjUgMjk2IDIwNS41IDI5NiAyMDAgMjk2IiBzdHJva2U9IiM3NTg5ODQiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIuNzciIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMjAwIDI5NiBsNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzc1ODk4NCIvPjxwYXRoIGQ9Ik0yMTEgMzY5IEMyMDUuNSAzNjkgMjA1LjUgMzY5IDIwMCAzNjkiIHN0cm9rZT0iIzc1ODk4NCIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0yMDAgMzY5IGw2IC0zLjEgdjYuMiB6IiBmaWxsPSIjNzU4OTg0Ii8+PHBhdGggZD0iTTExODQgNzcgQzExOTAuNSA3NyAxMTkwLjUgNzcgMTE5NyA3NyIgc3Ryb2tlPSIjNzU4OTg0IiBzdHJva2Utd2lkdGg9IjIuMSIgb3BhY2l0eT0iLjc3IiBmaWxsPSJub25lIiBzdHJva2UtZGFzaGFycmF5PSI1IDQiLz48cGF0aCBkPSJNMTE5NyA3NyBsLTYgLTMuMSB2Ni4yIHoiIGZpbGw9IiM3NTg5ODQiLz48cGF0aCBkPSJNMTE4NCAxNDYgQzExOTAuNSAxNDYgMTE5MC41IDE0NiAxMTk3IDE0NiIgc3Ryb2tlPSIjNzU4OTg0IiBzdHJva2Utd2lkdGg9IjIuMSIgb3BhY2l0eT0iLjc3IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTExOTcgMTQ2IGwtNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzc1ODk4NCIvPjxwYXRoIGQ9Ik0xMTg0IDE0NiBDMTE5MC41IDE0NiAxMTkwLjUgMjQ1IDExOTcgMjQ1IiBzdHJva2U9IiM3NTg5ODQiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIuNzciIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTE5NyAyNDUgbC02IC0zLjEgdjYuMiB6IiBmaWxsPSIjNzU4OTg0Ii8+PHBhdGggZD0iTTExODQgMTQ2IEMxMTkwLjUgMTQ2IDExOTAuNSAzNzAgMTE5NyAzNzAiIHN0cm9rZT0iIzc1ODk4NCIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xMTk3IDM3MCBsLTYgLTMuMSB2Ni4yIHoiIGZpbGw9IiM3NTg5ODQiLz48cGF0aCBkPSJNMTE4NCAyMjIgQzExOTAuNSAyMjIgMTE5MC41IDI0NSAxMTk3IDI0NSIgc3Ryb2tlPSIjNzU4OTg0IiBzdHJva2Utd2lkdGg9IjIuMSIgb3BhY2l0eT0iLjc3IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTExOTcgMjQ1IGwtNiAtMy4xIHY2LjIgeiIgZmlsbD0iIzc1ODk4NCIvPjxwYXRoIGQ9Ik0xMTg0IDI5NSBDMTE5MC41IDI5NSAxMTkwLjUgMjQ1IDExOTcgMjQ1IiBzdHJva2U9IiM3NTg5ODQiIHN0cm9rZS13aWR0aD0iMi4xIiBvcGFjaXR5PSIuNzciIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTE5NyAyNDUgbC02IC0zLjEgdjYuMiB6IiBmaWxsPSIjNzU4OTg0Ii8+PHBhdGggZD0iTTExODQgMzcwIEMxMTkwLjUgMzcwIDExOTAuNSAzNzAgMTE5NyAzNzAiIHN0cm9rZT0iIzc1ODk4NCIgc3Ryb2tlLXdpZHRoPSIyLjEiIG9wYWNpdHk9Ii43NyIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xMTk3IDM3MCBsLTYgLTMuMSB2Ni4yIHoiIGZpbGw9IiM3NTg5ODQiLz48cmVjdCB4PSI4IiB5PSI1OSIgd2lkdGg9IjE5MiIgaGVpZ2h0PSI0MiIgcng9IjkiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2I4Y2NjNCIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48Y2lyY2xlIGN4PSIyMSIgY3k9IjgwIiByPSI0IiBmaWxsPSIjYmI2ODMyIi8+PHRleHQgeD0iMTA4IiB5PSI4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiMxODNkM2IiPuyYgeyDgSDqsrDqs7wg6riw64uk66awIOyLnOqwhDwvdGV4dD48cmVjdCB4PSI4IiB5PSIxMzEiIHdpZHRoPSIxOTIiIGhlaWdodD0iNDIiIHJ4PSI5IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNiOGNjYzQiIHN0cm9rZS13aWR0aD0iMS40Ii8+PGNpcmNsZSBjeD0iMjEiIGN5PSIxNTIiIHI9IjQiIGZpbGw9IiMzNzg0NWIiLz48dGV4dCB4PSIxMDgiIHk9IjE1NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiMxODNkM2IiPuqzhOyCsCDsnqXsuZgg7IKs7Jqp66WgKENQVSk8L3RleHQ+PHJlY3QgeD0iOCIgeT0iMjAxIiB3aWR0aD0iMTkyIiBoZWlnaHQ9IjQyIiByeD0iOSIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjYjhjY2M0IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxjaXJjbGUgY3g9IjIxIiBjeT0iMjIyIiByPSI0IiBmaWxsPSIjZDVhMjM5Ii8+PHRleHQgeD0iMTA4IiB5PSIyMjciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjMTgzZDNiIj7rqZTrqqjrpqwg7Jes7JygPC90ZXh0PjxyZWN0IHg9IjgiIHk9IjI3NSIgd2lkdGg9IjE5MiIgaGVpZ2h0PSI0MiIgcng9IjkiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2I4Y2NjNCIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48Y2lyY2xlIGN4PSIyMSIgY3k9IjI5NiIgcj0iNCIgZmlsbD0iI2Q1YTIzOSIvPjx0ZXh0IHg9IjEwOCIgeT0iMzAxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXBwbGUgU0QgR290aGljIE5lbywgTm90byBTYW5zIENKSyBLUiwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iIzE4M2QzYiI+65SU7Iqk7YGs66GcIOyYruq4tCDslpE8L3RleHQ+PHJlY3QgeD0iOCIgeT0iMzQ4IiB3aWR0aD0iMTkyIiBoZWlnaHQ9IjQyIiByeD0iOSIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjYjhjY2M0IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxjaXJjbGUgY3g9IjIxIiBjeT0iMzY5IiByPSI0IiBmaWxsPSIjYmI2ODMyIi8+PHRleHQgeD0iMTA4IiB5PSIzNzQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjMTgzZDNiIj7stpTsspzCt+umrOu3sMK364u17J6lIOyLnOqwhDwvdGV4dD48cmVjdCB4PSIxMTk3IiB5PSI1NiIgd2lkdGg9IjE5MiIgaGVpZ2h0PSI0MiIgcng9IjkiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2I4Y2NjNCIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48Y2lyY2xlIGN4PSIxMjEwIiBjeT0iNzciIHI9IjQiIGZpbGw9IiM4Mzk1OTEiLz48dGV4dCB4PSIxMjk3IiB5PSI4MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiMxODNkM2IiPu2ctOuMgO2PsOyXkOyEnCDsp4HsoJEg67Cb7J2MPC90ZXh0PjxyZWN0IHg9IjExOTciIHk9IjEyNSIgd2lkdGg9IjE5MiIgaGVpZ2h0PSI0MiIgcng9IjkiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2I4Y2NjNCIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48Y2lyY2xlIGN4PSIxMjEwIiBjeT0iMTQ2IiByPSI0IiBmaWxsPSIjMzc4NDViIi8+PHRleHQgeD0iMTI5NyIgeT0iMTUxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXBwbGUgU0QgR290aGljIE5lbywgTm90byBTYW5zIENKSyBLUiwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iIzE4M2QzYiI+7J6l7IaMIOuqqeuhnSDrsJvripQg7Iuc6rCEPC90ZXh0PjxyZWN0IHg9IjExOTciIHk9IjIyNCIgd2lkdGg9IjE5MiIgaGVpZ2h0PSI0MiIgcng9IjkiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2I4Y2NjNCIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48Y2lyY2xlIGN4PSIxMjEwIiBjeT0iMjQ1IiByPSI0IiBmaWxsPSIjZDVhMjM5Ii8+PHRleHQgeD0iMTI5NyIgeT0iMjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXBwbGUgU0QgR290aGljIE5lbywgTm90byBTYW5zIENKSyBLUiwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iIzE4M2QzYiI+7J287KCVIOyggOyepcK364uk7IucIOydveuKlCDsi5zqsIQ8L3RleHQ+PHJlY3QgeD0iMTE5NyIgeT0iMzQ5IiB3aWR0aD0iMTkyIiBoZWlnaHQ9IjQyIiByeD0iOSIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjYjhjY2M0IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxjaXJjbGUgY3g9IjEyMTAiIGN5PSIzNzAiIHI9IjQiIGZpbGw9IiMzNzg0NWIiLz48dGV4dCB4PSIxMjk3IiB5PSIzNzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjMTgzZDNiIj7qs7XsnKAg7J287KCVwrfroZzqt7jsnbgg7Iuc6rCEPC90ZXh0PjxyZWN0IHg9IjIxMSIgeT0iNjIiIHdpZHRoPSIxNjYiIGhlaWdodD0iMzYiIHJ4PSI5IiBmaWxsPSIjZThmMWVkIiBzdHJva2U9IiNiYmNlYzYiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHRleHQgeD0iMjk0IiB5PSI4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiMxODNkM2IiPuyekeyXhSDrsLDri6wo7Lm07ZSE7Lm0KTwvdGV4dD48cmVjdCB4PSIyMTEiIHk9IjEzNCIgd2lkdGg9IjE2NiIgaGVpZ2h0PSIzNiIgcng9IjkiIGZpbGw9IiNlOGYxZWQiIHN0cm9rZT0iI2JiY2VjNiIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48dGV4dCB4PSIyOTQiIHk9IjE1NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiMxODNkM2IiPuqzhOyCsCDsnqXsuZgoQ1BVKTwvdGV4dD48cmVjdCB4PSIyMTEiIHk9IjIwNCIgd2lkdGg9IjE2NiIgaGVpZ2h0PSIzNiIgcng9IjkiIGZpbGw9IiNlOGYxZWQiIHN0cm9rZT0iI2JiY2VjNiIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48dGV4dCB4PSIyOTQiIHk9IjIyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiMxODNkM2IiPuyekeyXheuMgCjrqZTrqqjrpqwpPC90ZXh0PjxyZWN0IHg9IjIxMSIgeT0iMjc4IiB3aWR0aD0iMTY2IiBoZWlnaHQ9IjM2IiByeD0iOSIgZmlsbD0iI2U4ZjFlZCIgc3Ryb2tlPSIjYmJjZWM2IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjI5NCIgeT0iMzAxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXBwbGUgU0QgR290aGljIE5lbywgTm90byBTYW5zIENKSyBLUiwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iIzE4M2QzYiI+65SU7Iqk7YGsIOyEnOuejSjsiqTsmZEpPC90ZXh0PjxyZWN0IHg9IjIxMSIgeT0iMzUxIiB3aWR0aD0iMTY2IiBoZWlnaHQ9IjM2IiByeD0iOSIgZmlsbD0iI2U4ZjFlZCIgc3Ryb2tlPSIjYmJjZWM2IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjI5NCIgeT0iMzc0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXBwbGUgU0QgR290aGljIE5lbywgTm90byBTYW5zIENKSyBLUiwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iIzE4M2QzYiI+7Jm467aAIOyduOqzteyngOuKpShBSSk8L3RleHQ+PHJlY3QgeD0iMTAxOCIgeT0iNTkiIHdpZHRoPSIxNjYiIGhlaWdodD0iMzYiIHJ4PSI5IiBmaWxsPSIjZThmMWVkIiBzdHJva2U9IiNiYmNlYzYiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHRleHQgeD0iMTEwMSIgeT0iODIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjMTgzZDNiIj7subTsubTsmKQg67CU7YOVIOyngOuPhDwvdGV4dD48cmVjdCB4PSIxMDE4IiB5PSIxMjgiIHdpZHRoPSIxNjYiIGhlaWdodD0iMzYiIHJ4PSI5IiBmaWxsPSIjZThmMWVkIiBzdHJva2U9IiNiYmNlYzYiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHRleHQgeD0iMTEwMSIgeT0iMTUxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXBwbGUgU0QgR290aGljIE5lbywgTm90byBTYW5zIENKSyBLUiwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iIzE4M2QzYiI+7Jes7ZaJIOq4sOuhnSDssL3qs6AoREIpPC90ZXh0PjxyZWN0IHg9IjEwMTgiIHk9IjIwNCIgd2lkdGg9IjE2NiIgaGVpZ2h0PSIzNiIgcng9IjkiIGZpbGw9IiNlOGYxZWQiIHN0cm9rZT0iI2JiY2VjNiIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48dGV4dCB4PSIxMTAxIiB5PSIyMjciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjMTgzZDNiIj7shozsi50g67Cw64usKOy5tO2UhOy5tCk8L3RleHQ+PHJlY3QgeD0iMTAxOCIgeT0iMjc3IiB3aWR0aD0iMTY2IiBoZWlnaHQ9IjM2IiByeD0iOSIgZmlsbD0iI2U4ZjFlZCIgc3Ryb2tlPSIjYmJjZWM2IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjExMDEiIHk9IjMwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiMxODNkM2IiPuy5nOq1rOyZgCDsl7TrprAg7Jew6rKwPC90ZXh0PjxyZWN0IHg9IjEwMTgiIHk9IjM1MiIgd2lkdGg9IjE2NiIgaGVpZ2h0PSIzNiIgcng9IjkiIGZpbGw9IiNlOGYxZWQiIHN0cm9rZT0iI2JiY2VjNiIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48dGV4dCB4PSIxMTAxIiB5PSIzNzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjMTgzZDNiIj7subTsubTsmKTCt+q1rOq4gCDsnbjspp08L3RleHQ+PHJlY3QgeD0iNDIwIiB5PSIxMDkiIHdpZHRoPSIxNjAiIGhlaWdodD0iNDIiIHJ4PSI5IiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSIjODA1MkEwIiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjUwMCIgeT0iMTM2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXBwbGUgU0QgR290aGljIE5lbywgTm90byBTYW5zIENKSyBLUiwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzgwNTJBMCI+7JiB7IOBIOu2hOyEnTwvdGV4dD48cmVjdCB4PSI0MjAiIHk9IjI3MyIgd2lkdGg9IjE2MCIgaGVpZ2h0PSI0MiIgcng9IjkiIGZpbGw9IndoaXRlIiBzdHJva2U9IiNCNjUzNDIiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHRleHQgeD0iNTAwIiB5PSIzMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjQjY1MzQyIj7stpTsspzCt+umrOu3sMK367mE7IScPC90ZXh0PjxyZWN0IHg9IjgyMCIgeT0iNzQiIHdpZHRoPSIxNjAiIGhlaWdodD0iNDIiIHJ4PSI5IiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSIjMTQ3OUFDIiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjkwMCIgeT0iMTAxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXBwbGUgU0QgR290aGljIE5lbywgTm90byBTYW5zIENKSyBLUiwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzE0NzlBQyI+7J6l7IaMwrfsp4Drj4Q8L3RleHQ+PHJlY3QgeD0iODIwIiB5PSIyMTAiIHdpZHRoPSIxNjAiIGhlaWdodD0iNDIiIHJ4PSI5IiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSIjMzM3RTU4IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjkwMCIgeT0iMjM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXBwbGUgU0QgR290aGljIE5lbywgTm90byBTYW5zIENKSyBLUiwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzMzN0U1OCI+7J287KCVwrfqsJnsnbQg6rOg7LmY6riwPC90ZXh0PjxyZWN0IHg9IjgyMCIgeT0iMzM4IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjQyIiByeD0iOSIgZmlsbD0id2hpdGUiIHN0cm9rZT0iIzlCNkIxNiIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48dGV4dCB4PSI5MDAiIHk9IjM2NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiM5QjZCMTYiPuqzteycoCDrp4HtgazCt+uhnOq3uOyduDwvdGV4dD48cmVjdCB4PSI2MjAiIHk9IjE4MCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSI3NCIgcng9IjkiIGZpbGw9IiMxNjRlNGMiIHN0cm9rZT0iIzE2NGU0YyIgc3Ryb2tlLXdpZHRoPSIxLjQiLz48dGV4dCB4PSI3MDAiIHk9IjIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFwcGxlIFNEIEdvdGhpYyBOZW8sIE5vdG8gU2FucyBDSksgS1IsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSI3NDAiIGZpbGw9IndoaXRlIj5Ucm92YSDshJzrsoQ8L3RleHQ+PHRleHQgeD0iNzAwIiB5PSIyMzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNTUwIiBmaWxsPSIjZGFlZWU1Ij7slbHsnZgg7J287J2EIOuwm+uKlCDqs7M8L3RleHQ+PHRleHQgeD0iNzAwIiB5PSI0MjMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBTRCBHb3RoaWMgTmVvLCBOb3RvIFNhbnMgQ0pLIEtSLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjMzc1ZDUzIj7rsoTtirwg64iE66aE44CA4oaS44CA7ISc67KE6rCAIOydvO2VqOOAgOKGkuOAgO2VqOq7mCDsk7DripQg7J6Q7JuQ7J20IOuwlOu5oOynkOOAgOKGkuOAgOyLnOqwhCDqt7jrnpjtlITqsIAg7Jik66W066m0IO2ZlOuptOyXkOyEnCDrjZQg6riw64uk66a8PC90ZXh0Pjwvc3ZnPg==\"/></div>",
+        "mode": "html"
+      },
+      "title": "앱에서 누른 일은 어디로 갈까요?",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 10,
+      "panels": [],
+      "title": "영상 분석",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "선이 오르면 링크를 넣고 장소가 뜰 때까지 더 기다려요. 왼쪽 창구에서 접수한 뒤 처리를 시작하기까지와, 실제 분석이 성공하기까지를 따로 봐요. 각 선은 최근 3시간 작업 평균이에요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 9,
+            "lineWidth": 2,
+            "showPoints": "auto",
+            "spanNulls": false
+          },
+          "min": 0,
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(trova_queue_wait_seconds_sum{job=\"trova-prod\"}[3h])) / (sum(increase(trova_queue_wait_seconds_count{job=\"trova-prod\"}[3h])) > 0)",
+          "instant": false,
+          "legendFormat": "접수 → 분석 시작",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(trova_analysis_execution_seconds_sum{job=\"trova-prod\",outcome=\"success\"}[3h])) / (sum(increase(trova_analysis_execution_seconds_count{job=\"trova-prod\",outcome=\"success\"}[3h])) > 0)",
+          "instant": false,
+          "legendFormat": "분석 시작 → 성공",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "영상 결과 기다린 시간",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "스왑(swap=맞바꾸기)은 메모리 작업대의 자료를 디스크 서랍에 넣었다가 필요할 때 꺼내는 일이에요. 특히 꺼내는 양이 계속 오르면 영상 분석과 목록 읽기가 늦어질 수 있어요. 서버 전체가 초당 옮긴 자료 묶음 수를 보여줘요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 9,
+            "lineWidth": 2,
+            "showPoints": "auto",
+            "spanNulls": false
+          },
+          "min": 0,
+          "unit": "suffix:묶음/초"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(host_swap_pages_total{job=\"trova-prod\",direction=\"out\"}[5m]))",
+          "instant": false,
+          "legendFormat": "작업대 → 디스크에 넣음",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(host_swap_pages_total{job=\"trova-prod\",direction=\"in\"}[5m]))",
+          "instant": false,
+          "legendFormat": "디스크 → 작업대로 꺼냄",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "디스크로 옮긴 양",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "id": 20,
+      "panels": [],
+      "title": "장소·지도",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "이 선이 오르면 저장한 장소 목록과 지도 위의 핀이 늦게 떠요. 앱이 서버의 주소록에서 이름과 좌표를 받는 최근 5분 평균이에요. 바탕 지도는 휴대폰이 카카오에서 직접 받아요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 9,
+            "lineWidth": 2,
+            "showPoints": "auto",
+            "spanNulls": false
+          },
+          "min": 0,
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_requests_seconds_sum{job=\"trova-prod\",method=~\"GET\",uri=~\"/api/places\"}[5m])) / (sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",method=~\"GET\",uri=~\"/api/places\"}[5m])) > 0)",
+          "instant": false,
+          "legendFormat": "저장한 장소·좌표",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "장소 목록 받는 시간",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 30,
+      "panels": [],
+      "title": "AI 추천·리뷰 요약·비서",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "AI(Artificial Intelligence=인공지능)는 부탁을 읽고 답을 만드는 도우미예요. 선이 오르면 교체 후보, 리뷰 요약 또는 비서 답장이 늦게 떠요. 앱이 서버에 부탁해 답을 받는 최근 5분 평균이라 이미 저장한 요약을 읽는 시간도 포함해요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 9,
+            "lineWidth": 2,
+            "showPoints": "auto",
+            "spanNulls": false
+          },
+          "min": 0,
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 29
+      },
+      "id": 31,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_requests_seconds_sum{job=\"trova-prod\",method=~\"GET\",uri=~\"/api/trip-places/[^/]+/alternatives\"}[5m])) / (sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",method=~\"GET\",uri=~\"/api/trip-places/[^/]+/alternatives\"}[5m])) > 0)",
+          "instant": false,
+          "legendFormat": "교체 후보",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_requests_seconds_sum{job=\"trova-prod\",method=~\"GET\",uri=~\"/api/(places|saved-places|trip-places)/[^/]+/details\"}[5m])) / (sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",method=~\"GET\",uri=~\"/api/(places|saved-places|trip-places)/[^/]+/details\"}[5m])) > 0)",
+          "instant": false,
+          "legendFormat": "리뷰 요약",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_requests_seconds_sum{job=\"trova-prod\",method=~\"POST\",uri=~\"/api/conversations/[^/]+/messages\"}[5m])) / (sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",method=~\"POST\",uri=~\"/api/conversations/[^/]+/messages\"}[5m])) > 0)",
+          "instant": false,
+          "legendFormat": "여행 비서 답장",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "추천·리뷰·답장 시간",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "id": 40,
+      "panels": [],
+      "title": "일정 저장·같이 고치기",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "선이 오르면 내 저장 확인이나 친구 앱이 고친 일정을 다시 읽는 과정이 늦어져요. 서버는 소식 배달원처럼 변경을 알리고 앱이 최신 일정을 다시 받아요. 실제 상대 화면에 그려진 시각은 따로 측정해야 해요. 최근 5분 평균이에요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 9,
+            "lineWidth": 2,
+            "showPoints": "auto",
+            "spanNulls": false
+          },
+          "min": 0,
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 41,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_requests_seconds_sum{job=\"trova-prod\",method=~\"POST\",uri=~\"/api/trips\"}[5m])) / (sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",method=~\"POST\",uri=~\"/api/trips\"}[5m])) > 0)",
+          "instant": false,
+          "legendFormat": "새 일정 저장",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_requests_seconds_sum{job=\"trova-prod\",method=~\"PATCH\",uri=~\"/api/(trips/[^/]+/(title|dates)|trip-places/[^/]+/(details|order))\"}[5m])) / (sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",method=~\"PATCH\",uri=~\"/api/(trips/[^/]+/(title|dates)|trip-places/[^/]+/(details|order))\"}[5m])) > 0)",
+          "instant": false,
+          "legendFormat": "일정 수정",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_requests_seconds_sum{job=\"trova-prod\",method=~\"GET\",uri=\"/api/trips/{id}\"}[5m])) / (sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",method=~\"GET\",uri=\"/api/trips/{id}\"}[5m])) > 0)",
+          "instant": false,
+          "legendFormat": "최신 일정 다시 읽기",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "일정 저장·다시 읽는 시간",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 44
+      },
+      "id": 50,
+      "panels": [],
+      "title": "공유 링크·로그인",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "선이 오르면 받은 링크에서 일정이 늦게 열리거나 웹 로그인 뒤 홈 전환이 늦어져요. 링크 확인과 일회용 코드를 앱 출입증으로 교환하는 최근 5분 평균이에요. 카카오·구글 창에서 입력한 시간은 제외해요.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 9,
+            "lineWidth": 2,
+            "showPoints": "auto",
+            "spanNulls": false
+          },
+          "min": 0,
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 45
+      },
+      "id": 51,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_requests_seconds_sum{job=\"trova-prod\",method=~\"GET\",uri=~\"/api/public/trips/[^/]+\"}[5m])) / (sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",method=~\"GET\",uri=~\"/api/public/trips/[^/]+\"}[5m])) > 0)",
+          "instant": false,
+          "legendFormat": "공유 일정 열기",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_requests_seconds_sum{job=\"trova-prod\",method=~\"POST\",uri=~\"/api/auth/web-exchange\"}[5m])) / (sum(rate(http_server_requests_seconds_count{job=\"trova-prod\",method=~\"POST\",uri=~\"/api/auth/web-exchange\"}[5m])) > 0)",
+          "instant": false,
+          "legendFormat": "웹 로그인 마무리",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "공유 일정·로그인 시간",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 42,
+  "tags": [
+    "trova",
+    "production"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "1m",
+      "5m",
+      "15m"
+    ]
+  },
+  "timezone": "Asia/Seoul",
+  "title": "Trova 한눈에 보기",
+  "uid": "trova-at-a-glance",
+  "version": 3,
+  "weekStart": ""
+}

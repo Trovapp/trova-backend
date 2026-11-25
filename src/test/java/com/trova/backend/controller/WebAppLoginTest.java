@@ -6,6 +6,8 @@ import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
 import com.trova.backend.service.WebAppLoginService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -30,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @TestPropertySource(properties = {
         "app.web-app-url=https://trova.example.dev/",
+        "app.web-app-legacy-origin=https://old.example.dev/",
         "app.admin-web-url=https://trova-admin.example.dev",
         "app.admin.users=google:wa-admin"})
 class WebAppLoginTest {
@@ -103,17 +106,18 @@ class WebAppLoginTest {
         assertThat(webAppLoginService.failureRedirect()).isEqualTo(WEB_APP + "/auth/callback/?error=oauth_failed");
     }
 
-    @Test
-    void 웹앱_주소는_쿠키_없이_API를_부를_수_있다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {WEB_APP, "https://old.example.dev"})
+    void 새_주소와_옛_주소는_쿠키_없이_일반_API만_부를_수_있다(String origin) throws Exception {
         mockMvc.perform(options("/api/trips")
-                        .header(HttpHeaders.ORIGIN, WEB_APP)
+                        .header(HttpHeaders.ORIGIN, origin)
                         .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
                 .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, WEB_APP))
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin))
                 .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS));
         // 관리자 API는 관리자 웹 주소만
         mockMvc.perform(options("/api/admin/dashboard/summary")
-                        .header(HttpHeaders.ORIGIN, WEB_APP)
+                        .header(HttpHeaders.ORIGIN, origin)
                         .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
                 .andExpect(status().isForbidden());
     }

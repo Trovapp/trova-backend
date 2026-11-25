@@ -228,7 +228,10 @@ class AdminActionsControllerTest {
                 Instant.now().minusSeconds(700));
 
         execute(old, token, "사유").andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("REAUTH_REQUIRED"));
+                .andExpect(jsonPath("$.error").value("REAUTH_REQUIRED"))
+                .andExpect(jsonPath("$.code").value("REAUTH_REQUIRED"))
+                .andExpect(jsonPath("$.status").value(403))
+                .andExpect(jsonPath("$.traceId").isNotEmpty());
 
         assertStillSuspended(user.getId());
     }

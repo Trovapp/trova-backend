@@ -1,0 +1,392 @@
+{
+  "at": 1795595458.6380312,
+  "shared_trip_members": 10,
+  "shared_viewers": 10,
+  "other_trip_viewers": 54,
+  "results": [
+    {
+      "user": 1,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 730.9136390686035
+    },
+    {
+      "user": 2,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 929.3525218963623
+    },
+    {
+      "user": 3,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 430.22751808166504
+    },
+    {
+      "user": 4,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 429.11267280578613
+    },
+    {
+      "user": 5,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 424.35574531555176
+    },
+    {
+      "user": 6,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 423.9215850830078
+    },
+    {
+      "user": 7,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 922.6016998291016
+    },
+    {
+      "user": 8,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 722.3372459411621
+    },
+    {
+      "user": 9,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 423.4037399291992
+    },
+    {
+      "user": 10,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 422.65915870666504
+    },
+    {
+      "user": 11,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 721.2231159210205
+    },
+    {
+      "user": 12,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 721.468448638916
+    },
+    {
+      "user": 13,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 821.8622207641602
+    },
+    {
+      "user": 14,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 422.7333068847656
+    },
+    {
+      "user": 15,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 423.2678413391113
+    },
+    {
+      "user": 16,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 720.4399108886719
+    },
+    {
+      "user": 17,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 422.7445125579834
+    },
+    {
+      "user": 18,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 521.5895175933838
+    },
+    {
+      "user": 19,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 820.6870555877686
+    },
+    {
+      "user": 20,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 423.87890815734863
+    },
+    {
+      "user": 21,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 421.9086170196533
+    },
+    {
+      "user": 22,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 911.0386371612549
+    },
+    {
+      "user": 23,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 919.5132255554199
+    },
+    {
+      "user": 24,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 820.0006484985352
+    },
+    {
+      "user": 25,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 421.0171699523926
+    },
+    {
+      "user": 26,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 919.6257591247559
+    },
+    {
+      "user": 27,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 421.1773872375488
+    },
+    {
+      "user": 28,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 422.44577407836914
+    },
+    {
+      "user": 29,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 819.4622993469238
+    },
+    {
+      "user": 30,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 421.25988006591797
+    },
+    {
+      "user": 31,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 420.9282398223877
+    },
+    {
+      "user": 32,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 520.1661586761475
+    },
+    {
+      "user": 33,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 419.9216365814209
+    },
+    {
+      "user": 34,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 419.7676181793213
+    },
+    {
+      "user": 35,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 918.391227722168
+    },
+    {
+      "user": 36,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 419.8787212371826
+    },
+    {
+      "user": 37,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 918.137788772583
+    },
+    {
+      "user": 38,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 918.0657863616943
+    },
+    {
+      "user": 39,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 717.9758548736572
+    },
+    {
+      "user": 40,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 419.48771476745605
+    },
+    {
+      "user": 41,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 917.9749488830566
+    },
+    {
+      "user": 42,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 420.1188087463379
+    },
+    {
+      "user": 43,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 518.7380313873291
+    },
+    {
+      "user": 44,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 716.7301177978516
+    },
+    {
+      "user": 45,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 916.7940616607666
+    },
+    {
+      "user": 46,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 916.5105819702148
+    },
+    {
+      "user": 47,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 716.6266441345215
+    },
+    {
+      "user": 48,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 517.5330638885498
+    },
+    {
+      "user": 49,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 417.7696704864502
+    },
+    {
+      "user": 50,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 916.5318012237549
+    },
+    {
+      "user": 51,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 716.6674137115479
+    },
+    {
+      "user": 52,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 716.604471206665
+    },
+    {
+      "user": 53,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 716.3479328155518
+    },
+    {
+      "user": 54,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 415.2038097381592
+    },
+    {
+      "user": 55,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 415.12393951416016
+    },
+    {
+      "user": 56,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 814.2333030700684
+    },
+    {
+      "user": 57,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 713.5138511657715
+    },
+    {
+      "user": 58,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 415.1592254638672
+    },
+    {
+      "user": 59,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 713.6845588684082
+    },
+    {
+      "user": 60,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 415.4825210571289
+    },
+    {
+      "user": 61,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 420.26281356811523
+    },
+    {
+      "user": 62,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 415.3869152069092
+    },
+    {
+      "user": 63,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 415.438175201416
+    },
+    {
+      "user": 64,
+      "status": 200,
+      "ready": true,
+      "admission_ms": 813.4558200836182
+    }
+  ]
+}

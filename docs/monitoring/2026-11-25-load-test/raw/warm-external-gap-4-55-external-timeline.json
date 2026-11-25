@@ -1,0 +1,170 @@
+[
+  {
+    "at": 1795595257.228576,
+    "places": 441,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 441,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595259.64858,
+    "places": 445,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 445,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595261.869719,
+    "places": 449,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 449,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595264.118494,
+    "places": 449,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 449,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595266.374152,
+    "places": 453,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 453,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595269.603903,
+    "places": 457,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 457,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595271.860312,
+    "places": 458,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 458,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595274.124544,
+    "places": 461,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 461,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595276.372683,
+    "places": 465,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 465,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595278.6295402,
+    "places": 467,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 467,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595281.627926,
+    "places": 469,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 469,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795595283.872292,
+    "places": 472,
+    "gemini_metric_units": 108,
+    "operations": {
+      "gemini/conversation-turn/false": 1,
+      "gemini/conversation-query-embedding/true": 5,
+      "google-places/nearby-search-alternative/true": 472,
+      "gemini/place-embedding-batch/true": 80,
+      "gemini/conversation-turn/true": 22,
+      "internal/conversation-tool-find_alternatives/true": 11
+    },
+    "source": "isolated DB api_call_logs"
+  }
+]

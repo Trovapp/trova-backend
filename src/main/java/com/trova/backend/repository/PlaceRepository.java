@@ -48,6 +48,14 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             @Param("latitude") Double latitude, @Param("longitude") Double longitude,
             @Param("address") String address, @Param("lastSyncedAt") LocalDateTime lastSyncedAt);
 
+    @Modifying
+    @Query("""
+            update Place p set p.latitude = :latitude, p.longitude = :longitude,
+                p.address = coalesce(p.address, :address)
+            where p.id = :id and (p.latitude is null or p.longitude is null)
+            """)
+    int repairMissingLocation(Long id, double latitude, double longitude, String address);
+
     // embedding은 pgvector 타입이라 Place 엔티티에 JPA 필드로 매핑하지 않는다 — H2
     // 테스트 DB가 vector 타입을 모르기 때문에(스키마 생성 시 전체 테스트 스위트가
     // 깨짐). 네이티브 쿼리로만 읽고 쓴다.

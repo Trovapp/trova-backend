@@ -41,6 +41,10 @@ public class AlternativeFinderService {
 
     private static final Logger log = LoggerFactory.getLogger(AlternativeFinderService.class);
 
+    private static final Set<String> NOT_A_STOP = Set.of(
+            "lodging", "hotel", "motel", "hostel", "guest_house", "resort_hotel", "extended_stay_hotel",
+            "subway_station", "train_station", "transit_station", "bus_station", "light_rail_station", "airport",
+            "university", "school", "primary_school", "secondary_school", "parking", "gas_station");
     private static final double SEARCH_RADIUS_METERS = 2000;
     // 이름 끝이 같은 후보를 같은 장소로 볼 거리 — 구글·카카오 좌표 차이를 넉넉히 본다(#177).
     private static final double SAME_PLACE_KM = 0.3;
@@ -123,10 +127,6 @@ public class AlternativeFinderService {
                 ? GoogleTypeMapper.toGoogleType(filter.category()).orElse(null)
                 : GoogleTypeMapper.defaultTypeFor(target.getCategory()).orElse(null);
 
-        // next는 검색 성공 여부와 무관하게 항상 구해둔다(검색이 실패해도 형제 조회는
-        // 이미 끝나 있어야 이후 로직이 next 유무를 일관되게 판단할 수 있다).
-        TripPlace next = findNext(target);
-
         // 명시 필터 없이 같은 종류 검색에 성공했고 원본을 뺀 후보가 3곳 미만이면 한 번만 보충한다.
         // 검색 실패와 성공한 빈 결과를 구분하고, 보충 실패가 이미 확보한 후보를 지우지 않도록 한다.
         long searchStart = System.currentTimeMillis();
@@ -164,7 +164,8 @@ public class AlternativeFinderService {
 
         // 같은 여행에 이미 있는 장소가 대안으로 나오면 안 된다 — 진관사계곡 대안으로 같은 여행의 은평한옥마을이 나왔다(#177).
         // 영상에서 온 장소는 구글 장소 ID가 없어 이름(공백 무시)으로도 거른다. 같은 주소의 다른 가게가 있어 거리로는 거르지 않는다.
-        List<TripPlace> inTrip = tripPlaceRepository.findByItinerary_Trip(target.getItinerary().getTrip());
+        List<TripPlace> inTrip = tripPlaceRepository.findByTripOrderByDayAndVisitOrder(target.getItinerary().getTrip());
+        TripPlace next = findNext(target, inTrip);
         Set<String> tripGoogleIds = inTrip.stream().map(TripPlace::getGooglePlaceId)
                 .filter(Objects::nonNull).collect(Collectors.toSet());
         Set<String> tripNames = inTrip.stream().map(p -> normalizeName(p.getPlaceName()))
@@ -179,9 +180,9 @@ public class AlternativeFinderService {
         // 바꾸려는 곳이 숙소·역이면 같은 종류가 대안이므로 그대로 둔다.
         boolean lodgingTarget = GoogleTypeMapper.defaultTypeFor(target.getCategory()).filter("lodging"::equals).isPresent();
         if (filter.category() == null && !lodgingTarget
-                && (target.getCategory() == null || !GapRecommendationService.NOT_A_STOP.contains(target.getCategory()))) {
+                && (target.getCategory() == null || !NOT_A_STOP.contains(target.getCategory()))) {
             candidates = candidates.stream()
-                    .filter(p -> !(p.getCategory() != null && GapRecommendationService.NOT_A_STOP.contains(p.getCategory())))
+                    .filter(p -> !(p.getCategory() != null && NOT_A_STOP.contains(p.getCategory())))
                     .toList();
         }
 
@@ -372,11 +373,14 @@ public class AlternativeFinderService {
         return TripAccess.requireMember(place.getItinerary().getTrip(), user);
     }
 
-    private TripPlace findNext(TripPlace target) {
-        List<TripPlace> siblings = tripPlaceRepository.findByItineraryOrderByVisitOrder(target.getItinerary());
-        for (int i = 0; i < siblings.size(); i++) {
-            if (siblings.get(i).getId().equals(target.getId())) {
-                return i + 1 < siblings.size() ? siblings.get(i + 1) : null;
+    private TripPlace findNext(TripPlace target, List<TripPlace> inTrip) {
+        boolean afterTarget = false;
+        for (TripPlace place : inTrip) {
+            if (afterTarget && Objects.equals(place.getItinerary().getId(), target.getItinerary().getId())) {
+                return place;
+            }
+            if (target.getId().equals(place.getId())) {
+                afterTarget = true;
             }
         }
         return null;

@@ -1,6 +1,8 @@
 package com.trova.backend.security;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -23,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = "server.forward-headers-strategy=native")
+        properties = {"server.forward-headers-strategy=native", "server.tomcat.remoteip.host-header=X-Forwarded-Host"})
 class ForwardedHeadersIntegrationTest {
 
     @LocalServerPort private int port;
@@ -52,8 +54,23 @@ class ForwardedHeadersIntegrationTest {
     }
 
     private String redirectUri(String forwardedProto) throws Exception {
+        return redirectUri(forwardedProto, null, "kakao");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "api.trova.duckdns.org,google", "api.trova.duckdns.org,kakao",
+            "193-123-161-217.sslip.io,google", "193-123-161-217.sslip.io,kakao"
+    })
+    void callbackUsesRequestedHost(String host, String provider) throws Exception {
+        assertThat(redirectUri("https", host, provider))
+                .isEqualTo("https://" + host + "/login/oauth2/code/" + provider);
+    }
+
+    private String redirectUri(String forwardedProto, String host, String provider) throws Exception {
         HttpRequest.Builder request = HttpRequest.newBuilder(
-                URI.create("http://localhost:" + port + "/oauth2/authorization/kakao"));
+                URI.create("http://localhost:" + port + "/oauth2/authorization/" + provider));
+        if (host != null) request.header("X-Forwarded-Host", host);
         if (forwardedProto != null) {
             request.header("X-Forwarded-Proto", forwardedProto);
         }

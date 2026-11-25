@@ -172,7 +172,7 @@ class AlternativeFinderServiceTest {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(place.getItinerary().getTrip())).thenReturn(List.of(place));
 
         GooglePlacesNearbySearchResponse.Place raw = new GooglePlacesNearbySearchResponse.Place(
                 "gp-1", new GooglePlacesNearbySearchResponse.Place.DisplayName("대안카페"),
@@ -199,7 +199,7 @@ class AlternativeFinderServiceTest {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(place.getItinerary().getTrip())).thenReturn(List.of(place));
 
         GooglePlacesNearbySearchResponse.Place rawIndoor = new GooglePlacesNearbySearchResponse.Place(
                 "gp-in", new GooglePlacesNearbySearchResponse.Place.DisplayName("실내카페"),
@@ -236,7 +236,7 @@ class AlternativeFinderServiceTest {
         TripPlace next = new TripPlace(itinerary, "다음", null, "cafe", 37.510, 127.000, null, null, 2, PlaceSource.NORMAL, null);
         setId(place, 1L);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(place, next));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(itinerary.getTrip())).thenReturn(List.of(place, next));
 
         // 위도 0.01도 ≈ 1.11km — 후보를 next 바로 옆(약 1.1km)과 아주 먼 곳(약 5.5km) 두 개로 구성
         GooglePlacesNearbySearchResponse.Place near = new GooglePlacesNearbySearchResponse.Place(
@@ -268,7 +268,6 @@ class AlternativeFinderServiceTest {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
         when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "cafe"))
                 .thenThrow(new RuntimeException("Google Places API 장애"));
 
@@ -285,7 +284,7 @@ class AlternativeFinderServiceTest {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(place.getItinerary().getTrip())).thenReturn(List.of(place));
 
         GooglePlacesNearbySearchResponse.Place raw = new GooglePlacesNearbySearchResponse.Place(
                 "gp-tag-fail", new GooglePlacesNearbySearchResponse.Place.DisplayName("태깅안된카페"),
@@ -315,7 +314,7 @@ class AlternativeFinderServiceTest {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(place.getItinerary().getTrip())).thenReturn(List.of(place));
 
         GooglePlacesNearbySearchResponse.Place rawNoCoord = new GooglePlacesNearbySearchResponse.Place(
                 "gp-no-coord", new GooglePlacesNearbySearchResponse.Place.DisplayName("좌표없는곳"),
@@ -357,9 +356,7 @@ class AlternativeFinderServiceTest {
         TripPlace temple = new TripPlace(
                 place.getItinerary(), "진관사", null, "attraction", 37.5040, 127.0, null, null, 4, PlaceSource.NORMAL, null);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary()))
-                .thenReturn(List.of(place, sameTripByName, sameTripById, temple));
-        when(tripPlaceRepository.findByItinerary_Trip(place.getItinerary().getTrip()))
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(place.getItinerary().getTrip()))
                 .thenReturn(List.of(place, sameTripByName, sameTripById, temple));
 
         GooglePlacesNearbySearchResponse.Place rawByName = new GooglePlacesNearbySearchResponse.Place(
@@ -407,7 +404,7 @@ class AlternativeFinderServiceTest {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(place.getItinerary().getTrip())).thenReturn(List.of(place));
 
         GooglePlacesNearbySearchResponse.Place rawHotel = new GooglePlacesNearbySearchResponse.Place(
                 "gp-hotel", new GooglePlacesNearbySearchResponse.Place.DisplayName("어느 호텔"),
@@ -445,7 +442,12 @@ class AlternativeFinderServiceTest {
                 itinerary, "돼지국밥집", null, "korean_restaurant", 37.5, 127.0, null, null, 1, PlaceSource.NORMAL, null);
         setId(place, 1L);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(place));
+        Itinerary tomorrow = new Itinerary(trip, 2, null);
+        setId(itinerary, 31L);
+        setId(tomorrow, 32L);
+        TripPlace firstTomorrow = new TripPlace(tomorrow, "다음 날 첫 장소", null, "park", 35.0, 127.0,
+                null, null, 1, PlaceSource.NORMAL, null);
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(place, firstTomorrow));
 
         GooglePlacesNearbySearchResponse.Place raw = new GooglePlacesNearbySearchResponse.Place(
                 "gp-r", new GooglePlacesNearbySearchResponse.Place.DisplayName("다른 국밥집"),
@@ -461,6 +463,7 @@ class AlternativeFinderServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get()).extracting(AlternativeCandidate::googlePlaceId).containsExactly("gp-r");
+        assertThat(result.orElseThrow().getFirst().distanceToNextKm()).isNull();
     }
 
     @Test
@@ -469,7 +472,7 @@ class AlternativeFinderServiceTest {
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         place.applyGooglePlaceId("gp-self");
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(place.getItinerary().getTrip())).thenReturn(List.of(place));
 
         GooglePlacesNearbySearchResponse.Place rawSelf = new GooglePlacesNearbySearchResponse.Place(
                 "gp-self", new GooglePlacesNearbySearchResponse.Place.DisplayName("원래 장소"),
@@ -498,7 +501,7 @@ class AlternativeFinderServiceTest {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(place.getItinerary().getTrip())).thenReturn(List.of(place));
 
         GooglePlacesNearbySearchResponse.Place rawLow = new GooglePlacesNearbySearchResponse.Place(
                 "low-gp", new GooglePlacesNearbySearchResponse.Place.DisplayName("낮은 후보"),
@@ -536,7 +539,7 @@ class AlternativeFinderServiceTest {
         User owner = user();
         TripPlace place = tripPlace(1L, owner, 37.5, 127.0);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(place));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(place.getItinerary())).thenReturn(List.of(place));
+        when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(place.getItinerary().getTrip())).thenReturn(List.of(place));
 
         GooglePlacesNearbySearchResponse.Place rawLow = new GooglePlacesNearbySearchResponse.Place(
                 "low-gp", new GooglePlacesNearbySearchResponse.Place.DisplayName("낮은 후보"),
@@ -633,7 +636,7 @@ class AlternativeFinderServiceTest {
                 37.5, 127.0, null, null, 1, PlaceSource.NORMAL, null);
         setId(target, 1L);
         when(tripPlaceRepository.findById(1L)).thenReturn(Optional.of(target));
-        when(tripPlaceRepository.findByItineraryOrderByVisitOrder(target.getItinerary())).thenReturn(List.of(target));
+        lenient().when(tripPlaceRepository.findByTripOrderByDayAndVisitOrder(target.getItinerary().getTrip())).thenReturn(List.of(target));
         return owner;
     }
 

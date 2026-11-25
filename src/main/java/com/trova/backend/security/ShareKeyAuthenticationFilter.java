@@ -8,7 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+import com.trova.backend.controller.ApiErrors;
+import java.util.Map;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -54,7 +55,7 @@ public class ShareKeyAuthenticationFilter extends OncePerRequestFilter {
         if (key.isPresent() && !suspendedUsers.isSuspended(key.get().getUserId())) {
             // 감으로 정한 한도(실측 아님) — 단축어가 새거나 잘못 반복돼도 하루 한도를 순식간에 쓰지 않게.
             if (!rateLimiter.tryAcquire("share-key:" + key.get().getId(), perMinute)) {
-                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                ApiErrors.write(response, 429, Map.of());
                 return;
             }
             SecurityContextHolder.getContext().setAuthentication(new JwtAuthenticationToken(key.get().getUserId()));

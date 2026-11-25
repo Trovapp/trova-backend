@@ -1,0 +1,104 @@
+[
+  {
+    "at": 1795593846.63831,
+    "places": 0,
+    "gemini_metric_units": 0,
+    "operations": {},
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593849.0954728,
+    "places": 0,
+    "gemini_metric_units": 0,
+    "operations": {},
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593851.349654,
+    "places": 0,
+    "gemini_metric_units": 0,
+    "operations": {},
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593853.569217,
+    "places": 0,
+    "gemini_metric_units": 0,
+    "operations": {},
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593855.782045,
+    "places": 0,
+    "gemini_metric_units": 0,
+    "operations": {},
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593857.9994712,
+    "places": 1,
+    "gemini_metric_units": 0,
+    "operations": {
+      "google-places/nearby-search-alternative/true": 1
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593861.016348,
+    "places": 1,
+    "gemini_metric_units": 0,
+    "operations": {
+      "google-places/nearby-search-alternative/true": 1
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593863.239634,
+    "places": 1,
+    "gemini_metric_units": 0,
+    "operations": {
+      "google-places/nearby-search-alternative/true": 1
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593865.456077,
+    "places": 1,
+    "gemini_metric_units": 20,
+    "operations": {
+      "gemini/place-embedding-batch/true": 20,
+      "google-places/nearby-search-alternative/true": 1
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593867.6798,
+    "places": 1,
+    "gemini_metric_units": 20,
+    "operations": {
+      "gemini/place-embedding-batch/true": 20,
+      "google-places/nearby-search-alternative/true": 1
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593870.7243688,
+    "places": 2,
+    "gemini_metric_units": 20,
+    "operations": {
+      "gemini/place-embedding-batch/true": 20,
+      "google-places/nearby-search-alternative/true": 2
+    },
+    "source": "isolated DB api_call_logs"
+  },
+  {
+    "at": 1795593872.968547,
+    "places": 2,
+    "gemini_metric_units": 20,
+    "operations": {
+      "gemini/place-embedding-batch/true": 20,
+      "google-places/nearby-search-alternative/true": 2
+    },
+    "source": "isolated DB api_call_logs"
+  }
+]

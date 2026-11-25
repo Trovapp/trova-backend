@@ -40,7 +40,7 @@ public class BookmarkController {
      * 본인 영상 장소가 아니면 404, 지도에서 찾지 못하면 422(앱이 "지도에서 찾지 못했다"고 알린다).
      */
     @PostMapping("/saved-place")
-    public ResponseEntity<BookmarkResponse> createFromSavedPlace(
+    public ResponseEntity<?> createFromSavedPlace(
             Authentication authentication, @RequestBody CreateSavedPlaceBookmarkRequest request
     ) {
         if (request == null || request.savedPlaceId() == null) {
@@ -52,7 +52,7 @@ public class BookmarkController {
             return ResponseEntity.notFound().build();
         }
         if (match.get().place().isEmpty()) {
-            return ResponseEntity.status(422).build();
+            return ResponseEntity.unprocessableEntity().body(java.util.Map.of("code", "PLACE_MATCH_AMBIGUOUS"));
         }
         return bookmarkService.addBookmark(user, match.get().place().get().getId(), request.folderId())
                 .map(b -> ResponseEntity.ok(BookmarkResponse.from(b)))
@@ -76,6 +76,10 @@ public class BookmarkController {
             Long id, Long placeId, String placeName, String googlePlaceId, String mood, String space,
             Double latitude, Double longitude, String createdAt, Long folderId, String category, String address
     ) {
+        public String getAddressSource() {
+            return address == null ? null : "PLACE_CATALOG";
+        }
+
         static BookmarkResponse from(Bookmark b) {
             return new BookmarkResponse(
                     b.getId(), b.getPlace().getId(), b.getPlace().getName(), b.getPlace().getGooglePlaceId(),
