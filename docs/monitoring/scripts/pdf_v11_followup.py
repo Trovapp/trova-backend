@@ -24,7 +24,7 @@ def formatted(text):
     return text.replace('`', '')
 
 story = []
-for filename in ['README.md', 'conflict-results.md']:
+for filename in ['README.md', 'conflict-results.md', 'fresh-ui-results.md']:
     if story:
         story.append(PageBreak())
     lines = (root/filename).read_text(encoding='utf-8').splitlines()
@@ -59,7 +59,7 @@ for filename in ['README.md', 'conflict-results.md']:
 
 def footer(canvas, doc):
     canvas.setFont('Malgun', 8)
-    canvas.drawString(46, 23, 'Trova v11 공동 편집 후속 측정 · 2026-11-25 · 새 대안 측정 대기')
+    canvas.drawString(46, 23, 'Trova v11 공동 편집 후속 측정 · 2026-11-25 · 대안30건·공동편집40회')
     canvas.drawRightString(A4[0]-46, 23, str(doc.page))
 
-SimpleDocTemplate(str(root/'v11-followup-report.pdf'), pagesize=A4, leftMargin=46, rightMargin=46, topMargin=38, bottomMargin=42, title='Trova v11 공동 편집 후속 측정 (중간 보고)', author='Trova').build(story, onFirstPage=footer, onLaterPages=footer)
+SimpleDocTemplate(str(root/'v11-followup-report.pdf'), pagesize=A4, leftMargin=46, rightMargin=46, topMargin=38, bottomMargin=42, title='Trova v11 새 대안·공동 편집 후속 측정', author='Trova').build(story, onFirstPage=footer, onLaterPages=footer)

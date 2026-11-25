@@ -1,0 +1,28 @@
+{
+  "sample": 17,
+  "place": "서문시장",
+  "start": "2026-11-25T18:42:16.554+09:00",
+  "end": "2026-11-25T18:42:20.595+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 4.039,
+  "observations": [
+    {
+      "seconds": 0.834,
+      "changed": 0.09714
+    },
+    {
+      "seconds": 1.912,
+      "changed": 0.10475
+    },
+    {
+      "seconds": 3.098,
+      "changed": 0.11074
+    },
+    {
+      "seconds": 4.039,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

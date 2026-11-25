@@ -1,0 +1,28 @@
+{
+  "sample": 23,
+  "place": "바람의언덕",
+  "start": "2026-11-25T18:48:35.577+09:00",
+  "end": "2026-11-25T18:48:39.985+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 4.407,
+  "observations": [
+    {
+      "seconds": 0.802,
+      "changed": 0.09938
+    },
+    {
+      "seconds": 2.17,
+      "changed": 0.10435
+    },
+    {
+      "seconds": 3.492,
+      "changed": 0.10432
+    },
+    {
+      "seconds": 4.407,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

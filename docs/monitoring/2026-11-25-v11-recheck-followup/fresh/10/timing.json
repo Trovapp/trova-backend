@@ -1,0 +1,28 @@
+{
+  "sample": 10,
+  "place": "부석사",
+  "start": "2026-11-25T18:34:08.914+09:00",
+  "end": "2026-11-25T18:34:12.291+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 3.376,
+  "observations": [
+    {
+      "seconds": 0.734,
+      "changed": 0.09692
+    },
+    {
+      "seconds": 1.672,
+      "changed": 0.10435
+    },
+    {
+      "seconds": 2.63,
+      "changed": 0.10834
+    },
+    {
+      "seconds": 3.376,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

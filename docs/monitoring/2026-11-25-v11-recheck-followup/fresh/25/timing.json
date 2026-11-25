@@ -1,0 +1,28 @@
+{
+  "sample": 25,
+  "place": "순천만국가정원",
+  "start": "2026-11-25T18:50:28.084+09:00",
+  "end": "2026-11-25T18:50:32.146+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 4.061,
+  "observations": [
+    {
+      "seconds": 0.865,
+      "changed": 0.097
+    },
+    {
+      "seconds": 1.942,
+      "changed": 0.10475
+    },
+    {
+      "seconds": 3.269,
+      "changed": 0.11053
+    },
+    {
+      "seconds": 4.061,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

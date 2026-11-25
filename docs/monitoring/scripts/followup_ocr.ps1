@@ -1,4 +1,4 @@
-param([Parameter(Mandatory=$true)][string]$ImagePath)
+param([Parameter(Mandatory=$true)][string]$ImagePath, [switch]$AllText)
 # Offline evidence inspection only; no device input or network requests.
 Add-Type -AssemblyName System.Runtime.WindowsRuntime
 [Windows.Graphics.Imaging.BitmapDecoder,Windows.Foundation,ContentType=WindowsRuntime] > $null
@@ -19,7 +19,7 @@ $bitmap=AwaitResult ($decoder.GetSoftwareBitmapAsync()) ([Windows.Graphics.Imagi
 $engine=[Windows.Media.Ocr.OcrEngine]::TryCreateFromUserProfileLanguages()
 $result=AwaitResult ($engine.RecognizeAsync($bitmap)) ([Windows.Media.Ocr.OcrResult])
 $rows=@(foreach($line in $result.Lines) {
- if($line.Text -match 'memo|offline|delete|친구|저장|연결|네트워크|삭제|완료|이삭|연화|광안|변경|다시|불러|사라|없어') {
+ if($AllText -or $line.Text -match 'memo|offline|delete|친구|저장|연결|네트워크|삭제|완료|이삭|연화|광안|변경|다시|불러|사라|없어') {
   [pscustomobject]@{text=$line.Text;bounds=@($line.Words | ForEach-Object { $_.BoundingRect.ToString() })}
  }
 })

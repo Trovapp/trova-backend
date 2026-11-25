@@ -1,0 +1,25 @@
+{
+  "sample": 30,
+  "place": "오설록 티 뮤지엄",
+  "device": "5584",
+  "start": "2026-11-25T19:04:23.802+09:00",
+  "end": "2026-11-25T19:04:27.236+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 3.433,
+  "observations": [
+    {
+      "seconds": 1.057,
+      "changed": 0.08653
+    },
+    {
+      "seconds": 2.372,
+      "changed": 0.09479
+    },
+    {
+      "seconds": 3.433,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

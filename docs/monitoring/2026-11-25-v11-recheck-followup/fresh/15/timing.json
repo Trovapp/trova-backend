@@ -1,0 +1,28 @@
+{
+  "sample": 15,
+  "place": "중앙탑사적공원",
+  "start": "2026-11-25T18:39:44.339+09:00",
+  "end": "2026-11-25T18:39:48.082+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 3.742,
+  "observations": [
+    {
+      "seconds": 0.76,
+      "changed": 0.09714
+    },
+    {
+      "seconds": 1.822,
+      "changed": 0.10443
+    },
+    {
+      "seconds": 2.923,
+      "changed": 0.11074
+    },
+    {
+      "seconds": 3.742,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}
