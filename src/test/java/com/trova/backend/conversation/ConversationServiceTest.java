@@ -17,7 +17,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class ConversationServiceTest {
@@ -59,12 +63,12 @@ class ConversationServiceTest {
     @Test
     void functionCall이_오면_도구를_실행하고_결과를_반영해_재호출한다() {
         ConversationState state = new ConversationState(1L, 10L, 100L, null, null);
-        var functionCall = new GeminiChatClient.FunctionCall("find_alternatives", Map.of("category", "카페"), "sig");
+        GeminiChatClient.FunctionCall functionCall = new GeminiChatClient.FunctionCall("find_alternatives", Map.of("category", "카페"), "sig");
         when(geminiChatClient.sendMessage(any(), eq("조용한 카페 찾아줘"), any()))
                 .thenReturn(new GeminiChatClient.ChatResult(functionCall, null));
 
         List<AlternativeCandidate> candidates = List.of(candidate(5L));
-        var toolResult = new ConversationToolExecutor.ToolExecutionResult(candidates, Map.of("candidates", List.of()));
+        ConversationToolExecutor.ToolExecutionResult toolResult = new ConversationToolExecutor.ToolExecutionResult(candidates, Map.of("candidates", List.of()));
         when(toolExecutor.execute(user, state, functionCall, "조용한 카페 찾아줘")).thenReturn(toolResult);
 
         when(geminiChatClient.sendFunctionResult(any(), eq("조용한 카페 찾아줘"), eq(functionCall), any(), any()))
