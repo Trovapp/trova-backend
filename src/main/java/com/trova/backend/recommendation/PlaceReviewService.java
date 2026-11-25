@@ -199,7 +199,7 @@ public class PlaceReviewService {
                     "google-places", "place-details-phone", null, System.currentTimeMillis() - start,
                     true, null, null, null, null);
             place.applyPhone(response == null ? null : response.nationalPhoneNumber());
-            placeRepository.save(place);
+            placeRepository.updatePhone(place);
         } catch (Exception e) {
             apiCallLogService.record(
                     "google-places", "place-details-phone", null, System.currentTimeMillis() - start,
@@ -211,7 +211,7 @@ public class PlaceReviewService {
     private void cache(Place place, ReviewSummary summary, List<String> snippets) {
         place.applyReviewSummary(serializeSummary(summary));
         place.applyReviewSnippets(snippets);
-        placeRepository.save(place);
+        placeRepository.updateReviewCache(place);
     }
 
     private String serializeSummary(ReviewSummary summary) {

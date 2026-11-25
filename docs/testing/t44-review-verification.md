@@ -52,3 +52,16 @@ JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew --no-daemon \
 ```
 
 전체 1,509건 중 1,503건 통과, 기존 조건부 테스트 6건 건너뜀, 실패·오류 0건이다. 대화 계약 12건·실제 HTTP 4건·직렬화 3건도 모두 통과했다. 테스트 제외 옵션을 사용하지 않았다. Gradle 데몬이 다른 샌드박스의 파일 권한을 재사용하는 문제를 피하려고 새 데몬과 별도 프로젝트 캐시를 사용했다.
+
+## 재검토 후 main 병합과 문서 정리
+
+태그 재사용 PR #540이 합쳐진 `origin/main` (`bd8871a`)을 기존 PR 브랜치에 병합했다. 태그 재사용 ADR 0055를 유지하고 대화 스트림 결정은 [ADR 0056](../adr/0056-conversation-card-stream.md)으로 옮겼으며, ADR 목록에는 0055 다음에 0056을 두었다. 경험 기록의 T44 절은 2026-11-23 운영 배포 항목 아래로 옮겨 배포 기록이 T44에 속하지 않도록 했다.
+
+첫 전체 빌드는 macOS 샌드박스가 `ProcessHandle.descendants()`의 sysctl 조회를 막아 기존 프로세스 실행기 테스트에서 `Operation not permitted (sysctl failed)`로 실패했다. 프로세스 조회가 허용된 환경에서 테스트를 제외하지 않고 같은 전체 빌드를 다시 실행했다.
+
+```sh
+JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew --no-daemon \
+  --project-cache-dir /tmp/t44-final-gradle-cache build
+```
+
+결과: `BUILD SUCCESSFUL in 2m 36s`, 전체 1,525건 중 1,519건 통과·기존 조건부 6건 건너뜀·실패/오류 0건. 수정한 문서의 상대 링크와 `git diff --check`도 통과했다.

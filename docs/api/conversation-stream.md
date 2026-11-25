@@ -43,7 +43,7 @@ data:{"turnCount":1,"turnLimitReached":false}
 
 `reply`의 `turnCount`, `turnLimitReached`는 기존 응답과 같다. `done`은 해당 턴의 서버 처리가 끝났다는 뜻이다. 10턴이 찬 뒤 요청하면 Gemini를 호출하지 않고 `reply: null`, `turnCount: 10`, `turnLimitReached: true`인 `reply`·`done`을 보낸다. 세션은 기존처럼 서버 메모리에만 있으며 마지막 활동 후 30분 TTL을 따른다.
 
-두 경로는 세션별 ReentrantLock으로 한 턴씩 처리한다. 최대 30초 대기 후 잠금을 얻지 못하면 429이며, 이미 시작한 SSE에서는 error 이벤트로 전달한다. 외부 호출을 세션 모니터 안에서 실행하지 않아 JDK 21 가상 스레드의 캐리어 pinning을 피한다. 결정 근거는 [ADR 0055](../adr/0055-conversation-card-stream.md)에 기록했다.
+두 경로는 세션별 ReentrantLock으로 한 턴씩 처리한다. 최대 30초 대기 후 잠금을 얻지 못하면 429이며, 이미 시작한 SSE에서는 error 이벤트로 전달한다. 외부 호출을 세션 모니터 안에서 실행하지 않아 JDK 21 가상 스레드의 캐리어 pinning을 피한다. 결정 근거는 [ADR 0056](../adr/0056-conversation-card-stream.md)에 기록했다.
 
 ## 오류·연결 종료
 

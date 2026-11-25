@@ -94,4 +94,5 @@
 | [0052](0052-alternative-rule-reasons.md) | 대안 장소 추천 이유를 규칙 문장으로 만들고 개인화 점수는 묶음 조회한다 | 확정 | 2026-11-20 |
 | [0053](0053-trip-edit-members.md) | 여행 멤버, 공유 링크 참여와 버전 충돌 처리 | 확정 | 2026-11-21 |
 | [0054](0054-trip-change-stream.md) | 여행 변경 SSE와 Kafka 전달, 브로커 장애 시 로컬 전달 | 확정 | 2026-11-21 |
-| [0055](0055-conversation-card-stream.md) | 대화 카드 우선 SSE, 단일 JVM 처리 상한과 세션 잠금·pinning 회피 | 확정 | 2026-11-25 |
+| [0055](0055-space-tag-reuse.md) | 대안 찾기의 실내외 태그를 30일 재사용 | 확정 | 2026-11-25 |
+| [0056](0056-conversation-card-stream.md) | 대화 카드 우선 SSE, 단일 JVM 처리 상한과 세션 잠금·pinning 회피 | 확정 | 2026-11-25 |

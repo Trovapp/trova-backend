@@ -35,7 +35,8 @@ class AlternativeExplanationBindingTest {
             context.registerBean(AlternativeFinderService.class, () -> new AlternativeFinderService(
                     mock(GooglePlacesApiClient.class), mock(PlaceCatalogService.class), mock(TripPlaceRepository.class),
                     mock(PlaceTaggingRunner.class), mock(SeoulCongestionApiClient.class), mock(ApiCallLogService.class),
-                    mock(PlaceEmbeddingService.class), mock(PersonalizationService.class)));
+                    mock(PlaceEmbeddingService.class), mock(PersonalizationService.class), mock(com.trova.backend.repository.PlaceRepository.class),
+                    new io.micrometer.core.instrument.simple.SimpleMeterRegistry()));
             context.refresh();
             assertThat(ReflectionTestUtils.getField(context.getBean(AlternativeFinderService.class), "geminiExplanationEnabled"))
                     .isEqualTo(expected);
