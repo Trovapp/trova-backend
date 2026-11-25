@@ -1,0 +1,9 @@
+{
+  "changed_at": 1795592947.680017,
+  "before_seconds": 3,
+  "after_seconds": 15,
+  "app_cpu": 0.125,
+  "memory_mib": 768,
+  "heap_mib": 144,
+  "caveat": "same JVM sequential; warm-up and elapsed time are confounders, not a causal ABBA comparison"
+}

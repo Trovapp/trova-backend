@@ -1,0 +1,109 @@
+services:
+  db:
+    image: pgvector/pgvector:0.8.1-pg17
+    cpus: 0.75
+    mem_limit: 768m
+    memswap_limit: 768m
+    environment:
+      POSTGRES_DB: loadtest
+      POSTGRES_USER: loadtest
+      POSTGRES_PASSWORD: isolated-534-only
+    networks: [backend]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U loadtest']
+      interval: 3s
+      retries: 60
+  kafka:
+    image: apache/kafka:3.9.1
+    cpus: 0.75
+    mem_limit: 768m
+    memswap_limit: 768m
+    networks: [backend]
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_HEAP_OPTS: -Xms128m -Xmx256m
+  app:
+    build: .
+    cpus: ${APP_CPUS:-0.125}
+    mem_limit: ${APP_MEMORY:-768m}
+    memswap_limit: ${APP_MEMORY:-768m}
+    networks: [backend, egress]
+    ports: ['127.0.0.1:18084:8080']
+    depends_on:
+      db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    env_file:
+      - /private/tmp/claude-501/-Users-gimtaehyeong-orca-taeng-agent-manager/93d69a51-105f-4d3f-8331-3d49c93b1a04/scratchpad/loadtest-keys/external-api.env
+    volumes:
+      - ../../../..:/workspace:ro
+      - ../raw:/evidence
+    command: [java, '-Xmx144m', '-XX:+UseG1GC', '-XX:ActiveProcessorCount=2', '-Xlog:gc*,safepoint:file=/evidence/gc.log:time,uptime,level,tags', '-jar', '/workspace/build/libs/trova-backend-0.0.1-SNAPSHOT.jar']
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/loadtest
+      SPRING_DATASOURCE_USERNAME: loadtest
+      SPRING_DATASOURCE_PASSWORD: isolated-534-only
+      GOOGLE_CLIENT_ID: isolated
+      GOOGLE_CLIENT_SECRET: isolated
+      KAKAO_CLIENT_ID: isolated
+      KAKAO_CLIENT_SECRET: isolated
+      JWT_SECRET: isolated-loadtest-534-secret-never-production-12345678
+      APP_QUEUE_TYPE: kafka
+      APP_TRIP_EVENTS_TYPE: kafka
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      AUTO_DRAFT_ENABLED: 'false'
+      IP_RATE_LIMIT_PER_MINUTE: '0'
+      ACTUATOR_EXPOSE: health,prometheus
+      APP_INSTANCE_NAME: isolated-loadtest-534
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    cpus: 0.25
+    mem_limit: 256m
+    memswap_limit: 256m
+    networks: [backend, egress]
+    ports: ['127.0.0.1:19094:9090']
+    volumes: ['./prometheus.yml:/etc/prometheus/prometheus.yml:ro']
+  kakao-probe:
+    image: trova-loadtest-534-app
+    profiles: [probe]
+    cpus: 0.125
+    mem_limit: 128m
+    memswap_limit: 128m
+    networks: [backend, egress]
+    env_file:
+      - /private/tmp/claude-501/-Users-gimtaehyeong-orca-taeng-agent-manager/93d69a51-105f-4d3f-8331-3d49c93b1a04/scratchpad/loadtest-keys/external-api.env
+    volumes:
+      - ../../../..:/workspace:ro
+      - ../raw:/evidence
+    command: [python3, /workspace/docs/monitoring/2026-11-25-load-test/reproduce/kakao_smoke.py]
+  grafana:
+    image: grafana/grafana:11.4.0
+    profiles: [visual]
+    cpus: 0.125
+    mem_limit: 384m
+    memswap_limit: 384m
+    networks: [backend, egress]
+    ports: ['127.0.0.1:13334:3000']
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_DISABLE_LOGIN_FORM: 'true'
+    volumes:
+      - ./grafana-datasource.yml:/etc/grafana/provisioning/datasources/default.yml:ro
+      - ./grafana-provider.yml:/etc/grafana/provisioning/dashboards/default.yml:ro
+      - ./dashboard.json:/var/lib/grafana/dashboards/loadtest.json:ro
+networks:
+  backend:
+    internal: true
+  egress: {}

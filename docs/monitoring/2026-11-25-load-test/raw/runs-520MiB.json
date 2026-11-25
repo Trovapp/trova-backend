@@ -1,0 +1,270 @@
+[
+  {
+    "label": "detail-1-0",
+    "mode": "detail",
+    "vus": 1,
+    "start": 1795592219.673106,
+    "end": 1795592257.5840042,
+    "exit": 0,
+    "guard": null,
+    "before": {
+      "places": 0,
+      "gemini_metric_units": 0,
+      "operations": {}
+    },
+    "after": {
+      "places": 0,
+      "gemini_metric_units": 0,
+      "operations": {}
+    },
+    "resources_before": {
+      "app": "usage_usec 58749480\nuser_usec 56123313\nsystem_usec 2626166\nnice_usec 0\nnr_periods 4775\nnr_throttled 4698\nthrottled_usec 1341587413\nnr_bursts 0\nburst_usec 0\n545071104\nlow 0\nhigh 0\nmax 358\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "db": "usage_usec 5849744\nuser_usec 4013351\nsystem_usec 1836393\nnice_usec 0\nnr_periods 687\nnr_throttled 3\nthrottled_usec 76250\nnr_bursts 0\nburst_usec 0\n95858688\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "kafka": "usage_usec 14245871\nuser_usec 12124833\nsystem_usec 2121038\nnice_usec 0\nnr_periods 4396\nnr_throttled 28\nthrottled_usec 3265561\nnr_bursts 0\nburst_usec 0\n417759232\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    "resources_after": {
+      "app": "usage_usec 63092714\nuser_usec 60238166\nsystem_usec 2854548\nnice_usec 0\nnr_periods 5155\nnr_throttled 5038\nthrottled_usec 1459893994\nnr_bursts 0\nburst_usec 0\n545112064\nlow 0\nhigh 0\nmax 415\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "db": "usage_usec 6318748\nuser_usec 4355157\nsystem_usec 1963590\nnice_usec 0\nnr_periods 768\nnr_throttled 3\nthrottled_usec 76250\nnr_bursts 0\nburst_usec 0\n96452608\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "kafka": "usage_usec 15730760\nuser_usec 13445125\nsystem_usec 2285634\nnice_usec 0\nnr_periods 4774\nnr_throttled 28\nthrottled_usec 3265561\nnr_bursts 0\nburst_usec 0\n434249728\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    "generator": [
+      {
+        "at": 1795592221.28877,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.88%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"f7ff6eeedea7\",\"MemPerc\":\"2.01%\",\"MemUsage\":\"10.29MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"614B / 611B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592224.90104,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.35%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"f7ff6eeedea7\",\"MemPerc\":\"1.99%\",\"MemUsage\":\"10.19MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"1.1kB / 653B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592228.945525,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.40%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"f7ff6eeedea7\",\"MemPerc\":\"2.07%\",\"MemUsage\":\"10.6MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"1.14kB / 695B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592235.204695,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.67%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"f7ff6eeedea7\",\"MemPerc\":\"2.06%\",\"MemUsage\":\"10.56MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"1.14kB / 695B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592239.262361,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.66%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"f7ff6eeedea7\",\"MemPerc\":\"2.11%\",\"MemUsage\":\"10.79MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"3.11kB / 827B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592242.5258062,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.41%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"f7ff6eeedea7\",\"MemPerc\":\"2.08%\",\"MemUsage\":\"10.65MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"7.18kB / 1.78kB\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592245.2048068,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.47%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"f7ff6eeedea7\",\"MemPerc\":\"2.13%\",\"MemUsage\":\"10.9MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"11.3kB / 2.73kB\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592249.246817,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.61%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"f7ff6eeedea7\",\"MemPerc\":\"2.08%\",\"MemUsage\":\"10.66MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"17.4kB / 4.17kB\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592251.998563,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.53%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"f7ff6eeedea7\",\"MemPerc\":\"2.08%\",\"MemUsage\":\"10.65MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"21.4kB / 5.12kB\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592254.497727,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.50%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"f7ff6eeedea7\",\"MemPerc\":\"2.08%\",\"MemUsage\":\"10.65MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"25.5kB / 6.07kB\",\"PIDs\":\"7\"}\n"
+      }
+    ],
+    "p50_ms": 399.292001,
+    "p95_ms": 7908.414112199991,
+    "p99_ms": 16207.06409604,
+    "errors": 0,
+    "requests": 13,
+    "rps": 0.3592789472912007,
+    "pass": false,
+    "phase": "first-use-520MiB"
+  },
+  {
+    "label": "detail-recovery-1",
+    "mode": "detail",
+    "vus": 1,
+    "start": 1795592258.37447,
+    "end": 1795592280.055827,
+    "exit": 0,
+    "guard": null,
+    "before": {
+      "places": 0,
+      "gemini_metric_units": 0,
+      "operations": {}
+    },
+    "after": {
+      "places": 0,
+      "gemini_metric_units": 0,
+      "operations": {}
+    },
+    "resources_before": {
+      "app": "usage_usec 63113934\nuser_usec 60253600\nsystem_usec 2860334\nnice_usec 0\nnr_periods 5158\nnr_throttled 5039\nthrottled_usec 1459913195\nnr_bursts 0\nburst_usec 0\n539820032\nlow 0\nhigh 0\nmax 417\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "db": "usage_usec 6324825\nuser_usec 4360929\nsystem_usec 1963896\nnice_usec 0\nnr_periods 770\nnr_throttled 3\nthrottled_usec 76250\nnr_bursts 0\nburst_usec 0\n97026048\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "kafka": "usage_usec 15741597\nuser_usec 13452293\nsystem_usec 2289304\nnice_usec 0\nnr_periods 4776\nnr_throttled 28\nthrottled_usec 3265561\nnr_bursts 0\nburst_usec 0\n434094080\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    "resources_after": {
+      "app": "usage_usec 65176994\nuser_usec 62170021\nsystem_usec 3006973\nnice_usec 0\nnr_periods 5380\nnr_throttled 5187\nthrottled_usec 1497274640\nnr_bursts 0\nburst_usec 0\n543899648\nlow 0\nhigh 0\nmax 422\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "db": "usage_usec 6612296\nuser_usec 4567477\nsystem_usec 2044819\nnice_usec 0\nnr_periods 826\nnr_throttled 3\nthrottled_usec 76250\nnr_bursts 0\nburst_usec 0\n95784960\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "kafka": "usage_usec 16562547\nuser_usec 14152728\nsystem_usec 2409819\nnice_usec 0\nnr_periods 5000\nnr_throttled 28\nthrottled_usec 3265561\nnr_bursts 0\nburst_usec 0\n420515840\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    "generator": [
+      {
+        "at": 1795592259.791583,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.46%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"772694b8cdea\",\"MemPerc\":\"2.04%\",\"MemUsage\":\"10.44MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"2.58kB / 743B\",\"PIDs\":\"8\"}\n"
+      },
+      {
+        "at": 1795592262.499518,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.55%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"772694b8cdea\",\"MemPerc\":\"2.17%\",\"MemUsage\":\"11.12MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"7.14kB / 1.74kB\",\"PIDs\":\"8\"}\n"
+      },
+      {
+        "at": 1795592264.913995,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.62%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"772694b8cdea\",\"MemPerc\":\"2.09%\",\"MemUsage\":\"10.7MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"11.2kB / 2.69kB\",\"PIDs\":\"8\"}\n"
+      },
+      {
+        "at": 1795592267.95435,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.65%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"772694b8cdea\",\"MemPerc\":\"2.03%\",\"MemUsage\":\"10.42MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"15.3kB / 3.65kB\",\"PIDs\":\"8\"}\n"
+      },
+      {
+        "at": 1795592270.207872,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.42%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"772694b8cdea\",\"MemPerc\":\"2.04%\",\"MemUsage\":\"10.43MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"19.4kB / 4.6kB\",\"PIDs\":\"8\"}\n"
+      },
+      {
+        "at": 1795592272.918596,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.68%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"772694b8cdea\",\"MemPerc\":\"2.04%\",\"MemUsage\":\"10.45MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"23.4kB / 5.55kB\",\"PIDs\":\"8\"}\n"
+      },
+      {
+        "at": 1795592275.200365,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.63%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"772694b8cdea\",\"MemPerc\":\"2.04%\",\"MemUsage\":\"10.46MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"27.5kB / 6.51kB\",\"PIDs\":\"8\"}\n"
+      }
+    ],
+    "p50_ms": 494.556001,
+    "p95_ms": 598.3740793999999,
+    "p99_ms": 599.07824948,
+    "errors": 0,
+    "requests": 7,
+    "rps": 0.7411469544927348,
+    "pass": true,
+    "phase": "first-use-520MiB"
+  },
+  {
+    "label": "memo-1-2",
+    "mode": "memo",
+    "vus": 1,
+    "start": 1795592281.487443,
+    "end": 1795592320.467663,
+    "exit": 99,
+    "guard": null,
+    "before": {
+      "places": 0,
+      "gemini_metric_units": 0,
+      "operations": {}
+    },
+    "after": {
+      "places": 0,
+      "gemini_metric_units": 0,
+      "operations": {}
+    },
+    "resources_before": {
+      "app": "usage_usec 65222773\nuser_usec 62197820\nsystem_usec 3024953\nnice_usec 0\nnr_periods 5384\nnr_throttled 5190\nthrottled_usec 1497986818\nnr_bursts 0\nburst_usec 0\n545091584\nlow 0\nhigh 0\nmax 426\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "db": "usage_usec 6639632\nuser_usec 4584993\nsystem_usec 2054639\nnice_usec 0\nnr_periods 829\nnr_throttled 3\nthrottled_usec 76250\nnr_bursts 0\nburst_usec 0\n96104448\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "kafka": "usage_usec 16574675\nuser_usec 14159575\nsystem_usec 2415099\nnice_usec 0\nnr_periods 5003\nnr_throttled 28\nthrottled_usec 3265561\nnr_bursts 0\nburst_usec 0\n421359616\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    "resources_after": {
+      "app": "usage_usec 70676372\nuser_usec 65812948\nsystem_usec 4863424\nnice_usec 0\nnr_periods 5822\nnr_throttled 5628\nthrottled_usec 1700434375\nnr_bursts 0\nburst_usec 0\n545144832\nlow 0\nhigh 0\nmax 5146\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "db": "usage_usec 7164288\nuser_usec 4926404\nsystem_usec 2237884\nnice_usec 0\nnr_periods 905\nnr_throttled 3\nthrottled_usec 76250\nnr_bursts 0\nburst_usec 0\n95289344\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "kafka": "usage_usec 18009223\nuser_usec 15359965\nsystem_usec 2649257\nnice_usec 0\nnr_periods 5429\nnr_throttled 29\nthrottled_usec 3288851\nnr_bursts 0\nburst_usec 0\n420257792\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    "generator": [
+      {
+        "at": 1795592283.100791,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.44%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"d13a5b28203c\",\"MemPerc\":\"2.05%\",\"MemUsage\":\"10.48MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"614B / 682B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592286.305258,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.34%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"d13a5b28203c\",\"MemPerc\":\"1.87%\",\"MemUsage\":\"9.59MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"1.1kB / 724B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592290.998913,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.39%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"d13a5b28203c\",\"MemPerc\":\"2.01%\",\"MemUsage\":\"10.27MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"1.14kB / 766B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592294.915647,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.51%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"d13a5b28203c\",\"MemPerc\":\"2.11%\",\"MemUsage\":\"10.79MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"1.14kB / 766B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592298.942869,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"1.46%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"d13a5b28203c\",\"MemPerc\":\"2.09%\",\"MemUsage\":\"10.68MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"1.14kB / 766B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592304.118742,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.44%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"d13a5b28203c\",\"MemPerc\":\"2.09%\",\"MemUsage\":\"10.68MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"1.14kB / 766B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592308.478505,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.53%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"d13a5b28203c\",\"MemPerc\":\"2.09%\",\"MemUsage\":\"10.69MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"1.34kB / 1.39kB\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592313.1944802,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.38%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"d13a5b28203c\",\"MemPerc\":\"2.08%\",\"MemUsage\":\"10.66MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"1.34kB / 1.39kB\",\"PIDs\":\"7\"}\n"
+      }
+    ],
+    "p50_ms": 17709.546543,
+    "p95_ms": 24272.6441523,
+    "p99_ms": 24856.030606459997,
+    "errors": 0.5,
+    "requests": 2,
+    "rps": 0.05343560587113454,
+    "pass": false,
+    "phase": "first-use-520MiB"
+  },
+  {
+    "label": "memo-recovery-3",
+    "mode": "detail",
+    "vus": 1,
+    "start": 1795592328.577748,
+    "end": 1795592355.316563,
+    "exit": 0,
+    "guard": null,
+    "before": {
+      "places": 0,
+      "gemini_metric_units": 0,
+      "operations": {}
+    },
+    "after": {
+      "places": 0,
+      "gemini_metric_units": 0,
+      "operations": {}
+    },
+    "resources_before": {
+      "app": "usage_usec 71155452\nuser_usec 66069037\nsystem_usec 5086414\nnice_usec 0\nnr_periods 5860\nnr_throttled 5666\nthrottled_usec 1719819991\nnr_bursts 0\nburst_usec 0\n545009664\nlow 0\nhigh 0\nmax 5948\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "db": "usage_usec 7196387\nuser_usec 4947835\nsystem_usec 2248552\nnice_usec 0\nnr_periods 911\nnr_throttled 3\nthrottled_usec 76250\nnr_bursts 0\nburst_usec 0\n95653888\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "kafka": "usage_usec 18149178\nuser_usec 15479779\nsystem_usec 2669399\nnice_usec 0\nnr_periods 5466\nnr_throttled 29\nthrottled_usec 3288851\nnr_bursts 0\nburst_usec 0\n420327424\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    "resources_after": {
+      "app": "usage_usec 75350879\nuser_usec 67981410\nsystem_usec 7369468\nnice_usec 0\nnr_periods 6197\nnr_throttled 6003\nthrottled_usec 1916415902\nnr_bursts 0\nburst_usec 0\n545243136\nlow 0\nhigh 0\nmax 11796\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "db": "usage_usec 7647460\nuser_usec 5262361\nsystem_usec 2385098\nnice_usec 0\nnr_periods 1028\nnr_throttled 3\nthrottled_usec 76250\nnr_bursts 0\nburst_usec 0\n94720000\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "kafka": "usage_usec 19333287\nuser_usec 16469649\nsystem_usec 2863638\nnice_usec 0\nnr_periods 5803\nnr_throttled 29\nthrottled_usec 3288851\nnr_bursts 0\nburst_usec 0\n427204608\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    "generator": [
+      {
+        "at": 1795592333.397385,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.57%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"df8d55d61b99\",\"MemPerc\":\"1.96%\",\"MemUsage\":\"10.04MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"3.15kB / 839B\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592338.480774,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.54%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"df8d55d61b99\",\"MemPerc\":\"2.00%\",\"MemUsage\":\"10.25MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"7.34kB / 2.14kB\",\"PIDs\":\"7\"}\n"
+      },
+      {
+        "at": 1795592347.4765491,
+        "stats": "{\"BlockIO\":\"0B / 0B\",\"CPUPerc\":\"0.45%\",\"Container\":\"trova-loadtest-534-k6\",\"ID\":\"df8d55d61b99\",\"MemPerc\":\"2.01%\",\"MemUsage\":\"10.3MiB / 512MiB\",\"Name\":\"trova-loadtest-534-k6\",\"NetIO\":\"7.34kB / 2.14kB\",\"PIDs\":\"7\"}\n"
+      }
+    ],
+    "p50_ms": null,
+    "p95_ms": null,
+    "p99_ms": null,
+    "errors": 0,
+    "requests": null,
+    "rps": 0.1675728102634171,
+    "pass": false,
+    "phase": "first-use-520MiB"
+  }
+]

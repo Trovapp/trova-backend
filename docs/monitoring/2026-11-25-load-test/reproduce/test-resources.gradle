@@ -1,0 +1,6 @@
+// Validation JVM concurrency hint; tests are neither excluded nor disabled.
+allprojects {
+    tasks.withType(Test).configureEach {
+        jvmArgs '-XX:ActiveProcessorCount=2'
+    }
+}

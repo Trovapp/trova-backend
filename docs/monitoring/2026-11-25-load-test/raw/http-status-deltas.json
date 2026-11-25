@@ -1,0 +1,260 @@
+{
+  "warm-detail-cpu1": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 6.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 12.0
+  },
+  "warm-memo-cpu1": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 6.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 12.0
+  },
+  "warm-order-cpu1": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 5.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/order\"}": 12.0
+  },
+  "detail-1-3": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"IOException\",exception=\"IOException\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 8.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 5.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 13.0
+  },
+  "detail-recovery-4": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"IOException\",exception=\"IOException\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 2.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 7.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 4.0
+  },
+  "memo-1-5": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"IOException\",exception=\"IOException\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 19.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 2.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 1.0
+  },
+  "memo-recovery-6": {},
+  "memory768-scrape3s-detail1": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 14.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 25.0
+  },
+  "detail-1-8": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 30.0
+  },
+  "detail-5-9": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 141.0
+  },
+  "detail-recovery-10": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 20.0
+  },
+  "memo-1-11": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 28.0
+  },
+  "memo-5-12": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 97.0
+  },
+  "memo-recovery-13": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 2.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 20.0
+  },
+  "order-1-14": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/order\"}": 24.0
+  },
+  "order-recovery-15": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 2.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 17.0
+  },
+  "confirm-detail-5-idle-sse": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"IOException\",exception=\"IOException\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}/events\"}": 15.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 134.0
+  },
+  "live-1-17": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 21.0
+  },
+  "live-recovery-18": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 20.0
+  },
+  "alternatives-1-19": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/alternatives\"}": 2.0
+  },
+  "conversation-1-20": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"POST\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/conversations/{sessionId}/messages\"}": 3.0
+  },
+  "gap-1-21": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{tripId}/days/{day}/gap-recommendations\"}": 4.0
+  },
+  "gap-2-22": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"IOException\",exception=\"IOException\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}/events\"}": 64.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{tripId}/days/{day}/gap-recommendations\"}": 11.0
+  },
+  "mixed-5-23": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/alternatives\"}": 5.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 78.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{tripId}/days/{day}/gap-recommendations\"}": 5.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 18.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/order\"}": 11.0
+  },
+  "late-detail-10-24": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 274.0
+  },
+  "confirm-late-detail-10-25": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 324.0
+  },
+  "late-detail-20-26": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 569.0
+  },
+  "late-detail-40-27": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 692.0
+  },
+  "confirm-late-detail-40-28": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 871.0
+  },
+  "late-detail-recovery-29": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 2.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 20.0
+  },
+  "late-memo-1-30": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 30.0
+  },
+  "late-memo-5-31": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 108.0
+  },
+  "confirm-late-memo-5-32": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 137.0
+  },
+  "late-memo-10-33": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 208.0
+  },
+  "confirm-late-memo-10-34": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 233.0
+  },
+  "late-memo-recovery-35": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 19.0
+  },
+  "late-order-1-36": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/order\"}": 32.0
+  },
+  "late-order-5-37": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/order\"}": 135.0
+  },
+  "confirm-late-order-5-38": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/order\"}": 141.0
+  },
+  "late-order-10-39": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/order\"}": 226.0
+  },
+  "confirm-late-order-10-40": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/order\"}": 250.0
+  },
+  "late-order-20-41": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/order\"}": 285.0
+  },
+  "confirm-late-order-20-42": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/order\"}": 286.0
+  },
+  "late-order-recovery-43": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}\"}": 20.0
+  },
+  "live-concurrent-3-final": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"CLIENT_ERROR\",status=\"409\",uri=\"/api/trip-places/{id}/details\"}": 10.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 70.0
+  },
+  "warm-external-alternatives-1-45": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/alternatives\"}": 8.0
+  },
+  "warm-external-alternatives-2-46": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"IOException\",exception=\"IOException\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{id}/events\"}": 64.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 2.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/alternatives\"}": 15.0
+  },
+  "warm-external-alternatives-4-47": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 2.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/alternatives\"}": 32.0
+  },
+  "warm-external-alternatives-8-48": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 2.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/alternatives\"}": 54.0
+  },
+  "warm-external-alternatives-16-49": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/alternatives\"}": 94.0
+  },
+  "warm-external-alternatives-32-50": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/alternatives\"}": 119.0
+  },
+  "warm-external-conversation-1-51": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"POST\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/conversations/{sessionId}/messages\"}": 3.0
+  },
+  "warm-external-conversation-2-52": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"POST\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/conversations/{sessionId}/messages\"}": 5.0
+  },
+  "warm-external-gap-1-53": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{tripId}/days/{day}/gap-recommendations\"}": 8.0
+  },
+  "warm-external-gap-2-54": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{tripId}/days/{day}/gap-recommendations\"}": 16.0
+  },
+  "warm-external-gap-4-55": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{tripId}/days/{day}/gap-recommendations\"}": 31.0
+  },
+  "warm-external-gap-8-56": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{tripId}/days/{day}/gap-recommendations\"}": 57.0
+  },
+  "warm-external-gap-16-57": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{tripId}/days/{day}/gap-recommendations\"}": 113.0
+  },
+  "warm-external-gap-32-58": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trips/{tripId}/days/{day}/gap-recommendations\"}": 123.0
+  },
+  "upper-alternatives-64-59": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"CLIENT_ERROR\",status=\"429\",uri=\"/api/trip-places/{id}/alternatives\"}": 2.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/alternatives\"}": 166.0
+  },
+  "live-valid-members10-vu1": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 4.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 32.0
+  },
+  "live-valid-members10-vu3": {
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"GET\",outcome=\"SUCCESS\",status=\"200\",uri=\"/actuator/prometheus\"}": 3.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"CLIENT_ERROR\",status=\"409\",uri=\"/api/trip-places/{id}/details\"}": 5.0,
+    "http_server_requests_seconds_count{application=\"trova-backend\",error=\"none\",exception=\"none\",method=\"PATCH\",outcome=\"SUCCESS\",status=\"200\",uri=\"/api/trip-places/{id}/details\"}": 95.0
+  }
+}

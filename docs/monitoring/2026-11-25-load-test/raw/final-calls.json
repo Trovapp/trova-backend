@@ -1,0 +1,12 @@
+{
+  "places": 1021.0,
+  "gemini_metric_units": 108.0,
+  "operations": {
+    "gemini/conversation-query-embedding/true": 5.0,
+    "internal/conversation-tool-find_alternatives/true": 11.0,
+    "gemini/conversation-turn/false": 1.0,
+    "gemini/conversation-turn/true": 22.0,
+    "google-places/nearby-search-alternative/true": 1021.0,
+    "gemini/place-embedding-batch/true": 80.0
+  }
+}
