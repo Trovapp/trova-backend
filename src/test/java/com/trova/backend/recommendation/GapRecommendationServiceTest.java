@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import com.trova.backend.service.ApiCallLogService;
+import com.trova.backend.service.DailyQuotaService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,6 +44,7 @@ class GapRecommendationServiceTest {
     @Mock private ApiCallLogService apiCallLogService;
     @Mock private PlaceEmbeddingService placeEmbeddingService;
     @Mock private PersonalizationService personalizationService;
+    @Mock private DailyQuotaService dailyQuotaService;
     @InjectMocks private GapRecommendationService gapRecommendationService;
 
     private static final Long USER_ID = 1L;
@@ -166,6 +168,48 @@ class GapRecommendationServiceTest {
     }
 
     @Test
+    void 외부_검색마다_직전에_한번씩_차감한다() {
+        when(tripPlaceRepository.findGapPlaceRows(1L, USER_ID, 1)).thenReturn(List.of(
+                row(10L, "09:00", "10:00", 37.5, 127.0, null),
+                row(11L, "11:00", "12:00", 37.6, 127.1, null)));
+        when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any()))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of()));
+
+        assertThat(gapRecommendationService.findGaps(USER_ID, 1L, 1).orElseThrow()).hasSize(2);
+
+        org.mockito.InOrder order = org.mockito.Mockito.inOrder(dailyQuotaService, googlePlacesApiClient);
+        for (int call = 0; call < 2; call++) {
+            order.verify(dailyQuotaService).consumePlaceCall(USER_ID);
+            order.verify(googlePlacesApiClient).searchNearby(anyDouble(), anyDouble(), anyDouble(), any());
+        }
+        order.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void 한도_소진은_검색_실패로_삼키지_않고_외부_호출_전에_중단한다() {
+        when(tripPlaceRepository.findGapPlaceRows(1L, USER_ID, 1)).thenReturn(List.of(
+                row(10L, "09:00", "10:00", 37.5, 127.0, null)));
+        org.mockito.Mockito.doThrow(new DailyQuotaService.QuotaExceededException("오늘 장소 검색·추천을 모두 사용했어요. 내일 다시 시도해주세요."))
+                .when(dailyQuotaService).consumePlaceCall(USER_ID);
+
+        assertThatThrownBy(() -> gapRecommendationService.findGaps(USER_ID, 1L, 1))
+                .isInstanceOf(DailyQuotaService.QuotaExceededException.class)
+                .hasMessage("오늘 장소 검색·추천을 모두 사용했어요. 내일 다시 시도해주세요.");
+        verifyNoInteractions(googlePlacesApiClient, apiCallLogService);
+    }
+
+    @Test
+    void 외부_검색이_실패해도_실제로_시도한_한번은_차감한다() {
+        when(tripPlaceRepository.findGapPlaceRows(1L, USER_ID, 1)).thenReturn(List.of(
+                row(10L, "09:00", "10:00", 37.5, 127.0, null)));
+        when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any()))
+                .thenThrow(new IllegalStateException("provider failure"));
+
+        assertThat(gapRecommendationService.findGaps(USER_ID, 1L, 1).orElseThrow().getFirst().recommendations()).isEmpty();
+        verify(dailyQuotaService).consumePlaceCall(USER_ID);
+    }
+
+    @Test
     void 시간이_없는_장소_쌍은_gap으로_잡지_않는다() {
         when(tripPlaceRepository.findGapPlaceRows(1L, USER_ID, 1)).thenReturn(List.of(
                 row(10L, null, null, 37.5, 127.0, null),
@@ -175,7 +219,7 @@ class GapRecommendationServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get()).isEmpty();
-        verifyNoInteractions(googlePlacesApiClient);
+        verifyNoInteractions(googlePlacesApiClient, dailyQuotaService);
     }
 
     @Test

@@ -59,7 +59,7 @@ final class TripStream implements Runnable {
         try {
             if (closed.get() || !ready.await(10, TimeUnit.SECONDS)) return;
             while (active()) {
-                var message = pending.take();
+                SseEmitter.SseEventBuilder message = pending.take();
                 writeStarted = System.nanoTime();
                 if (!active()) break;
                 emitter.send(message);
@@ -71,14 +71,12 @@ final class TripStream implements Runnable {
         } catch (IOException | IllegalStateException disconnected) {
             // The servlet container may already have closed the response.
         } finally {
-            closed.set(true);
+            close();
             pending.clear();
             try {
                 emitter.complete();
             } catch (IllegalStateException alreadyCompleted) {
                 // A client disconnect can recycle Tomcat's response before the writer exits.
-            } finally {
-                release.accept(this);
             }
         }
     }
@@ -137,12 +135,14 @@ final class TripStream implements Runnable {
 
     void close() {
         if (!closed.compareAndSet(false, true)) return;
+        // Admission is released immediately, even if a servlet write has not unwound yet.
+        release.accept(this);
         Thread task = writer;
-        if (task != null) task.interrupt();
+        if (task != null && task != Thread.currentThread()) task.interrupt();
         AsyncContext context = transport;
         if (writeStarted != 0 && context != null) {
             // complete() on the emitter waits for its write lock. Ask the container independently
-            // to finish a stalled request and retain the admission slot until the writer exits.
+            // to finish a stalled request without waiting for the writer to exit.
             sender.execute(() -> {
                 try { context.complete(); }
                 catch (IllegalStateException alreadyCompleted) { /* Servlet has finished. */ }

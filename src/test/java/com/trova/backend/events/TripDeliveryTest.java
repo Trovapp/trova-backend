@@ -24,7 +24,7 @@ class TripDeliveryTest {
     final Clock clock = mock(Clock.class);
     final Instant now = Instant.EPOCH;
     final TripAudience members = mock(TripAudience.class);
-    final TripStreams streams = new TripStreams(members, clock, 1, 4);
+    final TripStreams streams = new TripStreams(members, clock, 1, 4, new SimpleMeterRegistry());
     final TripChangedEvent event = new TripChangedEvent(7, 3, 4, "민수", "MEMBER_REMOVED", "변경됐어요");
     TripDeliveryTest() { when(clock.instant()).thenReturn(now); }
 
@@ -55,7 +55,7 @@ class TripDeliveryTest {
         when(members.version(7, 6)).thenThrow(new ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN));
         assertThatThrownBy(() -> open(7, 6, now.plusSeconds(10))).isInstanceOf(ResponseStatusException.class);
         open(7, 5, now.plusSeconds(10));
-        assertThatThrownBy(() -> open(7, 5, now.plusSeconds(10))).isInstanceOf(ResponseStatusException.class);
+        assertThatCode(() -> open(7, 5, now.plusSeconds(10))).doesNotThrowAnyException();
     }
     @Test void JWT가_만료되면_열려_있던_연결을_닫고_다시_접속할_수_있다() {
         try (var mocks = mockConstruction(SseEmitter.class)) {

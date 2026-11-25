@@ -71,6 +71,26 @@ class TripEventsHttpTest {
                 .contains("X-Trip-Version", "Retry-After");
     }
 
+    @Test void 같은_사용자의_네번째_실시간_연결도_200이다() throws Exception {
+        User owner = user();
+        Trip trip = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now()));
+        String path = "/api/trips/" + trip.getId() + "/events";
+        String bearer = "Bearer " + jwt.issue(owner);
+        java.util.List<org.springframework.test.web.servlet.MvcResult> opened = new java.util.ArrayList<>();
+        try {
+            for (int count = 0; count < 4; count++) {
+                opened.add(mvc.perform(get(path).header("Authorization", bearer))
+                        .andExpect(status().isOk()).andExpect(request().asyncStarted()).andReturn());
+            }
+            assertThat(opened.getFirst().getAsyncResult(3000)).isNull();
+            assertThat(streams.viewing(trip.getId(), owner.getId())).isTrue();
+        } finally {
+            for (org.springframework.test.web.servlet.MvcResult result : opened) {
+                ((TripStream) result.getRequest().getAttribute(TripSseMvc.STREAM)).close();
+            }
+        }
+    }
+
     @Test void nativeAndTicketStreamsRequireCurrentMembership() throws Exception {
         var owner = user();
         var editor = user();

@@ -6,6 +6,7 @@ import com.trova.backend.repository.GapPlaceRow;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.service.ApiCallLogService;
+import com.trova.backend.service.DailyQuotaService;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -48,11 +49,13 @@ public class GapRecommendationService {
     private final ApiCallLogService apiCallLogService;
     private final PlaceEmbeddingService placeEmbeddingService;
     private final PersonalizationService personalizationService;
+    private final DailyQuotaService dailyQuotaService;
 
     public GapRecommendationService(
             SavedPlaceRepository savedPlaceRepository, TripPlaceRepository tripPlaceRepository,
             GooglePlacesApiClient googlePlacesApiClient, PlaceCatalogService placeCatalogService, ApiCallLogService apiCallLogService,
-            PlaceEmbeddingService placeEmbeddingService, PersonalizationService personalizationService
+            PlaceEmbeddingService placeEmbeddingService, PersonalizationService personalizationService,
+            DailyQuotaService dailyQuotaService
     ) {
         this.savedPlaceRepository = savedPlaceRepository;
         this.tripPlaceRepository = tripPlaceRepository;
@@ -61,6 +64,7 @@ public class GapRecommendationService {
         this.apiCallLogService = apiCallLogService;
         this.placeEmbeddingService = placeEmbeddingService;
         this.personalizationService = personalizationService;
+        this.dailyQuotaService = dailyQuotaService;
     }
 
     public Optional<List<Gap>> findGaps(User user, Long tripId, int day) {
@@ -135,6 +139,8 @@ public class GapRecommendationService {
         // 검색 실패를 500으로 흘려보내지 않는다 — AlternativeFinderService와 같은 원칙.
         long searchStart = System.currentTimeMillis();
         GooglePlacesNearbySearchResponse response;
+        // Keep quota rejection outside the search fallback so HTTP 429 reaches the caller.
+        dailyQuotaService.consumePlaceCall(userId);
         try {
             response = googlePlacesApiClient.searchNearby(lat, lng, SEARCH_RADIUS_METERS, includedType);
             apiCallLogService.record(
@@ -151,8 +157,8 @@ public class GapRecommendationService {
         List<Place> candidates = raw.isEmpty() ? List.of() : placeCatalogService.upsertAll(raw);
         Map<String, List<String>> kakaoCategories = new HashMap<>();
         if (!raw.isEmpty()) {
-            var ids = raw.stream().map(GooglePlacesNearbySearchResponse.Place::id).distinct().toList();
-            for (var row : savedPlaceRepository.findKakaoCategories(userId, ids)) {
+            List<String> ids = raw.stream().map(GooglePlacesNearbySearchResponse.Place::id).distinct().toList();
+            for (SavedPlaceRepository.KakaoCategoryRow row : savedPlaceRepository.findKakaoCategories(userId, ids)) {
                 kakaoCategories.computeIfAbsent(row.googlePlaceId(), ignored -> new ArrayList<>()).add(row.category());
             }
         }
@@ -160,7 +166,7 @@ public class GapRecommendationService {
         List<Place> filteredCandidates = new ArrayList<>();
         for (int i = 0; i < candidates.size(); i++) {
             Place candidate = candidates.get(i);
-            var source = raw.get(i);
+            GooglePlacesNearbySearchResponse.Place source = raw.get(i);
             if (neighbors.stream().noneMatch(n -> isSameGooglePlace(candidate, n))
                     && GapStopPolicy.allows(source, candidate, kakaoCategories.getOrDefault(source.id(), List.of()))) {
                 filteredCandidates.add(candidate);

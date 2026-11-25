@@ -3249,3 +3249,11 @@ sudo cp -p /opt/trova-backend/app.jar.bak-20261123-001451 /opt/trova-backend/app
 - 혼합 후보의 러너 입력·저장 ID·재사용/신규 로그, 후보별 저장 예외 후 나머지 후보 처리, 실패 호출 카운터를 검증했다. ADR 0055의 상태·대안·재검토 조건도 보완했다.
 - 신규 테스트 5개와 실패 재시도 카운터 단언을 추가했다. 전체 merge 저장 복원 변형은 태그 보존 테스트 3개가, 혼합 후보 구분 제거·실패 카운터 누락 변형은 대상 2개가 실패해 검출했고 모두 원복했다. 자세한 결과는 [검증 보고서](monitoring/2026-11-25-tag-reuse/verification.md)에 남겼다.
 - 전체 검증: `./gradlew --no-daemon --project-cache-dir /tmp/t43-gradle-cache build` 통과(2분 12초, 1,505개 중 1,499개 통과·실패 0·건너뜀 6), `git diff --check` 통과. 운영 DB DDL·PR 머지·배포는 하지 않았다.
+
+## 2026-11-25 — #545 SSE 재접속 슬롯과 빈 시간 추천 한도
+
+운영 재측정(SSE 429 51건·빈 시간 추천 429 19건)과 부하 시험의 빠른 화면 재진입 실패를 확인했다. `TripStreams.register`는 사용자 슬롯 상한에서 거절하는 대신 등록 순서상 가장 오래된 같은 사용자 연결을 교체한다. 전체 256개 제한은 유지한다. `TripStream.close`의 원자적 종료 전환에서 슬롯을 즉시 반환해 servlet 쓰기나 emitter 완료 지연과 분리했다. 서버가 아직 감지하지 못한 TCP 단절은 다음 전송까지 남을 수 있다. 새 활성 슬롯 gauge와 교체 counter에는 사용자·여행 라벨이 없다.
+
+`TripController`의 요청당 차감을 제거하고 `GapRecommendationService`의 Google Places 검색 직전에만 차감했다. 검색이 없으면 차감하지 않고, 한도 예외는 실패 폴백에 삼키지 않는다. 캐시는 개인화·저장 장소 분류의 무효화 설계가 필요해 추가하지 않았다. 관련 회귀 테스트 102개 통과와 실제 변형 6/6 검출을 확인했다. [검증 기록](testing/t47-sse-gap-quota.md), [ADR 0057](adr/0057-trip-sse-slots-gap-quota.md)에 정책·검증 범위를 남겼다. 운영 설정·DB와 대화 스트림·대안 태그 코드는 변경하지 않았다.
+
+전체 `./gradlew --no-daemon build`도 성공했다(1,535개 중 통과 1,529·조건부 건너뜀 6·실패/오류 0). 최초 sandbox 실행의 sysctl 프로세스 조회 제한은 정상 권한의 전체 재실행으로 확인했으며 테스트를 제외하지 않았다.
