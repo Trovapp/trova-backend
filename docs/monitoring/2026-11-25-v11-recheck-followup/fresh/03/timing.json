@@ -1,0 +1,32 @@
+{
+  "sample": 3,
+  "place": "수원화성박물관",
+  "start": "2026-11-25T18:23:49.133+09:00",
+  "end": "2026-11-25T18:23:53.741+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 4.607,
+  "observations": [
+    {
+      "seconds": 0.846,
+      "changed": 0.09692
+    },
+    {
+      "seconds": 1.769,
+      "changed": 0.1058
+    },
+    {
+      "seconds": 2.786,
+      "changed": 0.10567
+    },
+    {
+      "seconds": 3.719,
+      "changed": 0.11107
+    },
+    {
+      "seconds": 4.607,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

@@ -1,0 +1,28 @@
+{
+  "sample": 19,
+  "place": "대왕암공원",
+  "start": "2026-11-25T18:44:13.380+09:00",
+  "end": "2026-11-25T18:44:17.888+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 4.507,
+  "observations": [
+    {
+      "seconds": 1.626,
+      "changed": 0.10143
+    },
+    {
+      "seconds": 2.731,
+      "changed": 0.10594
+    },
+    {
+      "seconds": 3.7,
+      "changed": 0.11053
+    },
+    {
+      "seconds": 4.507,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

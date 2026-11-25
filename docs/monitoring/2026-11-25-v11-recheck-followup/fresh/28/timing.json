@@ -1,0 +1,25 @@
+{
+  "sample": 28,
+  "place": "죽녹원",
+  "device": "5584",
+  "start": "2026-11-25T19:01:45.017+09:00",
+  "end": "2026-11-25T19:01:50.377+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 5.358,
+  "observations": [
+    {
+      "seconds": 2.238,
+      "changed": 0.09036
+    },
+    {
+      "seconds": 3.949,
+      "changed": 0.09314
+    },
+    {
+      "seconds": 5.358,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

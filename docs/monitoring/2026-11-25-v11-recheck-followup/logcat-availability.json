@@ -1,0 +1,20 @@
+[
+  {
+    "device": "5584",
+    "earliest": "2026-11-24T15:06:03.971000+09:00",
+    "latest": "2026-11-25T17:15:04.213000+09:00",
+    "windowKeywordCounts": {
+      "trova": 1
+    },
+    "rawSaved": false
+  },
+  {
+    "device": "5586",
+    "earliest": "2026-11-24T23:26:21.707000+09:00",
+    "latest": "2026-11-25T17:15:26.093000+09:00",
+    "windowKeywordCounts": {
+      "Network": 3
+    },
+    "rawSaved": false
+  }
+]

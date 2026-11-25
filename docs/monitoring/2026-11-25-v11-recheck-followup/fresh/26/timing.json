@@ -1,0 +1,25 @@
+{
+  "sample": 26,
+  "place": "오동도",
+  "device": "5584",
+  "start": "2026-11-25T18:58:02.538+09:00",
+  "end": "2026-11-25T18:58:07.580+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 5.04,
+  "observations": [
+    {
+      "seconds": 1.712,
+      "changed": 0.08953
+    },
+    {
+      "seconds": 4.033,
+      "changed": 0.09749
+    },
+    {
+      "seconds": 5.04,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

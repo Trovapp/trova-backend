@@ -1,0 +1,22 @@
+[
+  {
+    "device": "5584",
+    "kst": "2026-11-25T16:22:29.286000+09:00",
+    "line": "         1795591349.286   701  1177 W PackageConfigPersister: App-specific configuration not found for packageName: com.trovapp.trova and userId: 0"
+  },
+  {
+    "device": "5586",
+    "kst": "2026-11-25T16:22:22.997000+09:00",
+    "line": "         1795591342.997  1259 19056 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s"
+  },
+  {
+    "device": "5586",
+    "kst": "2026-11-25T16:22:23.032000+09:00",
+    "line": "         1795591343.032  1259 19056 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s"
+  },
+  {
+    "device": "5586",
+    "kst": "2026-11-25T16:22:23.514000+09:00",
+    "line": "         1795591343.514  1259  2110 W AlarmManager: java.lang.IllegalArgumentException: alarm \"NetworkLocationActivityDetection\" has short window length"
+  }
+]

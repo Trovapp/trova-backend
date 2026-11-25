@@ -1,0 +1,25 @@
+{
+  "sample": 27,
+  "place": "국립아시아문화전당",
+  "device": "5584",
+  "start": "2026-11-25T19:00:00.981+09:00",
+  "end": "2026-11-25T19:00:07.955+09:00",
+  "buttonReadyObserved": true,
+  "busySeen": true,
+  "observedSeconds": 6.972,
+  "observations": [
+    {
+      "seconds": 3.627,
+      "changed": 0.0892
+    },
+    {
+      "seconds": 5.531,
+      "changed": 0.09344
+    },
+    {
+      "seconds": 6.972,
+      "changed": 0.0
+    }
+  ],
+  "method": "ADB screenshot button-ready observation; HTTP timing from server separately"
+}

@@ -1,0 +1,65 @@
+{
+  "start": "2026-11-25T16:54:49.225+09:00",
+  "observations": [
+    {
+      "device": "5584",
+      "phase": "reconnect-01s",
+      "captureStart": "2026-11-25T16:54:50.582+09:00",
+      "captureEnd": "2026-11-25T16:54:51.821+09:00"
+    },
+    {
+      "device": "5586",
+      "phase": "reconnect-01s",
+      "captureStart": "2026-11-25T16:54:50.583+09:00",
+      "captureEnd": "2026-11-25T16:54:51.082+09:00"
+    },
+    {
+      "device": "5584",
+      "phase": "reconnect-03s",
+      "captureStart": "2026-11-25T16:54:52.582+09:00",
+      "captureEnd": "2026-11-25T16:54:53.808+09:00"
+    },
+    {
+      "device": "5586",
+      "phase": "reconnect-03s",
+      "captureStart": "2026-11-25T16:54:52.582+09:00",
+      "captureEnd": "2026-11-25T16:54:53.092+09:00"
+    },
+    {
+      "device": "5584",
+      "phase": "reconnect-06s",
+      "captureStart": "2026-11-25T16:54:55.582+09:00",
+      "captureEnd": "2026-11-25T16:54:57.017+09:00"
+    },
+    {
+      "device": "5586",
+      "phase": "reconnect-06s",
+      "captureStart": "2026-11-25T16:54:55.582+09:00",
+      "captureEnd": "2026-11-25T16:54:56.087+09:00"
+    },
+    {
+      "device": "5584",
+      "phase": "reconnect-10s",
+      "captureStart": "2026-11-25T16:54:59.582+09:00",
+      "captureEnd": "2026-11-25T16:55:00.406+09:00"
+    },
+    {
+      "device": "5586",
+      "phase": "reconnect-10s",
+      "captureStart": "2026-11-25T16:54:59.582+09:00",
+      "captureEnd": "2026-11-25T16:55:00.168+09:00"
+    },
+    {
+      "device": "5584",
+      "phase": "reconnect-20s",
+      "captureStart": "2026-11-25T16:55:09.582+09:00",
+      "captureEnd": "2026-11-25T16:55:10.261+09:00"
+    },
+    {
+      "device": "5586",
+      "phase": "reconnect-20s",
+      "captureStart": "2026-11-25T16:55:09.582+09:00",
+      "captureEnd": "2026-11-25T16:55:10.039+09:00"
+    }
+  ]
+}
