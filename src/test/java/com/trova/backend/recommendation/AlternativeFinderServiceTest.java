@@ -16,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import com.trova.backend.repository.PlaceRepository;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -50,6 +53,8 @@ class AlternativeFinderServiceTest {
     @Mock private ApiCallLogService apiCallLogService;
     @Mock private PlaceEmbeddingService placeEmbeddingService;
     @Mock private PersonalizationService personalizationService;
+    @Mock private PlaceRepository placeRepository;
+    @Spy private SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
     @InjectMocks private AlternativeFinderService alternativeFinderService;
 
     @BeforeEach

@@ -1,6 +1,15 @@
 package com.trova.backend.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OrderColumn;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +43,9 @@ public class Place {
     private String mood;
 
     private String space;
+
+    @Column(name = "space_tagged_at")
+    private LocalDateTime spaceTaggedAt;
 
     private Double rating;
 
@@ -92,11 +104,17 @@ public class Place {
 
     public void applyTags(String mood, String space) {
         this.mood = mood;
-        this.space = space;
+        applySpaceTag(space);
     }
 
     public void applySpaceTag(String space) {
         this.space = space;
+        this.spaceTaggedAt = space == null || space.isBlank() ? null : LocalDateTime.now();
+    }
+
+    public boolean hasFreshSpaceTag(LocalDateTime now) {
+        return space != null && !space.isBlank() && spaceTaggedAt != null
+                && spaceTaggedAt.isAfter(now.minusDays(30));
     }
 
     public void applyReviewSummary(String reviewSummary) {
@@ -119,6 +137,7 @@ public class Place {
     public String getCategory() { return category; }
     public String getMood() { return mood; }
     public String getSpace() { return space; }
+    public LocalDateTime getSpaceTaggedAt() { return spaceTaggedAt; }
     public Double getRating() { return rating; }
     public Integer getUserRatingCount() { return userRatingCount; }
     public String getPriceLevel() { return priceLevel; }

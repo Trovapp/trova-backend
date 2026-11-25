@@ -27,6 +27,13 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     // 처음부터 배치 조회로 만든다.
     List<Place> findByGooglePlaceIdIn(List<String> googlePlaceIds);
 
+    // detached 후보 전체를 merge하면 다른 요청의 리뷰/전화 갱신을 덮을 수 있어 태그 두 컬럼만 저장한다.
+    @Modifying
+    @Transactional
+    @Query("update Place p set p.space = :space, p.spaceTaggedAt = :taggedAt where p.id = :id")
+    int updateSpaceTag(@Param("id") Long id, @Param("space") String space,
+                       @Param("taggedAt") LocalDateTime taggedAt);
+
     // 동시에 같은 장소를 저장하려는 요청이 있어도 유니크 제약 에러 없이 한쪽만 저장된다(#37).
     // 예외를 잡는 방식은 호출 측 트랜잭션(TripService.resolveDetailsPlace)이 Postgres에서
     // "current transaction is aborted"로 중단되므로 쓸 수 없다. 저장 여부(0/1)를 돌려준다.
