@@ -1,0 +1,517 @@
+2026-11-25T12:37:19.403+09:00	5584	tap	970 2230
+2026-11-25T12:37:56.520+09:00	5584	tap	320 2230
+2026-11-25T12:38:27.448+09:00	5584	tap	100 2230
+2026-11-25T12:38:27.763+09:00	5584	tap	400 1220
+2026-11-25T12:38:36.558+09:00	5584	phase-start	video
+2026-11-25T12:38:36.711+09:00	5584	tap	540 1390 video-01-submit
+2026-11-25T12:39:03.366+09:00	5584	observation	video-01-not-confirmed-browser-login-no-measurement
+2026-11-25T12:39:31.695+09:00	5586	tap	110 2230
+2026-11-25T12:39:44.062+09:00	5584	tap	110 2230
+2026-11-25T12:39:58.246+09:00	5584	tap	300 450
+2026-11-25T12:40:11.425+09:00	5584	tap	540 1390 video-01-submit-confirmed
+2026-11-25T12:41:03.493+09:00	5584	result	video-01-5cGq5pxZoKk-1-place
+2026-11-25T12:41:04.524+09:00	5584	tap	70 210
+2026-11-25T12:41:04.686+09:00	5584	tap	100 2230
+2026-11-25T12:41:19.530+09:00	5584	tap	400 1220
+2026-11-25T12:41:23.362+09:00	5584	tap	540 1390 video-02-submit
+2026-11-25T12:42:12.643+09:00	5584	result	video-02-Z0ItlTVpm8Q-1-place
+2026-11-25T12:42:12.715+09:00	5584	tap	70 210
+2026-11-25T12:42:12.878+09:00	5584	tap	100 2230
+2026-11-25T12:42:13.402+09:00	5584	tap	400 1220
+2026-11-25T12:42:31.365+09:00	5584	tap	540 1390 video-03-submit
+2026-11-25T12:43:27.345+09:00	5584	timeout	곳을 찾았어요
+2026-11-25T12:43:39.675+09:00	5584	observation	video-03-earlier-coordinate-missed-input-no-request
+2026-11-25T12:43:42.073+09:00	5584	click	인스타그램 또는 유튜브 링크
+2026-11-25T12:43:48.722+09:00	5584	click	장소 추출하기 video-03-confirmed
+2026-11-25T12:44:09.700+09:00	5584	observed	곳을 찾았어요
+2026-11-25T12:44:43.469+09:00	5584	result	video-03-BTdwatJi-KM-5-places
+2026-11-25T12:44:45.990+09:00	5584	click	위로 이동
+2026-11-25T12:44:49.468+09:00	5584	click	홈
+2026-11-25T12:44:52.815+09:00	5584	click	인스타그램 또는 유튜브 링크
+2026-11-25T12:45:18.426+09:00	5584	click	장소 추출하기 video-04-submit
+2026-11-25T12:45:43.148+09:00	5584	observed	곳을 찾았어요
+2026-11-25T12:46:13.343+09:00	5584	result	video-04-MMm9GVCFExU-6-places-1-unconfirmed
+2026-11-25T12:46:16.856+09:00	5584	click	위로 이동
+2026-11-25T12:46:20.222+09:00	5584	click	홈
+2026-11-25T12:46:23.584+09:00	5584	click	인스타그램 또는 유튜브 링크
+2026-11-25T12:46:29.987+09:00	5584	click	장소 추출하기 video-05-submit
+2026-11-25T12:46:51.241+09:00	5584	observed	곳을 찾았어요
+2026-11-25T12:47:09.055+09:00	5584	phase-end	video-5-successes
+2026-11-25T12:47:09.125+09:00	5584	result	video-05-Glp-yFEtSIg-4-places
+2026-11-25T12:47:11.448+09:00	5584	click	준비된 일정 보기
+2026-11-25T12:47:27.637+09:00	5584	click	여행 이름 (선택)
+2026-11-25T12:47:43.837+09:00	5584	tap	800 650
+2026-11-25T12:47:57.387+09:00	5584	click	여행에 저장하기
+2026-11-25T12:48:45.192+09:00	5584	tap	450 605
+2026-11-25T12:49:14.318+09:00	5584	tap	500 950
+2026-11-25T12:49:15.183+09:00	5584	tap	1015 210
+2026-11-25T12:49:50.714+09:00	5584	tap	500 900
+2026-11-25T12:49:51.566+09:00	5584	tap	75 210
+2026-11-25T12:50:06.951+09:00	5584	tap	400 620
+2026-11-25T12:50:18.396+09:00	5584	tap	800 680
+2026-11-25T12:50:31.318+09:00	5584	tap	630 1475
+2026-11-25T12:50:32.174+09:00	5584	tap	800 1810
+2026-11-25T12:50:33.010+09:00	5584	tap	540 850
+2026-11-25T12:51:09.818+09:00	5584	tap	230 1390
+2026-11-25T12:51:24.803+09:00	5584	tap	815 1615 setup-day1-add-McDonalds
+2026-11-25T12:51:25.659+09:00	5584	tap	590 605
+2026-11-25T12:51:51.590+09:00	5584	tap	815 2025 setup-day2-add-BurgerKing
+2026-11-25T12:51:52.454+09:00	5584	tap	300 780
+2026-11-25T12:52:03.368+09:00	5584	phase-start	alternatives
+2026-11-25T12:52:03.438+09:00	5584	tap	280 780
+2026-11-25T12:52:16.444+09:00	5584	tap	530 1300
+2026-11-25T12:52:27.909+09:00	5584	tap	550 1400
+2026-11-25T12:52:39.480+09:00	5584	tap	540 1560 alternative-01-day2-BurgerKing-default
+2026-11-25T12:53:32.264+09:00	5584	result	alternative-01-day2-BurgerKing-default-success
+2026-11-25T12:53:40.896+09:00	5584	request-start	alternative-02-day2-BurgerKing-default
+2026-11-25T12:53:42.868+09:00	5584	request-observed-end	alternative-02-day2-BurgerKing-default 1.971s busy=True
+2026-11-25T12:53:50.919+09:00	5584	request-start	alternative-03-day2-BurgerKing-default
+2026-11-25T12:53:52.706+09:00	5584	request-observed-end	alternative-03-day2-BurgerKing-default 1.785s busy=True
+2026-11-25T12:54:00.949+09:00	5584	request-start	alternative-04-day2-BurgerKing-default
+2026-11-25T12:54:03.123+09:00	5584	request-observed-end	alternative-04-day2-BurgerKing-default 2.173s busy=True
+2026-11-25T12:54:10.978+09:00	5584	request-start	alternative-05-day2-BurgerKing-default
+2026-11-25T12:54:12.835+09:00	5584	request-observed-end	alternative-05-day2-BurgerKing-default 1.856s busy=True
+2026-11-25T12:54:21.019+09:00	5584	request-start	alternative-06-day2-BurgerKing-default
+2026-11-25T12:54:22.783+09:00	5584	request-observed-end	alternative-06-day2-BurgerKing-default 1.762s busy=True
+2026-11-25T12:54:48.108+09:00	5584	tap	1005 1250
+2026-11-25T12:54:49.030+09:00	5584	tap	210 605
+2026-11-25T12:54:49.890+09:00	5584	tap	280 780
+2026-11-25T12:54:51.057+09:00	5584	tap	530 1300
+2026-11-25T12:55:02.422+09:00	5584	tap	540 1400
+2026-11-25T12:55:03.833+09:00	5584	request-start	alternative-07-day1-McDonalds-default
+2026-11-25T12:55:07.159+09:00	5584	request-observed-end	alternative-07-day1-McDonalds-default 3.326s busy=True
+2026-11-25T12:55:13.856+09:00	5584	request-start	alternative-08-day1-McDonalds-default
+2026-11-25T12:55:16.003+09:00	5584	request-observed-end	alternative-08-day1-McDonalds-default 2.146s busy=True
+2026-11-25T12:55:23.884+09:00	5584	request-start	alternative-09-day1-McDonalds-default
+2026-11-25T12:55:26.054+09:00	5584	request-observed-end	alternative-09-day1-McDonalds-default 2.168s busy=True
+2026-11-25T12:55:33.918+09:00	5584	request-start	alternative-10-day1-McDonalds-default
+2026-11-25T12:55:36.352+09:00	5584	request-observed-end	alternative-10-day1-McDonalds-default 2.431s busy=True
+2026-11-25T12:55:43.944+09:00	5584	request-start	alternative-11-day1-McDonalds-default
+2026-11-25T12:55:46.024+09:00	5584	request-observed-end	alternative-11-day1-McDonalds-default 2.079s busy=True
+2026-11-25T12:56:07.142+09:00	5584	request-start	alternative-12-day1-McDonalds-default
+2026-11-25T12:56:09.288+09:00	5584	request-observed-end	alternative-12-day1-McDonalds-default 2.144s busy=True
+2026-11-25T12:56:17.169+09:00	5584	request-start	alternative-13-day1-McDonalds-default
+2026-11-25T12:56:19.224+09:00	5584	request-observed-end	alternative-13-day1-McDonalds-default 2.054s busy=True
+2026-11-25T12:56:27.190+09:00	5584	request-start	alternative-14-day1-McDonalds-default
+2026-11-25T12:56:29.347+09:00	5584	request-observed-end	alternative-14-day1-McDonalds-default 2.156s busy=True
+2026-11-25T12:56:37.221+09:00	5584	request-start	alternative-15-day1-McDonalds-default
+2026-11-25T12:56:39.290+09:00	5584	request-observed-end	alternative-15-day1-McDonalds-default 2.067s busy=True
+2026-11-25T12:56:47.248+09:00	5584	request-start	alternative-16-day1-McDonalds-default
+2026-11-25T12:56:49.216+09:00	5584	request-observed-end	alternative-16-day1-McDonalds-default 1.966s busy=True
+2026-11-25T12:57:12.068+09:00	5584	tap	1005 1250
+2026-11-25T12:57:12.940+09:00	5584	tap	590 605
+2026-11-25T12:57:13.823+09:00	5584	tap	280 780
+2026-11-25T12:57:14.719+09:00	5584	tap	530 1300
+2026-11-25T12:57:15.674+09:00	5584	tap	540 1400
+2026-11-25T12:57:17.325+09:00	5584	request-start	alternative-17-day2-BurgerKing-default
+2026-11-25T12:57:19.375+09:00	5584	request-observed-end	alternative-17-day2-BurgerKing-default 2.049s busy=True
+2026-11-25T12:57:27.347+09:00	5584	request-start	alternative-18-day2-BurgerKing-default
+2026-11-25T12:57:29.374+09:00	5584	request-observed-end	alternative-18-day2-BurgerKing-default 2.025s busy=True
+2026-11-25T12:57:37.379+09:00	5584	request-start	alternative-19-day2-BurgerKing-default
+2026-11-25T12:57:39.171+09:00	5584	request-observed-end	alternative-19-day2-BurgerKing-default 1.791s busy=True
+2026-11-25T12:57:47.401+09:00	5584	request-start	alternative-20-day2-BurgerKing-default
+2026-11-25T12:57:49.192+09:00	5584	request-observed-end	alternative-20-day2-BurgerKing-default 1.791s busy=True
+2026-11-25T12:57:57.424+09:00	5584	request-start	alternative-21-day2-BurgerKing-default
+2026-11-25T12:57:59.387+09:00	5584	request-observed-end	alternative-21-day2-BurgerKing-default 1.963s busy=True
+2026-11-25T12:58:49.164+09:00	5584	request-start	alternative-22-day2-BurgerKing-default
+2026-11-25T12:58:51.172+09:00	5584	request-observed-end	alternative-22-day2-BurgerKing-default 2.007s busy=True
+2026-11-25T12:58:59.185+09:00	5584	request-start	alternative-23-day2-BurgerKing-default
+2026-11-25T12:59:01.295+09:00	5584	request-observed-end	alternative-23-day2-BurgerKing-default 2.108s busy=True
+2026-11-25T12:59:09.228+09:00	5584	request-start	alternative-24-day2-BurgerKing-default
+2026-11-25T12:59:11.174+09:00	5584	request-observed-end	alternative-24-day2-BurgerKing-default 1.945s busy=True
+2026-11-25T12:59:19.252+09:00	5584	request-start	alternative-25-day2-BurgerKing-default
+2026-11-25T12:59:21.182+09:00	5584	request-observed-end	alternative-25-day2-BurgerKing-default 1.929s busy=True
+2026-11-25T12:59:45.516+09:00	5584	tap	1005 1250
+2026-11-25T12:59:46.479+09:00	5584	tap	210 605
+2026-11-25T12:59:47.350+09:00	5584	tap	280 780
+2026-11-25T12:59:48.197+09:00	5584	tap	530 1300
+2026-11-25T12:59:49.130+09:00	5584	tap	540 1400
+2026-11-25T12:59:50.712+09:00	5584	request-start	alternative-26-day1-McDonalds-default
+2026-11-25T12:59:52.605+09:00	5584	request-observed-end	alternative-26-day1-McDonalds-default 1.891s busy=True
+2026-11-25T13:00:00.735+09:00	5584	request-start	alternative-27-day1-McDonalds-default
+2026-11-25T13:00:02.724+09:00	5584	request-observed-end	alternative-27-day1-McDonalds-default 1.987s busy=True
+2026-11-25T13:00:10.759+09:00	5584	request-start	alternative-28-day1-McDonalds-default
+2026-11-25T13:00:12.560+09:00	5584	request-observed-end	alternative-28-day1-McDonalds-default 1.799s busy=True
+2026-11-25T13:00:20.785+09:00	5584	request-start	alternative-29-day1-McDonalds-default
+2026-11-25T13:00:22.706+09:00	5584	request-observed-end	alternative-29-day1-McDonalds-default 1.919s busy=True
+2026-11-25T13:00:30.835+09:00	5584	request-start	alternative-30-day1-McDonalds-default
+2026-11-25T13:00:32.645+09:00	5584	request-observed-end	alternative-30-day1-McDonalds-default 1.809s busy=True
+2026-11-25T13:00:44.962+09:00	5584	phase-end	alternatives-30-ui-requests-15-per-day
+2026-11-25T13:00:45.037+09:00	5584	tap	1005 1250
+2026-11-25T13:00:45.883+09:00	5584	tap	590 605
+2026-11-25T13:00:46.746+09:00	5584	phase-start	conversation
+2026-11-25T13:00:46.813+09:00	5584	tap	790 780
+2026-11-25T13:01:06.622+09:00	5584	tap	450 1670
+2026-11-25T13:01:25.123+09:00	5584	tap	975 1085 conversation-01-day2-museums
+2026-11-25T13:02:00.721+09:00	5584	result	conversation-01-day2-museums-one-card-byeol
+2026-11-25T13:02:00.890+09:00	5584	tap	1005 604
+2026-11-25T13:02:02.051+09:00	5584	tap	790 780
+2026-11-25T13:03:02.558+09:00	5584	request-start	conversation-02-day2-museums Find nearby museums only
+2026-11-25T13:03:15.942+09:00	5584	screenshot-observed	conversation-02-day2-museums 13.334s
+2026-11-25T13:03:30.701+09:00	5584	request-start	conversation-03-day2-museums Find nearby museums only
+2026-11-25T13:03:44.057+09:00	5584	screenshot-observed	conversation-03-day2-museums 13.311s
+2026-11-25T13:03:58.617+09:00	5584	request-start	conversation-04-day2-museums Find nearby museums only
+2026-11-25T13:04:11.859+09:00	5584	screenshot-observed	conversation-04-day2-museums 13.199s
+2026-11-25T13:04:53.685+09:00	5584	visual-review	conversation-01-to-04-success-one-candidate-card
+2026-11-25T13:05:02.741+09:00	5584	request-start	conversation-05-day2-museums Find nearby museums only
+2026-11-25T13:05:16.120+09:00	5584	screenshot-observed	conversation-05-day2-museums 13.341s
+2026-11-25T13:05:30.679+09:00	5584	request-start	conversation-06-day2-museums Find nearby museums only
+2026-11-25T13:05:44.303+09:00	5584	screenshot-observed	conversation-06-day2-museums 13.578s
+2026-11-25T13:05:59.521+09:00	5584	request-start	conversation-07-day2-museums Find nearby museums only
+2026-11-25T13:06:12.934+09:00	5584	screenshot-observed	conversation-07-day2-museums 13.376s
+2026-11-25T13:06:26.935+09:00	5584	request-start	conversation-08-day2-museums Find nearby museums only
+2026-11-25T13:06:40.381+09:00	5584	screenshot-observed	conversation-08-day2-museums 13.397s
+2026-11-25T13:06:54.895+09:00	5584	request-start	conversation-09-day2-museums Find nearby museums only
+2026-11-25T13:07:08.328+09:00	5584	screenshot-observed	conversation-09-day2-museums 13.387s
+2026-11-25T13:09:59.408+09:00	5584	request-start	conversation-10-day2-museums Find nearby museums only
+2026-11-25T13:10:13.039+09:00	5584	screenshot-observed	conversation-10-day2-museums 13.571s
+2026-11-25T13:10:27.416+09:00	5584	request-start	conversation-11-day2-museums Find nearby museums only
+2026-11-25T13:10:40.814+09:00	5584	screenshot-observed	conversation-11-day2-museums 13.358s
+2026-11-25T13:10:55.616+09:00	5584	request-start	conversation-12-day2-museums Find nearby museums only
+2026-11-25T13:11:09.561+09:00	5584	screenshot-observed	conversation-12-day2-museums 13.882s
+2026-11-25T13:11:24.666+09:00	5584	request-start	conversation-13-day2-museums Find nearby museums only
+2026-11-25T13:11:38.226+09:00	5584	screenshot-observed	conversation-13-day2-museums 13.517s
+2026-11-25T13:11:53.054+09:00	5584	request-start	conversation-14-day2-museums Find nearby museums only
+2026-11-25T13:12:06.339+09:00	5584	screenshot-observed	conversation-14-day2-museums 13.245s
+2026-11-25T13:12:37.249+09:00	5584	request-start	conversation-15-day2-museums Find nearby museums only
+2026-11-25T13:12:50.827+09:00	5584	screenshot-observed	conversation-15-day2-museums 13.543s
+2026-11-25T13:13:15.070+09:00	5584	visual-review	conversation-05-to-15-success-one-candidate-card
+2026-11-25T13:13:23.476+09:00	5584	request-start	conversation-16-day2-restaurants Find nearby restaurants
+2026-11-25T13:13:34.305+09:00	5584	correction	conversation-15-empty-candidates-not-single-previous-review-label-incorrect-05-to-14-single
+2026-11-25T13:13:37.096+09:00	5584	screenshot-observed	conversation-16-day2-restaurants 13.572s
+2026-11-25T13:14:05.827+09:00	5584	request-start	conversation-17-day2-restaurants Find nearby restaurants
+2026-11-25T13:14:19.661+09:00	5584	screenshot-observed	conversation-17-day2-restaurants 13.786s
+2026-11-25T13:14:34.839+09:00	5584	request-start	conversation-18-day2-restaurants Find nearby restaurants
+2026-11-25T13:14:48.526+09:00	5584	screenshot-observed	conversation-18-day2-restaurants 13.645s
+2026-11-25T13:15:03.235+09:00	5584	request-start	conversation-19-day2-restaurants Find nearby restaurants
+2026-11-25T13:15:16.761+09:00	5584	screenshot-observed	conversation-19-day2-restaurants 13.488s
+2026-11-25T13:15:31.996+09:00	5584	request-start	conversation-20-day2-restaurants Find nearby restaurants
+2026-11-25T13:15:45.702+09:00	5584	screenshot-observed	conversation-20-day2-restaurants 13.661s
+2026-11-25T13:16:00.877+09:00	5584	request-start	conversation-21-day2-restaurants Find nearby restaurants
+2026-11-25T13:16:02.158+09:00	5584	visual-review	conversation-16-multi-17-single-18-single-19-multi
+2026-11-25T13:16:14.789+09:00	5584	screenshot-observed	conversation-21-day2-restaurants 13.861s
+2026-11-25T13:16:49.377+09:00	5584	request-start	conversation-22-day2-restaurants Find nearby restaurants
+2026-11-25T13:17:02.882+09:00	5584	screenshot-observed	conversation-22-day2-restaurants 13.468s
+2026-11-25T13:17:17.602+09:00	5584	request-start	conversation-23-day2-restaurants Find nearby restaurants
+2026-11-25T13:17:31.122+09:00	5584	screenshot-observed	conversation-23-day2-restaurants 13.475s
+2026-11-25T13:17:45.717+09:00	5584	request-start	conversation-24-day2-restaurants Find nearby restaurants
+2026-11-25T13:17:59.776+09:00	5584	screenshot-observed	conversation-24-day2-restaurants 14.013s
+2026-11-25T13:18:14.259+09:00	5584	request-start	conversation-25-day2-restaurants Find nearby restaurants
+2026-11-25T13:18:17.031+09:00	5584	visual-review	conversation-20-multi-21-multi-22-empty-23-multi
+2026-11-25T13:18:27.913+09:00	5584	screenshot-observed	conversation-25-day2-restaurants 13.604s
+2026-11-25T13:18:43.370+09:00	5584	request-start	conversation-26-day2-restaurants Find nearby restaurants
+2026-11-25T13:18:57.001+09:00	5584	screenshot-observed	conversation-26-day2-restaurants 13.585s
+2026-11-25T13:19:23.103+09:00	5584	request-start	conversation-27-day2-restaurants Find nearby restaurants
+2026-11-25T13:19:35.553+09:00	5584	visual-review	conversation-24-single-25-multi-26-multi
+2026-11-25T13:19:36.880+09:00	5584	screenshot-observed	conversation-27-day2-restaurants 13.725s
+2026-11-25T13:19:51.775+09:00	5584	request-start	conversation-28-day2-restaurants Find nearby restaurants
+2026-11-25T13:20:05.755+09:00	5584	screenshot-observed	conversation-28-day2-restaurants 13.93s
+2026-11-25T13:20:20.602+09:00	5584	request-start	conversation-29-day2-restaurants Find nearby restaurants
+2026-11-25T13:20:34.267+09:00	5584	screenshot-observed	conversation-29-day2-restaurants 13.624s
+2026-11-25T13:20:48.364+09:00	5584	request-start	conversation-30-day2-restaurants Find nearby restaurants
+2026-11-25T13:21:01.947+09:00	5584	screenshot-observed	conversation-30-day2-restaurants 13.542s
+2026-11-25T13:21:07.934+09:00	5584	visual-review	conversation-27-multi-28-multi-29-multi
+2026-11-25T13:21:23.709+09:00	5584	phase-end	conversation-30-submissions
+2026-11-25T13:21:23.838+09:00	5584	tap	1005 1250 close-compact-chat
+2026-11-25T13:21:39.168+09:00	5584	visual-review	conversation-30-multi-total-single17-multiple11-empty2
+2026-11-25T13:21:39.234+09:00	5584	tap	74 210 back-to-trips
+2026-11-25T13:21:55.657+09:00	5584	tap	74 210 back-to-trip-list
+2026-11-25T13:22:30.247+09:00	5584	phase-start	trip-detail
+2026-11-25T13:22:30.315+09:00	5584	request-start	detail-01-multiday
+2026-11-25T13:22:30.396+09:00	5584	tap	500 1400 detail-01
+2026-11-25T13:22:57.436+09:00	5584	tap	74 210 detail-return
+2026-11-25T13:23:12.861+09:00	5584	tap	74 210 return-list
+2026-11-25T13:23:50.643+09:00	5584	request-start	detail-02-multiday
+2026-11-25T13:23:55.149+09:00	5584	screenshot-observed	detail-02-multiday
+2026-11-25T13:24:03.875+09:00	5584	request-start	detail-03-multiday
+2026-11-25T13:24:08.369+09:00	5584	screenshot-observed	detail-03-multiday
+2026-11-25T13:24:16.915+09:00	5584	request-start	detail-04-multiday
+2026-11-25T13:24:21.381+09:00	5584	screenshot-observed	detail-04-multiday
+2026-11-25T13:24:30.187+09:00	5584	request-start	detail-05-multiday
+2026-11-25T13:24:34.679+09:00	5584	screenshot-observed	detail-05-multiday
+2026-11-25T13:24:42.926+09:00	5584	request-start	detail-06-multiday
+2026-11-25T13:24:47.492+09:00	5584	screenshot-observed	detail-06-multiday
+2026-11-25T13:25:15.277+09:00	5584	request-start	detail-07-multiday
+2026-11-25T13:25:19.766+09:00	5584	screenshot-observed	detail-07-multiday
+2026-11-25T13:25:28.975+09:00	5584	request-start	detail-08-multiday
+2026-11-25T13:25:33.472+09:00	5584	screenshot-observed	detail-08-multiday
+2026-11-25T13:25:42.208+09:00	5584	request-start	detail-09-multiday
+2026-11-25T13:25:46.703+09:00	5584	screenshot-observed	detail-09-multiday
+2026-11-25T13:25:55.672+09:00	5584	request-start	detail-10-multiday
+2026-11-25T13:26:00.193+09:00	5584	screenshot-observed	detail-10-multiday
+2026-11-25T13:26:09.341+09:00	5584	request-start	detail-11-multiday
+2026-11-25T13:26:13.842+09:00	5584	screenshot-observed	detail-11-multiday
+2026-11-25T13:26:27.245+09:00	5584	request-start	detail-12-multiday
+2026-11-25T13:26:31.732+09:00	5584	screenshot-observed	detail-12-multiday
+2026-11-25T13:26:40.560+09:00	5584	request-start	detail-13-multiday
+2026-11-25T13:26:45.055+09:00	5584	screenshot-observed	detail-13-multiday
+2026-11-25T13:26:53.629+09:00	5584	request-start	detail-14-multiday
+2026-11-25T13:26:58.211+09:00	5584	screenshot-observed	detail-14-multiday
+2026-11-25T13:27:06.876+09:00	5584	request-start	detail-15-multiday
+2026-11-25T13:27:11.444+09:00	5584	screenshot-observed	detail-15-multiday
+2026-11-25T13:27:20.204+09:00	5584	request-start	detail-16-multiday
+2026-11-25T13:27:24.753+09:00	5584	screenshot-observed	detail-16-multiday
+2026-11-25T13:27:49.556+09:00	5584	request-start	detail-17-multiday
+2026-11-25T13:27:54.038+09:00	5584	screenshot-observed	detail-17-multiday
+2026-11-25T13:28:04.496+09:00	5584	request-start	detail-18-multiday
+2026-11-25T13:28:08.998+09:00	5584	screenshot-observed	detail-18-multiday
+2026-11-25T13:28:18.959+09:00	5584	request-start	detail-19-multiday
+2026-11-25T13:28:23.496+09:00	5584	screenshot-observed	detail-19-multiday
+2026-11-25T13:28:32.991+09:00	5584	request-start	detail-20-multiday
+2026-11-25T13:28:37.540+09:00	5584	screenshot-observed	detail-20-multiday
+2026-11-25T13:28:46.671+09:00	5584	request-start	detail-21-multiday
+2026-11-25T13:28:51.146+09:00	5584	screenshot-observed	detail-21-multiday
+2026-11-25T13:29:13.472+09:00	5584	request-start	detail-22-multiday
+2026-11-25T13:29:18.055+09:00	5584	screenshot-observed	detail-22-multiday
+2026-11-25T13:29:27.891+09:00	5584	request-start	detail-23-multiday
+2026-11-25T13:29:32.412+09:00	5584	screenshot-observed	detail-23-multiday
+2026-11-25T13:29:41.755+09:00	5584	request-start	detail-24-multiday
+2026-11-25T13:29:46.273+09:00	5584	screenshot-observed	detail-24-multiday
+2026-11-25T13:29:55.754+09:00	5584	request-start	detail-25-multiday
+2026-11-25T13:30:00.312+09:00	5584	screenshot-observed	detail-25-multiday
+2026-11-25T13:30:09.548+09:00	5584	request-start	detail-26-multiday
+2026-11-25T13:30:14.075+09:00	5584	screenshot-observed	detail-26-multiday
+2026-11-25T13:30:22.216+09:00	5584	visual-review	detail-01-to-21-loaded-two-days-two-places
+2026-11-25T13:30:36.812+09:00	5584	request-start	detail-27-multiday
+2026-11-25T13:30:41.345+09:00	5584	screenshot-observed	detail-27-multiday
+2026-11-25T13:30:49.905+09:00	5584	request-start	detail-28-multiday
+2026-11-25T13:30:54.429+09:00	5584	screenshot-observed	detail-28-multiday
+2026-11-25T13:31:04.090+09:00	5584	request-start	detail-29-multiday
+2026-11-25T13:31:08.648+09:00	5584	screenshot-observed	detail-29-multiday
+2026-11-25T13:31:17.991+09:00	5584	request-start	detail-30-multiday
+2026-11-25T13:31:22.550+09:00	5584	screenshot-observed	detail-30-multiday
+2026-11-25T13:31:46.047+09:00	5584	phase-end	trip-detail-30-openings-completed
+2026-11-25T13:32:16.892+09:00	5584	tap	500 1310 own-four-place-trip
+2026-11-25T13:32:41.235+09:00	5584	observation	navigation-opened-existing-trip-readonly-no-edit-exclude-from-detail-window
+2026-11-25T13:32:41.310+09:00	5584	tap	74 210 back-existing-trip
+2026-11-25T13:32:42.208+09:00	5584	tap	74 210 back-trip-list
+2026-11-25T13:33:02.118+09:00	5584	click	V11-RECHECK-531, 경주 · 4곳 own-trip
+2026-11-25T13:33:26.123+09:00	5584	phase-start	trip-edit-memo-and-order
+2026-11-25T13:33:26.206+09:00	5584	tap	430 1670 edit-own-first-memo
+2026-11-25T13:34:05.747+09:00	5584	request-start	memo-01
+2026-11-25T13:34:05.820+09:00	5584	tap	908 1755 save-own-memo-01
+2026-11-25T13:34:27.651+09:00	5584	tap	1005 755 close-place-preview
+2026-11-25T13:35:18.825+09:00	5584	observation	memo-01-saved-on-blur-place-preview-extra-read
+2026-11-25T13:35:18.891+09:00	5584	tap	310 1608 edit-memo-02
+2026-11-25T13:35:21.167+09:00	5584	request-start	memo-02-keyboard-done
+2026-11-25T13:36:00.955+09:00	5584	request-start	memo-03-keyboard-done
+2026-11-25T13:36:04.588+09:00	5584	screenshot-observed	memo-03
+2026-11-25T13:36:14.337+09:00	5584	request-start	memo-04-keyboard-done
+2026-11-25T13:36:18.346+09:00	5584	screenshot-observed	memo-04
+2026-11-25T13:36:27.865+09:00	5584	request-start	memo-05-keyboard-done
+2026-11-25T13:36:31.447+09:00	5584	screenshot-observed	memo-05
+2026-11-25T13:36:41.435+09:00	5584	request-start	memo-06-keyboard-done
+2026-11-25T13:36:45.393+09:00	5584	screenshot-observed	memo-06
+2026-11-25T13:36:54.848+09:00	5584	request-start	memo-07-keyboard-done
+2026-11-25T13:36:58.919+09:00	5584	screenshot-observed	memo-07
+2026-11-25T13:37:20.548+09:00	5584	request-start	memo-08-keyboard-done
+2026-11-25T13:37:24.488+09:00	5584	screenshot-observed	memo-08
+2026-11-25T13:37:34.124+09:00	5584	request-start	memo-09-keyboard-done
+2026-11-25T13:37:37.704+09:00	5584	screenshot-observed	memo-09
+2026-11-25T13:37:47.564+09:00	5584	request-start	memo-10-keyboard-done
+2026-11-25T13:37:51.270+09:00	5584	screenshot-observed	memo-10
+2026-11-25T13:38:01.191+09:00	5584	request-start	memo-11-keyboard-done
+2026-11-25T13:38:05.651+09:00	5584	screenshot-observed	memo-11
+2026-11-25T13:38:15.507+09:00	5584	request-start	memo-12-keyboard-done
+2026-11-25T13:38:19.500+09:00	5584	screenshot-observed	memo-12
+2026-11-25T13:38:40.280+09:00	5584	request-start	memo-13-keyboard-done
+2026-11-25T13:38:43.941+09:00	5584	screenshot-observed	memo-13
+2026-11-25T13:38:53.671+09:00	5584	request-start	memo-14-keyboard-done
+2026-11-25T13:38:57.318+09:00	5584	screenshot-observed	memo-14
+2026-11-25T13:39:07.061+09:00	5584	request-start	memo-15-keyboard-done
+2026-11-25T13:39:11.008+09:00	5584	screenshot-observed	memo-15
+2026-11-25T13:39:31.385+09:00	5584	observation	memo-01-to-15-saved
+2026-11-25T13:39:31.455+09:00	5584	tap	1005 1500 first-place-menu
+2026-11-25T13:39:52.205+09:00	5584	request-start	order-01-first-place-down
+2026-11-25T13:39:52.287+09:00	5584	tap	310 1705 move-first-down
+2026-11-25T13:40:33.784+09:00	5584	request-start	order-02-first-place-down
+2026-11-25T13:40:37.312+09:00	5584	screenshot-observed	order-02
+2026-11-25T13:40:46.089+09:00	5584	request-start	order-03-first-place-down
+2026-11-25T13:40:49.825+09:00	5584	screenshot-observed	order-03
+2026-11-25T13:40:58.419+09:00	5584	request-start	order-04-first-place-down
+2026-11-25T13:41:02.019+09:00	5584	screenshot-observed	order-04
+2026-11-25T13:41:10.480+09:00	5584	request-start	order-05-first-place-down
+2026-11-25T13:41:14.065+09:00	5584	screenshot-observed	order-05
+2026-11-25T13:41:22.494+09:00	5584	request-start	order-06-first-place-down
+2026-11-25T13:41:26.112+09:00	5584	screenshot-observed	order-06
+2026-11-25T13:41:54.249+09:00	5584	request-start	order-07-first-place-down
+2026-11-25T13:41:57.799+09:00	5584	screenshot-observed	order-07
+2026-11-25T13:42:06.257+09:00	5584	request-start	order-08-first-place-down
+2026-11-25T13:42:10.150+09:00	5584	screenshot-observed	order-08
+2026-11-25T13:42:18.767+09:00	5584	request-start	order-09-first-place-down
+2026-11-25T13:42:22.736+09:00	5584	screenshot-observed	order-09
+2026-11-25T13:42:31.289+09:00	5584	request-start	order-10-first-place-down
+2026-11-25T13:42:35.080+09:00	5584	screenshot-observed	order-10
+2026-11-25T13:42:43.570+09:00	5584	request-start	order-11-first-place-down
+2026-11-25T13:42:47.339+09:00	5584	screenshot-observed	order-11
+2026-11-25T13:43:12.854+09:00	5584	request-start	order-12-first-place-down
+2026-11-25T13:43:16.677+09:00	5584	screenshot-observed	order-12
+2026-11-25T13:43:25.163+09:00	5584	request-start	order-13-first-place-down
+2026-11-25T13:43:29.415+09:00	5584	screenshot-observed	order-13
+2026-11-25T13:43:37.920+09:00	5584	request-start	order-14-first-place-down
+2026-11-25T13:43:41.730+09:00	5584	screenshot-observed	order-14
+2026-11-25T13:43:50.198+09:00	5584	request-start	order-15-first-place-down
+2026-11-25T13:43:53.676+09:00	5584	screenshot-observed	order-15
+2026-11-25T13:47:37.895+09:00	5584	phase-end	trip-edit-15memo-15order
+2026-11-25T13:48:00.879+09:00	5584	tap	918 210 collaboration-share-open
+2026-11-25T13:50:11.298+09:00	5584	tap	540 2085 create-own-test-trip-link
+2026-11-25T13:50:29.265+09:00	5584	tap	285 1750 copy-own-test-trip-link
+2026-11-25T13:50:45.732+09:00	5584	tap	300 600 close-share-sheet
+2026-11-25T13:51:00.011+09:00	5586	tap	540 1532 join-own-test-trip
+2026-11-25T13:51:45.456+09:00	5584	phase-start	collaboration-live
+2026-11-25T13:51:49.724+09:00	5584	request-start	live-01-keyboard-done
+2026-11-25T13:51:52.373+09:00	5586	memo-change-observed	live-01
+2026-11-25T13:52:09.057+09:00	5584	request-start	live-02-keyboard-done
+2026-11-25T13:53:34.173+09:00	5586	measurement-correction	live01-first-change-partial-live02-success-visible-but-threshold-missed-exclude-both-from-complete-display-latency
+2026-11-25T13:53:37.711+09:00	5584	request-start	live-03-keyboard-done
+2026-11-25T13:53:41.177+09:00	5586	memo-change-observed	live-03
+2026-11-25T13:53:52.238+09:00	5584	request-start	live-04-keyboard-done
+2026-11-25T13:53:55.875+09:00	5586	memo-change-observed	live-04
+2026-11-25T13:54:06.934+09:00	5584	request-start	live-05-keyboard-done
+2026-11-25T13:54:10.348+09:00	5586	memo-change-observed	live-05
+2026-11-25T13:54:21.306+09:00	5584	request-start	live-06-keyboard-done
+2026-11-25T13:54:24.254+09:00	5586	memo-change-observed	live-06
+2026-11-25T13:54:35.475+09:00	5584	request-start	live-07-keyboard-done
+2026-11-25T13:54:38.915+09:00	5586	memo-change-observed	live-07
+2026-11-25T13:55:06.672+09:00	5584	request-start	live-08-keyboard-done
+2026-11-25T13:55:10.158+09:00	5586	memo-change-observed	live-08
+2026-11-25T13:55:21.214+09:00	5584	request-start	live-09-keyboard-done
+2026-11-25T13:55:24.758+09:00	5586	memo-change-observed	live-09
+2026-11-25T13:55:35.937+09:00	5584	request-start	live-10-keyboard-done
+2026-11-25T13:55:39.975+09:00	5586	memo-change-observed	live-10
+2026-11-25T13:55:50.793+09:00	5584	request-start	live-11-keyboard-done
+2026-11-25T13:55:54.197+09:00	5586	memo-change-observed	live-11
+2026-11-25T13:56:05.404+09:00	5584	request-start	live-12-keyboard-done
+2026-11-25T13:56:08.962+09:00	5586	memo-change-observed	live-12
+2026-11-25T13:56:35.689+09:00	5584	request-start	live-13-keyboard-done
+2026-11-25T13:56:39.100+09:00	5586	memo-change-observed	live-13
+2026-11-25T13:56:50.050+09:00	5584	request-start	live-14-keyboard-done
+2026-11-25T13:56:52.800+09:00	5586	memo-change-observed	live-14
+2026-11-25T13:57:03.898+09:00	5584	request-start	live-15-keyboard-done
+2026-11-25T13:57:07.212+09:00	5586	memo-change-observed	live-15
+2026-11-25T13:57:18.425+09:00	5584	request-start	live-16-keyboard-done
+2026-11-25T13:57:22.115+09:00	5586	memo-change-observed	live-16
+2026-11-25T13:57:32.916+09:00	5584	request-start	live-17-keyboard-done
+2026-11-25T13:57:35.851+09:00	5586	memo-change-observed	live-17
+2026-11-25T13:57:50.619+09:00	5586	phase-end	collaboration-live-17-edits-15-timed
+2026-11-25T13:57:50.700+09:00	5586	tap	75 210 exit-shared-trip-for-gap-setup
+2026-11-25T13:58:11.096+09:00	5586	tap	540 2165 trip-tab-for-gap
+2026-11-25T13:58:50.870+09:00	5586	phase-start	gap-recommendations
+2026-11-25T13:58:50.943+09:00	5586	tap	540 1260 gap-01-open-test-trip
+2026-11-25T13:58:57.020+09:00	5586	tap	880 2180 gap-01-open-candidate
+2026-11-25T13:59:23.813+09:00	5586	result	gap-01-candidates-visible
+2026-11-25T13:59:23.885+09:00	5586	tap	500 60 close-gap-sheet
+2026-11-25T13:59:26.868+09:00	5586	tap	75 210 gap-01-exit-trip
+2026-11-25T13:59:53.767+09:00	5586	tap	75 210 exit-gap-trip
+2026-11-25T14:00:42.306+09:00	5586	request-start	gap-02-reopen-trip-auto-gap-query
+2026-11-25T14:00:49.835+09:00	5586	candidates-observed	gap-02
+2026-11-25T14:00:57.405+09:00	5586	request-start	gap-03-reopen-trip-auto-gap-query
+2026-11-25T14:01:04.962+09:00	5586	candidates-observed	gap-03
+2026-11-25T14:01:12.544+09:00	5586	request-start	gap-04-reopen-trip-auto-gap-query
+2026-11-25T14:01:20.089+09:00	5586	candidates-observed	gap-04
+2026-11-25T14:01:27.826+09:00	5586	request-start	gap-05-reopen-trip-auto-gap-query
+2026-11-25T14:01:35.443+09:00	5586	candidates-observed	gap-05
+2026-11-25T14:01:43.000+09:00	5586	request-start	gap-06-reopen-trip-auto-gap-query
+2026-11-25T14:01:50.512+09:00	5586	candidates-observed	gap-06
+2026-11-25T14:02:26.531+09:00	5586	request-start	gap-07-reopen-trip-auto-gap-query
+2026-11-25T14:02:34.060+09:00	5586	candidates-observed	gap-07
+2026-11-25T14:02:41.647+09:00	5586	request-start	gap-08-reopen-trip-auto-gap-query
+2026-11-25T14:02:49.198+09:00	5586	candidates-observed	gap-08
+2026-11-25T14:02:56.783+09:00	5586	request-start	gap-09-reopen-trip-auto-gap-query
+2026-11-25T14:03:04.326+09:00	5586	candidates-observed	gap-09
+2026-11-25T14:03:11.947+09:00	5586	request-start	gap-10-reopen-trip-auto-gap-query
+2026-11-25T14:03:19.497+09:00	5586	candidates-observed	gap-10
+2026-11-25T14:03:27.108+09:00	5586	request-start	gap-11-reopen-trip-auto-gap-query
+2026-11-25T14:03:34.679+09:00	5586	candidates-observed	gap-11
+2026-11-25T14:04:09.287+09:00	5586	request-start	gap-12-reopen-trip-auto-gap-query
+2026-11-25T14:04:16.901+09:00	5586	candidates-observed	gap-12
+2026-11-25T14:04:24.481+09:00	5586	request-start	gap-13-reopen-trip-auto-gap-query
+2026-11-25T14:04:32.016+09:00	5586	candidates-observed	gap-13
+2026-11-25T14:04:39.740+09:00	5586	request-start	gap-14-reopen-trip-auto-gap-query
+2026-11-25T14:04:47.267+09:00	5586	candidates-observed	gap-14
+2026-11-25T14:04:54.817+09:00	5586	request-start	gap-15-reopen-trip-auto-gap-query
+2026-11-25T14:05:02.338+09:00	5586	candidates-observed	gap-15
+2026-11-25T14:05:09.918+09:00	5586	request-start	gap-16-reopen-trip-auto-gap-query
+2026-11-25T14:05:17.459+09:00	5586	candidates-observed	gap-16
+2026-11-25T14:05:37.495+09:00	5586	request-start	gap-17-reopen-trip-auto-gap-query
+2026-11-25T14:05:45.035+09:00	5586	candidates-observed	gap-17
+2026-11-25T14:05:52.625+09:00	5586	request-start	gap-18-reopen-trip-auto-gap-query
+2026-11-25T14:06:00.153+09:00	5586	candidates-observed	gap-18
+2026-11-25T14:06:07.708+09:00	5586	request-start	gap-19-reopen-trip-auto-gap-query
+2026-11-25T14:06:15.357+09:00	5586	candidates-observed	gap-19
+2026-11-25T14:06:22.885+09:00	5586	request-start	gap-20-reopen-trip-auto-gap-query
+2026-11-25T14:06:30.384+09:00	5586	candidates-observed	gap-20
+2026-11-25T14:06:38.092+09:00	5586	request-start	gap-21-reopen-trip-auto-gap-query
+2026-11-25T14:06:45.638+09:00	5586	candidates-observed	gap-21
+2026-11-25T14:07:21.506+09:00	5586	request-start	gap-22-reopen-trip-auto-gap-query
+2026-11-25T14:07:29.018+09:00	5586	candidates-observed	gap-22
+2026-11-25T14:07:36.586+09:00	5586	request-start	gap-23-reopen-trip-auto-gap-query
+2026-11-25T14:07:44.121+09:00	5586	candidates-observed	gap-23
+2026-11-25T14:07:51.694+09:00	5586	request-start	gap-24-reopen-trip-auto-gap-query
+2026-11-25T14:07:59.253+09:00	5586	candidates-observed	gap-24
+2026-11-25T14:08:06.823+09:00	5586	request-start	gap-25-reopen-trip-auto-gap-query
+2026-11-25T14:08:14.397+09:00	5586	candidates-observed	gap-25
+2026-11-25T14:08:21.965+09:00	5586	request-start	gap-26-reopen-trip-auto-gap-query
+2026-11-25T14:08:29.563+09:00	5586	candidates-observed	gap-26
+2026-11-25T14:08:44.887+09:00	5586	request-start	gap-27-reopen-trip-auto-gap-query
+2026-11-25T14:08:52.467+09:00	5586	candidates-observed	gap-27
+2026-11-25T14:09:00.024+09:00	5586	request-start	gap-28-reopen-trip-auto-gap-query
+2026-11-25T14:09:07.601+09:00	5586	candidates-observed	gap-28
+2026-11-25T14:09:15.221+09:00	5586	request-start	gap-29-reopen-trip-auto-gap-query
+2026-11-25T14:09:22.703+09:00	5586	candidates-observed	gap-29
+2026-11-25T14:09:30.392+09:00	5586	request-start	gap-30-reopen-trip-auto-gap-query
+2026-11-25T14:09:37.915+09:00	5586	candidates-observed	gap-30
+2026-11-25T14:09:56.976+09:00	5586	phase-end	gap-recommendations-30-entries
+2026-11-25T14:09:57.148+09:00	host	phase-start	readonly-errors
+2026-11-25T14:09:57.149+09:00	host	request-start	error-01 GET /api/public/trips/v11-recheck-531-no-such-trip
+2026-11-25T14:09:57.900+09:00	host	result	error-01 status=404 traceId=bfe22e57-b6eb-490a-be8c-39d9324fa199
+2026-11-25T14:10:05.901+09:00	host	request-start	error-02 GET /api/trip-drafts/auto
+2026-11-25T14:10:06.180+09:00	host	result	error-02 status=401 traceId=1306b7a7-03fe-4975-b0c4-d4ac781e4c92
+2026-11-25T14:10:14.182+09:00	host	request-start	error-03 GET /api/public/trips/v11-recheck-531-no-such-trip
+2026-11-25T14:10:14.466+09:00	host	result	error-03 status=404 traceId=b2b1e587-9557-48df-9758-04f723b78d54
+2026-11-25T14:10:22.467+09:00	host	request-start	error-04 GET /api/trip-drafts/auto
+2026-11-25T14:10:22.631+09:00	host	result	error-04 status=401 traceId=12b796a2-77bd-4f10-b672-baa32f6eedb0
+2026-11-25T14:10:30.633+09:00	host	phase-end	readonly-errors
+2026-11-25T14:10:59.929+09:00	5584	cleanup-start	own-test-trips-and-five-videos
+2026-11-25T14:11:00.045+09:00	5584	tap	1014 210 own-test-trip-menu
+2026-11-25T14:11:21.778+09:00	5584	tap	280 2250 delete-own-V11-RECHECK-531
+2026-11-25T14:11:40.894+09:00	5584	tap	895 1375 confirm-delete-own-V11-RECHECK-531
+2026-11-25T14:12:10.768+09:00	5584	cleanup-result	V11-RECHECK-531-deleted-from-trip-list
+2026-11-25T14:12:54.779+09:00	5584	tap	500 1785 open-own-V11-MULTIDAY-531-cleanup
+2026-11-25T14:12:58.908+09:00	5584	tap	1014 210 own-multiday-menu
+2026-11-25T14:13:18.678+09:00	5584	tap	280 2250 delete-own-V11-MULTIDAY-531
+2026-11-25T14:13:35.583+09:00	5584	tap	895 1400 confirm-delete-own-V11-MULTIDAY-531
+2026-11-25T14:14:08.449+09:00	5584	cleanup-result	V11-MULTIDAY-531-deleted-from-trip-list
+2026-11-25T14:14:08.528+09:00	5584	tap	110 2235 home-for-own-draft-cleanup
+2026-11-25T14:14:35.857+09:00	5584	tap	978 1335 dismiss-own-video03-draft
+2026-11-25T14:15:03.209+09:00	5584	tap	978 1335 dismiss-own-video02-draft
+2026-11-25T14:15:28.765+09:00	5584	tap	978 1335 dismiss-own-video01-draft
+2026-11-25T14:15:31.866+09:00	5584	tap	320 1845 expand-drafts-to-check-own-video04
+2026-11-25T14:16:23.941+09:00	5584	tap	944 651 dismiss-own-video04-featured-draft
+2026-11-25T14:16:26.949+09:00	5584	tap	324 2235 own-video-cleanup-tab
+2026-11-25T14:16:47.773+09:00	5584	tap	500 850 cleanup-video05-open
+2026-11-25T14:16:50.800+09:00	5584	tap	1014 210 cleanup-video05-menu
+2026-11-25T14:17:08.334+09:00	5584	tap	300 2250 delete-own-video05-record
+2026-11-25T14:17:29.243+09:00	5584	tap	895 1400 confirm-delete-own-video05-record
+2026-11-25T14:17:58.889+09:00	5584	tap	500 850 cleanup-video04-open
+2026-11-25T14:18:02.038+09:00	5584	tap	1014 210 cleanup-video04-menu
+2026-11-25T14:18:05.225+09:00	5584	tap	300 2250 delete-own-video04-record
+2026-11-25T14:18:25.197+09:00	5584	tap	895 1400 confirm-delete-own-video04-record
+2026-11-25T14:19:12.626+09:00	5584	tap	500 850 cleanup-video03-open
+2026-11-25T14:19:15.927+09:00	5584	tap	1014 210 cleanup-video03-menu
+2026-11-25T14:19:18.800+09:00	5584	tap	300 2250 delete-own-video03-record
+2026-11-25T14:19:55.241+09:00	5584	tap	895 1400 confirm-delete-own-video03-record
+2026-11-25T14:20:28.439+09:00	5584	tap	500 850 cleanup-video02-open
+2026-11-25T14:20:31.815+09:00	5584	tap	1014 210 cleanup-video02-menu
+2026-11-25T14:20:34.640+09:00	5584	tap	300 2250 delete-own-video02-record
+2026-11-25T14:21:18.692+09:00	5584	tap	895 1400 confirm-delete-own-video02-record
+2026-11-25T14:21:42.658+09:00	5584	tap	500 850 cleanup-video01-open
+2026-11-25T14:21:45.679+09:00	5584	tap	1014 210 cleanup-video01-menu
+2026-11-25T14:21:48.533+09:00	5584	tap	300 2250 delete-own-video01-record
+2026-11-25T14:22:07.617+09:00	5584	tap	895 1400 confirm-delete-own-video01-record
+2026-11-25T14:22:25.038+09:00	5584	cleanup-result	five-new-video-records-deleted-four-unapproved-drafts-dismissed
+2026-11-25T14:22:25.111+09:00	5586	tap	110 2160 home-after-shared-trip-cleanup
+2026-11-25T14:22:27.128+09:00	5586	tap	540 2160 trip-list-after-cleanup
+2026-11-25T14:22:50.164+09:00	5586	tap	540 1260 verify-deleted-own-shared-trip
+2026-11-25T14:23:12.152+09:00	5586	tap	540 1460 return-list-after-cleanup
+2026-11-25T14:23:15.113+09:00	5586	cleanup-end	trips-2-videos-5-deleted-drafts-4-dismissed-shared-access-removed

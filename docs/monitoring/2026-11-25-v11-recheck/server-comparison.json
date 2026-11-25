@@ -1,0 +1,24 @@
+[
+  {
+    "label": "대안 (12→30건)",
+    "before": {
+      "meanSeconds": 2.0493783831666668,
+      "p95Seconds": 4.0802189296,
+      "sqlPerRequest": 26.666666666666668
+    },
+    "after": {
+      "meanSeconds": 0.7687513311333334,
+      "p95Seconds": 1.2526987945,
+      "sqlPerRequest": 8.266666666666667
+    }
+  },
+  {
+    "label": "상세 (24h→단기 33건)",
+    "before": {
+      "p95Seconds": 0.44428
+    },
+    "after": {
+      "p95Seconds": 0.23152557834999996
+    }
+  }
+]
