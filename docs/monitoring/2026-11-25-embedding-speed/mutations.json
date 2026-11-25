@@ -1,0 +1,18 @@
+[
+  {
+    "mutation": "묶음_분할",
+    "exit_code": 1,
+    "caught": true,
+    "failed_tests": [
+      "기존_결과_점수_이유_벡터_대상과_한번의_묶음을_유지한다()"
+    ]
+  },
+  {
+    "mutation": "순차_복원",
+    "exit_code": 1,
+    "caught": true,
+    "failed_tests": [
+      "Gemini_HTTP와_독립작업이_겹치고_DB는_요청스레드에_남는다()"
+    ]
+  }
+]

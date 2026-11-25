@@ -54,6 +54,10 @@ class AlternativeFinderServiceTest {
 
     @BeforeEach
     void 보충_검색의_기본_응답은_빈_목록이다() {
+        lenient().when(placeEmbeddingService.ensureEmbeddingsWithWork(anyList(), any())).thenAnswer(inv -> {
+            ((Runnable) inv.getArgument(1)).run();
+            return new PlaceEmbeddingService.EmbeddingStats(0, 0);
+        });
         lenient().when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, null))
                 .thenReturn(new GooglePlacesNearbySearchResponse(List.of()));
     }

@@ -166,4 +166,45 @@ class PlaceEmbeddingServiceTest {
         verify(apiCallLogService, times(1)).recordBatch(eq("gemini"), eq("place-embedding-batch"), anyLong(),
                 eq(false), eq("embedding generation failed"), eq(2));
     }
+    @Test
+    void 임베딩이_없어도_독립작업은_정확히_한번_실행한다() {
+        Runnable independent = mock(Runnable.class);
+        PlaceEmbeddingService.EmbeddingStats emptyStats = placeEmbeddingService.ensureEmbeddingsWithWork(List.of(), independent);
+        org.junit.jupiter.api.Assertions.assertEquals(new PlaceEmbeddingService.EmbeddingStats(0, 0), emptyStats);
+        verify(independent).run();
+        verifyNoInteractions(geminiEmbeddingClient);
+    }
+
+    @Test
+    void 기존_벡터만_있어도_독립작업은_정확히_한번_실행한다() {
+        Runnable independent = mock(Runnable.class);
+        when(placeRepository.findIdsWithEmbedding(List.of(1L))).thenReturn(List.of(1L));
+        PlaceEmbeddingService.EmbeddingStats stats = placeEmbeddingService.ensureEmbeddingsWithWork(List.of(place(1, "가")), independent);
+        org.junit.jupiter.api.Assertions.assertEquals(new PlaceEmbeddingService.EmbeddingStats(0, 0), stats);
+        verify(independent).run();
+        verifyNoInteractions(geminiEmbeddingClient);
+    }
+
+    @Test
+    void 존재_조회_실패시에도_독립작업은_실행한다() {
+        Runnable independent = mock(Runnable.class);
+        when(placeRepository.findIdsWithEmbedding(anyList())).thenThrow(new RuntimeException("DB 실패"));
+        PlaceEmbeddingService.EmbeddingStats stats = placeEmbeddingService.ensureEmbeddingsWithWork(List.of(place(1, "가")), independent);
+        org.junit.jupiter.api.Assertions.assertEquals(new PlaceEmbeddingService.EmbeddingStats(0, 0), stats);
+        verify(independent).run();
+        verifyNoInteractions(geminiEmbeddingClient);
+    }
+
+    @Test
+    void 독립작업이_없는_기존_호출은_요청스레드에서_계속_실행한다() {
+        Thread caller = Thread.currentThread();
+        when(placeRepository.findIdsWithEmbedding(anyList())).thenReturn(List.of());
+        when(geminiEmbeddingClient.embedBatch(anyList())).thenAnswer(inv -> {
+            org.junit.jupiter.api.Assertions.assertSame(caller, Thread.currentThread());
+            return Optional.of(List.of(new float[]{1}));
+        });
+        placeEmbeddingService.ensureEmbeddings(List.of(place(1, "가")));
+        verify(geminiEmbeddingClient).embedBatch(List.of("가 cafe"));
+    }
+
 }

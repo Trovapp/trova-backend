@@ -1,0 +1,218 @@
+{
+  "source": "docs/monitoring/2026-11-25-v11-recheck-followup/server-alternatives/journal.log",
+  "matching": "같은 스레드의 가장 가까운 이전 묶음과 단계행의 간격 1초 미만; 요청 ID 없는 로그이므로 상관 관계 추정",
+  "matched": 30,
+  "extra_batch_sizes": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "matches": [
+    {
+      "stage_line": 2,
+      "batch_line": 1,
+      "gap_seconds": 0.446715,
+      "batch_size": 13
+    },
+    {
+      "stage_line": 5,
+      "batch_line": 4,
+      "gap_seconds": 0.409088,
+      "batch_size": 19
+    },
+    {
+      "stage_line": 8,
+      "batch_line": 7,
+      "gap_seconds": 0.415215,
+      "batch_size": 19
+    },
+    {
+      "stage_line": 11,
+      "batch_line": 10,
+      "gap_seconds": 0.440683,
+      "batch_size": 20
+    },
+    {
+      "stage_line": 14,
+      "batch_line": 13,
+      "gap_seconds": 0.417924,
+      "batch_size": 19
+    },
+    {
+      "stage_line": 17,
+      "batch_line": 16,
+      "gap_seconds": 0.280897,
+      "batch_size": 11
+    },
+    {
+      "stage_line": 20,
+      "batch_line": 19,
+      "gap_seconds": 0.315236,
+      "batch_size": 14
+    },
+    {
+      "stage_line": 23,
+      "batch_line": 22,
+      "gap_seconds": 0.420985,
+      "batch_size": 19
+    },
+    {
+      "stage_line": 26,
+      "batch_line": 25,
+      "gap_seconds": 0.453134,
+      "batch_size": 20
+    },
+    {
+      "stage_line": 29,
+      "batch_line": 28,
+      "gap_seconds": 0.248724,
+      "batch_size": 10
+    },
+    {
+      "stage_line": 32,
+      "batch_line": 31,
+      "gap_seconds": 0.110859,
+      "batch_size": 3
+    },
+    {
+      "stage_line": 35,
+      "batch_line": 34,
+      "gap_seconds": 0.467398,
+      "batch_size": 20
+    },
+    {
+      "stage_line": 38,
+      "batch_line": 37,
+      "gap_seconds": 0.168939,
+      "batch_size": 6
+    },
+    {
+      "stage_line": 41,
+      "batch_line": 40,
+      "gap_seconds": 0.081504,
+      "batch_size": 1
+    },
+    {
+      "stage_line": 44,
+      "batch_line": 43,
+      "gap_seconds": 0.092689,
+      "batch_size": 7
+    },
+    {
+      "stage_line": 47,
+      "batch_line": 46,
+      "gap_seconds": 0.346028,
+      "batch_size": 14
+    },
+    {
+      "stage_line": 50,
+      "batch_line": 49,
+      "gap_seconds": 0.510999,
+      "batch_size": 19
+    },
+    {
+      "stage_line": 53,
+      "batch_line": 52,
+      "gap_seconds": 0.198063,
+      "batch_size": 6
+    },
+    {
+      "stage_line": 56,
+      "batch_line": 55,
+      "gap_seconds": 0.437917,
+      "batch_size": 16
+    },
+    {
+      "stage_line": 59,
+      "batch_line": 58,
+      "gap_seconds": 0.538529,
+      "batch_size": 19
+    },
+    {
+      "stage_line": 62,
+      "batch_line": 61,
+      "gap_seconds": 0.164101,
+      "batch_size": 5
+    },
+    {
+      "stage_line": 65,
+      "batch_line": 64,
+      "gap_seconds": 0.51801,
+      "batch_size": 19
+    },
+    {
+      "stage_line": 68,
+      "batch_line": 67,
+      "gap_seconds": 0.367486,
+      "batch_size": 12
+    },
+    {
+      "stage_line": 71,
+      "batch_line": 70,
+      "gap_seconds": 0.231969,
+      "batch_size": 7
+    },
+    {
+      "stage_line": 74,
+      "batch_line": 73,
+      "gap_seconds": 0.315125,
+      "batch_size": 12
+    },
+    {
+      "stage_line": 80,
+      "batch_line": 79,
+      "gap_seconds": 0.189128,
+      "batch_size": 14
+    },
+    {
+      "stage_line": 83,
+      "batch_line": 82,
+      "gap_seconds": 0.179673,
+      "batch_size": 16
+    },
+    {
+      "stage_line": 86,
+      "batch_line": 85,
+      "gap_seconds": 0.197872,
+      "batch_size": 15
+    },
+    {
+      "stage_line": 89,
+      "batch_line": 88,
+      "gap_seconds": 0.206698,
+      "batch_size": 20
+    },
+    {
+      "stage_line": 92,
+      "batch_line": 91,
+      "gap_seconds": 0.070649,
+      "batch_size": 4
+    }
+  ]
+}

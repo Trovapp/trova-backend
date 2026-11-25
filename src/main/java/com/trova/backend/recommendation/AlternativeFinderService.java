@@ -210,18 +210,9 @@ public class AlternativeFinderService {
             }
         }
 
-        long embeddingStart = System.currentTimeMillis();
-        placeEmbeddingService.ensureEmbeddings(candidates);
-        long embeddingMs = System.currentTimeMillis() - embeddingStart;
-        long congestionMs = 0;
-        long personalizationStart = System.currentTimeMillis();
-        Map<Long, Double> personalizationScores = geminiExplanationEnabled ? Map.of()
-                : personalizationService.personalizationScores(user.getId(), candidates);
-        long personalizationMs = System.currentTimeMillis() - personalizationStart;
-
-        List<AlternativeCandidate> result = new ArrayList<>();
-        Map<Long, Double> scoreByPlaceId = new java.util.HashMap<>();
-        Map<Long, List<UserPreferenceSignalRepository.SimilarSignal>> similarSignalsByPlaceId = new java.util.HashMap<>();
+        // 거리로 탈락한 후보도 과거 선호 신호의 장소일 수 있다. 그 벡터의 생성 여부가
+        // 다른 후보 점수에 영향을 주므로 임베딩·개인화 입력 candidates는 기존 범위를 유지한다.
+        List<LocatedCandidate> located = new ArrayList<>();
         for (Place candidate : candidates) {
             // Place.latitude/longitude는 nullable(Google 응답에 location이 없을 수
             // 있음)이라, upsertAll로 캐시된 행이 좌표 없이 저장돼 있을 수 있다. target/next는
@@ -255,11 +246,42 @@ public class AlternativeFinderService {
                 continue;
             }
 
+            located.add(new LocatedCandidate(candidate, distanceToNextKm, estimatedTravelMinutes));
+        }
+
+        Map<Long, Optional<SeoulCongestionResponse>> congestionByPlaceId = new java.util.HashMap<>();
+        long[] congestionMs = {0};
+        long embeddingStart = System.currentTimeMillis();
+        Runnable congestionWork = located.stream().noneMatch(c -> SeoulCongestionAreaCache.isKnownArea(c.place().getName()))
+                ? PlaceEmbeddingService.NO_WORK : () -> {
+            long start = System.currentTimeMillis();
+            for (LocatedCandidate candidate : located) {
+                if (SeoulCongestionAreaCache.isKnownArea(candidate.place().getName())) {
+                    congestionByPlaceId.put(candidate.place().getId(),
+                            seoulCongestionApiClient.fetchCongestion(candidate.place().getName()));
+                }
+            }
+            congestionMs[0] = System.currentTimeMillis() - start;
+        };
+        PlaceEmbeddingService.EmbeddingStats embeddingStats =
+                placeEmbeddingService.ensureEmbeddingsWithWork(candidates, congestionWork);
+        long embeddingMs = System.currentTimeMillis() - embeddingStart;
+        long personalizationStart = System.currentTimeMillis();
+        Map<Long, Double> personalizationScores = geminiExplanationEnabled ? Map.of()
+                : personalizationService.personalizationScores(user.getId(), candidates);
+        long personalizationMs = System.currentTimeMillis() - personalizationStart;
+
+        List<AlternativeCandidate> result = new ArrayList<>();
+        Map<Long, Double> scoreByPlaceId = new java.util.HashMap<>();
+        Map<Long, List<UserPreferenceSignalRepository.SimilarSignal>> similarSignalsByPlaceId = new java.util.HashMap<>();
+        for (LocatedCandidate locatedCandidate : located) {
+            Place candidate = locatedCandidate.place();
+            Double distanceToNextKm = locatedCandidate.distanceToNextKm();
+            Integer estimatedTravelMinutes = locatedCandidate.estimatedTravelMinutes();
             boolean congestionAvailable = false;
             String congestionLevel = null;
-            long congestionStart = System.currentTimeMillis();
             if (SeoulCongestionAreaCache.isKnownArea(candidate.getName())) {
-                Optional<SeoulCongestionResponse> congestion = seoulCongestionApiClient.fetchCongestion(candidate.getName());
+                Optional<SeoulCongestionResponse> congestion = congestionByPlaceId.getOrDefault(candidate.getId(), Optional.empty());
                 if (congestion.isPresent() && congestion.get().cityData() != null
                         && congestion.get().cityData().livePopulation() != null
                         && !congestion.get().cityData().livePopulation().isEmpty()) {
@@ -267,8 +289,6 @@ public class AlternativeFinderService {
                     congestionLevel = congestion.get().cityData().livePopulation().get(0).areaCongestLevel();
                 }
             }
-
-            congestionMs += System.currentTimeMillis() - congestionStart;
 
             long candidatePersonalizationStart = System.currentTimeMillis();
             PersonalizationService.PersonalizationResult personalization = geminiExplanationEnabled
@@ -326,13 +346,17 @@ public class AlternativeFinderService {
             }
         }
         // 처음 보는 지역의 첫 대화가 느린 구간을 찾으려고 요청마다 구간별 시간을 한 줄로 남긴다(#77).
-        // 임베딩 구간의 요청/저장 세부는 PlaceEmbeddingService가 따로 남긴다.
-        log.info("대안 찾기 구간별 시간: 검색={}ms 카탈로그저장={}ms({}곳) 실내태그={}ms 임베딩={}ms 혼잡도={}ms 개인화조회={}ms({}곳) 추천이유={}ms",
+        // 임베딩 시간은 독립 혼잡도 작업과 겹치는 벽시계 시간이다. 혼잡도와 합산하면 안 된다.
+        // HTTP 요청/저장 세부는 PlaceEmbeddingService가 따로 남긴다.
+        log.info("대안 찾기 구간별 시간: 검색={}ms 카탈로그저장={}ms({}곳) 실내태그={}ms 임베딩={}ms(묶음 {}회·{}곳) 혼잡도={}ms 개인화조회={}ms({}곳) 추천이유={}ms",
                 searchMs,
-                upsertMs, raw.size(), tagMs, embeddingMs, congestionMs, personalizationMs, result.size(),
+                upsertMs, raw.size(), tagMs, embeddingMs, embeddingStats.batchCalls(), embeddingStats.places(),
+                congestionMs[0], personalizationMs, result.size(),
                 System.currentTimeMillis() - explanationStart);
         return Optional.of(withReasons);
     }
+
+    private record LocatedCandidate(Place place, Double distanceToNextKm, Integer estimatedTravelMinutes) {}
 
     private Optional<List<GooglePlacesNearbySearchResponse.Place>> searchNearby(TripPlace target, String includedType) {
         long start = System.currentTimeMillis();

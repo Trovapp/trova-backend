@@ -1,0 +1,172 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.5.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :resolveMainClassName
+> Task :bootJar
+> Task :jar
+> Task :assemble
+> Task :compileTestJava UP-TO-DATE
+> Task :processTestResources UP-TO-DATE
+> Task :testClasses UP-TO-DATE
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+> Task :test
+
+2026-11-25T21:47:57.855+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.855+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-11-25T21:47:57.856+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-11-25T21:47:57.857+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.858+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Shutdown initiated...
+2026-11-25T21:47:57.858+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Shutdown completed.
+2026-11-25T21:47:57.859+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.859+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-16 - Shutdown initiated...
+2026-11-25T21:47:57.860+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-16 - Shutdown completed.
+2026-11-25T21:47:57.860+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.861+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-17 - Shutdown initiated...
+2026-11-25T21:47:57.861+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-17 - Shutdown completed.
+2026-11-25T21:47:57.862+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.862+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-18 - Shutdown initiated...
+2026-11-25T21:47:57.863+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-18 - Shutdown completed.
+2026-11-25T21:47:57.863+09:00  INFO 69518 --- [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-11-25T21:47:57.865+09:00  INFO 69518 --- [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-11-25T21:47:57.866+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.866+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-19 - Shutdown initiated...
+2026-11-25T21:47:57.867+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-19 - Shutdown completed.
+2026-11-25T21:47:57.870+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.871+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-20 - Shutdown initiated...
+2026-11-25T21:47:57.871+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-20 - Shutdown completed.
+2026-11-25T21:47:57.871+09:00  INFO 69518 --- [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-11-25T21:47:57.872+09:00  INFO 69518 --- [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-11-25T21:47:57.873+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.874+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-21 - Shutdown initiated...
+2026-11-25T21:47:57.874+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-21 - Shutdown completed.
+2026-11-25T21:47:57.877+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.878+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-22 - Shutdown initiated...
+2026-11-25T21:47:57.878+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-22 - Shutdown completed.
+2026-11-25T21:47:57.879+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.879+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-24 - Shutdown initiated...
+2026-11-25T21:47:57.879+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-24 - Shutdown completed.
+2026-11-25T21:47:57.880+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.881+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-25 - Shutdown initiated...
+2026-11-25T21:47:57.881+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-25 - Shutdown completed.
+2026-11-25T21:47:57.883+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.883+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-26 - Shutdown initiated...
+2026-11-25T21:47:57.883+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-26 - Shutdown completed.
+2026-11-25T21:47:57.883+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+Hibernate: drop table if exists admin_action_logs cascade
+Hibernate: drop table if exists api_call_logs cascade
+Hibernate: drop table if exists bookmark_folders cascade
+Hibernate: drop table if exists bookmarks cascade
+Hibernate: drop table if exists expo_push_tokens cascade
+Hibernate: drop table if exists itineraries cascade
+Hibernate: drop table if exists notifications cascade
+Hibernate: drop table if exists place_review_snippets cascade
+Hibernate: drop table if exists places cascade
+Hibernate: drop table if exists processing_jobs cascade
+Hibernate: drop table if exists push_subscriptions cascade
+Hibernate: drop table if exists saved_places cascade
+Hibernate: drop table if exists server_metric_snapshots cascade
+Hibernate: drop table if exists share_keys cascade
+Hibernate: drop table if exists trip_activity cascade
+Hibernate: drop table if exists trip_drafts cascade
+Hibernate: drop table if exists trip_members cascade
+Hibernate: drop table if exists trip_places cascade
+Hibernate: drop table if exists trip_replan_jobs cascade
+Hibernate: drop table if exists trip_share_links cascade
+Hibernate: drop table if exists trips cascade
+Hibernate: drop table if exists user_consents cascade
+Hibernate: drop table if exists user_preference_signals cascade
+Hibernate: drop table if exists user_preferences cascade
+Hibernate: drop table if exists users cascade
+2026-11-25T21:47:57.885+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.886+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-27 - Shutdown initiated...
+2026-11-25T21:47:57.886+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-27 - Shutdown completed.
+2026-11-25T21:47:57.888+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.889+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-28 - Shutdown initiated...
+2026-11-25T21:47:57.889+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-28 - Shutdown completed.
+2026-11-25T21:47:57.891+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.892+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-29 - Shutdown initiated...
+2026-11-25T21:47:57.892+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-29 - Shutdown completed.
+2026-11-25T21:47:57.893+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.893+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-30 - Shutdown initiated...
+2026-11-25T21:47:57.894+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-30 - Shutdown completed.
+2026-11-25T21:47:57.895+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.896+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-31 - Shutdown initiated...
+2026-11-25T21:47:57.896+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-31 - Shutdown completed.
+2026-11-25T21:47:57.897+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.897+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-32 - Shutdown initiated...
+2026-11-25T21:47:57.897+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-32 - Shutdown completed.
+2026-11-25T21:47:57.898+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.899+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-34 - Shutdown initiated...
+2026-11-25T21:47:57.899+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-34 - Shutdown completed.
+2026-11-25T21:47:57.900+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.900+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-35 - Shutdown initiated...
+2026-11-25T21:47:57.901+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-35 - Shutdown completed.
+2026-11-25T21:47:57.902+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.902+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-36 - Shutdown initiated...
+2026-11-25T21:47:57.902+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-36 - Shutdown completed.
+2026-11-25T21:47:57.903+09:00  INFO 69518 --- [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-11-25T21:47:57.904+09:00  INFO 69518 --- [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-11-25T21:47:57.905+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.906+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-37 - Shutdown initiated...
+2026-11-25T21:47:57.906+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-37 - Shutdown completed.
+2026-11-25T21:47:57.909+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.909+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-38 - Shutdown initiated...
+2026-11-25T21:47:57.910+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-38 - Shutdown completed.
+2026-11-25T21:47:57.910+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.911+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-40 - Shutdown initiated...
+2026-11-25T21:47:57.911+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-40 - Shutdown completed.
+2026-11-25T21:47:57.911+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+Hibernate: drop table if exists admin_action_logs cascade
+Hibernate: drop table if exists api_call_logs cascade
+Hibernate: drop table if exists bookmark_folders cascade
+Hibernate: drop table if exists bookmarks cascade
+Hibernate: drop table if exists expo_push_tokens cascade
+Hibernate: drop table if exists itineraries cascade
+Hibernate: drop table if exists notifications cascade
+Hibernate: drop table if exists place_review_snippets cascade
+Hibernate: drop table if exists places cascade
+Hibernate: drop table if exists processing_jobs cascade
+Hibernate: drop table if exists push_subscriptions cascade
+Hibernate: drop table if exists saved_places cascade
+Hibernate: drop table if exists server_metric_snapshots cascade
+Hibernate: drop table if exists share_keys cascade
+Hibernate: drop table if exists trip_activity cascade
+Hibernate: drop table if exists trip_drafts cascade
+Hibernate: drop table if exists trip_members cascade
+Hibernate: drop table if exists trip_places cascade
+Hibernate: drop table if exists trip_replan_jobs cascade
+Hibernate: drop table if exists trip_share_links cascade
+Hibernate: drop table if exists trips cascade
+Hibernate: drop table if exists user_consents cascade
+Hibernate: drop table if exists user_preference_signals cascade
+Hibernate: drop table if exists user_preferences cascade
+Hibernate: drop table if exists users cascade
+2026-11-25T21:47:57.912+09:00  INFO 69518 --- [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-11-25T21:47:57.913+09:00  INFO 69518 --- [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-11-25T21:47:57.914+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.914+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-41 - Shutdown initiated...
+2026-11-25T21:47:57.914+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-41 - Shutdown completed.
+2026-11-25T21:47:57.917+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.917+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-42 - Shutdown initiated...
+2026-11-25T21:47:57.917+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-42 - Shutdown completed.
+2026-11-25T21:47:57.918+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.919+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-43 - Shutdown initiated...
+2026-11-25T21:47:57.919+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-43 - Shutdown completed.
+2026-11-25T21:47:57.919+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.920+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-46 - Shutdown initiated...
+2026-11-25T21:47:57.920+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-46 - Shutdown completed.
+2026-11-25T21:47:57.921+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.921+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-47 - Shutdown initiated...
+2026-11-25T21:47:57.921+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-47 - Shutdown completed.
+2026-11-25T21:47:57.922+09:00  INFO 69518 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-25T21:47:57.923+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-48 - Shutdown initiated...
+2026-11-25T21:47:57.944+09:00  INFO 69518 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-48 - Shutdown completed.
+
+> Task :check
+> Task :build
+
+BUILD SUCCESSFUL in 2m 24s
+8 actionable tasks: 4 executed, 4 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.5.1/userguide/configuration_cache_enabling.html

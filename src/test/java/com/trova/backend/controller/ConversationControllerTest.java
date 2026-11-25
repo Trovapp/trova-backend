@@ -271,6 +271,10 @@ class ConversationControllerTest {
 
     @Test
     void functionCall이_오면_실제_AlternativeFinderService_경로로_candidates가_응답에_담긴다() throws Exception {
+        when(placeEmbeddingService.ensureEmbeddingsWithWork(any(), any())).thenAnswer(inv -> {
+            ((Runnable) inv.getArgument(1)).run();
+            return new PlaceEmbeddingService.EmbeddingStats(0, 0);
+        });
         var raw = new GooglePlacesNearbySearchResponse.Place(
                 "gp-conv-1", new GooglePlacesNearbySearchResponse.Place.DisplayName("대안카페"),
                 List.of("cafe"), 4.3, 50, "PRICE_LEVEL_MODERATE",
