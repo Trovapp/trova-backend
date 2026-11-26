@@ -6,6 +6,7 @@ import com.trova.backend.repository.GapPlaceRow;
 import com.trova.backend.repository.SavedPlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.service.ApiCallLogService;
+import com.trova.backend.service.DailyQuotaService;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -48,11 +49,13 @@ public class GapRecommendationService {
     private final ApiCallLogService apiCallLogService;
     private final PlaceEmbeddingService placeEmbeddingService;
     private final PersonalizationService personalizationService;
+    private final DailyQuotaService dailyQuotaService;
 
     public GapRecommendationService(
             SavedPlaceRepository savedPlaceRepository, TripPlaceRepository tripPlaceRepository,
             GooglePlacesApiClient googlePlacesApiClient, PlaceCatalogService placeCatalogService, ApiCallLogService apiCallLogService,
-            PlaceEmbeddingService placeEmbeddingService, PersonalizationService personalizationService
+            PlaceEmbeddingService placeEmbeddingService, PersonalizationService personalizationService,
+            DailyQuotaService dailyQuotaService
     ) {
         this.savedPlaceRepository = savedPlaceRepository;
         this.tripPlaceRepository = tripPlaceRepository;
@@ -61,6 +64,7 @@ public class GapRecommendationService {
         this.apiCallLogService = apiCallLogService;
         this.placeEmbeddingService = placeEmbeddingService;
         this.personalizationService = personalizationService;
+        this.dailyQuotaService = dailyQuotaService;
     }
 
     public Optional<List<Gap>> findGaps(User user, Long tripId, int day) {
@@ -72,6 +76,16 @@ public class GapRecommendationService {
      * 여행·일차·장소 엔티티와 기본 EAGER 연관(일차의 여행, 장소의 일차)을 따로 읽어 SQL이 5~6번이었다.
      */
     public Optional<List<Gap>> findGaps(Long userId, Long tripId, int day) {
+        return findGaps(userId, tripId, day, null);
+    }
+
+    /** 대화에서 선택한 빈 시간만 검색하고 차감한다. */
+    public Optional<Gap> findGap(User user, Long tripId, int day, Long beforePlaceId) {
+        return findGaps(user.getId(), tripId, day, beforePlaceId)
+                .flatMap(gaps -> gaps.stream().findFirst());
+    }
+
+    private Optional<List<Gap>> findGaps(Long userId, Long tripId, int day, Long beforePlaceId) {
         List<GapPlaceRow> rows = tripPlaceRepository.findGapPlaceRows(tripId, userId, day);
         if (rows.isEmpty()) {
             return Optional.empty();
@@ -82,15 +96,16 @@ public class GapRecommendationService {
             throw new IncorrectResultSizeDataAccessException(1, (int) itineraryCount);
         }
         List<GapPlaceRow> places = rows.stream().filter(row -> row.placeId() != null).toList();
-        return Optional.of(computeGaps(places, userId));
+        return Optional.of(computeGaps(places, userId, beforePlaceId));
     }
 
-    private List<Gap> computeGaps(List<GapPlaceRow> places, Long userId) {
+    private List<Gap> computeGaps(List<GapPlaceRow> places, Long userId, Long beforePlaceId) {
         List<Gap> gaps = new ArrayList<>();
 
         for (int i = 0; i < places.size() - 1; i++) {
             GapPlaceRow before = places.get(i);
             GapPlaceRow after = places.get(i + 1);
+            if (beforePlaceId != null && !beforePlaceId.equals(before.placeId())) continue;
             LocalTime endTime = before.visitEndTime();
             LocalTime startTime = after.visitStartTime();
             if (endTime == null || startTime == null) {
@@ -116,7 +131,8 @@ public class GapRecommendationService {
         if (!places.isEmpty()) {
             GapPlaceRow last = places.get(places.size() - 1);
             LocalTime endTime = last.visitEndTime();
-            if (endTime != null && endTime.isBefore(DAY_END) && last.latitude() != null && last.longitude() != null) {
+            if ((beforePlaceId == null || beforePlaceId.equals(last.placeId()))
+                    && endTime != null && endTime.isBefore(DAY_END) && last.latitude() != null && last.longitude() != null) {
                 Duration gap = Duration.between(endTime, DAY_END);
                 if (gap.compareTo(GAP_THRESHOLD) > 0) {
                     gaps.add(new Gap(last.placeId(), null, (int) gap.toMinutes(),
@@ -135,6 +151,8 @@ public class GapRecommendationService {
         // 검색 실패를 500으로 흘려보내지 않는다 — AlternativeFinderService와 같은 원칙.
         long searchStart = System.currentTimeMillis();
         GooglePlacesNearbySearchResponse response;
+        // Keep quota rejection outside the search fallback so HTTP 429 reaches the caller.
+        dailyQuotaService.consumePlaceCall(userId);
         try {
             response = googlePlacesApiClient.searchNearby(lat, lng, SEARCH_RADIUS_METERS, includedType);
             apiCallLogService.record(
@@ -151,8 +169,8 @@ public class GapRecommendationService {
         List<Place> candidates = raw.isEmpty() ? List.of() : placeCatalogService.upsertAll(raw);
         Map<String, List<String>> kakaoCategories = new HashMap<>();
         if (!raw.isEmpty()) {
-            var ids = raw.stream().map(GooglePlacesNearbySearchResponse.Place::id).distinct().toList();
-            for (var row : savedPlaceRepository.findKakaoCategories(userId, ids)) {
+            List<String> ids = raw.stream().map(GooglePlacesNearbySearchResponse.Place::id).distinct().toList();
+            for (SavedPlaceRepository.KakaoCategoryRow row : savedPlaceRepository.findKakaoCategories(userId, ids)) {
                 kakaoCategories.computeIfAbsent(row.googlePlaceId(), ignored -> new ArrayList<>()).add(row.category());
             }
         }
@@ -160,7 +178,7 @@ public class GapRecommendationService {
         List<Place> filteredCandidates = new ArrayList<>();
         for (int i = 0; i < candidates.size(); i++) {
             Place candidate = candidates.get(i);
-            var source = raw.get(i);
+            GooglePlacesNearbySearchResponse.Place source = raw.get(i);
             if (neighbors.stream().noneMatch(n -> isSameGooglePlace(candidate, n))
                     && GapStopPolicy.allows(source, candidate, kakaoCategories.getOrDefault(source.id(), List.of()))) {
                 filteredCandidates.add(candidate);

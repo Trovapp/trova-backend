@@ -1,5 +1,8 @@
 package com.trova.backend.recommendation;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.trova.backend.congestion.SeoulCongestionApiClient;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.Place;
@@ -9,22 +12,26 @@ import com.trova.backend.entity.TripPlace;
 import com.trova.backend.entity.User;
 import com.trova.backend.pipeline.PlaceTag;
 import com.trova.backend.pipeline.PlaceTaggingRunner;
+import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.service.ApiCallLogService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
-
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,6 +57,8 @@ class AlternativeFinderServiceTest {
     @Mock private ApiCallLogService apiCallLogService;
     @Mock private PlaceEmbeddingService placeEmbeddingService;
     @Mock private PersonalizationService personalizationService;
+    @Mock private PlaceRepository placeRepository;
+    @Spy private SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
     @InjectMocks private AlternativeFinderService alternativeFinderService;
 
     @BeforeEach
@@ -861,6 +870,69 @@ class AlternativeFinderServiceTest {
         verify(googlePlacesApiClient).searchNearby(37.5, 127.0, 2000, "cafe");
         verify(googlePlacesApiClient, never()).searchNearby(37.5, 127.0, 2000, null);
         verifyNoMoreInteractions(googlePlacesApiClient);
+    }
+
+    @Test
+    void 유효_만료_없는_태그가_섞이면_필요한_후보만_태깅하고_저장한다() {
+        User owner = prepareTarget();
+        List<GooglePlacesNearbySearchResponse.Place> raw = List.of(
+                rawPlace("fresh", "cafe"), rawPlace("expired", "cafe"), rawPlace("missing", "cafe"));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "cafe"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+        List<Place> candidates = tagCandidates(raw);
+        candidates.get(0).applySpaceTag("INDOOR");
+        candidates.get(1).applySpaceTag("OUTDOOR");
+        ReflectionTestUtils.setField(candidates.get(1), "spaceTaggedAt", LocalDateTime.now().minusDays(31));
+        when(placeCatalogService.upsertAll(raw)).thenReturn(candidates);
+        when(placeTaggingRunner.run(anyList(), anyLong())).thenReturn(List.of(
+                new PlaceTag(0, "조용한", "INDOOR"), new PlaceTag(1, "조용한", "OUTDOOR")));
+        Logger logger = (Logger) LoggerFactory.getLogger(AlternativeFinderService.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            assertThat(alternativeFinderService.findAlternatives(owner, 1L,
+                    new AlternativeFilter(null, true, null, null, null), false).orElseThrow())
+                    .extracting(AlternativeCandidate::googlePlaceId).containsExactly("fresh", "expired");
+            ArgumentCaptor<List<PlaceTaggingRunner.TagCandidate>> captor = ArgumentCaptor.forClass(List.class);
+            verify(placeTaggingRunner).run(captor.capture(), anyLong());
+            assertThat(captor.getValue()).extracting(PlaceTaggingRunner.TagCandidate::index).containsExactly(0, 1);
+            assertThat(captor.getValue()).extracting(PlaceTaggingRunner.TagCandidate::name)
+                    .containsExactly(candidates.get(1).getName(), candidates.get(2).getName());
+            verify(placeRepository, never()).updateSpaceTag(eq(10L), any(), any());
+            verify(placeRepository).updateSpaceTag(eq(11L), eq("INDOOR"), any());
+            verify(placeRepository).updateSpaceTag(eq(12L), eq("OUTDOOR"), any());
+            assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage)
+                    .anySatisfy(message -> assertThat(message).contains("재사용 1·신규 2"));
+        } finally {
+            logger.detachAppender(appender);
+            appender.stop();
+        }
+    }
+
+    @Test
+    void 첫_후보_태그_저장이_실패해도_나머지_후보를_저장하고_응답한다() {
+        User owner = prepareTarget();
+        List<GooglePlacesNearbySearchResponse.Place> raw = List.of(rawPlace("failed", "cafe"), rawPlace("next", "cafe"));
+        when(googlePlacesApiClient.searchNearby(37.5, 127.0, 2000, "cafe"))
+                .thenReturn(new GooglePlacesNearbySearchResponse(raw));
+        List<Place> candidates = tagCandidates(raw);
+        when(placeCatalogService.upsertAll(raw)).thenReturn(candidates);
+        when(placeTaggingRunner.run(anyList(), anyLong())).thenReturn(List.of(
+                new PlaceTag(0, "조용한", "INDOOR"), new PlaceTag(1, "조용한", "INDOOR")));
+        when(placeRepository.updateSpaceTag(eq(10L), any(), any())).thenThrow(new IllegalStateException("DB 실패"));
+        assertThat(alternativeFinderService.findAlternatives(owner, 1L,
+                new AlternativeFilter(null, true, null, null, null), false).orElseThrow())
+                .extracting(AlternativeCandidate::googlePlaceId).containsExactly("failed", "next");
+        verify(placeRepository).updateSpaceTag(eq(11L), eq("INDOOR"), any());
+    }
+
+    private List<Place> tagCandidates(List<GooglePlacesNearbySearchResponse.Place> raw) {
+        return raw.stream().map(item -> {
+            Place place = new Place(item.id(), item.id(), "cafe", 4.0, 10, null, 37.501, 127.001, "주소");
+            setId(place, (long) raw.indexOf(item) + 10);
+            return place;
+        }).toList();
     }
 
 }

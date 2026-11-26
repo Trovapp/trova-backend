@@ -102,6 +102,32 @@ class ConversationControllerTest {
     }
 
     @Test
+    void 스트림도_인증과_입력과_세션_소유권과_여행_멤버십을_검사한다() throws Exception {
+        String stream = "/api/conversations/auth-stream/messages/stream";
+        mockMvc.perform(post(stream).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"message\":\"안녕\"}")).andExpect(status().isUnauthorized());
+        mockMvc.perform(post(stream).with(loginAs("conv1", "대화유저")).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"message\":\"\"}")).andExpect(status().isBadRequest());
+        mockMvc.perform(post(stream).with(loginAs("conv1", "대화유저")).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"message\":\"안녕\"}")).andExpect(status().isBadRequest());
+        when(geminiChatClient.sendMessage(any(), any(), any()))
+                .thenReturn(new GeminiChatClient.ChatResult(null, "반가워요"));
+        User editor = userRepository.save(new User("google", "stream-editor", "편집자", null));
+        trip.getMembers().add(new TripMember(editor, TripMember.Role.EDITOR));
+        tripRepository.saveAndFlush(trip);
+        mockMvc.perform(post("/api/conversations/auth-stream/messages")
+                        .with(loginAs("stream-editor", "편집자")).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"message\":\"hello\",\"tripId\":%d,\"tripPlaceId\":%d}"
+                                .formatted(trip.getId(), place.getId()))).andExpect(status().isOk());
+        mockMvc.perform(post(stream).with(loginAs("conv1", "대화유저")).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"message\":\"안녕\"}")).andExpect(status().isNotFound());
+        trip.getMembers().clear();
+        tripRepository.saveAndFlush(trip);
+        mockMvc.perform(post(stream).with(loginAs("stream-editor", "편집자")).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"message\":\"안녕\"}")).andExpect(status().isForbidden());
+    }
+
+    @Test
     void 빈_시간_대화는_앞_장소가_해당_여행의_같은_일차인지_검사한다() throws Exception {
         Trip another = tripRepository.save(new Trip(me, "두 번째 여행", null, null));
         itineraryRepository.save(new Itinerary(another, 1, null));

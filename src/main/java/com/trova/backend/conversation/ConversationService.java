@@ -5,9 +5,13 @@ import com.trova.backend.recommendation.AlternativeCandidate;
 import com.trova.backend.service.AiTextSanitizer;
 import com.trova.backend.service.ApiCallLogService;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 /**
  * 대화형 비서 한 턴을 오케스트레이션한다: 턴 상한 확인 → Gemini 호출 → functionCall이면
@@ -40,6 +44,29 @@ public class ConversationService {
     }
 
     public TurnResult sendMessage(User user, ConversationState state, String message) {
+        return sendMessage(user, state, message, null);
+    }
+
+    /** 콜백은 도구 직후, Gemini 2차 호출 전에 실행된다. 전송 계층이 카드 전송 성공 여부를 반환한다. null은 기존 POST 경로다. */
+    public TurnResult sendMessage(User user, ConversationState state, String message,
+                                  Predicate<List<AlternativeCandidate>> onCards) {
+        boolean acquired;
+        try {
+            acquired = state.turnLock().tryLock(30, TimeUnit.SECONDS);
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "대화 대기 중 중단", interrupted);
+        }
+        if (!acquired) throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "대화 세션 대기 시간 초과");
+        try {
+            return processTurn(user, state, message, onCards);
+        } finally {
+            state.turnLock().unlock();
+        }
+    }
+
+    private TurnResult processTurn(User user, ConversationState state, String message,
+                                  Predicate<List<AlternativeCandidate>> onCards) {
         if (state.getTurnCount() >= MAX_TURNS) {
             return new TurnResult(null, null, state.getTurnCount(), true);
         }
@@ -51,6 +78,7 @@ public class ConversationService {
 
         String reply;
         List<AlternativeCandidate> candidates = null;
+        List<AlternativeCandidate> shownCandidates = null;
 
         if (first.functionCall() != null) {
             // sendMessage와 sendFunctionResult는 각각 별도의 Gemini generateContent
@@ -61,6 +89,9 @@ public class ConversationService {
 
             ConversationToolExecutor.ToolExecutionResult toolResult = toolExecutor.execute(user, state, first.functionCall(), message);
 
+            if (toolResult.candidates() != null && onCards != null && onCards.test(toolResult.candidates())) {
+                shownCandidates = toolResult.candidates();
+            }
             long secondStart = System.currentTimeMillis();
             GeminiChatClient.ChatResult second = geminiChatClient.sendFunctionResult(
                     state.getHistory(), message, first.functionCall(), toolResult.responseForGemini(), tools);
@@ -72,6 +103,7 @@ public class ConversationService {
             if (success) {
                 reply = second.text();
                 candidates = toolResult.candidates();
+                if (onCards == null) shownCandidates = candidates;
             } else {
                 reply = FALLBACK_REPLY;
             }
@@ -91,19 +123,19 @@ public class ConversationService {
         // 지시문으로도 막지만 모델이 가끔 대시·글머리·따옴표를 섞어서 보내기 직전에 한 번 더 정리한다(#53).
         reply = AiTextSanitizer.clean(reply);
         state.appendTurn(ConversationState.ROLE_MODEL, reply);
-        if (candidates != null && !candidates.isEmpty()) {
+        if (shownCandidates != null && !shownCandidates.isEmpty()) {
             // functionCall/functionResponse 왕복 자체는 히스토리에 남기지 않으므로,
             // 다음 턴에서 Gemini가 note_preference를 부를 수 있게 placeId를 텍스트
             // 턴으로 요약해 남긴다 — 없으면 "그거 좋다" 같은 후속 발화에서 Gemini가
             // 어떤 placeId를 가리키는지 알 방법이 없다.
-            String summary = "표시한 후보: " + candidates.stream()
+            String summary = "표시한 후보: " + shownCandidates.stream()
                     .map(c -> c.placeId() + "=" + c.name())
                     .collect(java.util.stream.Collectors.joining(", "));
             state.appendTurn(ConversationState.ROLE_MODEL, summary);
         }
         state.incrementTurnCount();
-        if (candidates != null) {
-            state.addShownCandidateIds(candidates.stream().map(AlternativeCandidate::placeId).toList());
+        if (shownCandidates != null) {
+            state.addShownCandidateIds(shownCandidates.stream().map(AlternativeCandidate::placeId).toList());
         }
 
         return new TurnResult(reply, candidates, state.getTurnCount(), false);

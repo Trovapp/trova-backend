@@ -12,14 +12,14 @@ import com.trova.backend.recommendation.PlaceEmbeddingService;
 import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
 import com.trova.backend.service.ApiCallLogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
+import com.trova.backend.service.DailyQuotaService.QuotaExceededException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Gemini의 functionCall을 실제 기존 서비스 호출로 매핑하는 얇은 어댑터. 새 추천
@@ -82,6 +82,8 @@ public class ConversationToolExecutor {
                 case "note_preference" -> executeNotePreference(user, state, call.args());
                 default -> new ToolExecutionResult(null, Map.of("error", "알 수 없는 도구: " + call.name()));
             };
+        } catch (QuotaExceededException exhausted) {
+            result = new ToolExecutionResult(null, Map.of("error", exhausted.getMessage()));
         } catch (Exception e) {
             log.warn("대화형 비서 도구 실행 실패: {}", call.name(), e);
             result = new ToolExecutionResult(null, Map.of("error", "지금 조회할 수 없어요"));
@@ -113,11 +115,7 @@ public class ConversationToolExecutor {
             return new ToolExecutionResult(null, Map.of("error", "이 대화는 빈 시간 추천 대상이 아니에요"));
         }
         List<AlternativeCandidate> candidates = gapRecommendationService
-                .findGaps(user, state.getTripId(), state.getDay())
-                .orElse(List.of())
-                .stream()
-                .filter(gap -> gap.beforePlaceId().equals(state.getGapBeforePlaceId()))
-                .findFirst()
+                .findGap(user, state.getTripId(), state.getDay(), state.getGapBeforePlaceId())
                 .map(GapRecommendationService.Gap::recommendations)
                 .orElse(List.of());
         candidates = rerankByQuerySimilarity(message, candidates).stream().limit(MAX_CANDIDATES_IN_CHAT).toList();

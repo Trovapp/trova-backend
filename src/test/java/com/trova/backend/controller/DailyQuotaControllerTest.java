@@ -1,6 +1,15 @@
 package com.trova.backend.controller;
 
 import com.trova.backend.entity.User;
+import com.trova.backend.entity.Trip;
+import com.trova.backend.entity.Itinerary;
+import com.trova.backend.entity.TripPlace;
+import com.trova.backend.entity.PlaceSource;
+import com.trova.backend.repository.TripRepository;
+import com.trova.backend.repository.ItineraryRepository;
+import com.trova.backend.repository.TripPlaceRepository;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import com.trova.backend.recommendation.GooglePlacesApiClient;
 import com.trova.backend.recommendation.GooglePlacesNearbySearchResponse;
 import com.trova.backend.recommendation.PlaceEmbeddingService;
@@ -52,6 +61,38 @@ class DailyQuotaControllerTest {
 
     @MockitoBean
     private PlaceEmbeddingService placeEmbeddingService;
+
+    @Autowired private TripRepository trips;
+    @Autowired private ItineraryRepository itineraries;
+    @Autowired private TripPlaceRepository tripPlaces;
+
+    @Test
+    void 빈_시간이_없는_조회는_한도를_쓰지_않고_검색_두번_뒤에는_429다() throws Exception {
+        User owner = userRepository.save(new User("google", "gap-quota", "빈시간", null));
+        Trip trip = trips.saveAndFlush(new Trip(owner, "여행", LocalDate.now(), LocalDate.now()));
+        Itinerary day = itineraries.saveAndFlush(new Itinerary(trip, 1, LocalDate.now()));
+        String path = "/api/trips/" + trip.getId() + "/days/1/gap-recommendations";
+        for (int count = 0; count < 3; count++) {
+            mockMvc.perform(get(path).with(loginAs("gap-quota"))).andExpect(status().isOk());
+        }
+        org.mockito.Mockito.verifyNoInteractions(googlePlacesApiClient);
+        TripPlace stop = new TripPlace(day, "카페", "서울", "cafe", 37.5, 127.0, null, null, 1, PlaceSource.NORMAL, null);
+        stop.restoreSchedule(1, LocalTime.of(9, 0), LocalTime.of(10, 0));
+        tripPlaces.saveAndFlush(stop);
+        when(googlePlacesApiClient.searchNearby(anyDouble(), anyDouble(), anyDouble(), any()))
+                .thenReturn(new GooglePlacesNearbySearchResponse(List.of()));
+        for (int count = 0; count < 2; count++) {
+            mockMvc.perform(get(path).with(loginAs("gap-quota"))).andExpect(status().isOk());
+        }
+        mockMvc.perform(get(path).with(loginAs("gap-quota")))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(jsonPath("$.message").value("오늘 장소 검색·추천을 모두 사용했어요. 내일 다시 시도해주세요."));
+        org.mockito.Mockito.verify(googlePlacesApiClient, org.mockito.Mockito.times(2))
+                .searchNearby(anyDouble(), anyDouble(), anyDouble(), any());
+        tripPlaces.deleteAll();
+        tripPlaces.flush();
+        mockMvc.perform(get(path).with(loginAs("gap-quota"))).andExpect(status().isOk());
+    }
 
     private RequestPostProcessor loginAs(String sub) {
         ClientRegistration google = ClientRegistration.withRegistrationId("google")

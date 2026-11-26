@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 대화 세션 하나의 상태. DB에 저장하지 않는다 — "세션 한정" 설계 원칙(스펙 참고).
@@ -14,6 +15,10 @@ public class ConversationState {
 
     public static final String ROLE_USER = "user";
     public static final String ROLE_MODEL = "model";
+
+    private final ReentrantLock turnLock = new ReentrantLock(true);
+
+    ReentrantLock turnLock() { return turnLock; }
 
     private final Long userId;
     private final Long tripId;

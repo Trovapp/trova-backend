@@ -16,6 +16,7 @@ import com.trova.backend.repository.PlaceRepository;
 import com.trova.backend.repository.TripPlaceRepository;
 import com.trova.backend.repository.UserPreferenceSignalRepository;
 import com.trova.backend.service.ApiCallLogService;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -118,6 +119,7 @@ class EmbeddingSpeedTest {
         when(trips.findById(1L)).thenReturn(Optional.of(target));
         when(trips.findByItineraryOrderByVisitOrder(itinerary)).thenReturn(List.of(target));
         when(trips.findByItinerary_Trip(itinerary.getTrip())).thenReturn(List.of(target));
+        when(trips.findByTripOrderByDayAndVisitOrder(itinerary.getTrip())).thenReturn(List.of(target));
         when(google.searchNearby(anyDouble(), anyDouble(), anyDouble(), nullable(String.class)))
                 .thenReturn(new GooglePlacesNearbySearchResponse(raw));
         when(catalog.upsertAll(raw)).thenReturn(places);
@@ -174,8 +176,11 @@ class EmbeddingSpeedTest {
         Class<?> embeddingClass = baseline ? Class.forName("com.trova.backend.recommendation.BeforePlaceEmbeddingService") : PlaceEmbeddingService.class;
         Object embeddingService = embeddingClass.getConstructors()[0].newInstance(fakeGemini, repository, jdbc, apiLog);
         Class<?> finderClass = baseline ? Class.forName("com.trova.backend.recommendation.BeforeAlternativeFinderService") : AlternativeFinderService.class;
-        Object finder = finderClass.getConstructors()[0].newInstance(google, catalog, trips, mock(PlaceTaggingRunner.class),
-                crowd, apiLog, embeddingService, personal);
+        Object finder = baseline
+                ? finderClass.getConstructors()[0].newInstance(google, catalog, trips, mock(PlaceTaggingRunner.class),
+                        crowd, apiLog, embeddingService, personal)
+                : new AlternativeFinderService(google, catalog, trips, mock(PlaceTaggingRunner.class),
+                        crowd, apiLog, (PlaceEmbeddingService) embeddingService, personal, repository, new SimpleMeterRegistry());
         ReflectionTestUtils.setField(finder, "geminiExplanationEnabled", explanations);
         long start = System.nanoTime();
         Optional<List<AlternativeCandidate>> actual = (Optional<List<AlternativeCandidate>>) finderClass.getMethod("findAlternatives", User.class, Long.class, AlternativeFilter.class)

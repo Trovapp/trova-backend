@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -46,7 +48,7 @@ class PlaceReviewConcurrentTest {
     @BeforeEach
     void 준비() {
         when(places.findById(1L)).thenAnswer(call -> Optional.of(stored.get() == null ? place("g1") : stored.get()));
-        when(places.save(any())).thenAnswer(call -> { Place p = call.getArgument(0); stored.set(p); return p; });
+        lenient().doAnswer(call -> { stored.set(call.getArgument(0)); return null; }).when(places).updateReviewCache(any());
         when(runner.run(any(), anyLong())).thenReturn(summary);
     }
 
@@ -101,7 +103,7 @@ class PlaceReviewConcurrentTest {
         List<Outcome> results = pair(() -> verify(client, times(1)).getDetails("g1"));
         assertThat(results).allSatisfy(result -> { assertThat(result.error()).isNull(); assertThat(result.value().orElseThrow().summary()).isEqualTo(summary); });
         verify(runner, times(1)).run(any(), anyLong());
-        verify(places, times(1)).save(any());
+        verify(places, times(1)).updateReviewCache(any());
         assertThat(service.getOrGenerateSummary(1L).orElseThrow().phone()).isEqualTo("02-111-2222");
         verify(client, times(1)).getDetails("g1");
     }
@@ -111,7 +113,7 @@ class PlaceReviewConcurrentTest {
         when(client.getDetails("g1")).thenAnswer(call -> { gate(); throw new IllegalStateException("fixture failure"); });
         List<Outcome> results = pair(() -> verify(client, times(1)).getDetails("g1"));
         assertThat(results).allSatisfy(result -> assertThat(result.value().orElseThrow().summary().highlights()).isEqualTo("리뷰를 불러오지 못했어요."));
-        verify(places, never()).save(any());
+        verify(places, never()).updateReviewCache(any());
         doReturn(new GooglePlacesDetailsResponse("g1", List.of())).when(client).getDetails("g1");
         assertThat(service.getOrGenerateSummary(1L).orElseThrow().summary().highlights()).isEqualTo("리뷰 정보가 없어요.");
         verify(client, times(2)).getDetails("g1");
@@ -124,7 +126,7 @@ class PlaceReviewConcurrentTest {
         List<Outcome> results = pair(() -> verify(client, times(1)).getDetails("g1"));
         assertThat(results).allSatisfy(result -> assertThat(result.value().orElseThrow().summary().highlights()).isEqualTo("리뷰를 불러오지 못했어요."));
         verify(runner, times(1)).run(any(), anyLong());
-        verify(places, never()).save(any());
+        verify(places, never()).updateReviewCache(any());
         doReturn(summary).when(runner).run(any(), anyLong());
         assertThat(service.getOrGenerateSummary(1L).orElseThrow().summary()).isEqualTo(summary);
         verify(client, times(2)).getDetails("g1");
@@ -134,10 +136,10 @@ class PlaceReviewConcurrentTest {
     void 저장_예외를_양쪽에_전달하고_다음_요청의_진행을_막지_않는다() throws Exception {
         when(client.getDetails("g1")).thenAnswer(call -> { gate(); return details(); });
         IllegalStateException failure = new IllegalStateException("save failure");
-        when(places.save(any())).thenThrow(failure);
+        doThrow(failure).when(places).updateReviewCache(any());
         List<Outcome> results = pair(() -> verify(client, times(1)).getDetails("g1"));
         assertThat(results).allSatisfy(result -> assertThat(result.error()).isSameAs(failure));
-        doAnswer(call -> call.getArgument(0)).when(places).save(any());
+        doAnswer(call -> null).when(places).updateReviewCache(any());
         assertThat(service.getOrGenerateSummary(1L).orElseThrow().summary()).isEqualTo(summary);
         verify(client, times(2)).getDetails("g1");
     }
