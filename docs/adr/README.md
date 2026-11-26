@@ -99,3 +99,4 @@
 | [0057](0057-trip-sse-slots-gap-quota.md) | 여행 SSE의 오래된 연결 교체·종료 즉시 슬롯 반환, 빈 시간 추천 외부 검색별 차감 | 확정 | 2026-11-25 |
 | [0058](0058-request-scoped-embedding-overlap.md) | 요청 범위 가상 스레드로 임베딩 HTTP 대기와 독립 작업을 겹친다 | 확정 | 2026-11-26 |
 | [0059](0059-analytics-consent-and-deletion.md) | 선택 분석 동의 CAS·분리 UUID·철회와 탈퇴 삭제 대기열 | 확정 | 2026-11-26 |
+| [0060](0060-ship-and-ping.md) | 서버 API 요청의 쉽앤핑 전송과 기능 지도 등록 | 확정 | 2026-11-26 |
