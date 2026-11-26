@@ -35,7 +35,7 @@ public class TripMemberController {
     public ResponseEntity<?> join(Authentication auth, @PathVariable String token, HttpServletRequest request) {
         if (!limiter.tryAcquire("public-trip:" + request.getRemoteAddr(), limit))
             return ResponseEntity.status(429).header("Retry-After", "60").build();
-        return ResponseEntity.ok(Map.of("tripId", memberships.join(token, users.resolve(auth))));
+        return ResponseEntity.ok(memberships.joinWithResult(token, users.resolve(auth)));
     }
 
     @ExceptionHandler(TripMembershipService.MemberLimitException.class)

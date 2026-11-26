@@ -101,6 +101,11 @@ management:
         http.server.requests: true
 
 app:
+  analytics:
+    notice-ready: ${APP_ANALYTICS_NOTICE_READY:false}
+    # 삭제 작업은 DB 대기열에만 기록한다. 실제 삭제 연동은 별도 운영 검증 후 활성화한다.
+    # 값은 저장소에 넣지 않는다. 키가 없어도 대기 작업을 성공 처리하거나 버리지 않는다.
+    posthog-personal-api-key: ${POSTHOG_PERSONAL_API_KEY:}
   alternatives:
     gemini-explanation-enabled: ${ALTERNATIVES_GEMINI_EXPLANATION_ENABLED:false}
   consent:

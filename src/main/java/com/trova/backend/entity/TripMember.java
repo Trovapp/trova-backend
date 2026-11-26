@@ -7,11 +7,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Embeddable
 public class TripMember {
+    @Column(name = "analytics_event_id")
+    private UUID analyticsEventId;
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -29,7 +32,9 @@ public class TripMember {
         this.user = user;
         this.role = role;
         this.joinedAt = LocalDateTime.now();
+        this.analyticsEventId = UUID.randomUUID();
     }
     public User getUser() { return user; }
     public Role getRole() { return role; }
+    public UUID getAnalyticsEventId() { return analyticsEventId; }
 }
