@@ -39,9 +39,25 @@ public class AnalyticsConsentService {
     }
 
     @Transactional
+    public State checkBatch(Long userId, long expectedRevision) {
+        if (invalidRevision(expectedRevision)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        lockUser(userId);
+        State current = get(userId);
+        if (!current.noticeReady() || current.revision() != expectedRevision || !current.usageConsent()
+                || !current.transferConsent() || current.analyticsId() == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+        return current;
+    }
+
+    private boolean invalidRevision(long revision) {
+        return revision < 0 || revision > 9_007_199_254_740_991L;
+    }
+
+    @Transactional
     public State put(Long userId, Selection request) {
         if (request == null || !VERSION.equals(request.consentVersion()) || request.expectedRevision() == null
-                || request.expectedRevision() < 0 || request.expectedRevision() > 9_007_199_254_740_991L
+                || invalidRevision(request.expectedRevision())
                 || request.usageConsent() == null || request.transferConsent() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }

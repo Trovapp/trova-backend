@@ -2,8 +2,6 @@ package com.trova.backend.service;
 
 import com.trova.backend.admin.FailureReason;
 import com.trova.backend.entity.JobStatus;
-import com.trova.backend.entity.ProcessingJob;
-import com.trova.backend.entity.User;
 import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.SavedPlaceRepository;
 import org.springframework.http.HttpStatus;
@@ -26,12 +24,12 @@ public class AnalysisResultService {
 
     // 상태와 장소 수를 동일 DB 스냅샷에서 읽는다. 분석 완료는 결과 저장과 함께 커밋된다(ADR 0029).
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
-    public Result get(User user, Long jobId) {
-        ProcessingJob job = jobs.findByIdAndUser(jobId, user)
+    public Result get(Long userId, Long jobId) {
+        ProcessingJobRepository.AnalysisStatusRow job = jobs.findAnalysisStatusByIdAndUserId(jobId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         JobStatus status = job.getAnalysisStatus() == null ? job.getStatus() : job.getAnalysisStatus();
         if (status == JobStatus.DONE) {
-            return new Result("SUCCEEDED", places.countByProcessingJob(job), null);
+            return new Result("SUCCEEDED", places.countByProcessingJobId(jobId), null);
         }
         if (status == JobStatus.FAILED) {
             FailureReason reason = FailureReason.classify(job.getErrorMessage());

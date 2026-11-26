@@ -21,6 +21,6 @@ public class AnalysisResultController {
     @GetMapping("/api/places/videos/{jobId}/analysis-result")
     public ResponseEntity<AnalysisResultService.Result> get(Authentication auth, @PathVariable Long jobId) {
         return ResponseEntity.ok().header("Cache-Control", "no-store")
-                .body(results.get(users.resolve(auth), jobId));
+                .body(results.get(users.resolveUserId(auth), jobId));
     }
 }

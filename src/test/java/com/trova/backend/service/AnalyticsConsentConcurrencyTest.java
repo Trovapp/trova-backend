@@ -10,6 +10,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import com.trova.backend.security.JwtAuthenticationToken;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -27,7 +32,46 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(properties = {"app.analytics.notice-ready=true", "app.analytics.posthog-personal-api-key="})
+@AutoConfigureMockMvc
 class AnalyticsConsentConcurrencyTest {
+    @Autowired private MockMvc mvc;
+
+    @Test
+    void 배치_확인은_진행_중인_철회가_커밋될_때까지_기다린다() throws Exception {
+        User user = users.save(new User("google", UUID.randomUUID().toString(), "배치", null));
+        UUID id = service.put(user.getId(), selection(true)).analyticsId();
+        CountDownLatch revoked = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        CountDownLatch checking = new CountDownLatch(1);
+        try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+            Future<?> revoke = executor.submit(() -> new TransactionTemplate(transactions).executeWithoutResult(tx -> {
+                service.revoke(user.getId());
+                revoked.countDown();
+                await(release);
+            }));
+            try {
+                await(revoked);
+                Future<Integer> check = executor.submit(() -> {
+                    checking.countDown();
+                    return mvc.perform(get("/api/me/analytics-consent").param("expectedRevision", "1")
+                            .with(authentication(new JwtAuthenticationToken(user.getId()))))
+                            .andReturn().getResponse().getStatus();
+                });
+                await(checking);
+                assertThatThrownBy(() -> check.get(200, TimeUnit.MILLISECONDS)).isInstanceOf(TimeoutException.class);
+                release.countDown();
+                revoke.get(10, TimeUnit.SECONDS);
+                assertThat(check.get(10, TimeUnit.SECONDS)).isEqualTo(409);
+            } finally {
+                release.countDown();
+            }
+        } finally {
+            consents.deleteById(user.getId());
+            users.deleteById(user.getId());
+            jdbc.update("delete from analytics_deletion_jobs where analytics_id = ?", id);
+        }
+    }
+
     @Autowired private AnalyticsConsentService service;
     @Autowired private UserAccountService accounts;
     @Autowired private UserRepository users;

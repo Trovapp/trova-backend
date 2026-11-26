@@ -8,6 +8,7 @@ import com.trova.backend.repository.ProcessingJobRepository;
 import com.trova.backend.repository.TripRepository;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtAuthenticationToken;
+import com.trova.backend.security.KnownUsers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,6 +44,31 @@ class AnalyticsContractTest {
     @Autowired private TripRepository trips;
     @Autowired private JdbcTemplate jdbc;
     private final ObjectMapper mapper = new ObjectMapper();
+
+    @Autowired private KnownUsers knownUsers;
+
+    @Test
+    void 배치의_동의_세대가_현재_허용된_세대여야_한다() throws Exception {
+        User user = user();
+        mvc.perform(get(PATH).param("expectedRevision", "0").with(as(user))).andExpect(status().isConflict());
+        String id = consent(user, 0, true, true).get("analyticsId").asText();
+        mvc.perform(get(PATH).param("expectedRevision", "1").with(as(user)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.analyticsId").value(id));
+        mvc.perform(delete(PATH).with(as(user))).andExpect(status().isNoContent());
+        consent(user, 2, true, true);
+        mvc.perform(get(PATH).param("expectedRevision", "1").with(as(user))).andExpect(status().isConflict());
+        mvc.perform(get(PATH).param("expectedRevision", "").with(as(user))).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 결과와_동의_폴링에서_JWT_사용자_ID를_기억한다() throws Exception {
+        User user = user();
+        mvc.perform(get("/api/places/videos/0/analysis-result").with(as(user))).andExpect(status().isNotFound());
+        assertThat(knownUsers.contains(user.getId())).isTrue();
+        knownUsers.remove(user.getId());
+        mvc.perform(get(PATH).with(as(user))).andExpect(status().isOk());
+        assertThat(knownUsers.contains(user.getId())).isTrue();
+    }
 
     private User user() {
         return users.save(new User("google", UUID.randomUUID().toString(), "테스트", null));
