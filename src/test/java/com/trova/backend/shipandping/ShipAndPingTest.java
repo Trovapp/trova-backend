@@ -1,5 +1,11 @@
 package com.trova.backend.shipandping;
 
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import java.util.Properties;
+import org.springframework.boot.info.BuildProperties;
+import org.springframework.test.util.ReflectionTestUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -91,10 +97,10 @@ class ShipAndPingTest {
         assertThat(bodies).isEmpty();
     }
 
-    @Test void 오류는_클래스명만_보내고_수집주소와_SSE는_제외한다() throws Exception {
+    @Test void 오류는_클래스명만_보내고_수집주소는_제외한다() throws Exception {
         sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
         RequestFilter filter = new RequestFilter(sender);
-        for (String path : new String[]{"/v1/ingest", "/v1/feature-map", "/api/trips/42/events"}) {
+        for (String path : new String[]{"/v1/ingest", "/v1/feature-map"}) {
             MockHttpServletRequest req = new MockHttpServletRequest("GET", path);
             filter.doFilter(req, new MockHttpServletResponse(), (r, s) -> {});
         }
@@ -106,6 +112,61 @@ class ShipAndPingTest {
         String body = bodies.poll();
         assertThat(body).contains("INTERNAL_SERVER_ERROR", "IllegalStateException").doesNotContain("private");
         assertThat(json.readTree(body).get("records").size()).isEqualTo(1);
+    }
+
+    @Test void 스트림_경로에서_거절과_JSON_응답과_연결_수립을_기록한다() throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
+        RequestFilter filter = new RequestFilter(sender);
+        for (int status : List.of(429, 503, 200, 201)) {
+            MockHttpServletRequest req = new MockHttpServletRequest("GET", "/api/trips/private-id/events");
+            MockHttpServletResponse res = new MockHttpServletResponse();
+            req.setAsyncSupported(true);
+            filter.doFilter(req, res, (r, s) -> {
+                res.setStatus(status);
+                res.setContentType(status == 200 ? "application/json" : "text/event-stream;charset=UTF-8");
+                if (status == 201) req.startAsync();
+            });
+        }
+        sender.close();
+        String body = bodies.poll();
+        assertThat(body).isNotNull().contains("/api/trips/:id/events").doesNotContain("private-id");
+        assertThat(json.readTree(body).get("records").valueStream()
+                .map(row -> row.get("status").asInt()).toList()).containsExactly(429, 503, 200, 201);
+    }
+
+    @Test void 로그아웃은_인증_경로로_기록하고_OPTIONS는_제외한다() throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
+        RequestFilter filter = new RequestFilter(sender);
+        LogoutFilter logout =
+                new LogoutFilter(
+                        (req, res, auth) -> res.setStatus(204), (req, res, auth) -> {});
+        logout.setLogoutRequestMatcher(req -> "POST".equals(req.getMethod())
+                && "/api/auth/logout".equals(req.getRequestURI()));
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        filter.doFilter(new MockHttpServletRequest("POST", "/api/auth/logout"), response,
+                (req, res) -> logout.doFilter(req, res, (r, s) -> {}));
+        assertThat(response.getStatus()).isEqualTo(204);
+        MockHttpServletRequest preflight = new MockHttpServletRequest("OPTIONS", "/api/public/trips/private-token");
+        preflight.addHeader("Origin", "https://example.org");
+        preflight.addHeader("Access-Control-Request-Method", "GET");
+        CorsFilter cors = new CorsFilter(
+                req -> new CorsConfiguration().applyPermitDefaultValues());
+        filter.doFilter(preflight, new MockHttpServletResponse(), (req, res) -> cors.doFilter(req, res, (r, s) -> {}));
+        sender.close();
+        String body = bodies.poll();
+        assertThat(body).contains("/api/auth/logout").doesNotContain("private-token", "OPTIONS");
+        assertThat(json.readTree(body).get("records").size()).isOne();
+    }
+
+    @Test void 같은_빌드의_두_기동은_버전이_다르다() {
+        Properties properties = new Properties();
+        properties.setProperty("time", "2026-11-26T00:00:00Z");
+        BuildProperties build = new BuildProperties(properties);
+        ShipAndPingConfig config = new ShipAndPingConfig();
+        try (Sender first = config.shipAndPingSender(build); Sender second = config.shipAndPingSender(build)) {
+            assertThat(ReflectionTestUtils.getField(first, "version"))
+                    .isNotEqualTo(ReflectionTestUtils.getField(second, "version"));
+        }
     }
 
     @org.springframework.context.annotation.Profile("shipandping-standalone-test")
@@ -155,10 +216,11 @@ class ShipAndPingTest {
             entered.countDown();
             try {
                 release.await(5, TimeUnit.SECONDS);
+                Thread.sleep(550);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-            exchange.sendResponseHeaders(503, -1);
+            exchange.sendResponseHeaders(202, -1);
             exchange.close();
         });
         sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
@@ -173,6 +235,37 @@ class ShipAndPingTest {
         }
         sender.close();
         assertThat(bodies.stream().mapToInt(body -> json.readTree(body).get("records").size()).sum()).isEqualTo(1050);
+    }
+
+    @org.junit.jupiter.api.extension.ExtendWith(org.springframework.boot.test.system.OutputCaptureExtension.class)
+    @Test void 종료_기한이_지나면_대기와_전송중_건수만_남긴다(
+            org.springframework.boot.test.system.CapturedOutput output) throws Exception {
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        server.removeContext("/v1/ingest");
+        server.createContext("/v1/ingest", exchange -> {
+            entered.countDown();
+            try {
+                release.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                exchange.close();
+            }
+        });
+        sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30), Duration.ofMillis(100));
+        RequestRecord record = new RequestRecord("request", "/api/trips", "GET", 200, 1, "now", null, null);
+        try {
+            for (int i = 0; i < 50; i++) sender.offer(record);
+            assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue();
+            sender.offer(record);
+            long start = System.nanoTime();
+            sender.close();
+            assertThat(Duration.ofNanos(System.nanoTime() - start)).isLessThan(Duration.ofSeconds(2));
+            assertThat(output.getOut()).contains("전송 미확인 51건 폐기");
+        } finally {
+            release.countDown();
+        }
     }
 
     @Test void 크기와_건수_상한을_지키며_모든_기록을_보낸다() {

@@ -28,9 +28,16 @@ final class Sender implements AutoCloseable {
     private final long interval;
     private final HttpClient client;
     private final Thread worker;
+    private final Duration shutdownTimeout;
+    private int inFlight;
     private boolean closed;
 
     Sender(String key, URI endpoint, String version, Duration interval) {
+        this(key, endpoint, version, interval, Duration.ofSeconds(25));
+    }
+
+    Sender(String key, URI endpoint, String version, Duration interval, Duration shutdownTimeout) {
+        this.shutdownTimeout = shutdownTimeout;
         this.key = key;
         this.endpoint = endpoint;
         this.version = version;
@@ -57,6 +64,7 @@ final class Sender implements AutoCloseable {
         }
         List<RequestRecord> records = new ArrayList<>();
         while (!queue.isEmpty() && records.size() < 100) records.add(queue.removeFirst().record());
+        inFlight = records.size();
         return records;
     }
 
@@ -69,6 +77,10 @@ final class Sender implements AutoCloseable {
                     send(records);
                 } catch (IOException | RuntimeException ignored) {
                     // 수집 장애 때 버린다. 요청 경로나 키가 들어갈 수 있는 예외는 로그에 남기지 않는다.
+                } finally {
+                    synchronized (this) {
+                        inFlight = 0;
+                    }
                 }
             }
         } catch (InterruptedException interrupted) {
@@ -77,6 +89,7 @@ final class Sender implements AutoCloseable {
     }
 
     private void send(List<RequestRecord> records) throws IOException, InterruptedException {
+        if (Thread.interrupted()) throw new InterruptedException();
         byte[] body = json.writeValueAsBytes(Map.of("spec", "sp-1", "platform", "server",
                 "batch_id", UUID.randomUUID().toString(), "sent_at", Instant.now().toString(),
                 "app_version", version, "records", records));
@@ -85,6 +98,10 @@ final class Sender implements AutoCloseable {
             if (middle > 0) {
                 send(records.subList(0, middle));
                 send(records.subList(middle, records.size()));
+            } else {
+                synchronized (this) {
+                    inFlight--;
+                }
             }
             return;
         }
@@ -92,21 +109,30 @@ final class Sender implements AutoCloseable {
                 .header("Content-Type", "application/json").header("Authorization", "Bearer " + key)
                 .POST(HttpRequest.BodyPublishers.ofByteArray(body)).build();
         int status = client.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
+        synchronized (this) {
+            inFlight -= records.size();
+        }
         LOG.debug("쉽앤핑 요청 묶음 전송 HTTP {}", status);
     }
 
     @Override public void close() {
         if (worker == null) return;
         synchronized (this) {
+            if (closed) return;
             closed = true;
             notifyAll();
         }
         try {
-            worker.join(Duration.ofSeconds(5));
+            worker.join(shutdownTimeout);
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
         } finally {
-            if (worker.isAlive()) worker.interrupt();
+            synchronized (this) {
+                int discarded = queue.size() + inFlight;
+                queue.clear();
+                if (discarded > 0) LOG.warn("쉽앤핑 종료 시 전송 미확인 {}건 폐기", discarded);
+                if (worker.isAlive()) worker.interrupt();
+            }
             client.shutdownNow();
         }
     }

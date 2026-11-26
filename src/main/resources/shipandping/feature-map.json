@@ -14,6 +14,7 @@
   {"route":"/api/admin/users","method":"GET","name":"관리자 사용자 목록 보기"},
   {"route":"/api/admin/users/:id","method":"GET","name":"관리자 사용자 상세 보기"},
   {"route":"/api/auth/exchange","method":"POST","name":"관리자 웹 인증 코드 교환"},
+  {"route":"/api/auth/logout","method":"POST","name":"로그아웃"},
   {"route":"/api/auth/me","method":"GET","name":"로그인 상태 확인"},
   {"route":"/api/auth/web-exchange","method":"POST","name":"웹 인증 코드 교환"},
   {"route":"/api/bookmarks","method":"GET","name":"북마크 목록 보기"},

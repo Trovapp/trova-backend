@@ -3,6 +3,7 @@ package com.trova.backend.shipandping;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,7 @@ class ShipAndPingConfig implements WebMvcConfigurer {
     @Bean Sender shipAndPingSender(BuildProperties build) {
         return new Sender(System.getenv("SHIP_AND_PING_KEY"),
                 URI.create("https://ship-and-ping-ingest.taetaeg527.workers.dev/v1/ingest"),
-                build.getTime().toString(), Duration.ofSeconds(30));
+                build.getTime() + "-" + UUID.randomUUID(), Duration.ofSeconds(30));
     }
 
     @Bean FilterRegistrationBean<RequestFilter> shipAndPingFilter(Sender sender) {
