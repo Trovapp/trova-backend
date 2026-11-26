@@ -25,7 +25,7 @@ public class AnalyticsConsentController {
     @GetMapping
     public ResponseEntity<AnalyticsConsentService.State> get(Authentication auth) {
         return ResponseEntity.ok().header("Cache-Control", "no-store")
-                .body(consents.get(users.resolve(auth).getId()));
+                .body(consents.get(users.resolveUserId(auth)));
     }
 
     @PutMapping

@@ -11,13 +11,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "trip_share_links")
 public class TripShareLink {
-    @Column(name = "analytics_event_id")
-    private UUID analyticsEventId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +40,6 @@ public class TripShareLink {
         this.trip = trip;
         this.token = token;
         this.createdAt = LocalDateTime.now();
-        this.analyticsEventId = UUID.randomUUID();
     }
 
     public void revoke() {
@@ -51,7 +47,6 @@ public class TripShareLink {
     }
 
     public Long getId() { return id; }
-    public UUID getAnalyticsEventId() { return analyticsEventId; }
     public Trip getTrip() { return trip; }
     public String getToken() { return token; }
     public LocalDateTime getCreatedAt() { return createdAt; }

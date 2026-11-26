@@ -11,6 +11,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,10 +24,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(properties = {"app.analytics.notice-ready=true", "app.analytics.posthog-personal-api-key="})
 class AnalyticsConsentConcurrencyTest {
     @Autowired private AnalyticsConsentService service;
+    @Autowired private UserAccountService accounts;
     @Autowired private UserRepository users;
     @Autowired private AnalyticsConsentRepository consents;
     @Autowired private JdbcTemplate jdbc;
@@ -46,6 +53,61 @@ class AnalyticsConsentConcurrencyTest {
         } finally {
             consents.deleteById(user.getId());
             users.deleteById(user.getId());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void 동의_PUT과_탈퇴가_경합해도_발급_UUID는_삭제큐에_남는다(boolean putFirst) throws Exception {
+        User user = users.save(new User("google", UUID.randomUUID().toString(), "탈퇴경합", null));
+        AtomicReference<UUID> issued = new AtomicReference<>();
+        CountDownLatch locked = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        CountDownLatch competing = new CountDownLatch(1);
+        try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+            try {
+                Future<?> first = executor.submit(() -> new TransactionTemplate(transactions).executeWithoutResult(tx -> {
+                    if (putFirst) issued.set(service.put(user.getId(), selection(true)).analyticsId());
+                    else accounts.withdraw(user);
+                    locked.countDown();
+                    await(release);
+                }));
+                assertThat(locked.await(10, TimeUnit.SECONDS)).isTrue();
+                Future<?> second = executor.submit(() -> {
+                    competing.countDown();
+                    if (putFirst) accounts.withdraw(user);
+                    else assertThatThrownBy(() -> service.put(user.getId(), selection(true)))
+                            .isInstanceOf(InsufficientAuthenticationException.class);
+                });
+                assertThat(competing.await(10, TimeUnit.SECONDS)).isTrue();
+                // 첫 트랜잭션의 잠금 해제 전에는 경쟁 작업이 완료되지 않는다.
+                assertThatThrownBy(() -> second.get(200, TimeUnit.MILLISECONDS)).isInstanceOf(TimeoutException.class);
+                release.countDown();
+                first.get(10, TimeUnit.SECONDS);
+                second.get(10, TimeUnit.SECONDS);
+                assertThat(users.existsById(user.getId())).isFalse();
+                assertThat(consents.existsById(user.getId())).isFalse();
+                if (putFirst) {
+                    assertThat(issued.get()).isNotNull();
+                    assertThat(jdbc.queryForObject("select count(*) from analytics_deletion_jobs "
+                            + "where analytics_id = ? and status = 'PENDING'", Long.class, issued.get())).isEqualTo(1);
+                } else assertThat(issued.get()).isNull();
+            } finally {
+                release.countDown();
+            }
+        } finally {
+            if (consents.existsById(user.getId())) consents.deleteById(user.getId());
+            if (users.existsById(user.getId())) users.deleteById(user.getId());
+            if (issued.get() != null) jdbc.update("delete from analytics_deletion_jobs where analytics_id = ?", issued.get());
+        }
+    }
+
+    private void await(CountDownLatch latch) {
+        try {
+            if (!latch.await(10, TimeUnit.SECONDS)) throw new AssertionError("트랜잭션 해제 시간 초과");
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new AssertionError(exception);
         }
     }
 

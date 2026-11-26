@@ -16,8 +16,6 @@ CREATE TABLE IF NOT EXISTS public.analytics_deletion_jobs (
     status varchar(20) NOT NULL,
     created_at timestamp without time zone NOT NULL
 );
-ALTER TABLE public.trip_members ADD COLUMN IF NOT EXISTS analytics_event_id uuid;
-ALTER TABLE public.trip_share_links ADD COLUMN IF NOT EXISTS analytics_event_id uuid;
 
 -- ADR 0048: 기본 이벤트 트리거와 별개로 명시 적용 시에도 직접 API 노출을 막는다.
 ALTER TABLE public.analytics_consents ENABLE ROW LEVEL SECURITY;

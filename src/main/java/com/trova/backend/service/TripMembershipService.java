@@ -5,7 +5,6 @@ import com.trova.backend.entity.TripMember;
 import com.trova.backend.entity.User;
 import com.trova.backend.repository.TripRepository;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +40,7 @@ public class TripMembershipService {
         return joinWithResult(token, user).tripId();
     }
 
-    public record JoinResult(Long tripId, boolean newlyJoined, UUID analyticsEventId) {}
+    public record JoinResult(Long tripId, boolean newlyJoined) {}
 
     @Transactional
     public JoinResult joinWithResult(String token, User user) {
@@ -49,13 +48,13 @@ public class TripMembershipService {
         Trip trip = links.findPublic(token).orElseThrow(TripMembershipService::missing);
         if (trip.getMembers().stream().anyMatch(m -> m.getUser().getId().equals(user.getId()))) {
             changes.returnVersionAfterCommit(trip);
-            return new JoinResult(id, false, null);
+            return new JoinResult(id, false);
         }
         if (trip.getMembers().size() >= 10) throw new MemberLimitException();
         changes.record(trip, user, "MEMBER_JOINED", "여행에 참여했어요");
         TripMember member = new TripMember(user, TripMember.Role.EDITOR);
         trip.getMembers().add(member);
-        return new JoinResult(id, true, member.getAnalyticsEventId());
+        return new JoinResult(id, true);
     }
 
     public static class MemberLimitException extends RuntimeException {}

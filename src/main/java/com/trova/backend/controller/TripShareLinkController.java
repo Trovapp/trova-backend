@@ -33,7 +33,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -68,7 +67,7 @@ public class TripShareLinkController {
     }
 
     public record ShareLinkResponse(String token, String url, LocalDateTime createdAt,
-                                    boolean newlyCreated, UUID analyticsEventId) {
+                                    boolean newlyCreated) {
     }
 
     public record PublicTripResponse(String title, LocalDate startDate, LocalDate endDate, List<PublicDay> days) {
@@ -111,7 +110,7 @@ public class TripShareLinkController {
         Trip trip = tripRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND));
         TripAccess.requireOwner(trip, currentUserService.resolve(authentication));
-        return toResponse(shareLinkService.rotate(trip), true);
+        return toResponse(shareLinkService.rotate(trip), false);
     }
 
     @DeleteMapping("/api/trips/{id}/share-link")
@@ -173,7 +172,7 @@ public class TripShareLinkController {
 
     private ShareLinkResponse toResponse(TripShareLink link, boolean created) {
         return new ShareLinkResponse(link.getToken(), shareLinkService.url(link.getToken()), link.getCreatedAt(),
-                created, created ? link.getAnalyticsEventId() : null);
+                created);
     }
 
     private PublicTripResponse toPublicResponse(Trip trip) {

@@ -107,8 +107,10 @@ class AnalyticsContractTest {
     void 일부_동의도_이전_UUID를_폐기하고_다른_계정에_영향을_주지_않는다() throws Exception {
         User me = user();
         User other = user();
-        consent(me, 0, true, true);
+        UUID oldId = UUID.fromString(consent(me, 0, true, true).get("analyticsId").asText());
         assertThat(consent(me, 1, true, false).get("analyticsId").isNull()).isTrue();
+        assertThat(jdbc.queryForObject("select count(*) from analytics_deletion_jobs where analytics_id = ? and status = 'PENDING'",
+                Long.class, oldId)).isEqualTo(1);
         mvc.perform(get(PATH).with(as(other))).andExpect(jsonPath("$.revision").value(0));
     }
 
@@ -163,7 +165,25 @@ class AnalyticsContractTest {
     }
 
     @Test
-    void 공유_생성과_참여의_신규_여부와_고정_이벤트를_반환한다() throws Exception {
+    void 공유_링크_회전은_신규_생성으로_집계하지_않는다() throws Exception {
+        User owner = user();
+        Trip trip = trips.save(new Trip(owner, "회전", null, null));
+        String path = "/api/trips/" + trip.getId() + "/share-link";
+        mvc.perform(post(path).with(as(owner))).andExpect(status().isCreated());
+        mvc.perform(post(path + "/rotate").with(as(owner))).andExpect(status().isOk())
+                .andExpect(jsonPath("$.newlyCreated").value(false))
+                .andExpect(jsonPath("$.analyticsEventId").doesNotExist());
+    }
+
+    @Test
+    void 이벤트_ID_컬럼을_생성하지_않는다() {
+        assertThat(jdbc.queryForObject("select count(*) from information_schema.columns "
+                + "where lower(table_name) in ('trip_members', 'trip_share_links') "
+                + "and lower(column_name) = 'analytics_event_id'", Long.class)).isZero();
+    }
+
+    @Test
+    void 공유_생성과_참여는_신규_여부만_반환하고_이벤트_ID를_노출하지_않는다() throws Exception {
         User owner = user();
         User editor = user();
         Trip trip = trips.save(new Trip(owner, "테스트", null, null));
@@ -171,13 +191,13 @@ class AnalyticsContractTest {
         JsonNode created = mapper.readTree(mvc.perform(post(path).with(as(owner)))
                 .andExpect(status().isCreated()).andExpect(jsonPath("$.newlyCreated").value(true))
                 .andReturn().getResponse().getContentAsString());
-        assertThat(UUID.fromString(created.get("analyticsEventId").asText()).version()).isEqualTo(4);
+        assertThat(created.has("analyticsEventId")).isFalse();
         mvc.perform(post(path).with(as(owner))).andExpect(status().isOk()).andExpect(jsonPath("$.newlyCreated").value(false));
         String join = "/api/public/trips/" + created.get("token").asText() + "/join";
         JsonNode joined = mapper.readTree(mvc.perform(post(join).with(as(editor)))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.newlyJoined").value(true))
                 .andReturn().getResponse().getContentAsString());
-        assertThat(UUID.fromString(joined.get("analyticsEventId").asText()).version()).isEqualTo(4);
+        assertThat(joined.has("analyticsEventId")).isFalse();
         mvc.perform(post(join).with(as(editor))).andExpect(status().isOk()).andExpect(jsonPath("$.newlyJoined").value(false));
         mvc.perform(post(path).with(as(user()))).andExpect(status().isForbidden());
     }

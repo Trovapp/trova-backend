@@ -30,16 +30,17 @@ PUT 요청은 `consentVersion`, `expectedRevision`, `usageConsent`, `transferCon
 신규 생성은 기존 201, 재사용은 기존 200을 유지한다.
 
 ```json
-{"token":"기존 공유 토큰","url":"기존 공유 URL","createdAt":"2026-11-26T12:00:00","newlyCreated":true,"analyticsEventId":"UUID v4"}
+{"token":"기존 공유 토큰","url":"기존 공유 URL","createdAt":"2026-11-26T12:00:00","newlyCreated":true}
 ```
 
 `POST /api/public/trips/{token}/join`:
 
 ```json
-{"tripId":1,"newlyJoined":true,"analyticsEventId":"UUID v4"}
+{"tripId":1,"newlyJoined":true}
 ```
 
-이벤트 UUID는 신규 링크/멤버 저장 트랜잭션에 고정 저장된다. 재사용/기존 멤버면 신규 필드는 false, 이벤트 ID는 null이다.
+응답에 `analyticsEventId` 필드는 없다. 재사용/기존 멤버면 신규 필드는 false이며, `GET /api/trips/{id}/share-link`와 `POST /api/trips/{id}/share-link/rotate`도 `newlyCreated=false`다.
+중복 집계 방지가 필요하면 앱이 요청마다 무작위 ID를 만들고 같은 요청의 이벤트 전송 재시도에 재사용한다. 사용자·여행 ID나 공유 토큰은 이벤트 ID로 사용하지 않는다. 서버는 이벤트 ID를 받거나 저장하지 않는다.
 공개 조회에는 분석 ID와 이벤트 ID를 추가하지 않는다. 공유 권한 위반은 기존 403을 유지한다.
 
 ## 영상 결과
@@ -58,7 +59,7 @@ PUT 요청은 `consentVersion`, `expectedRevision`, `usageConsent`, `transferCon
 
 `analytics_consents`: user_id PK, revision, usage_consent, transfer_consent, analytics_id, updated_at, last_put_revision.
 `analytics_deletion_jobs`: id, analytics_id UNIQUE, status=PENDING, created_at. 사용자 FK는 없다.
-`trip_members`, `trip_share_links`: nullable analytics_event_id UUID 추가. 기존 행을 소급 생성하지 않는다.
+`trip_members`, `trip_share_links`: 분석 이벤트 ID 필드·컬럼을 추가하지 않는다. 운영 배포 전이므로 추가 DDL을 제거했고 엔티티에도 매핑하지 않는다.
 DDL 참고는 [analytics_consent.sql](../../db/supabase/analytics_consent.sql), 정책은 [ADR 0059](../adr/0059-analytics-consent-and-deletion.md)다.
 
 이번에는 삭제 큐 기록만 구현한다. `POSTHOG_PERSONAL_API_KEY` 이름만 정의하며 HTTP 삭제 작업자는 없다.
@@ -73,3 +74,11 @@ DDL 참고는 [analytics_consent.sql](../../db/supabase/analytics_consent.sql), 
 - Windows 전체 `gradlew.bat build` 2회: 각각 1,570개 중 통과 1,546, 실패 1, 조건부 건너뜀 23. 신규 12개는 모두 통과했다.
 - 유일한 실패는 기존 `AuxiliaryRunnerInterruptTest:110`의 리뷰요약 임시 폴더 미삭제 단언이다. pipeline 소스·테스트는 origin/main과 동일하며 단독 재실행은 통과했다. 테스트를 제외하지 않았고, 코디네이터가 이 제한을 기록한 일반 PR 생성(머지 금지)을 승인했다. 추가 단독 3회 `--rerun-tasks` 실행도 모두 통과했다(15초·11초·13초, 매회 실행 1개 통과·OS 조건 4개 건너뜀). [PR #548](https://github.com/Trovapp/trova-backend/pull/548)과 작업 기록에 남겼다.
 - 외부 PostHog 삭제 호출은 검증하지 않았으며 실행하지 않는다.
+
+### PR #548 리뷰 수정 검증
+
+- 수정 전 계약 테스트에서 이벤트 ID 노출, 이벤트 ID 컬럼 생성, rotate 신규 집계 3개 실패를 확인했다. 부분 동의 삭제 큐 단언과 PUT/탈퇴 경합 양쪽 순서는 기존 잠금 구현에서 이미 통과했다.
+- 수정 후 분석 관련 16개 테스트가 모두 통과했다. 새 테스트는 `공유_링크_회전은_신규_생성으로_집계하지_않는다`, `이벤트_ID_컬럼을_생성하지_않는다`, `동의_PUT과_탈퇴가_경합해도_발급_UUID는_삭제큐에_남는다`(PUT 우선/탈퇴 우선 2회)다.
+- 기존 공유·참여 테스트는 이벤트 ID 필드 부재를 확인하도록 바꾸고, 부분 동의 테스트는 이전 UUID의 PENDING 삭제 작업 1개를 단언한다. GET 동의 조회는 ADR 0036의 `resolveUserId`를 사용한다.
+- 동시성 테스트는 H2의 별도 트랜잭션으로 첫 작업의 커밋을 지연하고 두 번째 작업의 대기를 확인한다. PUT 우선이면 반환 UUID가 삭제 큐에 남고, 탈퇴 우선이면 PUT 인증이 거절되며 두 경우 모두 사용자와 동의 행은 남지 않는다.
+- 전체 `./gradlew.bat build`는 5분 13초에 종료했고 1,574개 중 통과 1,550·실패 1·건너뜀 23이었다. 유일한 실패는 사전 공유된 Windows 기존 `AuxiliaryRunnerInterruptTest:110`이며 그 외 실패는 없고, 테스트를 제외하지 않았다.

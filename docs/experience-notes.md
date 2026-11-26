@@ -3279,3 +3279,11 @@ sudo cp -p /opt/trova-backend/app.jar.bak-20261123-001451 /opt/trova-backend/app
 구현 전 계약 테스트 9개 중 8개 실패를 확인했다. 신규 AnalyticsContractTest·AnalyticsNoticeDefaultTest·AnalyticsConsentConcurrencyTest 총 12개는 모두 통과했다. Windows 전체 gradlew.bat build는 2회 모두 1,570개 중 통과 1,546·실패 1·조건부 건너뜀 23이었다. 유일한 실패는 기존 AuxiliaryRunnerInterruptTest:110의 리뷰요약 임시 폴더 삭제 단언이며, pipeline 코드와 테스트는 origin/main과 동일하다. 최초 단독 재실행 통과 후 코디네이터 요청으로 추가 3회 --rerun-tasks 실행도 모두 통과했다(15초·11초·13초, 매회 실행 1개 통과·OS 조건 4개 건너뜀). 테스트 제외나 무관한 코드 변경 없이 이 제한을 명시한 일반 PR 생성을 코디네이터가 승인했다.
 
 운영 DB DDL, 외부 PostHog 삭제/수집·가입·키 사용, 고지 게시, 머지·배포는 수행하지 않았다. 실제 삭제 worker와 운영 재시도/알림, 가입 흐름에 묶인 증거 전달은 후속 과제이며 전체 빌드 성공으로 보고하지 않는다.
+
+## 2026-11-26 분석 이벤트 연결 제거와 경합 검증 (#547, PR #548)
+
+공유 링크·멤버의 이벤트 ID 생성·엔티티 필드·응답 필드·추가 DDL을 제거했다. 최초 생성·참여 여부만 반환하고 rotate는 신규 생성으로 세지 않으며, GET 동의 조회는 resolveUserId를 사용한다. ADR 0059와 계약 문서에 앱 요청별 무작위 이벤트 ID 및 서버 미저장 원칙을 기록했다.
+
+수정 전 계약 회귀 3개 실패, 수정 후 분석 관련 16개 통과를 확인했다. 부분 동의의 이전 UUID 삭제 큐 단언과 PUT/탈퇴 양쪽 순서의 별도 트랜잭션 경합 검증을 추가했다. 전체 `./gradlew.bat build`는 5분 13초에 종료했고 1,574개 중 통과 1,550·실패 1·건너뜀 23이었다. 유일한 실패는 사전 공유된 Windows 기존 `AuxiliaryRunnerInterruptTest:110`이며 그 외 실패는 없고, 테스트를 제외하지 않았다.
+
+앱 계약 반영은 별도 작업자 범위다. 운영 DB 변경·외부 분석 호출·머지·배포는 수행하지 않았다.
