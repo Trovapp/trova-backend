@@ -64,6 +64,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 	environment 'PYTHONUTF8', '1'
+	// 운영 셸에서 테스트해도 실제 요청 수집기는 비활성이다.
+	environment 'SHIP_AND_PING_KEY', ''
 	// 테스트 설정의 기본 H2를 컨텍스트마다 다른 메모리 DB로 나눴다(#482). 캐시된 컨텍스트(최대 32개)가 각자 데이터를 들고 있어
 	// Gradle 기본 512MiB에서는 뒤쪽 내장 Kafka 테스트가 OutOfMemoryError로 시작하지 못했다(로컬 전체 실행 2회).
 	maxHeapSize = '1g'
@@ -71,3 +73,5 @@ tasks.named('test') {
 		systemProperty 'trova.test.runtime.classpath', sourceSets.test.runtimeClasspath.asPath
 	}
 }
+
+springBoot { buildInfo() }
