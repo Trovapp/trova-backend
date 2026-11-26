@@ -7,6 +7,11 @@ import com.trova.backend.queue.DraftJobQueue;
 import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.service.AutoDraftQueryService;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.DraftAdmissionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import com.trova.backend.service.TripDraftApprovalService;
 import com.trova.backend.service.TripPlannerService;
 import org.springframework.http.HttpStatus;
@@ -17,9 +22,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * 일정 에이전트 초안 API(#106). 만들기는 비동기로 시작하고, 앱은 상태를 다시 조회한다.
@@ -30,6 +38,7 @@ public class TripDraftController {
 
     private final CurrentUserService currentUserService;
     private final TripPlannerService tripPlannerService;
+    private final DraftAdmissionService admissionService;
     private final TripDraftRepository tripDraftRepository;
     private final TripDraftApprovalService tripDraftApprovalService;
     private final AutoDraftQueryService autoDraftQueryService;
@@ -39,7 +48,8 @@ public class TripDraftController {
     public TripDraftController(CurrentUserService currentUserService, TripPlannerService tripPlannerService,
                                TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService,
                                AutoDraftQueryService autoDraftQueryService,
-                               DraftJobQueue draftJobQueue) {
+                               DraftJobQueue draftJobQueue, DraftAdmissionService admissionService) {
+        this.admissionService = admissionService;
         this.currentUserService = currentUserService;
         this.tripPlannerService = tripPlannerService;
         this.tripDraftRepository = tripDraftRepository;
@@ -82,18 +92,42 @@ public class TripDraftController {
         }
     }
 
+    @Operation(summary = "일정 초안 접수", description = "Idempotency-Key(UUID)가 같으면 같은 사용자에게 24시간 동안 최초 접수 응답을 돌려준다.")
+    @ApiResponse(responseCode = "202", description = "최초 접수 또는 같은 키 재시도",
+            content = @Content(examples = @ExampleObject(value = "{\"draftId\":42,\"status\":\"PENDING\"}")))
+    @ApiResponse(responseCode = "409", description = "같은 원본을 다시 짜는 중",
+            content = @Content(examples = @ExampleObject(value = """
+                    {"code":"DRAFT_REPLACEMENT_IN_PROGRESS","message":"이 일정을 이미 다시 짜고 있어요.",
+                     "status":409,"traceId":"example","activeDraftId":42}
+                    """)))
     @PostMapping("/api/trip-drafts")
-    public ResponseEntity<?> create(Authentication authentication, @RequestBody CreateDraftRequest request) {
-        User user = currentUserService.resolve(authentication);
-        return tripPlannerService.create(user, request == null ? null : request.jobIds(),
-                        request == null ? null : request.message(),
-                        request == null ? null : request.replacesDraftId())
-                .<ResponseEntity<?>>map(draft -> {
-                    draftJobQueue.enqueue(draft.getId());
-                    return ResponseEntity.status(HttpStatus.ACCEPTED)
-                            .body(new CreateDraftResponse(draft.getId(), draft.getStatus().name()));
-                })
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+    public ResponseEntity<?> create(Authentication authentication, @RequestBody CreateDraftRequest request,
+                                    @RequestHeader(name = "Idempotency-Key", required = false) String header) {
+        Long userId = currentUserService.resolveUserId(authentication);
+        UUID key = null;
+        if (header != null) {
+            try {
+                key = UUID.fromString(header);
+            } catch (IllegalArgumentException ex) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (!key.toString().equalsIgnoreCase(header)) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        DraftAdmissionService.Admission result = admissionService.admit(userId, request.jobIds(), request.message(),
+                request.replacesDraftId(), key);
+        return switch (result.outcome()) {
+            case CREATED, REPLAY -> {
+                if (result.outcome() == DraftAdmissionService.Outcome.CREATED) {
+                    draftJobQueue.enqueue(result.draftId());
+                }
+                yield ResponseEntity.accepted().body(new CreateDraftResponse(result.draftId(), "PENDING"));
+            }
+            case CONFLICT -> ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                    "code", "DRAFT_REPLACEMENT_IN_PROGRESS", "activeDraftId", result.draftId()));
+            case INVALID -> ResponseEntity.badRequest().build();
+        };
     }
 
     @PostMapping("/api/trip-drafts/{id}/answer")

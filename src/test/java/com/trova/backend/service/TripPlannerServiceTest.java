@@ -226,13 +226,12 @@ class TripPlannerServiceTest {
         when(drafts.findById(7L)).thenReturn(Optional.of(mine));
         when(drafts.findById(8L)).thenReturn(Optional.of(manual));
         when(drafts.findById(6L)).thenReturn(Optional.of(others));
-        when(drafts.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        assertThat(service.create(user, List.of(1L), "당일치기", 7L).orElseThrow().getReplacesDraftId()).isEqualTo(7L);
+        assertThat(service.prepareDraft(user, List.of(1L), "당일치기", 7L).orElseThrow().getReplacesDraftId()).isEqualTo(7L);
         // 직접 만든(홈에 없던) 초안이나 남의 초안을 대신한다고 해도 홈에 올리지 않는다.
-        assertThat(service.create(user, List.of(1L), "당일치기", 8L).orElseThrow().isListed()).isFalse();
-        assertThat(service.create(user, List.of(1L), "당일치기", 6L).orElseThrow().isListed()).isFalse();
-        assertThat(service.create(user, List.of(1L), "당일치기").orElseThrow().isListed()).isFalse();
+        assertThat(service.prepareDraft(user, List.of(1L), "당일치기", 8L).orElseThrow().isListed()).isFalse();
+        assertThat(service.prepareDraft(user, List.of(1L), "당일치기", 6L).orElseThrow().isListed()).isFalse();
+        assertThat(service.prepareDraft(user, List.of(1L), "당일치기", null).orElseThrow().isListed()).isFalse();
     }
 
     @Test
@@ -241,9 +240,9 @@ class TripPlannerServiceTest {
         ProcessingJob othersJob = new ProcessingJob(other, "https://www.youtube.com/shorts/z", SourcePlatform.YOUTUBE);
         when(jobs.findById(5L)).thenReturn(Optional.of(othersJob));
 
-        assertThat(service.create(user, List.of(5L), "1박 2일")).isEmpty();
-        assertThat(service.create(user, List.of(), "1박 2일")).isEmpty();
-        assertThat(service.create(user, List.of(1L, 2L, 3L, 4L, 5L, 6L), "1박 2일")).isEmpty();
+        assertThat(service.prepareDraft(user, List.of(5L), "1박 2일", null)).isEmpty();
+        assertThat(service.prepareDraft(user, List.of(), "1박 2일", null)).isEmpty();
+        assertThat(service.prepareDraft(user, List.of(1L, 2L, 3L, 4L, 5L, 6L), "1박 2일", null)).isEmpty();
         verify(drafts, never()).save(any());
     }
 

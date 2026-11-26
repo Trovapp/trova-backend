@@ -6,12 +6,14 @@ import com.trova.backend.entity.User;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
 
@@ -26,6 +28,19 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
     @Query("select d.id from TripDraft d where d.status = :status and d.updatedAt > :from and d.updatedAt < :to")
     List<Long> findIdsByStatusAndUpdatedAtBetween(
             @Param("status") TripDraftStatus status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+
+    @Query("select d.id from TripDraft d where d.user.id = :userId and d.requestKey = :key "
+            + "and d.createdAt > :cutoff")
+    Optional<Long> findRecentRequest(Long userId, UUID key, LocalDateTime cutoff);
+
+    @Query("select d.id from TripDraft d where d.user.id = :userId and d.status in :statuses "
+            + "and (d.replacesDraftId = :sourceId or d.unlistedSourceId = :sourceId) order by d.id limit 1")
+    Optional<Long> findActiveReplacement(Long userId, Long sourceId, List<TripDraftStatus> statuses);
+
+    @Modifying
+    @Query(value = "update trip_drafts set request_key = null where request_key is not null and created_at <= :cutoff",
+            nativeQuery = true)
+    void clearExpiredRequestKeys(LocalDateTime cutoff);
 
     void deleteByUser(User user);
 

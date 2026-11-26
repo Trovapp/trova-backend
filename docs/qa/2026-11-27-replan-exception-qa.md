@@ -1,12 +1,14 @@
 # 여행 일정 다시 짜기 예외 처리 QA
 
+> **수정 후 계약** · 아래 표는 PR #552 시점의 재현 기록이다. 후속 수정은 ②에서 진행 중 작업 ID를 담은 409, ③에서 같은 UUID 키의 202 재생과 READY 결과 한 건을 검증한다. 동시 접수도 같은 키와 서로 다른 키로 각각 검증한다. [API 계약](../api/trip-draft-admission.md) · [ADR 0061](../adr/0061-trip-draft-admission.md)
+
 기존 수정 이후 모의 Gemini가 503 또는 타임아웃으로 끝나도 원본 일정 A를 홈과 상세에서 그대로 조회할 수 있었다. 새로 재현한 문제는 **첫 접수 응답을 잃고 같은 요청을 다시 보내면 하나의 사용자 동작으로 생성 작업 2개가 실행되고 대체 일정 2개가 홈 목록에 남는 것**이다.
 
 대상은 승인 전 일정 초안의 ‘조건 바꿔 다시 짜기’와 위치 변경 후 ‘다시 짜기’다. 과거 제보와 수정은 #424 기록에서 확인했다. 승인된 여행의 장소 재추천 `/api/trips/{id}/replan`은 별도 기능이며, 그 기능의 중복 접수 정책(ADR 0025)은 이 초안 API에 적용되지 않는다. [기존 수정 기록](../experience-notes.md) · [ADR 0025](../adr/0025-replan-admission-quota.md)
 
 ## 시나리오별 결과
 
-A는 기존 09:00 공원 방문 일정, B와 C는 접수 순서대로 만든 대체 초안이다. 목록 순서는 앱이 호출하는 `GET /api/trip-drafts/auto`의 실제 응답 순서다. 아래 줄 번호는 [추가한 테스트](../../src/test/java/com/trova/backend/controller/TripDraftReplacementQaTest.java) 기준이다.
+A는 기존 09:00 공원 방문 일정, B와 C는 접수 순서대로 만든 대체 초안이다. 목록 순서는 앱이 호출하는 `GET /api/trip-drafts/auto`의 실제 응답 순서다. 아래 줄 번호는 [QA 당시 테스트](https://github.com/Trovapp/trova-backend/blob/39ec2a4/src/test/java/com/trova/backend/controller/TripDraftReplacementQaTest.java) 기준이다.
 
 | 재현 조건 | 기대 동작 | 실제 동작 | 근거가 되는 테스트·로그·코드 위치 | 판정 |
 |---|---|---|---|---|

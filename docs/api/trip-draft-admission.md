@@ -1,0 +1,34 @@
+# 일정 초안 접수와 다시 짜기
+
+인증된 사용자가 `POST /api/trip-drafts`에 영상 목록과 조건을 보내면 서버가 비동기 생성 작업을 접수한다. 기존 초안에서 다시 짜기를 시작할 때는 `replacesDraftId`에 원본 초안 번호를 넣는다.
+
+```http
+POST /api/trip-drafts
+Content-Type: application/json
+Idempotency-Key: 93242a57-f1b4-40bc-9f28-514f1ae595c6
+
+{"jobIds":[17],"message":"당일치기 오전 위주","replacesDraftId":41}
+```
+
+앱은 사용자가 새 작업을 시작할 때 UUID 하나를 발급한다. 응답 유실이나 앱 재실행으로 같은 요청을 복구할 때는 그 키를 다시 보낸다. 키는 선택 사항이며 UUID 형식이 잘못되면 400이다.
+
+| 상황 | HTTP | 응답과 앱 동작 |
+|---|---|---|
+| 새 작업 접수 | 202 | `{"draftId":42,"status":"PENDING"}` |
+| 같은 사용자가 최초 접수 후 24시간 안에 같은 키를 재전송 | 202 | 본문 조건·원본·작업의 현재 상태와 관계없이 최초 접수 응답을 재생한다. `GET /api/trip-drafts/42`에서 현재 상태를 확인한다. |
+| 같은 사용자의 같은 원본에 진행 작업이 있고 키가 없거나 새 키인 경우 | 409 | 아래 `activeDraftId`로 기존 초안을 조회한다. 거절한 요청은 키를 소비하지 않는다. |
+| 원본의 작업이 READY·APPROVED·FAILED이고 새 키 또는 키 없이 재요청 | 202 | 새 초안을 접수한다. 완료 후에도 24시간 내 기존 키로는 최초 응답을 받는다. |
+
+409 응답 예시
+
+```json
+{
+  "code": "DRAFT_REPLACEMENT_IN_PROGRESS",
+  "message": "이 일정을 이미 다시 짜고 있어요.",
+  "status": 409,
+  "traceId": "d41ffc4d-3767-4c19-bcfa-f082c9de8821",
+  "activeDraftId": 42
+}
+```
+
+`activeDraftId`는 진행 중인 대체 초안의 숫자 ID다. `traceId`는 응답 헤더 `X-Trace-Id`와 같다. PENDING, PROCESSING, NEEDS_INPUT(사용자 답변 대기)을 진행 중으로 취급한다. 키 없이 보낸 요청도 진행 중에는 409를 받는다. 작업이 끝난 뒤 최초 응답을 복구하려면 첫 요청부터 키를 보내야 한다.

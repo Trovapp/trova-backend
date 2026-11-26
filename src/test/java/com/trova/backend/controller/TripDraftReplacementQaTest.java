@@ -31,13 +31,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import com.trova.backend.service.DraftAdmissionService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.net.SocketTimeoutException;
 import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -71,12 +77,14 @@ class TripDraftReplacementQaTest {
     @Autowired private SavedPlaceRepository places;
     @Autowired private TripDraftRepository drafts;
     @Autowired private TripPlannerService planner;
+    @Autowired private JdbcTemplate jdbc;
+    @Autowired private DraftAdmissionService admissions;
     @MockitoBean private DraftJobQueue queue;
     @MockitoBean private ChatModel model;
     @MockitoBean private OpeningHoursService hours;
 
     private final ObjectMapper json = new ObjectMapper();
-    private final List<Long> queued = new ArrayList<>();
+    private final List<Long> queued = new CopyOnWriteArrayList<>();
     private String bearer;
     private Long jobId;
     private Long placeId;
@@ -135,14 +143,14 @@ class TripDraftReplacementQaTest {
     }
 
     @Test
-    void 첫_요청이_늦게_끝나면_두_결과가_모두_목록에_남는다() throws Exception {
+    void 처리_중_조건을_바꿔도_409로_먼저_시작한_작업을_알린다() throws Exception {
         CountDownLatch entered = new CountDownLatch(1);
         CountDownLatch release = new CountDownLatch(1);
         when(model.call(any(Prompt.class))).thenAnswer(call -> {
             entered.countDown();
             assertThat(release.await(30, TimeUnit.SECONDS)).isTrue();
             return answer("11:00", "12:00");
-        }).thenReturn(answer("13:00", "14:00"));
+        });
 
         long first = submit("당일치기 오전 위주");
         try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
@@ -150,61 +158,152 @@ class TripDraftReplacementQaTest {
             try {
                 assertThat(entered.await(30, TimeUnit.SECONDS)).isTrue();
                 assertThat(detail(first).path("status").asText()).isEqualTo("PROCESSING");
-                long second = submit("당일치기 오후 위주");
-                assertThat(queued).containsExactly(first, second);
-                assertThat(cards()).containsExactly(second, first, originalId);
-
-                planner.processNow(second);
-                assertReadyAt(second, "13:00");
-                assertThat(detail(first).path("status").asText()).isEqualTo("PROCESSING");
-                assertThat(cards()).containsExactly(second, first);
-                release.countDown();
-                slow.get(30, TimeUnit.SECONDS);
-
-                assertThat(cards()).containsExactly(second, first);
-                assertReadyAt(first, "11:00");
-                assertReadyAt(second, "13:00");
-                verify(model, times(2)).call(any(Prompt.class));
+                assertConflict(create("당일치기 오후 위주", null).andReturn().getResponse(), first);
+                assertThat(queued).containsExactly(first);
+                assertThat(cards()).containsExactly(first, originalId);
             } finally {
                 release.countDown();
             }
+            slow.get(30, TimeUnit.SECONDS);
         }
+        assertThat(cards()).containsExactly(first);
+        assertReadyAt(first, "11:00");
+        verify(model).call(any(Prompt.class));
+        assertThat(submit("당일치기 오후 위주")).isNotEqualTo(first);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
-    void 접수_응답을_버리고_같은_요청을_재전송하면_두_초안이_준비된다(boolean finishedBeforeRetry) throws Exception {
-        when(model.call(any(Prompt.class))).thenReturn(answer("11:00", "12:00"), answer("13:00", "14:00"));
-        // 앱이 첫 응답을 소비하지 않는다. 작업자는 큐로 전달받은 번호만 사용한다.
-        create("당일치기").andExpect(status().isAccepted());
+    void 접수_응답을_잃어도_같은_키로_재시도하면_READY_초안_하나만_남는다(boolean finishedBeforeRetry) throws Exception {
+        when(model.call(any(Prompt.class))).thenReturn(answer("11:00", "12:00"));
+        String key = UUID.randomUUID().toString();
+        create("당일치기", key).andExpect(status().isAccepted());
         long first = queued.getFirst();
         if (finishedBeforeRetry) {
             planner.processNow(first);
-            assertThat(cards()).containsExactly(first);
         }
-        long retry = submit("당일치기");
-        assertThat(queued).containsExactly(first, retry);
-        assertThat(retry).isNotEqualTo(first);
+        assertThat(submit("당일치기", key)).isEqualTo(first);
         if (!finishedBeforeRetry) {
             planner.processNow(first);
         }
-        planner.processNow(retry);
+        assertThat(queued).containsExactly(first);
+        assertThat(cards()).containsExactly(first);
         assertReadyAt(first, "11:00");
-        assertReadyAt(retry, "13:00");
-        assertThat(cards()).containsExactly(retry, first);
-        verify(model, times(2)).call(any(Prompt.class));
+        verify(model).call(any(Prompt.class));
     }
 
-    private ResultActions create(String message) throws Exception {
-        return mvc.perform(post("/api/trip-drafts").header("Authorization", bearer)
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 동시_요청은_한_건만_저장하고_같은_키면_재생하고_다른_키면_충돌한다(boolean sameKey) throws Exception {
+        CountDownLatch ready = new CountDownLatch(2);
+        CountDownLatch start = new CountDownLatch(1);
+        String key = UUID.randomUUID().toString();
+        try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+            List<Future<MockHttpServletResponse>> calls = new ArrayList<>();
+            for (String requestKey : List.of(key, sameKey ? key : UUID.randomUUID().toString())) {
+                calls.add(executor.submit(() -> {
+                    ready.countDown();
+                    assertThat(start.await(10, TimeUnit.SECONDS)).isTrue();
+                    return create("당일치기", requestKey).andReturn().getResponse();
+                }));
+            }
+            try {
+                assertThat(ready.await(10, TimeUnit.SECONDS)).isTrue();
+            } finally {
+                start.countDown();
+            }
+            List<MockHttpServletResponse> responses = List.of(calls.getFirst().get(30, TimeUnit.SECONDS),
+                    calls.getLast().get(30, TimeUnit.SECONDS));
+            assertThat(responses).extracting(MockHttpServletResponse::getStatus)
+                    .containsExactlyInAnyOrder(202, sameKey ? 202 : 409);
+            assertThat(queued).hasSize(1);
+            long first = queued.getFirst();
+            for (MockHttpServletResponse response : responses) {
+                if (response.getStatus() == 409) {
+                    assertConflict(response, first);
+                } else {
+                    assertThat(json.readTree(response.getContentAsByteArray()).required("draftId").longValue())
+                            .isEqualTo(first);
+                }
+            }
+            assertThat(cards()).containsExactly(first, originalId);
+        }
+    }
+
+    @Test
+    void 키는_사용자별이고_실패해도_24시간_재생하며_만료_후_새로_접수한다() throws Exception {
+        String key = UUID.randomUUID().toString();
+        long first = submit("당일치기", key);
+        TripDraft draft = drafts.findById(first).orElseThrow();
+        draft.markFailed("QA");
+        drafts.save(draft);
+        assertThat(submit("변경한 조건", key)).isEqualTo(first);
+        String owner = bearer;
+        User other = users.save(new User("google", "qa-" + UUID.randomUUID(), "QA2", null));
+        bearer = "Bearer " + jwt.issue(other);
+        create("당일치기", key).andExpect(status().isBadRequest());
+        bearer = owner;
+
+        jdbc.update("update trip_drafts set created_at = ? where id = ?",
+                LocalDateTime.now().minusHours(25), first);
+        long next = submit("재시도", key);
+        assertThat(next).isNotEqualTo(first);
+        admissions.clearExpiredKeys();
+        assertThat(jdbc.queryForObject("select request_key from trip_drafts where id = ?", UUID.class, first)).isNull();
+        assertThat(submit("재시도", key)).isEqualTo(next);
+        assertThat(queued).containsExactly(first, next);
+    }
+
+    @Test
+    void 입력_대기도_진행_중이며_직접_만든_원본의_홈_노출은_유지한다() throws Exception {
+        TripDraft previous = drafts.findById(originalId).orElseThrow();
+        Long listed = originalId;
+        originalId = drafts.save(new TripDraft(previous.getUser(), List.of(jobId), "직접 만든 원본")).getId();
+        long first = submit("당일치기");
+        TripDraft waiting = drafts.findById(first).orElseThrow();
+        waiting.markNeedsInput("지역을 고르세요", "{}");
+        drafts.save(waiting);
+        assertConflict(create("당일치기", null).andReturn().getResponse(), first);
+        assertThat(cards()).containsExactly(listed);
+        originalId = listed;
+        assertThat(submit("다른 원본")).isNotEqualTo(first);
+    }
+
+    @Test
+    void 잘못된_요청_키는_작업을_만들지_않는다() throws Exception {
+        create("당일치기", "1-1-1-1-1").andExpect(status().isBadRequest());
+        assertThat(queued).isEmpty();
+        assertThat(cards()).containsExactly(originalId);
+    }
+
+    private void assertConflict(MockHttpServletResponse response, long first) throws Exception {
+        assertThat(response.getStatus()).isEqualTo(409);
+        JsonNode body = json.readTree(response.getContentAsByteArray());
+        assertThat(body.required("code").asText()).isEqualTo("DRAFT_REPLACEMENT_IN_PROGRESS");
+        assertThat(body.required("activeDraftId").longValue()).isEqualTo(first);
+        assertThat(body.required("status").intValue()).isEqualTo(409);
+        assertThat(body.required("message").asText()).isNotBlank();
+        assertThat(body.required("traceId").asText()).isNotBlank().isEqualTo(response.getHeader("X-Trace-Id"));
+    }
+
+    private ResultActions create(String message, String key) throws Exception {
+        MockHttpServletRequestBuilder request = post("/api/trip-drafts").header("Authorization", bearer)
                 .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsBytes(Map.of(
-                        "jobIds", List.of(jobId), "message", message, "replacesDraftId", originalId))));
+                        "jobIds", List.of(jobId), "message", message, "replacesDraftId", originalId)));
+        if (key != null) {
+            request.header("Idempotency-Key", key);
+        }
+        return mvc.perform(request);
     }
 
     private long submit(String message) throws Exception {
-        JsonNode accepted = json.readTree(create(message).andExpect(status().isAccepted())
+        return submit(message, null);
+    }
+
+    private long submit(String message, String key) throws Exception {
+        JsonNode accepted = json.readTree(create(message, key).andExpect(status().isAccepted())
                 .andReturn().getResponse().getContentAsByteArray());
-        assertThat(accepted.path("status").asText()).isEqualTo("PENDING");
+        assertThat(accepted.required("status").asText()).isEqualTo("PENDING");
         return accepted.required("draftId").longValue();
     }
 

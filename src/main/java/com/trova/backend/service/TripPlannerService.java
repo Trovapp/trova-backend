@@ -71,16 +71,11 @@ public class TripPlannerService {
         this.events = events;
     }
 
-    /** 고른 영상이 모두 이 사용자의 완료된 분석이어야 만든다. 아니면 빈 값(컨트롤러가 400). */
-    public Optional<TripDraft> create(User user, List<Long> jobIds, String message) {
-        return create(user, jobIds, message, null);
-    }
-
     /**
      * replacesDraftId: "다시 짜기"로 대신할 예전 초안. 그 초안이 이 사용자의 것이고 홈에 보이던 초안이면 새 초안도 홈에
      * 보이게 한다 — 다시 짜기에 성공해도 홈·내 여행에서 초안이 사라졌다(4차 수정 확인 QA, #424). 아니면 무시한다.
      */
-    public Optional<TripDraft> create(User user, List<Long> jobIds, String message, Long replacesDraftId) {
+    Optional<TripDraft> prepareDraft(User user, List<Long> jobIds, String message, Long replacesDraftId) {
         if (jobIds == null || jobIds.isEmpty() || jobIds.size() > MAX_VIDEOS || message == null || message.isBlank()) {
             return Optional.empty();
         }
@@ -98,10 +93,9 @@ public class TripPlannerService {
         if (replacesDraftId != null) {
             tripDraftRepository.findById(replacesDraftId)
                     .filter(old -> old.getUser().getId().equals(user.getId()))
-                    .filter(old -> old.isListed() && old.getTripId() == null)
-                    .ifPresent(old -> draft.replaces(old.getId()));
+                    .ifPresent(draft::recordReplacementOf);
         }
-        return Optional.of(tripDraftRepository.save(draft));
+        return Optional.of(draft);
     }
 
     /**

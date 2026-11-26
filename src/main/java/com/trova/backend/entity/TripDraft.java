@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +24,10 @@ import java.util.stream.Collectors;
  * (2일차부터) 초안 일정, 시작 전 질문을 담는다. 승인 전까지는 여행(Trip)을 만들지 않는다.
  */
 @Entity
-@Table(name = "trip_drafts")
+@Table(name = "trip_drafts", indexes = {
+        @Index(name = "idx_draft_user_request_key", columnList = "user_id, request_key"),
+        @Index(name = "idx_draft_user_replacement", columnList = "user_id, replaces_draft_id")
+})
 public class TripDraft {
 
     @Id
@@ -101,6 +106,26 @@ public class TripDraft {
     // 바로잡기는 외부 API를 새로 부르지 않는다) 앱이 "위치가 바뀌었어요 · 다시 짜기"를 보여 사용자가 고른다.
     @Column(name = "places_changed_at")
     private LocalDateTime placesChangedAt;
+
+    // 홈 교체 대상이 아닌 직접 만든 초안도 같은 원본의 진행 작업을 확인할 수 있게 한다.
+    @Column(name = "unlisted_source_id", updatable = false)
+    private Long unlistedSourceId;
+
+    // 작업자가 오래된 엔티티를 저장해도 정리한 키가 되살아나지 않도록 INSERT에서만 쓴다.
+    @Column(name = "request_key", updatable = false)
+    private UUID requestKey;
+
+    public void recordRequestKey(UUID key) {
+        this.requestKey = key;
+    }
+
+    public void recordReplacementOf(TripDraft source) {
+        if (source.isListed() && source.getTripId() == null) {
+            replaces(source.getId());
+        } else {
+            this.unlistedSourceId = source.getId();
+        }
+    }
 
     protected TripDraft() {
     }
