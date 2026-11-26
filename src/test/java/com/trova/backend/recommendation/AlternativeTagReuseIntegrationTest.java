@@ -62,6 +62,11 @@ class AlternativeTagReuseIntegrationTest {
         when(tripPlaces.findById(902L)).thenReturn(Optional.of(target));
         when(tripPlaces.findByItineraryOrderByVisitOrder(target.getItinerary())).thenReturn(List.of(target));
         when(tripPlaces.findByItinerary_Trip(trip)).thenReturn(List.of(target));
+        when(tripPlaces.findByTripOrderByDayAndVisitOrder(trip)).thenReturn(List.of(target));
+        when(embeddings.ensureEmbeddingsWithWork(anyList(), any())).thenAnswer(invocation -> {
+            ((Runnable) invocation.getArgument(1)).run();
+            return new PlaceEmbeddingService.EmbeddingStats(0, 0);
+        });
         Place saved = places.save(new Place("tag-reuse-place", "후보 카페", "cafe", 4.5, 100,
                 null, 37.501, 127.001, "주소"));
         placeId = saved.getId();

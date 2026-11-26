@@ -11,12 +11,33 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PlaceEmbeddingServiceTest {
@@ -29,7 +50,7 @@ class PlaceEmbeddingServiceTest {
 
     private void setId(Place place, Long id) {
         try {
-            var field = Place.class.getDeclaredField("id");
+            Field field = Place.class.getDeclaredField("id");
             field.setAccessible(true);
             field.set(place, id);
         } catch (Exception e) {
@@ -166,4 +187,112 @@ class PlaceEmbeddingServiceTest {
         verify(apiCallLogService, times(1)).recordBatch(eq("gemini"), eq("place-embedding-batch"), anyLong(),
                 eq(false), eq("embedding generation failed"), eq(2));
     }
+    @Test
+    void 임베딩이_없어도_독립작업은_정확히_한번_실행한다() {
+        Runnable independent = mock(Runnable.class);
+        PlaceEmbeddingService.EmbeddingStats emptyStats = placeEmbeddingService.ensureEmbeddingsWithWork(List.of(), independent);
+        org.junit.jupiter.api.Assertions.assertEquals(new PlaceEmbeddingService.EmbeddingStats(0, 0), emptyStats);
+        verify(independent).run();
+        verifyNoInteractions(geminiEmbeddingClient);
+    }
+
+    @Test
+    void 기존_벡터만_있어도_독립작업은_정확히_한번_실행한다() {
+        Runnable independent = mock(Runnable.class);
+        when(placeRepository.findIdsWithEmbedding(List.of(1L))).thenReturn(List.of(1L));
+        PlaceEmbeddingService.EmbeddingStats stats = placeEmbeddingService.ensureEmbeddingsWithWork(List.of(place(1, "가")), independent);
+        org.junit.jupiter.api.Assertions.assertEquals(new PlaceEmbeddingService.EmbeddingStats(0, 0), stats);
+        verify(independent).run();
+        verifyNoInteractions(geminiEmbeddingClient);
+    }
+
+    @Test
+    void 존재_조회_실패시에도_독립작업은_실행한다() {
+        Runnable independent = mock(Runnable.class);
+        when(placeRepository.findIdsWithEmbedding(anyList())).thenThrow(new RuntimeException("DB 실패"));
+        PlaceEmbeddingService.EmbeddingStats stats = placeEmbeddingService.ensureEmbeddingsWithWork(List.of(place(1, "가")), independent);
+        org.junit.jupiter.api.Assertions.assertEquals(new PlaceEmbeddingService.EmbeddingStats(0, 0), stats);
+        verify(independent).run();
+        verifyNoInteractions(geminiEmbeddingClient);
+    }
+
+    @Test
+    void 독립작업이_없는_기존_호출은_요청스레드에서_계속_실행한다() {
+        Thread caller = Thread.currentThread();
+        when(placeRepository.findIdsWithEmbedding(anyList())).thenReturn(List.of());
+        when(geminiEmbeddingClient.embedBatch(anyList())).thenAnswer(inv -> {
+            org.junit.jupiter.api.Assertions.assertSame(caller, Thread.currentThread());
+            return Optional.of(List.of(new float[]{1}));
+        });
+        placeEmbeddingService.ensureEmbeddings(List.of(place(1, "가")));
+        verify(geminiEmbeddingClient).embedBatch(List.of("가 cafe"));
+    }
+
+    @Test
+    void 두_묶음의_독립작업은_첫_묶음_HTTP_대기중_한번만_실행한다() {
+        List<Place> places = new ArrayList<>();
+        for (long id = 1; id <= 101; id++) {
+            places.add(place(id, "장소" + id));
+        }
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch workDone = new CountDownLatch(1);
+        AtomicInteger calls = new AtomicInteger();
+        AtomicInteger workCalls = new AtomicInteger();
+        when(placeRepository.findIdsWithEmbedding(anyList())).thenReturn(List.of());
+        when(geminiEmbeddingClient.embedBatch(anyList())).thenAnswer(inv -> {
+            if (calls.incrementAndGet() == 1) {
+                started.countDown();
+                assertTrue(workDone.await(5, TimeUnit.SECONDS));
+            } else {
+                assertEquals(1, workCalls.get());
+            }
+            List<String> texts = inv.getArgument(0);
+            return Optional.of(texts.stream().map(text -> new float[]{1f}).toList());
+        });
+
+        PlaceEmbeddingService.EmbeddingStats stats = placeEmbeddingService.ensureEmbeddingsWithWork(places, () -> {
+            try {
+                assertTrue(started.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
+            }
+            assertEquals(1, calls.get());
+            workCalls.incrementAndGet();
+            workDone.countDown();
+        });
+
+        assertEquals(1, workCalls.get());
+        assertEquals(new PlaceEmbeddingService.EmbeddingStats(2, 101), stats);
+        verify(geminiEmbeddingClient, times(2)).embedBatch(anyList());
+        verify(geminiEmbeddingClient).embedBatch(argThat(texts -> texts.size() == 100));
+        verify(geminiEmbeddingClient).embedBatch(argThat(texts -> texts.size() == 1));
+    }
+
+    @Test
+    void 독립작업이_실패해도_완료된_임베딩을_저장하고_사용량을_기록한다() {
+        CountDownLatch generated = new CountDownLatch(1);
+        when(placeRepository.findIdsWithEmbedding(anyList())).thenReturn(List.of());
+        when(geminiEmbeddingClient.embedBatch(anyList())).thenAnswer(inv -> {
+            generated.countDown();
+            return Optional.of(List.of(new float[]{1f}));
+        });
+
+        PlaceEmbeddingService.EmbeddingStats stats = placeEmbeddingService.ensureEmbeddingsWithWork(
+                List.of(place(1, "가")), () -> {
+                    try {
+                        assertTrue(generated.await(5, TimeUnit.SECONDS));
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IllegalStateException(e);
+                    }
+                    throw new IllegalStateException("혼잡도 조회 실패");
+                });
+
+        assertEquals(new PlaceEmbeddingService.EmbeddingStats(1, 1), stats);
+        verify(placeEmbeddingJdbcRepository).updateEmbeddings(Map.of(1L, "[1.0]"));
+        verify(apiCallLogService).recordBatch(eq("gemini"), eq("place-embedding-batch"), anyLong(),
+                eq(true), isNull(), eq(1));
+    }
+
 }

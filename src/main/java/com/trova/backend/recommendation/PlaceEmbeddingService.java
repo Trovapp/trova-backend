@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -29,6 +33,7 @@ public class PlaceEmbeddingService {
     private static final Logger log = LoggerFactory.getLogger(PlaceEmbeddingService.class);
     // batchEmbedContents 한 번에 보낼 수 있는 최대 문장 수
     static final int MAX_BATCH_SIZE = 100;
+    static final Runnable NO_WORK = () -> {};
 
     private final GeminiEmbeddingClient geminiEmbeddingClient;
     private final PlaceRepository placeRepository;
@@ -48,8 +53,20 @@ public class PlaceEmbeddingService {
     }
 
     public void ensureEmbeddings(List<Place> candidates) {
+        ensureEmbeddingsWithWork(candidates, NO_WORK);
+    }
+
+    public record EmbeddingStats(int batchCalls, int places) {}
+
+    /**
+     * HTTP 대기 중 독립 작업을 요청 스레드에서 수행한다. 엔티티 접근·존재 조회·저장·API 기록은
+     * 전부 요청 스레드에 남기고, 불변 텍스트 목록만 가상 스레드로 넘긴다. 추가 DB 연결은 없다.
+     * 독립 작업은 임베딩이 없거나 존재 조회가 실패해도 정확히 한 번 실행하며, 실패는 로그만 남긴다.
+     */
+    public EmbeddingStats ensureEmbeddingsWithWork(List<Place> candidates, Runnable independentWork) {
         if (candidates.isEmpty()) {
-            return;
+            runIndependentWork(independentWork);
+            return new EmbeddingStats(0, 0);
         }
         List<Long> ids = candidates.stream().map(Place::getId).toList();
         Set<Long> alreadyEmbedded;
@@ -62,25 +79,63 @@ public class PlaceEmbeddingService {
             alreadyEmbedded = new HashSet<>(placeRepository.findIdsWithEmbedding(ids));
         } catch (Exception e) {
             log.warn("임베딩 존재 여부 조회 실패, 이번 요청은 임베딩 생성을 건너뜁니다", e);
-            return;
+            runIndependentWork(independentWork);
+            return new EmbeddingStats(0, 0);
         }
 
         List<Place> missing = candidates.stream()
                 .filter(place -> !alreadyEmbedded.contains(place.getId()))
                 .toList();
-        for (int from = 0; from < missing.size(); from += MAX_BATCH_SIZE) {
-            embedBatch(missing.subList(from, Math.min(from + MAX_BATCH_SIZE, missing.size())));
+        if (missing.isEmpty()) {
+            runIndependentWork(independentWork);
+            return new EmbeddingStats(0, 0);
+        }
+        int calls = 0;
+        // 한 요청에서 Gemini 호출 자체는 여전히 순차적이다. 대기 중 독립 작업만 겹친다.
+        try (ExecutorService executor = independentWork == NO_WORK ? null : Executors.newVirtualThreadPerTaskExecutor()) {
+            for (int from = 0; from < missing.size(); from += MAX_BATCH_SIZE) {
+                List<Place> batch = missing.subList(from, Math.min(from + MAX_BATCH_SIZE, missing.size()));
+                List<String> texts = batch.stream().map(this::buildEmbeddingText).toList();
+                long start = System.currentTimeMillis();
+                Future<GeneratedBatch> pending = executor == null
+                        ? CompletableFuture.completedFuture(generateBatch(texts, start))
+                        : executor.submit(() -> generateBatch(texts, start));
+                calls++;
+                if (from == 0) {
+                    runIndependentWork(independentWork);
+                }
+                GeneratedBatch generated;
+                try {
+                    generated = pending.get();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("임베딩 대기 중 인터럽트", e);
+                } catch (java.util.concurrent.ExecutionException e) {
+                    throw new IllegalStateException("임베딩 생성 실패", e.getCause());
+                }
+                saveBatch(batch, generated.embeddings(), generated.latency());
+            }
+        }
+        return new EmbeddingStats(calls, missing.size());
+    }
+
+    private void runIndependentWork(Runnable independentWork) {
+        try {
+            independentWork.run();
+        } catch (Exception e) {
+            // 독립 조회 실패로 이미 생성한 벡터와 무료 한도 사용량 기록을 버리지 않는다.
+            log.warn("임베딩 대기 중 독립 작업 실패, 임베딩 처리는 계속합니다", e);
         }
     }
 
-    // 처음 보는 지역에서는 새 장소가 한꺼번에 들어온다(운영 실측: 김해 19개, 전주 16개). 하나씩 부르면
-    // 개당 약 0.4~0.5초가 쌓여 대화 첫 응답이 8~9초 늦어져서, 요청 한 번으로 묶는다(#73).
-    // 묶음이 실패하면 이번엔 전부 건너뛴다 — 저장되지 않은 장소는 다음 검색 때 다시 대상이 된다.
-    private void embedBatch(List<Place> places) {
-        List<String> texts = places.stream().map(this::buildEmbeddingText).toList();
-        long start = System.currentTimeMillis();
-        Optional<List<float[]>> embeddings = geminiEmbeddingClient.embedBatch(texts);
-        long latency = System.currentTimeMillis() - start;
+    private record GeneratedBatch(Optional<List<float[]>> embeddings, long latency) {}
+
+    private GeneratedBatch generateBatch(List<String> texts, long start) {
+        Optional<List<float[]>> vectors = geminiEmbeddingClient.embedBatch(texts);
+        return new GeneratedBatch(vectors, System.currentTimeMillis() - start);
+    }
+
+    private void saveBatch(List<Place> places, Optional<List<float[]>> embeddings, long latency) {
         // 무료 한도는 묶음 안의 문장 수로 센다 — 호출 기록도 문장마다 한 줄씩 남겨 줄 수가 사용량과 같게 한다.
         // latency는 묶음 요청 한 번의 시간이다. DB에는 묶음 INSERT 한 번으로 보낸다(#79).
         apiCallLogService.recordBatch(

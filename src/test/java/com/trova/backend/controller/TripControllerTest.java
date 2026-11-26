@@ -570,6 +570,10 @@ class TripControllerTest {
 
     @Test
     void 대안_찾기는_필터_쿼리파라미터를_반영해_실제_후보를_바인딩한다() throws Exception {
+        when(placeEmbeddingService.ensureEmbeddingsWithWork(any(), any())).thenAnswer(inv -> {
+            ((Runnable) inv.getArgument(1)).run();
+            return new PlaceEmbeddingService.EmbeddingStats(0, 0);
+        });
         User me = userRepository.save(new User("google", "alt4", "대안유저4", null));
         Trip t = trip(me, 1);
         Itinerary day1 = itineraryRepository.findByTripAndDay(t, 1).orElseThrow();

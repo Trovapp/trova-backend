@@ -97,3 +97,4 @@
 | [0055](0055-space-tag-reuse.md) | 대안 찾기의 실내외 태그를 30일 재사용 | 확정 | 2026-11-25 |
 | [0056](0056-conversation-card-stream.md) | 대화 카드 우선 SSE, 단일 JVM 처리 상한과 세션 잠금·pinning 회피 | 확정 | 2026-11-25 |
 | [0057](0057-trip-sse-slots-gap-quota.md) | 여행 SSE의 오래된 연결 교체·종료 즉시 슬롯 반환, 빈 시간 추천 외부 검색별 차감 | 확정 | 2026-11-25 |
+| [0058](0058-request-scoped-embedding-overlap.md) | 요청 범위 가상 스레드로 임베딩 HTTP 대기와 독립 작업을 겹친다 | 확정 | 2026-11-26 |
