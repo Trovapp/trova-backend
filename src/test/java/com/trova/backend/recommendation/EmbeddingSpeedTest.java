@@ -43,6 +43,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -59,6 +60,14 @@ class EmbeddingSpeedTest {
     @SuppressWarnings("unchecked")
     private Run run(boolean baseline, boolean congestion, boolean explanations, long embeddingDelay,
                     long congestionDelay, long scoreDelay) throws Exception {
+        return run(baseline, congestion, explanations, embeddingDelay, congestionDelay, scoreDelay, false, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Run run(boolean baseline, boolean congestion, boolean explanations, long embeddingDelay,
+                    long congestionDelay, long scoreDelay, boolean awaitCongestion, boolean outsideDistance) throws Exception {
+        CountDownLatch congestionCalled = new CountDownLatch(1);
+        CountDownLatch embeddingStarted = new CountDownLatch(1);
         Thread requestThread = Thread.currentThread();
         GooglePlacesApiClient google = mock(GooglePlacesApiClient.class);
         PlaceCatalogService catalog = mock(PlaceCatalogService.class);
@@ -77,6 +86,15 @@ class EmbeddingSpeedTest {
             public Optional<float[]> embed(String ignored) { throw new AssertionError("단건 호출 금지"); }
             public Optional<List<float[]>> embedBatch(List<String> texts) {
                 calls.incrementAndGet();
+                embeddingStarted.countDown();
+                if (awaitCongestion) {
+                    try {
+                        assertTrue(congestionCalled.await(5, TimeUnit.SECONDS), "혼잡도 조회가 임베딩 HTTP 대기 중 실행되어야 한다");
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IllegalStateException(e);
+                    }
+                }
                 synchronized (submitted) { submitted.add(List.copyOf(texts)); }
                 try { delay(embeddingDelay); } catch (InterruptedException e) { throw new RuntimeException(e); }
                 return Optional.of(texts.stream().map(t -> new float[]{t.startsWith("신규") ? .9f : .1f}).toList());
@@ -88,7 +106,7 @@ class EmbeddingSpeedTest {
                 null, null, 1, PlaceSource.NORMAL, null); id(target, 1);
         List<Place> places = List.of(
                 new Place("a", "신규", "cafe", 4.0, 10, null, 37.001, 127.0, "주소"),
-                new Place("b", congestion ? "경복궁" : "기존", "cafe", 4.0, 10, null, 37.001, 127.0, "주소"),
+                new Place("b", congestion ? "경복궁" : "기존", "cafe", 4.0, 10, null, outsideDistance ? 38.0 : 37.001, 127.0, "주소"),
                 new Place("c", "거리탈락_선호신호", "cafe", 5.0, 5000, null, 38.0, 127.0, "주소"),
                 new Place("d", "좌표없음", "cafe", 5.0, 5000, null, null, null, "주소"));
         for (int i = 0; i < places.size(); i++) id(places.get(i), 11 + i);
@@ -115,6 +133,10 @@ class EmbeddingSpeedTest {
         when(repository.findEmbeddingText(anyLong())).thenAnswer(inv -> Optional.ofNullable(vectors.get(inv.getArgument(0))));
         when(crowd.fetchCongestion("경복궁")).thenAnswer(inv -> {
             assertSame(requestThread, Thread.currentThread());
+            if (awaitCongestion) {
+                assertTrue(embeddingStarted.await(5, TimeUnit.SECONDS));
+            }
+            congestionCalled.countDown();
             delay(congestionDelay);
             return Optional.of(new SeoulCongestionResponse(new SeoulCongestionResponse.CityData(List.of(
                     new SeoulCongestionResponse.LivePopulation("보통", "")))));
@@ -158,8 +180,26 @@ class EmbeddingSpeedTest {
         long start = System.nanoTime();
         Optional<List<AlternativeCandidate>> actual = (Optional<List<AlternativeCandidate>>) finderClass.getMethod("findAlternatives", User.class, Long.class, AlternativeFilter.class)
                 .invoke(finder, user, 1L, new AlternativeFilter(null, null, .5, null, null));
+        if (outsideDistance) {
+            verify(crowd, never()).fetchCongestion("경복궁");
+        } else if (awaitCongestion) {
+            verify(crowd, times(1)).fetchCongestion("경복궁");
+        }
         long millis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
         return new Run(actual.orElseThrow(), scores, vectors, calls.get(), List.copyOf(submitted), millis);
+    }
+
+    @Test
+    void 혼잡도_조회는_대안_임베딩_HTTP_대기중에_실행된다() throws Exception {
+        Run actual = run(false, true, false, 0, 0, 0, true, false);
+        assertEquals(1, actual.calls());
+        assertTrue(actual.candidates().get(1).isCongestionAvailable());
+    }
+
+    @Test
+    void 거리_필터_밖의_경복궁은_혼잡도를_조회하지_않는다() throws Exception {
+        Run actual = run(false, true, false, 0, 0, 0, false, true);
+        assertThat(actual.candidates()).extracting(AlternativeCandidate::googlePlaceId).containsExactly("a");
     }
 
     @Test

@@ -61,11 +61,11 @@ public class PlaceEmbeddingService {
     /**
      * HTTP 대기 중 독립 작업을 요청 스레드에서 수행한다. 엔티티 접근·존재 조회·저장·API 기록은
      * 전부 요청 스레드에 남기고, 불변 텍스트 목록만 가상 스레드로 넘긴다. 추가 DB 연결은 없다.
-     * 독립 작업은 임베딩이 없거나 존재 조회가 실패해도 정확히 한 번 실행한다.
+     * 독립 작업은 임베딩이 없거나 존재 조회가 실패해도 정확히 한 번 실행하며, 실패는 로그만 남긴다.
      */
     public EmbeddingStats ensureEmbeddingsWithWork(List<Place> candidates, Runnable independentWork) {
         if (candidates.isEmpty()) {
-            independentWork.run();
+            runIndependentWork(independentWork);
             return new EmbeddingStats(0, 0);
         }
         List<Long> ids = candidates.stream().map(Place::getId).toList();
@@ -79,7 +79,7 @@ public class PlaceEmbeddingService {
             alreadyEmbedded = new HashSet<>(placeRepository.findIdsWithEmbedding(ids));
         } catch (Exception e) {
             log.warn("임베딩 존재 여부 조회 실패, 이번 요청은 임베딩 생성을 건너뜁니다", e);
-            independentWork.run();
+            runIndependentWork(independentWork);
             return new EmbeddingStats(0, 0);
         }
 
@@ -87,7 +87,7 @@ public class PlaceEmbeddingService {
                 .filter(place -> !alreadyEmbedded.contains(place.getId()))
                 .toList();
         if (missing.isEmpty()) {
-            independentWork.run();
+            runIndependentWork(independentWork);
             return new EmbeddingStats(0, 0);
         }
         int calls = 0;
@@ -102,7 +102,7 @@ public class PlaceEmbeddingService {
                         : executor.submit(() -> generateBatch(texts, start));
                 calls++;
                 if (from == 0) {
-                    independentWork.run();
+                    runIndependentWork(independentWork);
                 }
                 GeneratedBatch generated;
                 try {
@@ -117,6 +117,15 @@ public class PlaceEmbeddingService {
             }
         }
         return new EmbeddingStats(calls, missing.size());
+    }
+
+    private void runIndependentWork(Runnable independentWork) {
+        try {
+            independentWork.run();
+        } catch (Exception e) {
+            // 독립 조회 실패로 이미 생성한 벡터와 무료 한도 사용량 기록을 버리지 않는다.
+            log.warn("임베딩 대기 중 독립 작업 실패, 임베딩 처리는 계속합니다", e);
+        }
     }
 
     private record GeneratedBatch(Optional<List<float[]>> embeddings, long latency) {}

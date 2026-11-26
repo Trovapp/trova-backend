@@ -2,7 +2,7 @@ To honour the JVM settings for this build a single-use Daemon process will be fo
 Daemon will be stopped at the end of the build
 
 > Task :compileJava UP-TO-DATE
-Caught exception: Could not start the FSEvents stream: /Users/gimtaehyeong/orca/workspaces/trova-backend/trova-T46-embedding-speed
+Caught exception: Could not start the FSEvents stream: <repo>
 
 > Task :processResources UP-TO-DATE
 > Task :classes UP-TO-DATE
