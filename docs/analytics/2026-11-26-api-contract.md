@@ -71,5 +71,5 @@ DDL 참고는 [analytics_consent.sql](../../db/supabase/analytics_consent.sql), 
 - 구현 후 동의/공유/영상 결과 및 기본 고지 테스트 10개 통과.
 - `AnalyticsConsentConcurrencyTest`: 실제 별도 트랜잭션의 CAS 충돌, 철회 롤백과 삭제 큐 원자성, 키 없는 PENDING 보존을 검증한다.
 - Windows 전체 `gradlew.bat build` 2회: 각각 1,570개 중 통과 1,546, 실패 1, 조건부 건너뜀 23. 신규 12개는 모두 통과했다.
-- 유일한 실패는 기존 `AuxiliaryRunnerInterruptTest:110`의 리뷰요약 임시 폴더 미삭제 단언이다. pipeline 소스·테스트는 origin/main과 동일하며 단독 재실행은 통과했다. 테스트를 제외하지 않았고, 코디네이터가 이 제한을 기록한 일반 PR 생성(머지 금지)을 승인했다. 추가 단독 3회 결과는 PR 및 작업 기록에 남긴다.
+- 유일한 실패는 기존 `AuxiliaryRunnerInterruptTest:110`의 리뷰요약 임시 폴더 미삭제 단언이다. pipeline 소스·테스트는 origin/main과 동일하며 단독 재실행은 통과했다. 테스트를 제외하지 않았고, 코디네이터가 이 제한을 기록한 일반 PR 생성(머지 금지)을 승인했다. 추가 단독 3회 `--rerun-tasks` 실행도 모두 통과했다(15초·11초·13초, 매회 실행 1개 통과·OS 조건 4개 건너뜀). [PR #548](https://github.com/Trovapp/trova-backend/pull/548)과 작업 기록에 남겼다.
 - 외부 PostHog 삭제 호출은 검증하지 않았으며 실행하지 않는다.
