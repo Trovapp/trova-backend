@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SavedPlaceRepository extends JpaRepository<SavedPlace, Long> {
+    long countByProcessingJobId(Long jobId);
 
     // 엔티티가 필요한 기존 호출용. @ManyToOne 기본(EAGER)만으로는 작업마다 쿼리가
     // 따로 나가 SQL 22개가 나갔다(#29) — 작업·사용자를 조인한다. 목록 HTTP 응답은 아래 DTO 조회를 쓴다.

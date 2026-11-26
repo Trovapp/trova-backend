@@ -36,6 +36,14 @@ public interface ProcessingJobRepository extends JpaRepository<ProcessingJob, Lo
     List<ProcessingJob> findByUserAndSourceUrlAndStatusIn(User user, String sourceUrl, List<JobStatus> statuses);
     boolean existsByUserAndSourceUrlAndIdGreaterThan(User user, String sourceUrl, Long id);
     Optional<ProcessingJob> findByIdAndUser(Long id, User user);
+    interface AnalysisStatusRow {
+        JobStatus getStatus();
+        JobStatus getAnalysisStatus();
+        String getErrorMessage();
+    }
+
+    Optional<AnalysisStatusRow> findAnalysisStatusByIdAndUserId(Long id, Long userId);
+
     void deleteByUser(User user);
     // 서버 재시작 등으로 대기열에서 사라진 작업 정리용(#43).
     List<ProcessingJob> findByStatusInAndUpdatedAtBefore(List<JobStatus> statuses, java.time.LocalDateTime updatedBefore);

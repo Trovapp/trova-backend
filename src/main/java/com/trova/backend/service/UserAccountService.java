@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserAccountService {
+    private final AnalyticsConsentService analyticsConsents;
 
     private final UserRepository userRepository;
     private final SavedPlaceRepository savedPlaceRepository;
@@ -59,7 +60,8 @@ public class UserAccountService {
             PushSubscriptionRepository pushSubscriptionRepository,
             ExpoPushTokenRepository expoPushTokenRepository,
             KnownUsers knownUsers,
-            UserConsentRepository userConsentRepository
+            UserConsentRepository userConsentRepository,
+            AnalyticsConsentService analyticsConsents
     ) {
         this.userRepository = userRepository;
         this.savedPlaceRepository = savedPlaceRepository;
@@ -78,6 +80,7 @@ public class UserAccountService {
         this.expoPushTokenRepository = expoPushTokenRepository;
         this.knownUsers = knownUsers;
         this.userConsentRepository = userConsentRepository;
+        this.analyticsConsents = analyticsConsents;
     }
 
     // 회원을 참조하는 데이터를 전부 지운 뒤 회원을 지운다(탈퇴 시 지체 없이 파기).
@@ -87,6 +90,7 @@ public class UserAccountService {
     // 여러 회원이 함께 쓰는 장소 마스터(Place)는 지우지 않는다.
     @Transactional
     public void withdraw(User user) {
+        analyticsConsents.withdraw(user.getId());
         // 알림은 일정(Itinerary)을, 재구성 기록은 여행을 참조하므로 여행보다 먼저 지운다.
         notificationRepository.deleteByUser(user);
         tripReplanJobRepository.deleteByUser(user);
