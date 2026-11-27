@@ -124,6 +124,8 @@ class ApiErrorContractTest {
     @CsvSource({
             "/api/public/trips/test-empty?status=abc,400,BAD_REQUEST",
             "/api/trips,401,UNAUTHORIZED",
+            "/api/_test/fail,404,NOT_FOUND",
+            "/api/_test/slow,404,NOT_FOUND",
             "/api/trips?cors,403,FORBIDDEN",
             "/api/trips/7/events?ticket=invalid,401,UNAUTHORIZED",
             "/api/public/trips/test-empty?status=403,403,FORBIDDEN",

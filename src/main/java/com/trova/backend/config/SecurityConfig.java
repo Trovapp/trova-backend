@@ -116,6 +116,7 @@ public class SecurityConfig {
                             // 관리자 웹 1회용 코드 교환 — 코드 자체가 인증이다(AdminWebLoginService, #163).
                             .requestMatchers(HttpMethod.POST, "/api/auth/exchange").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/auth/web-exchange").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/_test/fail", "/api/_test/slow").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/trips/*/events").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/public/trips/*").permitAll()
                             // 인증 없이 열어두되, 실제로 노출되는 엔드포인트는 application.yml의
