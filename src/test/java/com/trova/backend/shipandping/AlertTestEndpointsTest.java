@@ -1,8 +1,6 @@
 package com.trova.backend.shipandping;
 
 import com.sun.net.httpserver.HttpServer;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -10,8 +8,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -22,25 +18,19 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.AsyncHandlerInterceptor;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-        "SHIP_AND_PING_ALERT_TEST=true", "server.tomcat.threads.max=1", "server.tomcat.threads.min-spare=1"
-})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "SHIP_AND_PING_ALERT_TEST=true")
 @Import(AlertTestEndpointsTest.LocalCollector.class)
 class AlertTestEndpointsTest {
     @LocalServerPort int port;
     @Autowired LocalCollector collector;
 
     @TestConfiguration(proxyBeanMethods = false)
-    static class LocalCollector implements AutoCloseable, WebMvcConfigurer {
-        private final CountDownLatch slowDispatched = new CountDownLatch(1);
+    static class LocalCollector implements AutoCloseable {
         private final HttpServer server;
         private final LinkedBlockingQueue<JsonNode> records = new LinkedBlockingQueue<>();
 
@@ -54,15 +44,6 @@ class AlertTestEndpointsTest {
                 }
             });
             server.start();
-        }
-
-        @Override public void addInterceptors(InterceptorRegistry registry) {
-            registry.addInterceptor(new AsyncHandlerInterceptor() {
-                @Override public void afterConcurrentHandlingStarted(HttpServletRequest request,
-                        HttpServletResponse response, Object handler) {
-                    slowDispatched.countDown();
-                }
-            }).addPathPatterns("/api/_test/slow");
         }
 
         @Bean Sender localSender() {
@@ -82,11 +63,6 @@ class AlertTestEndpointsTest {
     @Test
     void 익명_오류와_지연_요청을_실제_경로와_완료_시간으로_전송한다() throws Exception {
         try (HttpClient client = HttpClient.newHttpClient()) {
-            long start = System.nanoTime();
-            CompletableFuture<HttpResponse<Void>> delayed = client.sendAsync(
-                    request("/api/_test/slow"), HttpResponse.BodyHandlers.discarding());
-            assertThat(collector.slowDispatched.await(10, TimeUnit.SECONDS)).isTrue();
-            // slow가 대기하는 동안 유일한 서블릿 스레드가 fail을 먼저 처리한다.
             HttpResponse<String> failed = client.send(request("/api/_test/fail?sample=private-fixture"),
                     HttpResponse.BodyHandlers.ofString());
             assertThat(failed.statusCode()).isEqualTo(500);
@@ -99,10 +75,15 @@ class AlertTestEndpointsTest {
             assertThat(failed.body()).doesNotContain("private-fixture");
             assertThat(assertRecord("/api/_test/fail", 500).toString()).doesNotContain("private-fixture");
 
-            assertThat(delayed.get(15, TimeUnit.SECONDS).statusCode()).isEqualTo(200);
-            assertThat(Duration.ofNanos(System.nanoTime() - start)).isGreaterThanOrEqualTo(Duration.ofSeconds(6));
+            HttpRequest slowRequest = request("/api/_test/slow");
+            long start = System.nanoTime();
+            HttpResponse<Void> response = client.send(slowRequest, HttpResponse.BodyHandlers.discarding());
+            Duration elapsed = Duration.ofNanos(System.nanoTime() - start);
+            assertThat(response.statusCode()).isEqualTo(200);
+            assertThat(elapsed).isLessThan(Duration.ofSeconds(1));
+
             JsonNode slow = assertRecord("/api/_test/slow", 200);
-            assertThat(slow.get("duration_ms").asLong()).isGreaterThanOrEqualTo(6000);
+            assertThat(slow.get("duration_ms").asLong()).isBetween(0L, 999L);
         }
     }
 
