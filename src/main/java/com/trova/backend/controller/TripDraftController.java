@@ -93,8 +93,8 @@ public class TripDraftController {
         }
     }
 
-    @Operation(summary = "일정 초안 접수", description = "같은 사용자·본문의 미확정 수동 초안은 최초 접수 후 24시간 미만, "
-            + "원본이 있는 다시 짜기는 10분 미만 동안 재생한다. 접수된 UUID 키는 24시간 미만 동안 최초 응답을 재생한다.")
+    @Operation(summary = "일정 초안 접수", description = "최초 접수 후 24시간 미만이면 같은 사용자·원본·정규화 본문의 "
+            + "미확정 초안은 키가 없거나 달라도 최초 응답을 재생한다. 같은 사용자의 접수된 UUID 키는 같은 기간 동안 상태와 관계없이 재생한다.")
     @ApiResponse(responseCode = "202", description = "최초 접수 또는 같은 본문·키에 의한 재생",
             content = @Content(examples = @ExampleObject(value = "{\"draftId\":42,\"status\":\"PENDING\"}")))
     @ApiResponse(responseCode = "409", description = "같은 원본을 다시 짜는 중. 최초 접수 후 24시간 미만이고 본문이 같으면 같은 키로 기존 202를 복구할 수 있다.",

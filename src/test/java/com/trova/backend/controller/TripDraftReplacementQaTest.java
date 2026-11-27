@@ -168,9 +168,8 @@ class TripDraftReplacementQaTest {
         assertThat(detail(originalId)).isEqualTo(originalDetail);
         assertThat(read("/auto")).isEqualTo(originalCards);
 
-        assertThat(submit("당일치기")).isEqualTo(failed);
-        expireContentWindow(failed);
         long retry = submit("당일치기");
+        assertThat(retry).isNotEqualTo(failed);
         assertThat(queued).containsExactly(failed, retry);
         planner.processNow(retry);
         assertThat(cards()).containsExactly(retry);
@@ -548,7 +547,7 @@ class TripDraftReplacementQaTest {
         assertThat(jdbc.queryForObject("select count(*) from trip_drafts where user_id = ? and request_hash is not null",
                 Long.class, owner.getId())).isOne();
         if (withKeys) {
-            expireContentWindow(id);
+            setCreatedElevenMinutesAgo(id);
             assertThat(submit("달라진 조건", retryKey)).isEqualTo(id);
             assertThat(submit("달라진 조건", firstKey)).isEqualTo(id);
             assertThat(queued).containsExactly(id);
@@ -558,17 +557,17 @@ class TripDraftReplacementQaTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"READY", "FAILED", "PENDING", "NEEDS_INPUT"})
-    void 최초_접수_10분_경계는_재생으로_연장되지_않는다(String state) throws Exception {
+    @ValueSource(strings = {"READY", "PROCESSING", "PENDING", "NEEDS_INPUT"})
+    void 대체_초안의_최초_접수_24시간_경계는_재생으로_연장되지_않는다(String state) throws Exception {
         long id = submit("2027-01-10 오전");
         LocalDateTime boundary = LocalDateTime.now().withNano(0);
-        jdbc.update("update trip_drafts set status = ?, created_at = ? where id = ?", state, boundary.minusMinutes(10), id);
+        jdbc.update("update trip_drafts set status = ?, created_at = ? where id = ?", state, boundary.minusHours(24), id);
         LocalDateTime before = boundary.minusNanos(1_000);
         try (MockedStatic<LocalDateTime> time = mockStatic(LocalDateTime.class, CALLS_REAL_METHODS)) {
             time.when(LocalDateTime::now).thenReturn(before);
             assertThat(submit("2027-01-10 오전")).isEqualTo(id);
             time.when(LocalDateTime::now).thenReturn(boundary);
-            if (state.equals("PENDING")) {
+            if (state.equals("PENDING") || state.equals("PROCESSING")) {
                 assertConflict(create("2027-01-10 오전", null).andReturn().getResponse(), id);
                 assertThat(queued).containsExactly(id);
             } else {
@@ -599,6 +598,40 @@ class TripDraftReplacementQaTest {
         assertThat(detail(first).get("dismissed")).isEqualTo(BooleanNode.TRUE);
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 다른_탭이_202를_확인한_뒤_11분째_키가_달라지거나_없어도_READY_대체_초안_하나만_남는다(boolean withNewKey) throws Exception {
+        String sharedKey = UUID.randomUUID().toString();
+        create("당일치기 오전", sharedKey).andExpect(status().isAccepted());
+        long first = queued.getFirst();
+        assertThat(submit("당일치기 오전", sharedKey)).isEqualTo(first);
+        when(model.call(any(Prompt.class))).thenReturn(answer("11:00", "12:00"));
+        planner.processNow(first);
+        setCreatedElevenMinutesAgo(first);
+
+        String retryKey = withNewKey ? UUID.randomUUID().toString() : null;
+        assertThat(submit("  당일치기   오전 ", retryKey)).isEqualTo(first);
+        assertReadyAt(first, "11:00");
+        assertThat(cards()).containsExactly(first);
+        assertThat(queued).containsExactly(first);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"PENDING", "PROCESSING", "NEEDS_INPUT"})
+    void 같은_원본의_다른_작업을_보존하면서_최초_READY_초안을_복구한다(String otherStatus) throws Exception {
+        long first = submit("오전", UUID.randomUUID().toString());
+        TripDraft running = processing.start(first).orElseThrow();
+        running.markReady("{}", "{}");
+        assertThat(processing.finish(first, running)).isTrue();
+        setCreatedElevenMinutesAgo(first);
+
+        long other = submit("오후");
+        jdbc.update("update trip_drafts set status = ? where id = ?", otherStatus, other);
+        assertThat(submit("오전")).isEqualTo(first);
+        assertThat(detail(other).required("status").asText()).isEqualTo(otherStatus);
+        assertThat(queued).containsExactly(first, other);
+    }
+
     @Test
     void 수동_생성_202_직후_앱을_재시작해도_11분_뒤_READY_초안을_복구한다() throws Exception {
         originalId = null;
@@ -606,7 +639,7 @@ class TripDraftReplacementQaTest {
         TripDraft running = processing.start(first).orElseThrow();
         running.markReady("{}", "{}");
         assertThat(processing.finish(first, running)).isTrue();
-        expireContentWindow(first);
+        setCreatedElevenMinutesAgo(first);
 
         assertThat(submit(" 당일치기   오전 ", UUID.randomUUID().toString())).isEqualTo(first);
         assertThat(detail(first).required("status").asText()).isEqualTo("READY");
@@ -620,7 +653,7 @@ class TripDraftReplacementQaTest {
         create("당일치기", sharedKey).andExpect(status().isAccepted());
         long first = submit("당일치기", sharedKey);
         processing.start(first).orElseThrow();
-        expireContentWindow(first);
+        setCreatedElevenMinutesAgo(first);
 
         String newKey = UUID.randomUUID().toString();
         assertThat(submit("당일치기", newKey)).isEqualTo(first);
@@ -634,7 +667,7 @@ class TripDraftReplacementQaTest {
         originalId = null;
         create("오전", UUID.randomUUID().toString()).andExpect(status().isAccepted());
         long first = queued.getFirst();
-        expireContentWindow(first);
+        setCreatedElevenMinutesAgo(first);
 
         bearer = "Bearer " + jwt.issue(owner);
         assertThat(submit("오전")).isEqualTo(first);
@@ -642,9 +675,11 @@ class TripDraftReplacementQaTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"approve", "dismiss", "FAILED"})
-    void 수동_생성_승인_폐기_실패_직후에는_새_키로_같은_입력을_새로_접수한다(String action) throws Exception {
-        originalId = null;
+    @CsvSource({"false,approve", "false,dismiss", "false,FAILED", "true,approve", "true,dismiss", "true,FAILED"})
+    void 승인_폐기_실패_직후에는_새_키로_같은_입력을_새로_접수한다(boolean replacement, String action) throws Exception {
+        if (!replacement) {
+            originalId = null;
+        }
         String key = UUID.randomUUID().toString();
         long first = submit("당일치기", key);
         if (action.equals("FAILED")) {
@@ -691,7 +726,7 @@ class TripDraftReplacementQaTest {
         String message = "당일치기";
         long first = submit(message, firstKey);
         assertThat(submit(message, replayKey)).isEqualTo(first);
-        expireContentWindow(first);
+        setCreatedElevenMinutesAgo(first);
         mvc.perform(post("/api/trip-drafts").header("Idempotency-Key", replayKey)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json.writeValueAsBytes(Map.of("jobIds", List.of(jobId), "message", message))))
@@ -708,7 +743,7 @@ class TripDraftReplacementQaTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
-    void 같은_본문의_409를_읽지_못해도_완료_뒤_같은_키로_복구한다(boolean reorder) throws Exception {
+    void 진행_중인_대체_초안도_11분_뒤_같은_본문은_202로_복구한다(boolean reorder) throws Exception {
         originalId = manualSource();
         User owner = drafts.findById(originalId).orElseThrow().getUser();
         ProcessingJob other = new ProcessingJob(owner, "https://example.invalid/second", SourcePlatform.YOUTUBE);
@@ -721,13 +756,15 @@ class TripDraftReplacementQaTest {
         String retryKey = UUID.randomUUID().toString();
         create(videos, message, firstKey, originalId).andExpect(status().isAccepted());
         long first = queued.getFirst();
-        expireContentWindow(first);
+        setCreatedElevenMinutesAgo(first);
         TripDraft running = processing.start(first).orElseThrow();
-        create(retryVideos, message, retryKey, originalId).andExpect(status().isConflict());
+        byte[] accepted = create(retryVideos, message, retryKey, originalId).andExpect(status().isAccepted())
+                .andReturn().getResponse().getContentAsByteArray();
+        assertThat(json.readTree(accepted).required("draftId").longValue()).isEqualTo(first);
         running.markReady("{}", "{}");
         assertThat(processing.finish(first, running)).isTrue();
 
-        byte[] replay = create(retryVideos, message, retryKey, originalId).andExpect(status().isAccepted())
+        byte[] replay = create(retryVideos, "변경한 조건", retryKey, originalId).andExpect(status().isAccepted())
                 .andReturn().getResponse().getContentAsByteArray();
         assertThat(json.readTree(replay).required("draftId").longValue()).isEqualTo(first);
         assertThat(json.readTree(replay).required("status").asText()).isEqualTo("PENDING");
@@ -748,7 +785,7 @@ class TripDraftReplacementQaTest {
         assertThat(queued).containsExactly(first, afternoon);
     }
 
-    private void expireContentWindow(long id) {
+    private void setCreatedElevenMinutesAgo(long id) {
         jdbc.update("update trip_drafts set created_at = ? where id = ?", LocalDateTime.now().minusMinutes(11), id);
     }
 

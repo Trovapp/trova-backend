@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
 import java.util.List;
@@ -27,6 +28,7 @@ public class DraftAdmissionService {
     public enum Outcome { CREATED, REPLAY, CONFLICT, LEGACY_BUSY, INVALID }
     public record Admission(Outcome outcome, Long draftId) {}
 
+    private static final Duration REPLAY_WINDOW = Duration.ofHours(24);
     private static final Pattern WHITESPACE = Pattern.compile("\\s+", Pattern.UNICODE_CHARACTER_CLASS);
 
     private final UserRepository users;
@@ -44,22 +46,19 @@ public class DraftAdmissionService {
         User user = users.lockById(userId)
                 .orElseThrow(() -> new InsufficientAuthenticationException("사용자를 찾을 수 없습니다"));
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime keyCutoff = now.minusHours(24);
+        LocalDateTime replayCutoff = now.minus(REPLAY_WINDOW);
         if (key != null) {
-            Optional<Long> replay = drafts.findRecentRequest(userId, key, keyCutoff)
-                    .or(() -> drafts.findRecentReplayKey(userId, key, keyCutoff));
+            Optional<Long> replay = drafts.findRecentRequest(userId, key, replayCutoff)
+                    .or(() -> drafts.findRecentReplayKey(userId, key, replayCutoff));
             if (replay.isPresent()) {
                 return new Admission(Outcome.REPLAY, replay.get());
             }
         }
         List<TripDraft> open = sourceId == null ? List.of() : drafts.lockOpenReplacements(userId, sourceId);
         String hash = TripPlannerService.validDraftInput(jobIds, message) ? requestHash(jobIds, message, sourceId) : null;
-        boolean initialCreation = sourceId == null;
-        LocalDateTime contentCutoff = initialCreation ? keyCutoff : now.minusMinutes(10);
         Optional<Long> matching = hash == null ? Optional.empty()
-                : drafts.findReplayableContent(userId, hash, contentCutoff, initialCreation);
-        // 다른 조건의 새 대체 작업이 이미 열렸다면 과거 작업을 재생하지 않는다.
-        if (matching.isPresent() && (open.isEmpty() || open.getFirst().getId().equals(matching.get()))) {
+                : drafts.findReplayableContent(userId, hash, replayCutoff);
+        if (matching.isPresent()) {
             Long draftId = matching.get();
             if (key != null) {
                 drafts.addReplayKey(draftId, key);
@@ -69,7 +68,7 @@ public class DraftAdmissionService {
         for (TripDraft previous : open) {
             if (previous.getStatus() == TripDraftStatus.PENDING || previous.getStatus() == TripDraftStatus.PROCESSING) {
                 // 409 본문이 유실돼도 같은 입력의 재시도는 이 작업의 최초 202를 복구한다.
-                if (key != null && previous.matchesRecentRequest(hash, keyCutoff)) {
+                if (key != null && previous.matchesRecentRequest(hash, replayCutoff)) {
                     drafts.addReplayKey(previous.getId(), key);
                 }
                 return new Admission(Outcome.CONFLICT, previous.getId());
@@ -97,7 +96,7 @@ public class DraftAdmissionService {
     @Scheduled(fixedDelay = 1, initialDelay = 1, timeUnit = TimeUnit.HOURS)
     @Transactional
     public void clearExpiredKeys() {
-        LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
+        LocalDateTime cutoff = LocalDateTime.now().minus(REPLAY_WINDOW);
         drafts.clearExpiredRequestKeys(cutoff);
         drafts.clearExpiredReplayKeys(cutoff);
     }

@@ -66,10 +66,10 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
     void clearExpiredReplayKeys(LocalDateTime cutoff);
 
     @Query("select d.id from TripDraft d where d.user.id = :userId and d.requestHash = :hash "
-            + "and d.createdAt > :cutoff and (:initialCreation = false or "
-            + "(d.dismissedAt is null and d.status in (PENDING, PROCESSING, NEEDS_INPUT, READY))) "
+            + "and d.createdAt > :cutoff and d.dismissedAt is null "
+            + "and d.status in (PENDING, PROCESSING, NEEDS_INPUT, READY) "
             + "order by d.id desc limit 1")
-    Optional<Long> findReplayableContent(Long userId, String hash, LocalDateTime cutoff, boolean initialCreation);
+    Optional<Long> findReplayableContent(Long userId, String hash, LocalDateTime cutoff);
 
     // 답변 API와 같은 행을 잠가 질문의 재개와 교체가 동시에 성공하는 것을 막는다.
     @Lock(LockModeType.PESSIMISTIC_WRITE)
