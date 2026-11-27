@@ -2,6 +2,8 @@ package com.trova.backend.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.genai.errors.ApiException;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SavedPlace;
@@ -146,7 +148,7 @@ class TripDraftReplacementQaTest {
     @ParameterizedTest
     @ValueSource(strings = {"503", "timeout"})
     void 생성_실패는_원본을_보존하고_재시도_성공은_원본을_교체한다(String failure) throws Exception {
-        JsonNode originalDetail = detail(originalId);
+        ObjectNode originalDetail = (ObjectNode) detail(originalId);
         JsonNode originalCards = read("/auto");
         RuntimeException error = new RuntimeException("모의 AI 오류", failure.equals("503")
                 ? new ApiException(503, "UNAVAILABLE", "QA") : new SocketTimeoutException("QA"));
@@ -174,7 +176,7 @@ class TripDraftReplacementQaTest {
         assertThat(cards()).containsExactly(retry);
         assertReadyAt(retry, "11:00");
         assertThat(drafts.findById(originalId).orElseThrow().getDismissedAt()).isNotNull();
-        assertThat(detail(originalId)).isEqualTo(originalDetail);
+        assertThat(detail(originalId)).isEqualTo(originalDetail.deepCopy().put("dismissed", true));
     }
 
     @Test
@@ -587,6 +589,100 @@ class TripDraftReplacementQaTest {
     }
 
     @Test
+    void 수동_초안_상세에서_폐기_전후를_구별한다() throws Exception {
+        originalId = null;
+        long first = submit("당일치기");
+        assertThat(detail(first).get("dismissed")).isEqualTo(BooleanNode.FALSE);
+
+        mvc.perform(post("/api/trip-drafts/" + first + "/dismiss").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        assertThat(detail(first).get("dismissed")).isEqualTo(BooleanNode.TRUE);
+    }
+
+    @Test
+    void 수동_생성_202_직후_앱을_재시작해도_11분_뒤_READY_초안을_복구한다() throws Exception {
+        originalId = null;
+        long first = submit("당일치기 오전", UUID.randomUUID().toString());
+        TripDraft running = processing.start(first).orElseThrow();
+        running.markReady("{}", "{}");
+        assertThat(processing.finish(first, running)).isTrue();
+        expireContentWindow(first);
+
+        assertThat(submit(" 당일치기   오전 ", UUID.randomUUID().toString())).isEqualTo(first);
+        assertThat(detail(first).required("status").asText()).isEqualTo("READY");
+        assertThat(queued).containsExactly(first);
+    }
+
+    @Test
+    void 수동_생성_다른_탭이_202를_확인해도_11분_뒤_새_키로_같은_작업을_연다() throws Exception {
+        originalId = null;
+        String sharedKey = UUID.randomUUID().toString();
+        create("당일치기", sharedKey).andExpect(status().isAccepted());
+        long first = submit("당일치기", sharedKey);
+        processing.start(first).orElseThrow();
+        expireContentWindow(first);
+
+        String newKey = UUID.randomUUID().toString();
+        assertThat(submit("당일치기", newKey)).isEqualTo(first);
+        assertThat(submit("키로 복구", newKey)).isEqualTo(first);
+        assertThat(queued).containsExactly(first);
+    }
+
+    @Test
+    void 수동_생성_응답_유실_뒤_재로그인하면_11분_뒤_키가_없어도_복구한다() throws Exception {
+        User owner = drafts.findById(originalId).orElseThrow().getUser();
+        originalId = null;
+        create("오전", UUID.randomUUID().toString()).andExpect(status().isAccepted());
+        long first = queued.getFirst();
+        expireContentWindow(first);
+
+        bearer = "Bearer " + jwt.issue(owner);
+        assertThat(submit("오전")).isEqualTo(first);
+        assertThat(queued).containsExactly(first);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"approve", "dismiss", "FAILED"})
+    void 수동_생성_승인_폐기_실패_직후에는_새_키로_같은_입력을_새로_접수한다(String action) throws Exception {
+        originalId = null;
+        String key = UUID.randomUUID().toString();
+        long first = submit("당일치기", key);
+        if (action.equals("FAILED")) {
+            TripDraft failed = drafts.findById(first).orElseThrow();
+            failed.markFailed("QA");
+            drafts.save(failed);
+        } else {
+            when(model.call(any(Prompt.class))).thenReturn(answer("11:00", "12:00"));
+            planner.processNow(first);
+            mvc.perform(post("/api/trip-drafts/" + first + "/" + action).header("Authorization", bearer))
+                    .andExpect(status().is2xxSuccessful());
+        }
+        long next = submit("당일치기", UUID.randomUUID().toString());
+        assertThat(next).isNotEqualTo(first);
+        assertThat(submit("당일치기", key)).isEqualTo(first);
+        assertThat(queued).containsExactly(first, next);
+    }
+
+    @Test
+    void 수동_생성_질문_대기_중에도_최초_접수_24시간에_본문과_추가_키가_함께_만료된다() throws Exception {
+        originalId = null;
+        long first = submit("당일치기");
+        LocalDateTime boundary = LocalDateTime.now().withNano(0);
+        jdbc.update("update trip_drafts set status = 'NEEDS_INPUT', created_at = ? where id = ?",
+                boundary.minusHours(24), first);
+        LocalDateTime before = boundary.minusNanos(1_000);
+        String retryKey = UUID.randomUUID().toString();
+        try (MockedStatic<LocalDateTime> time = mockStatic(LocalDateTime.class, CALLS_REAL_METHODS)) {
+            time.when(LocalDateTime::now).thenReturn(before);
+            assertThat(submit("당일치기", retryKey)).isEqualTo(first);
+            time.when(LocalDateTime::now).thenReturn(boundary);
+            long next = submit("당일치기", retryKey);
+            assertThat(next).isNotEqualTo(first);
+            assertThat(queued).containsExactly(first, next);
+        }
+    }
+
+    @Test
     void 재로그인하면_새_본문_일치보다_최초_키와_본문_재생으로_연결한_키가_우선한다() throws Exception {
         User owner = drafts.findById(originalId).orElseThrow().getUser();
         originalId = null;
@@ -601,6 +697,8 @@ class TripDraftReplacementQaTest {
                         .content(json.writeValueAsBytes(Map.of("jobIds", List.of(jobId), "message", message))))
                 .andExpect(status().isUnauthorized());
         bearer = "Bearer " + jwt.issue(owner);
+        mvc.perform(post("/api/trip-drafts/" + first + "/dismiss").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
         long newer = submit(message, UUID.randomUUID().toString());
         assertThat(newer).isNotEqualTo(first);
         assertThat(submit(message, firstKey)).isEqualTo(first);

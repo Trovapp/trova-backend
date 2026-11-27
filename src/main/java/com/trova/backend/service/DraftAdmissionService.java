@@ -54,8 +54,10 @@ public class DraftAdmissionService {
         }
         List<TripDraft> open = sourceId == null ? List.of() : drafts.lockOpenReplacements(userId, sourceId);
         String hash = TripPlannerService.validDraftInput(jobIds, message) ? requestHash(jobIds, message, sourceId) : null;
+        boolean initialCreation = sourceId == null;
+        LocalDateTime contentCutoff = initialCreation ? keyCutoff : now.minusMinutes(10);
         Optional<Long> matching = hash == null ? Optional.empty()
-                : drafts.findRecentContent(userId, hash, now.minusMinutes(10));
+                : drafts.findReplayableContent(userId, hash, contentCutoff, initialCreation);
         // 다른 조건의 새 대체 작업이 이미 열렸다면 과거 작업을 재생하지 않는다.
         if (matching.isPresent() && (open.isEmpty() || open.getFirst().getId().equals(matching.get()))) {
             Long draftId = matching.get();
