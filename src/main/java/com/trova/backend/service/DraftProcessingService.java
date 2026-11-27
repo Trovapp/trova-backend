@@ -32,7 +32,7 @@ public class DraftProcessingService {
             return false;
         }
         if (result.getStatus() == TripDraftStatus.READY && result.getReplacesDraftId() != null) {
-            drafts.dismissReplaced(result.getReplacesDraftId(), LocalDateTime.now());
+            drafts.dismissSourceIfReplacementVisible(id, LocalDateTime.now());
         }
         return true;
     }

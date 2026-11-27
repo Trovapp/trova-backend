@@ -146,6 +146,36 @@ class TripDraftReplacementQaTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"PENDING", "PROCESSING"})
+    void 대체_초안만_숨기면_작업이_끝나도_원본이_홈에_남는다(String statusAtDismiss) throws Exception {
+        long replacement = submit("당일치기");
+        when(model.call(any(Prompt.class))).thenAnswer(call -> {
+            if (statusAtDismiss.equals("PROCESSING")) {
+                dismissReplacement(replacement, statusAtDismiss);
+            }
+            return answer("11:00", "12:00");
+        });
+
+        assertThat(cards()).containsExactly(replacement, originalId);
+        if (statusAtDismiss.equals("PENDING")) {
+            dismissReplacement(replacement, statusAtDismiss);
+        }
+        planner.processNow(replacement);
+
+        assertReadyAt(replacement, "11:00");
+        assertThat(detail(replacement).get("dismissed")).isEqualTo(BooleanNode.TRUE);
+        assertThat(cards()).containsExactly(originalId);
+        assertThat(detail(originalId).get("dismissed")).isEqualTo(BooleanNode.FALSE);
+    }
+
+    private void dismissReplacement(long replacement, String expectedStatus) throws Exception {
+        assertThat(detail(replacement).path("status").asText()).isEqualTo(expectedStatus);
+        mvc.perform(post("/api/trip-drafts/" + replacement + "/dismiss").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        assertThat(cards()).containsExactly(originalId);
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"503", "timeout"})
     void 생성_실패는_원본을_보존하고_재시도_성공은_원본을_교체한다(String failure) throws Exception {
         ObjectNode originalDetail = (ObjectNode) detail(originalId);

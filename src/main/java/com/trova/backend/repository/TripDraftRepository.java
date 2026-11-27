@@ -38,10 +38,15 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
             """)
     int finishIfProcessing(Long id, @Param("result") TripDraft result);
 
+    // 작업을 시작한 뒤에도 대체 초안이 닫힐 수 있으므로 완료 트랜잭션에서 저장된 숨김 시각을 확인한다.
     @Modifying
-    @Query("update TripDraft d set d.dismissedAt = :now "
-            + "where d.id = :id and d.dismissedAt is null and d.status <> APPROVED")
-    void dismissReplaced(Long id, LocalDateTime now);
+    @Query("""
+            update TripDraft d set d.dismissedAt = :now
+            where d.dismissedAt is null and d.status <> APPROVED and d.id = (
+                select r.replacesDraftId from TripDraft r where r.id = :replacementId and r.dismissedAt is null
+            )
+            """)
+    void dismissSourceIfReplacementVisible(Long replacementId, LocalDateTime now);
 
     // 멈춘 초안 다시 보내기용(ADR 0043).
     @Query("select d.id from TripDraft d where d.status = :status and d.updatedAt > :from and d.updatedAt < :to")
