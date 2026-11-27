@@ -31,6 +31,7 @@ public class DraftAdmissionService {
     public record Admission(Outcome outcome, Long draftId) {}
     public record Replay(Long draftId, TripDraftStatus status) {}
 
+    private static final List<TripDraftStatus> ALL_STATUSES = List.of(TripDraftStatus.values());
     private static final Duration REPLAY_WINDOW = Duration.ofHours(24);
     private static final Pattern WHITESPACE = Pattern.compile("\\s+", Pattern.UNICODE_CHARACTER_CLASS);
 
@@ -61,8 +62,9 @@ public class DraftAdmissionService {
         Optional<LocalDateTime> since = waitingSince(userId, key, hash, replayCutoff);
         Optional<Long> matching = Optional.empty();
         if (hash != null) {
-            matching = since.isPresent() ? drafts.findLatestContent(userId, hash, since.get())
-                    : drafts.findReplayableContent(userId, hash, replayCutoff, key == null);
+            List<TripDraftStatus> replayEvenIfClosed = key == null ? List.of(TripDraftStatus.APPROVED) : List.of();
+            matching = drafts.findReplayableContent(userId, hash, since.orElse(replayCutoff),
+                    since.isPresent() ? ALL_STATUSES : replayEvenIfClosed);
         }
         if (matching.isPresent()) {
             Long draftId = matching.get();
@@ -117,7 +119,8 @@ public class DraftAdmissionService {
         String hash = validatedHash(jobIds, message, sourceId);
         return findByKey(userId, key, cutoff)
                 .or(() -> hash == null ? Optional.empty()
-                        : drafts.findLatestContent(userId, hash, waitingSince(userId, key, hash, cutoff).orElse(cutoff)))
+                        : drafts.findReplayableContent(userId, hash, waitingSince(userId, key, hash, cutoff).orElse(cutoff),
+                                ALL_STATUSES))
                 .flatMap(drafts::findById)
                 .map(draft -> new Replay(draft.getId(), draft.getStatus()));
     }

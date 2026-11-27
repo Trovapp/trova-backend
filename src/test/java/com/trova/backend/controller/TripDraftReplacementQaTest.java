@@ -518,6 +518,28 @@ class TripDraftReplacementQaTest {
     }
 
     @Test
+    void 숨긴_뒤_승인한_초안은_키_없는_재시도에서도_최초_ID를_반환한다() throws Exception {
+        when(model.call(any(Prompt.class))).thenReturn(answer("11:00", "12:00"));
+        long first = submit("오전 위주");
+        planner.processNow(first);
+        assertThat(cards()).containsExactly(first);
+        mvc.perform(post("/api/trip-drafts/" + first + "/dismiss").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        assertThat(cards()).isEmpty();
+        mvc.perform(post("/api/trip-drafts/" + first + "/approve").header("Authorization", bearer))
+                .andExpect(status().isOk());
+        assertThat(drafts.findById(first).orElseThrow().getDismissedAt()).isNotNull();
+
+        JsonNode replay = json.readTree(lookup("오전 위주", null, originalId).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsByteArray());
+        assertThat(replay.required("draftId").longValue()).isEqualTo(first);
+        assertThat(replay.required("status").asText()).isEqualTo("APPROVED");
+        assertThat(submit("오전 위주")).isEqualTo(first);
+        assertThat(queued).containsExactly(first);
+        assertThat(cards()).isEmpty();
+    }
+
+    @Test
     void 자동_재시도_조회는_키나_본문으로_현재_상태를_읽고_작업을_추가하지_않는다() throws Exception {
         originalId = manualSource();
         long legacy = legacyQuestion(jobId);
@@ -647,7 +669,7 @@ class TripDraftReplacementQaTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"READY", "PROCESSING", "PENDING", "NEEDS_INPUT"})
+    @ValueSource(strings = {"READY", "PROCESSING", "PENDING", "NEEDS_INPUT", "APPROVED"})
     void 대체_초안의_최초_접수_24시간_경계는_재생으로_연장되지_않는다(String state) throws Exception {
         long id = submit("2027-01-10 오전");
         LocalDateTime boundary = LocalDateTime.now().withNano(0);
