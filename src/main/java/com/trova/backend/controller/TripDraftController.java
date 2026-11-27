@@ -7,6 +7,11 @@ import com.trova.backend.queue.DraftJobQueue;
 import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.service.AutoDraftQueryService;
 import com.trova.backend.service.CurrentUserService;
+import com.trova.backend.service.DraftAdmissionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import com.trova.backend.service.TripDraftApprovalService;
 import com.trova.backend.service.TripPlannerService;
 import org.springframework.http.HttpStatus;
@@ -17,9 +22,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * 일정 에이전트 초안 API(#106). 만들기는 비동기로 시작하고, 앱은 상태를 다시 조회한다.
@@ -30,6 +39,7 @@ public class TripDraftController {
 
     private final CurrentUserService currentUserService;
     private final TripPlannerService tripPlannerService;
+    private final DraftAdmissionService admissionService;
     private final TripDraftRepository tripDraftRepository;
     private final TripDraftApprovalService tripDraftApprovalService;
     private final AutoDraftQueryService autoDraftQueryService;
@@ -39,7 +49,8 @@ public class TripDraftController {
     public TripDraftController(CurrentUserService currentUserService, TripPlannerService tripPlannerService,
                                TripDraftRepository tripDraftRepository, TripDraftApprovalService tripDraftApprovalService,
                                AutoDraftQueryService autoDraftQueryService,
-                               DraftJobQueue draftJobQueue) {
+                               DraftJobQueue draftJobQueue, DraftAdmissionService admissionService) {
+        this.admissionService = admissionService;
         this.currentUserService = currentUserService;
         this.tripPlannerService = tripPlannerService;
         this.tripDraftRepository = tripDraftRepository;
@@ -72,28 +83,76 @@ public class TripDraftController {
                                 boolean placesChanged,
                                 // 영상마다 지금의 대표 분석 번호. jobIds와 다르면 그 영상을 다시 분석한 것이다 — 앱이 다시 짤 때
                                 // 이 번호를 쓴다(#416).
-                                List<Long> currentJobIds) {
+                                List<Long> currentJobIds, boolean dismissed) {
         static DraftResponse from(TripDraft d, List<Long> currentJobIds) {
             boolean reanalyzed = d.getTripId() == null && !currentJobIds.equals(d.getJobIds());
             return new DraftResponse(d.getId(), d.getStatus().name(), d.getMessage(), d.getJobIds(), d.getDays(),
                     d.getStartDate() == null ? null : d.getStartDate().toString(), d.getRequestSource(),
                     d.getQuestion(), d.getSummaryJson(), d.getDraftJson(), d.getGeminiCalls(), d.getErrorMessage(),
-                    d.getAnswer(), d.getTripId(), d.getPlacesChangedAt() != null || reanalyzed, currentJobIds);
+                    d.getAnswer(), d.getTripId(), d.getPlacesChangedAt() != null || reanalyzed, currentJobIds,
+                    d.getDismissedAt() != null);
         }
     }
 
+    @Operation(summary = "일정 초안 접수", description = "최초 접수 후 24시간 미만이면 같은 사용자·원본·정규화 본문의 "
+            + "미확정 초안을 재생한다. 키가 없으면 승인된 초안도 재생한다. 503 대기 키는 다음 동일 입력 접수와 연결되며 접수된 키는 상태와 관계없이 재생한다.")
+    @ApiResponse(responseCode = "202", description = "최초 접수 또는 같은 본문·키에 의한 재생",
+            content = @Content(examples = @ExampleObject(value = "{\"draftId\":42,\"status\":\"PENDING\"}")))
+    @ApiResponse(responseCode = "409", description = "같은 원본을 다시 짜는 중. 최초 접수 후 24시간 미만이고 본문이 같으면 같은 키로 기존 202를 복구할 수 있다.",
+            content = @Content(examples = @ExampleObject(value = """
+                    {"code":"DRAFT_REPLACEMENT_IN_PROGRESS","message":"이 일정을 이미 다시 짜고 있어요.",
+                     "status":409,"traceId":"example","activeDraftId":42}
+                    """)))
+    @ApiResponse(responseCode = "503", description = "구버전 작업의 원본을 확인할 수 없어 Retry-After 이후 재시도")
     @PostMapping("/api/trip-drafts")
-    public ResponseEntity<?> create(Authentication authentication, @RequestBody CreateDraftRequest request) {
-        User user = currentUserService.resolve(authentication);
-        return tripPlannerService.create(user, request == null ? null : request.jobIds(),
-                        request == null ? null : request.message(),
-                        request == null ? null : request.replacesDraftId())
-                .<ResponseEntity<?>>map(draft -> {
-                    draftJobQueue.enqueue(draft.getId());
-                    return ResponseEntity.status(HttpStatus.ACCEPTED)
-                            .body(new CreateDraftResponse(draft.getId(), draft.getStatus().name()));
-                })
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+    public ResponseEntity<?> create(Authentication authentication, @RequestBody CreateDraftRequest request,
+                                    @RequestHeader(name = "Idempotency-Key", required = false) String header) {
+        Long userId = currentUserService.resolveUserId(authentication);
+        UUID key = parseKey(header);
+        if (header != null && key == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        DraftAdmissionService.Admission result = admissionService.admit(userId, request.jobIds(), request.message(),
+                request.replacesDraftId(), key);
+        return switch (result.outcome()) {
+            case CREATED, REPLAY -> {
+                if (result.outcome() == DraftAdmissionService.Outcome.CREATED) {
+                    draftJobQueue.enqueue(result.draftId());
+                }
+                yield ResponseEntity.accepted().body(new CreateDraftResponse(result.draftId(), "PENDING"));
+            }
+            case CONFLICT -> ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                    "code", "DRAFT_REPLACEMENT_IN_PROGRESS", "activeDraftId", result.draftId()));
+            case LEGACY_BUSY -> ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .header("Retry-After", "30").body(Map.of("code", "DRAFT_LEGACY_JOB_IN_PROGRESS"));
+            case INVALID -> ResponseEntity.badRequest().build();
+        };
+    }
+
+    @Operation(summary = "자동 재시도 전 같은 키 또는 입력의 초안 상태 조회")
+    @PostMapping("/api/trip-drafts/replay")
+    public ResponseEntity<DraftAdmissionService.Replay> replay(Authentication authentication,
+            @RequestBody CreateDraftRequest request,
+            @RequestHeader(name = "Idempotency-Key", required = false) String header) {
+        Long userId = currentUserService.resolveUserId(authentication);
+        UUID key = parseKey(header);
+        if (header != null && key == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return admissionService.lookup(userId, request.jobIds(), request.message(), request.replacesDraftId(), key)
+                .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    private static UUID parseKey(String header) {
+        if (header == null) {
+            return null;
+        }
+        try {
+            UUID key = UUID.fromString(header);
+            return key.toString().equalsIgnoreCase(header) ? key : null;
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     @PostMapping("/api/trip-drafts/{id}/answer")
@@ -149,15 +208,21 @@ public class TripDraftController {
         return autoDraftQueryService.list(currentUserService.resolveUserId(authentication));
     }
 
+    @Operation(summary = "일정 초안 닫기", description = "홈에서 직접 닫을 때만 source=home을 보낸다. "
+            + "그 밖의 요청에서 같은 원본의 대체 초안 중 숨긴 것이 하나라도 있으면 원본을 보존하고 204를 반환한다.")
     @PostMapping("/api/trip-drafts/{id}/dismiss")
     @Transactional
-    public ResponseEntity<Void> dismiss(Authentication authentication, @PathVariable Long id) {
+    public ResponseEntity<Void> dismiss(Authentication authentication, @PathVariable Long id,
+                                        @RequestParam(required = false) String source) {
         User user = currentUserService.resolve(authentication);
-        TripDraft draft = tripDraftRepository.findById(id).filter(d -> d.getUser().getId().equals(user.getId())).orElse(null);
+        TripDraft draft = tripDraftRepository.findByIdForUpdate(id)
+                .filter(d -> d.getUser().getId().equals(user.getId())).orElse(null);
         if (draft == null) return ResponseEntity.notFound().build();
         if (draft.getStatus() == TripDraftStatus.APPROVED) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        if (!"home".equals(source) && tripDraftRepository.existsDismissedReplacement(user.getId(), id)) {
+            return ResponseEntity.noContent().build();
+        }
         draft.dismiss();
-        tripDraftRepository.save(draft);
         return ResponseEntity.noContent().build();
     }
 }

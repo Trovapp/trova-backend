@@ -100,3 +100,4 @@
 | [0058](0058-request-scoped-embedding-overlap.md) | 요청 범위 가상 스레드로 임베딩 HTTP 대기와 독립 작업을 겹친다 | 확정 | 2026-11-26 |
 | [0059](0059-analytics-consent-and-deletion.md) | 선택 분석 동의 CAS·분리 UUID·철회와 탈퇴 삭제 대기열 | 확정 | 2026-11-26 |
 | [0060](0060-ship-and-ping.md) | 서버 API 요청의 쉽앤핑 전송과 기능 지도 등록 | 확정 | 2026-11-26 |
+| [0061](0061-trip-draft-admission.md) | 일정 초안 재접수의 사용자 행 잠금, 진행 중 409와 24시간 요청 키 | 확정 | 2026-11-27 |

@@ -39,6 +39,8 @@ public final class ApiErrors {
 
     private static String message(int status, String code) {
         return switch (code) {
+            case "DRAFT_REPLACEMENT_IN_PROGRESS" -> "이 일정을 이미 다시 짜고 있어요.";
+            case "DRAFT_LEGACY_JOB_IN_PROGRESS" -> "이전에 요청한 일정을 처리하고 있어요. 잠시 후 다시 시도해 주세요.";
             case "VERSION_CONFLICT" -> "여행 일정이 변경됐어요. 최신 내용을 확인해 주세요.";
             case "MEMBER_LIMIT" -> "이미 10명이 함께하고 있어요.";
             case "PLACE_MATCH_AMBIGUOUS" -> "지도에서 이 장소를 정확히 찾지 못했어요.";

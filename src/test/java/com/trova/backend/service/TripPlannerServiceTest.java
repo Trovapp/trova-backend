@@ -38,7 +38,8 @@ class TripPlannerServiceTest {
     private final OpeningHoursService hours = mock(OpeningHoursService.class);
     private final TripPlanGraph graph = mock(TripPlanGraph.class);
     private final ApplicationEventPublisher events = mock(ApplicationEventPublisher.class);
-    private final TripPlannerService service = new TripPlannerService(drafts, jobs, saved, parser, hours, graph, events);
+    private final TripPlannerService service = new TripPlannerService(drafts, jobs, saved, parser, hours, graph, events,
+            new DraftProcessingService(drafts));
     private final User user = userWithId(1L);
 
     // 저장 전 엔티티는 id가 없어 소유자 비교를 할 수 없다 — id만 돌려주는 가짜 사용자를 쓴다.
@@ -60,14 +61,16 @@ class TripPlannerServiceTest {
 
     private TripDraft draft(List<Long> jobIds) {
         TripDraft draft = new TripDraft(user, jobIds, "이 영상들로 1박 2일");
-        when(drafts.findById(9L)).thenReturn(Optional.of(draft));
+        when(drafts.findByIdForUpdate(9L)).thenReturn(Optional.of(draft));
+        when(drafts.finishIfProcessing(9L, draft)).thenReturn(1);
         when(parser.parse(any())).thenReturn(new PlanRequestParser.PlanRequest(2, null, "CODE"));
         return draft;
     }
 
     private TripDraft autoDraft(List<Long> jobIds) {
         TripDraft draft = TripDraft.auto(user, jobIds, "이 영상들로 1박 2일");
-        when(drafts.findById(9L)).thenReturn(Optional.of(draft));
+        when(drafts.findByIdForUpdate(9L)).thenReturn(Optional.of(draft));
+        when(drafts.finishIfProcessing(9L, draft)).thenReturn(1);
         when(parser.parse(any())).thenReturn(new PlanRequestParser.PlanRequest(2, null, "CODE"));
         return draft;
     }
@@ -226,13 +229,12 @@ class TripPlannerServiceTest {
         when(drafts.findById(7L)).thenReturn(Optional.of(mine));
         when(drafts.findById(8L)).thenReturn(Optional.of(manual));
         when(drafts.findById(6L)).thenReturn(Optional.of(others));
-        when(drafts.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        assertThat(service.create(user, List.of(1L), "당일치기", 7L).orElseThrow().getReplacesDraftId()).isEqualTo(7L);
+        assertThat(service.prepareDraft(user, List.of(1L), "당일치기", 7L).orElseThrow().getReplacesDraftId()).isEqualTo(7L);
         // 직접 만든(홈에 없던) 초안이나 남의 초안을 대신한다고 해도 홈에 올리지 않는다.
-        assertThat(service.create(user, List.of(1L), "당일치기", 8L).orElseThrow().isListed()).isFalse();
-        assertThat(service.create(user, List.of(1L), "당일치기", 6L).orElseThrow().isListed()).isFalse();
-        assertThat(service.create(user, List.of(1L), "당일치기").orElseThrow().isListed()).isFalse();
+        assertThat(service.prepareDraft(user, List.of(1L), "당일치기", 8L).orElseThrow().isListed()).isFalse();
+        assertThat(service.prepareDraft(user, List.of(1L), "당일치기", 6L).orElseThrow().isListed()).isFalse();
+        assertThat(service.prepareDraft(user, List.of(1L), "당일치기", null).orElseThrow().isListed()).isFalse();
     }
 
     @Test
@@ -241,9 +243,9 @@ class TripPlannerServiceTest {
         ProcessingJob othersJob = new ProcessingJob(other, "https://www.youtube.com/shorts/z", SourcePlatform.YOUTUBE);
         when(jobs.findById(5L)).thenReturn(Optional.of(othersJob));
 
-        assertThat(service.create(user, List.of(5L), "1박 2일")).isEmpty();
-        assertThat(service.create(user, List.of(), "1박 2일")).isEmpty();
-        assertThat(service.create(user, List.of(1L, 2L, 3L, 4L, 5L, 6L), "1박 2일")).isEmpty();
+        assertThat(service.prepareDraft(user, List.of(5L), "1박 2일", null)).isEmpty();
+        assertThat(service.prepareDraft(user, List.of(), "1박 2일", null)).isEmpty();
+        assertThat(service.prepareDraft(user, List.of(1L, 2L, 3L, 4L, 5L, 6L), "1박 2일", null)).isEmpty();
         verify(drafts, never()).save(any());
     }
 
@@ -252,7 +254,7 @@ class TripPlannerServiceTest {
         draft.applyRequest(2, null, "CODE");
         draft.markNeedsInput("영상 속 지역이 서로 300km 넘게 떨어져 있어요.", "{}");
         when(drafts.findByIdForUpdate(9L)).thenReturn(Optional.of(draft));
-        when(drafts.findById(9L)).thenReturn(Optional.of(draft));
+        when(drafts.finishIfProcessing(9L, draft)).thenReturn(1);
         return draft;
     }
 

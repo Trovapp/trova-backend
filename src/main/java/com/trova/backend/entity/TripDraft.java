@@ -1,20 +1,27 @@
 package com.trova.backend.entity;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +29,13 @@ import java.util.stream.Collectors;
  * (2일차부터) 초안 일정, 시작 전 질문을 담는다. 승인 전까지는 여행(Trip)을 만들지 않는다.
  */
 @Entity
-@Table(name = "trip_drafts")
+// 닫기나 장소 변경 표시가 늦게 커밋돼도 다른 트랜잭션이 확정한 상태를 덮지 않는다.
+@DynamicUpdate
+@Table(name = "trip_drafts", indexes = {
+        @Index(name = "idx_draft_user_request_key", columnList = "user_id, request_key"),
+        @Index(name = "idx_draft_user_request_hash", columnList = "user_id, request_hash, created_at"),
+        @Index(name = "idx_draft_user_replacement", columnList = "user_id, replaces_draft_id")
+})
 public class TripDraft {
 
     @Id
@@ -39,6 +52,10 @@ public class TripDraft {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String message;
+
+    // PENDING에서 시작할 때마다 증가한다. 구버전 행은 첫 처리 또는 재전달 때 초기화한다.
+    @Column(name = "processing_round")
+    private Long processingRound;
 
     // 고른 영상들의 처리 작업 id(쉼표로 이음, 순서 유지).
     @Column(name = "job_ids", nullable = false)
@@ -102,6 +119,44 @@ public class TripDraft {
     @Column(name = "places_changed_at")
     private LocalDateTime placesChangedAt;
 
+    // 홈 교체 대상이 아닌 직접 만든 초안도 같은 원본의 진행 작업을 확인할 수 있게 한다.
+    @Column(name = "unlisted_source_id", updatable = false)
+    private Long unlistedSourceId;
+
+    // 구버전 INSERT는 NULL. 원본 번호 없는 구버전 행과 신버전의 독립 요청을 구분한다.
+    @Column(name = "source_tracked", updatable = false)
+    private Boolean sourceTracked = true;
+
+    // 작업자가 오래된 엔티티를 저장해도 정리한 키가 되살아나지 않도록 INSERT에서만 쓴다.
+    @Column(name = "request_key", updatable = false)
+    private UUID requestKey;
+
+    @Column(name = "request_hash", length = 64, updatable = false)
+    private String requestHash;
+
+    @ElementCollection
+    @CollectionTable(name = "draft_replay_keys", joinColumns = @JoinColumn(name = "draft_id"),
+            indexes = @Index(name = "idx_draft_replay_key", columnList = "request_key"))
+    @Column(name = "request_key", nullable = false)
+    private Set<UUID> replayKeys = new HashSet<>();
+
+    public void recordRequest(UUID key, String hash) {
+        this.requestKey = key;
+        this.requestHash = hash;
+    }
+
+    public boolean matchesRecentRequest(String hash, LocalDateTime cutoff) {
+        return hash != null && hash.equals(requestHash) && createdAt.isAfter(cutoff);
+    }
+
+    public void recordReplacementOf(TripDraft source) {
+        if (source.isListed() && source.getTripId() == null) {
+            replaces(source.getId());
+        } else {
+            this.unlistedSourceId = source.getId();
+        }
+    }
+
     protected TripDraft() {
     }
 
@@ -134,6 +189,11 @@ public class TripDraft {
     }
 
     public void markProcessing() {
+        if (processingRound == null) {
+            processingRound = 1L;
+        } else if (status == TripDraftStatus.PENDING) {
+            processingRound++;
+        }
         touch(TripDraftStatus.PROCESSING);
     }
 
@@ -198,6 +258,7 @@ public class TripDraft {
 
     public Long getId() { return id; }
     public User getUser() { return user; }
+    public Long getProcessingRound() { return processingRound; }
     public TripDraftStatus getStatus() { return status; }
     public String getMessage() { return message; }
     public List<Long> getJobIds() { return Arrays.stream(jobIds.split(",")).map(Long::valueOf).toList(); }
@@ -215,6 +276,7 @@ public class TripDraft {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public boolean isAutoCreated() { return autoCreated; }
     public LocalDateTime getDismissedAt() { return dismissedAt; }
+    public Long getUnlistedSourceId() { return unlistedSourceId; }
     public Long getReplacesDraftId() { return replacesDraftId; }
     public LocalDateTime getPlacesChangedAt() { return placesChangedAt; }
 }
