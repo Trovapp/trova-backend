@@ -27,6 +27,7 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -70,7 +71,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -434,48 +437,67 @@ class TripDraftReplacementQaTest {
         assertThat(queued).containsExactly(independent, retry);
     }
 
-    @Test
-    void 비노출_원본의_새_접수_뒤_배포_전_질문의_늦은_답변은_큐에_들어가지_않는다() throws Exception {
-        Long listed = originalId;
-        long older = legacyQuestion();
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 비노출_원본을_다시_짜도_별도_영상의_구버전_질문에_답할_수_있다(boolean withKey) throws Exception {
         originalId = manualSource();
-        long waiting = legacyQuestion();
-        long alsoWaiting = legacyQuestion();
-        long busy = legacyQuestion();
-        jdbc.update("update trip_drafts set status = 'PROCESSING' where id = ?", busy);
+        User owner = drafts.findById(originalId).orElseThrow().getUser();
+        ProcessingJob other = new ProcessingJob(owner, "https://example.invalid/other-video", SourcePlatform.YOUTUBE);
+        other.markDone();
+        long waiting = legacyQuestion(jobs.save(other).getId());
+        String key = withKey ? UUID.randomUUID().toString() : null;
 
-        create("변경", null).andExpect(status().isServiceUnavailable());
+        MockHttpServletResponse deferred = create("변경", key).andReturn().getResponse();
         assertThat(detail(waiting).path("status").asText()).isEqualTo("NEEDS_INPUT");
-        jdbc.update("update trip_drafts set status = 'READY' where id = ?", busy);
-        create(" ", null).andExpect(status().isBadRequest());
-        Long unlisted = originalId;
-        originalId = listed;
-        long tracked = submit("다른 원본");
-        originalId = unlisted;
-        assertThat(detail(waiting).path("status").asText()).isEqualTo("NEEDS_INPUT");
-        TripDraft trackedQuestion = drafts.findById(tracked).orElseThrow();
-        trackedQuestion.markNeedsInput("다른 원본의 질문", "{}");
-        drafts.save(trackedQuestion);
-
-        String key = UUID.randomUUID().toString();
+        assertThat(deferred.getStatus()).isEqualTo(503);
+        assertThat(deferred.getHeader("Retry-After")).isEqualTo("30");
+        assertThat(json.readTree(deferred.getContentAsByteArray()).required("code").asText())
+                .isEqualTo("DRAFT_LEGACY_JOB_IN_PROGRESS");
+        assertThat(queued).isEmpty();
+        answerSplit(waiting).andExpect(status().isAccepted());
+        create("변경", key).andExpect(status().isServiceUnavailable());
+        assertThat(queued).containsExactly(waiting);
+        TripDraft resumed = processing.start(waiting).orElseThrow();
+        resumed.markReady("{}", "{}");
+        assertThat(processing.finish(waiting, resumed)).isTrue();
         long next = submit("변경", key);
-        assertThat(submit("재전송", key)).isEqualTo(next);
-        for (long superseded : List.of(waiting, alsoWaiting)) {
-            answerSplit(superseded).andExpect(status().isConflict());
-            assertThat(detail(superseded).path("status").asText()).isEqualTo("FAILED");
-        }
-        assertThat(detail(older).path("status").asText()).isEqualTo("NEEDS_INPUT");
-        assertThat(detail(tracked).path("status").asText()).isEqualTo("NEEDS_INPUT");
-        assertThat(queued).containsExactly(tracked, next);
+        assertThat(queued).containsExactly(waiting, next);
     }
 
-    private long legacyQuestion() {
+    @Test
+    void 미추적_질문은_마지막_갱신_후_24시간부터_새_접수와_함께_만료된다() throws Exception {
+        long older = legacyQuestion(jobId);
+        originalId = manualSource();
+        long waiting = legacyQuestion(jobId);
+        LocalDateTime boundary = LocalDateTime.now().withNano(0);
+        jdbc.update("update trip_drafts set created_at = ?, updated_at = ? where id in (?, ?)",
+                boundary.minusDays(2), boundary.minusHours(24), older, waiting);
+        String key = UUID.randomUUID().toString();
+        long next;
+        LocalDateTime beforeBoundary = boundary.minusSeconds(1);
+        try (MockedStatic<LocalDateTime> time = mockStatic(LocalDateTime.class, CALLS_REAL_METHODS)) {
+            time.when(LocalDateTime::now).thenReturn(beforeBoundary);
+            create("변경", key).andExpect(status().isServiceUnavailable());
+            assertThat(detail(waiting).path("status").asText()).isEqualTo("NEEDS_INPUT");
+            time.when(LocalDateTime::now).thenReturn(boundary);
+            create(" ", key).andExpect(status().isBadRequest());
+            assertThat(detail(waiting).path("status").asText()).isEqualTo("NEEDS_INPUT");
+            next = submit("변경", key);
+        }
+        assertThat(submit("재전송", key)).isEqualTo(next);
+        answerSplit(waiting).andExpect(status().isConflict());
+        assertThat(detail(waiting).path("status").asText()).isEqualTo("FAILED");
+        assertThat(detail(older).path("status").asText()).isEqualTo("NEEDS_INPUT");
+        assertThat(queued).containsExactly(next);
+    }
+
+    private long legacyQuestion(Long videoJobId) {
         Long userId = drafts.findById(originalId).orElseThrow().getUser().getId();
         String message = UUID.randomUUID().toString();
         jdbc.update("""
                 insert into trip_drafts (user_id, job_ids, message, status, auto_created, created_at, updated_at)
                 values (?, ?, ?, 'NEEDS_INPUT', false, current_timestamp, current_timestamp)
-                """, userId, jobId.toString(), message);
+                """, userId, videoJobId.toString(), message);
         return jdbc.queryForObject("select id from trip_drafts where user_id = ? and message = ?",
                 Long.class, userId, message);
     }

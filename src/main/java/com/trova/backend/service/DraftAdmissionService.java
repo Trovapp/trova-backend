@@ -54,11 +54,14 @@ public class DraftAdmissionService {
         TripDraft draft = prepared.get();
         List<TripDraft> legacy = draft.getUnlistedSourceId() == null
                 ? List.of() : drafts.lockPossibleLegacyReplacements(userId, sourceId);
-        if (legacy.stream().anyMatch(candidate -> candidate.getStatus() != TripDraftStatus.NEEDS_INPUT)) {
-            return new Admission(Outcome.LEGACY_BUSY, null);
+        LocalDateTime questionCutoff = LocalDateTime.now().minusHours(24);
+        for (TripDraft candidate : legacy) {
+            if (candidate.getStatus() != TripDraftStatus.NEEDS_INPUT || candidate.getUpdatedAt().isAfter(questionCutoff)) {
+                return new Admission(Outcome.LEGACY_BUSY, null);
+            }
         }
         open.forEach(previous -> previous.markFailed("같은 원본에서 새 일정을 요청해 이 질문을 종료했어요."));
-        legacy.forEach(previous -> previous.markFailed("새 일정을 요청해 이전 버전의 질문을 종료했어요."));
+        legacy.forEach(previous -> previous.markFailed("24시간 동안 답변이 없어 이전 버전의 질문이 만료됐어요."));
         draft.recordRequestKey(key);
         return new Admission(Outcome.CREATED, drafts.save(draft).getId());
     }
