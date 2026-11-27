@@ -1,9 +1,6 @@
 package com.trova.backend.controller;
 
 import io.swagger.v3.oas.annotations.Hidden;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +26,9 @@ class AlertTestController {
     }
 
     @GetMapping("/slow")
-    CompletionStage<ResponseEntity<Void>> slow() {
+    ResponseEntity<Void> slow() {
         requireEnabled();
-        return CompletableFuture.supplyAsync(() -> ResponseEntity.ok().build(),
-                CompletableFuture.delayedExecutor(6, TimeUnit.SECONDS));
+        return ResponseEntity.ok().build();
     }
 
     private void requireEnabled() {
