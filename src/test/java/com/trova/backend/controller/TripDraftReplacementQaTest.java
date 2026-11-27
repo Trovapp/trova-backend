@@ -491,6 +491,96 @@ class TripDraftReplacementQaTest {
         assertThat(queued).containsExactly(next);
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void 다른_기기에서_승인하면_503_재시도는_최초_접수만_재생한다(boolean retainsKey) throws Exception {
+        originalId = manualSource();
+        long legacy = legacyQuestion(jobId);
+        String key = UUID.randomUUID().toString();
+        create("오전 위주", key).andExpect(status().isServiceUnavailable());
+        create("오전 위주", key).andExpect(status().isServiceUnavailable());
+        jdbc.update("update trip_drafts set status = 'READY' where id = ?", legacy);
+        long before = drafts.count();
+        long first = submit("오전   위주", UUID.randomUUID().toString());
+        when(model.call(any(Prompt.class))).thenReturn(answer("11:00", "12:00"));
+        planner.processNow(first);
+        mvc.perform(post("/api/trip-drafts/" + first + "/approve").header("Authorization", bearer))
+                .andExpect(status().isOk());
+        setCreatedElevenMinutesAgo(first);
+
+        assertThat(submit("오전 위주", retainsKey ? key : null)).isEqualTo(first);
+        assertThat(drafts.count()).isEqualTo(before + 1);
+        assertThat(queued).containsExactly(first);
+        long explicit = submit("오전 위주", UUID.randomUUID().toString());
+        assertThat(explicit).isNotEqualTo(first);
+        assertThat(submit("오전 위주", key)).isEqualTo(first);
+        assertThat(queued).containsExactly(first, explicit);
+    }
+
+    @Test
+    void 자동_재시도_조회는_키나_본문으로_현재_상태를_읽고_작업을_추가하지_않는다() throws Exception {
+        originalId = manualSource();
+        long legacy = legacyQuestion(jobId);
+        String key = UUID.randomUUID().toString();
+        create("오전", key).andExpect(status().isServiceUnavailable());
+        lookup("오전", key, originalId).andExpect(status().isNoContent());
+        jdbc.update("update trip_drafts set status = 'READY' where id = ?", legacy);
+        long first = submit("오전", UUID.randomUUID().toString());
+        TripDraft draft = drafts.findById(first).orElseThrow();
+        draft.markApproved(42L);
+        drafts.save(draft);
+        setCreatedElevenMinutesAgo(first);
+
+        for (String retryKey : new String[]{key, null, UUID.randomUUID().toString()}) {
+            JsonNode result = json.readTree(lookup("오전", retryKey, originalId).andExpect(status().isOk())
+                    .andReturn().getResponse().getContentAsByteArray());
+            assertThat(result.required("draftId").longValue()).isEqualTo(first);
+            assertThat(result.required("status").asText()).isEqualTo("APPROVED");
+        }
+        lookup("오후", null, originalId).andExpect(status().isNoContent());
+        lookup("오전", null, null).andExpect(status().isNoContent());
+        User other = users.save(new User("google", "qa-" + UUID.randomUUID(), "QA2", null));
+        bearer = "Bearer " + jwt.issue(other);
+        lookup("오전", key, originalId).andExpect(status().isNoContent());
+        assertThat(queued).containsExactly(first);
+    }
+
+    @Test
+    void 새로_시작해_503으로_대기하면_대기_이전의_승인을_조회하지_않는다() throws Exception {
+        originalId = manualSource();
+        long oldId = submit("오전", UUID.randomUUID().toString());
+        TripDraft old = drafts.findById(oldId).orElseThrow();
+        old.markApproved(42L);
+        drafts.save(old);
+
+        long legacy = legacyQuestion(jobId);
+        String key = UUID.randomUUID().toString();
+        create("오전", key).andExpect(status().isServiceUnavailable());
+        lookup("오전", key, originalId).andExpect(status().isNoContent());
+        jdbc.update("update trip_drafts set status = 'READY' where id = ?", legacy);
+        long next = submit("오전", key);
+        assertThat(queued).containsExactly(oldId, next);
+        assertThat(next).isNotEqualTo(oldId);
+    }
+
+    @Test
+    void 자동_조회는_키를_잃어도_이미_실패한_처리_결과를_보여준다() throws Exception {
+        long first = submit("오전", UUID.randomUUID().toString());
+        TripDraft draft = drafts.findById(first).orElseThrow();
+        draft.markFailed("QA");
+        drafts.save(draft);
+        setCreatedElevenMinutesAgo(first);
+        JsonNode result = json.readTree(lookup("오전", null, originalId).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsByteArray());
+        assertThat(result.required("draftId").longValue()).isEqualTo(first);
+        assertThat(result.required("status").asText()).isEqualTo("FAILED");
+        assertThat(queued).containsExactly(first);
+    }
+
+    private ResultActions lookup(String message, String key, Long sourceId) throws Exception {
+        return draftRequest("/api/trip-drafts/replay", List.of(jobId), message, key, sourceId);
+    }
+
     private long legacyQuestion(Long videoJobId) {
         Long userId = drafts.findById(originalId).orElseThrow().getUser().getId();
         String message = UUID.randomUUID().toString();
@@ -845,11 +935,16 @@ class TripDraftReplacementQaTest {
     }
 
     private ResultActions create(List<Long> videoIds, String message, String key, Long sourceId) throws Exception {
+        return draftRequest("/api/trip-drafts", videoIds, message, key, sourceId);
+    }
+
+    private ResultActions draftRequest(String path, List<Long> videoIds, String message, String key, Long sourceId)
+            throws Exception {
         Map<String, Object> body = new HashMap<>(Map.of("jobIds", videoIds, "message", message));
         if (sourceId != null) {
             body.put("replacesDraftId", sourceId);
         }
-        MockHttpServletRequestBuilder request = post("/api/trip-drafts").header("Authorization", bearer)
+        MockHttpServletRequestBuilder request = post(path).header("Authorization", bearer)
                 .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsBytes(body));
         if (key != null) {
             request.header("Idempotency-Key", key);

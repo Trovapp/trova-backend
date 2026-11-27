@@ -94,7 +94,7 @@ public class TripDraftController {
     }
 
     @Operation(summary = "일정 초안 접수", description = "최초 접수 후 24시간 미만이면 같은 사용자·원본·정규화 본문의 "
-            + "미확정 초안은 키가 없거나 달라도 최초 응답을 재생한다. 같은 사용자의 접수된 UUID 키는 같은 기간 동안 상태와 관계없이 재생한다.")
+            + "미확정 초안을 재생한다. 키가 없으면 승인된 초안도 재생한다. 503 대기 키는 다음 동일 입력 접수와 연결되며 접수된 키는 상태와 관계없이 재생한다.")
     @ApiResponse(responseCode = "202", description = "최초 접수 또는 같은 본문·키에 의한 재생",
             content = @Content(examples = @ExampleObject(value = "{\"draftId\":42,\"status\":\"PENDING\"}")))
     @ApiResponse(responseCode = "409", description = "같은 원본을 다시 짜는 중. 최초 접수 후 24시간 미만이고 본문이 같으면 같은 키로 기존 202를 복구할 수 있다.",
@@ -107,16 +107,9 @@ public class TripDraftController {
     public ResponseEntity<?> create(Authentication authentication, @RequestBody CreateDraftRequest request,
                                     @RequestHeader(name = "Idempotency-Key", required = false) String header) {
         Long userId = currentUserService.resolveUserId(authentication);
-        UUID key = null;
-        if (header != null) {
-            try {
-                key = UUID.fromString(header);
-            } catch (IllegalArgumentException ex) {
-                return ResponseEntity.badRequest().build();
-            }
-            if (!key.toString().equalsIgnoreCase(header)) {
-                return ResponseEntity.badRequest().build();
-            }
+        UUID key = parseKey(header);
+        if (header != null && key == null) {
+            return ResponseEntity.badRequest().build();
         }
         DraftAdmissionService.Admission result = admissionService.admit(userId, request.jobIds(), request.message(),
                 request.replacesDraftId(), key);
@@ -133,6 +126,32 @@ public class TripDraftController {
                     .header("Retry-After", "30").body(Map.of("code", "DRAFT_LEGACY_JOB_IN_PROGRESS"));
             case INVALID -> ResponseEntity.badRequest().build();
         };
+    }
+
+    @Operation(summary = "자동 재시도 전 같은 키 또는 입력의 초안 상태 조회")
+    @PostMapping("/api/trip-drafts/replay")
+    public ResponseEntity<DraftAdmissionService.Replay> replay(Authentication authentication,
+            @RequestBody CreateDraftRequest request,
+            @RequestHeader(name = "Idempotency-Key", required = false) String header) {
+        Long userId = currentUserService.resolveUserId(authentication);
+        UUID key = parseKey(header);
+        if (header != null && key == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return admissionService.lookup(userId, request.jobIds(), request.message(), request.replacesDraftId(), key)
+                .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    private static UUID parseKey(String header) {
+        if (header == null) {
+            return null;
+        }
+        try {
+            UUID key = UUID.fromString(header);
+            return key.toString().equalsIgnoreCase(header) ? key : null;
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     @PostMapping("/api/trip-drafts/{id}/answer")
