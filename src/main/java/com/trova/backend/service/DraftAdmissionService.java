@@ -44,8 +44,8 @@ public class DraftAdmissionService {
         User user = users.lockById(userId)
                 .orElseThrow(() -> new InsufficientAuthenticationException("사용자를 찾을 수 없습니다"));
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime keyCutoff = now.minusHours(24);
         if (key != null) {
-            LocalDateTime keyCutoff = now.minusHours(24);
             Optional<Long> replay = drafts.findRecentRequest(userId, key, keyCutoff)
                     .or(() -> drafts.findRecentReplayKey(userId, key, keyCutoff));
             if (replay.isPresent()) {
@@ -66,6 +66,10 @@ public class DraftAdmissionService {
         }
         for (TripDraft previous : open) {
             if (previous.getStatus() == TripDraftStatus.PENDING || previous.getStatus() == TripDraftStatus.PROCESSING) {
+                // 409 본문이 유실돼도 같은 입력의 재시도는 이 작업의 최초 202를 복구한다.
+                if (key != null && previous.matchesRecentRequest(hash, keyCutoff)) {
+                    drafts.addReplayKey(previous.getId(), key);
+                }
                 return new Admission(Outcome.CONFLICT, previous.getId());
             }
         }

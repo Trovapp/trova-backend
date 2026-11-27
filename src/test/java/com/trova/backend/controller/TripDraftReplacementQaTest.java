@@ -586,6 +586,70 @@ class TripDraftReplacementQaTest {
         assertThat(queued).containsExactly(first, independent);
     }
 
+    @Test
+    void 재로그인하면_새_본문_일치보다_최초_키와_본문_재생으로_연결한_키가_우선한다() throws Exception {
+        User owner = drafts.findById(originalId).orElseThrow().getUser();
+        originalId = null;
+        String firstKey = UUID.randomUUID().toString();
+        String replayKey = UUID.randomUUID().toString();
+        String message = "당일치기";
+        long first = submit(message, firstKey);
+        assertThat(submit(message, replayKey)).isEqualTo(first);
+        expireContentWindow(first);
+        mvc.perform(post("/api/trip-drafts").header("Idempotency-Key", replayKey)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json.writeValueAsBytes(Map.of("jobIds", List.of(jobId), "message", message))))
+                .andExpect(status().isUnauthorized());
+        bearer = "Bearer " + jwt.issue(owner);
+        long newer = submit(message, UUID.randomUUID().toString());
+        assertThat(newer).isNotEqualTo(first);
+        assertThat(submit(message, firstKey)).isEqualTo(first);
+        assertThat(submit(message, replayKey)).isEqualTo(first);
+        assertThat(queued).containsExactly(first, newer);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 같은_본문의_409를_읽지_못해도_완료_뒤_같은_키로_복구한다(boolean reorder) throws Exception {
+        originalId = manualSource();
+        User owner = drafts.findById(originalId).orElseThrow().getUser();
+        ProcessingJob other = new ProcessingJob(owner, "https://example.invalid/second", SourcePlatform.YOUTUBE);
+        other.markDone();
+        Long second = jobs.save(other).getId();
+        List<Long> videos = List.of(jobId, second);
+        List<Long> retryVideos = reorder ? List.of(second, jobId, jobId) : videos;
+        String message = "당일치기";
+        String firstKey = UUID.randomUUID().toString();
+        String retryKey = UUID.randomUUID().toString();
+        create(videos, message, firstKey, originalId).andExpect(status().isAccepted());
+        long first = queued.getFirst();
+        expireContentWindow(first);
+        TripDraft running = processing.start(first).orElseThrow();
+        create(retryVideos, message, retryKey, originalId).andExpect(status().isConflict());
+        running.markReady("{}", "{}");
+        assertThat(processing.finish(first, running)).isTrue();
+
+        byte[] replay = create(retryVideos, message, retryKey, originalId).andExpect(status().isAccepted())
+                .andReturn().getResponse().getContentAsByteArray();
+        assertThat(json.readTree(replay).required("draftId").longValue()).isEqualTo(first);
+        assertThat(json.readTree(replay).required("status").asText()).isEqualTo("PENDING");
+        assertThat(detail(first).path("status").asText()).isEqualTo("READY");
+        assertThat(queued).containsExactly(first);
+    }
+
+    @Test
+    void 다른_본문의_409는_기존_작업에_키를_연결하지_않는다() throws Exception {
+        long first = submit("오전");
+        String retryKey = UUID.randomUUID().toString();
+        create("오후", retryKey).andExpect(status().isConflict());
+        TripDraft running = processing.start(first).orElseThrow();
+        running.markReady("{}", "{}");
+        assertThat(processing.finish(first, running)).isTrue();
+        long afternoon = submit("오후", retryKey);
+        assertThat(afternoon).isNotEqualTo(first);
+        assertThat(queued).containsExactly(first, afternoon);
+    }
+
     private void expireContentWindow(long id) {
         jdbc.update("update trip_drafts set created_at = ? where id = ?", LocalDateTime.now().minusMinutes(11), id);
     }

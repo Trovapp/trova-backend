@@ -145,6 +145,10 @@ public class TripDraft {
         this.requestHash = hash;
     }
 
+    public boolean matchesRecentRequest(String hash, LocalDateTime cutoff) {
+        return hash != null && hash.equals(requestHash) && createdAt.isAfter(cutoff);
+    }
+
     public void recordReplacementOf(TripDraft source) {
         if (source.isListed() && source.getTripId() == null) {
             replaces(source.getId());
