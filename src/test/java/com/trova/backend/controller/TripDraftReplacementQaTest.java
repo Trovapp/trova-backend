@@ -56,6 +56,7 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -165,6 +166,8 @@ class TripDraftReplacementQaTest {
         assertThat(detail(originalId)).isEqualTo(originalDetail);
         assertThat(read("/auto")).isEqualTo(originalCards);
 
+        assertThat(submit("당일치기")).isEqualTo(failed);
+        expireContentWindow(failed);
         long retry = submit("당일치기");
         assertThat(queued).containsExactly(failed, retry);
         planner.processNow(retry);
@@ -225,9 +228,9 @@ class TripDraftReplacementQaTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"false,false", "true,false", "true,true"})
-    void 동시_요청은_한_건만_저장하고_같은_키면_재생하고_다른_키면_충돌한다(
-            boolean sameKey, boolean differentSource) throws Exception {
+    @CsvSource({"false,false,true", "true,false,true", "true,true,true", "false,false,false"})
+    void 동시_요청은_키나_본문이_같으면_같은_작업을_반환한다(
+            boolean sameKey, boolean differentSource, boolean withSource) throws Exception {
         Long secondSource = differentSource ? manualSource() : originalId;
         CountDownLatch ready = new CountDownLatch(2);
         CountDownLatch start = new CountDownLatch(1);
@@ -239,7 +242,7 @@ class TripDraftReplacementQaTest {
                 calls.add(executor.submit(() -> {
                     ready.countDown();
                     assertThat(start.await(10, TimeUnit.SECONDS)).isTrue();
-                    return create("당일치기", requestKey, source).andReturn().getResponse();
+                    return create("당일치기", requestKey, withSource ? source : null).andReturn().getResponse();
                 }));
             }
             try {
@@ -250,16 +253,12 @@ class TripDraftReplacementQaTest {
             List<MockHttpServletResponse> responses = List.of(calls.getFirst().get(30, TimeUnit.SECONDS),
                     calls.getLast().get(30, TimeUnit.SECONDS));
             assertThat(responses).extracting(MockHttpServletResponse::getStatus)
-                    .containsExactlyInAnyOrder(202, sameKey ? 202 : 409);
+                    .containsExactly(202, 202);
             assertThat(queued).hasSize(1);
             long first = queued.getFirst();
             for (MockHttpServletResponse response : responses) {
-                if (response.getStatus() == 409) {
-                    assertConflict(response, first);
-                } else {
-                    assertThat(json.readTree(response.getContentAsByteArray()).required("draftId").longValue())
-                            .isEqualTo(first);
-                }
+                assertThat(json.readTree(response.getContentAsByteArray()).required("draftId").longValue())
+                        .isEqualTo(first);
             }
             if (drafts.findById(first).orElseThrow().isListed()) {
                 assertThat(cards()).containsExactly(first, originalId);
@@ -526,6 +525,71 @@ class TripDraftReplacementQaTest {
         assertThat(cards()).containsExactly(id);
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 원본_없는_요청도_키가_없거나_달라도_같은_본문이면_한_번만_접수한다(boolean withKeys) throws Exception {
+        User owner = drafts.findById(originalId).orElseThrow().getUser();
+        ProcessingJob job = new ProcessingJob(owner, "https://example.invalid/second", SourcePlatform.YOUTUBE);
+        job.markDone();
+        Long second = jobs.save(job).getId();
+        originalId = null;
+        String firstKey = withKeys ? UUID.randomUUID().toString() : null;
+        String retryKey = withKeys ? UUID.randomUUID().toString() : null;
+        String message = "2027-01-10 오전 위주";
+        byte[] first = create(List.of(jobId, second), message, firstKey, null).andExpect(status().isAccepted())
+                .andReturn().getResponse().getContentAsByteArray();
+        byte[] replay = create(List.of(second, jobId, jobId), "  2027-01-10  오전\n위주  ", retryKey, null)
+                .andExpect(status().isAccepted()).andReturn().getResponse().getContentAsByteArray();
+        assertThat(json.readTree(replay)).isEqualTo(json.readTree(first));
+        long id = json.readTree(first).required("draftId").longValue();
+        assertThat(queued).containsExactly(id);
+        assertThat(jdbc.queryForObject("select count(*) from trip_drafts where user_id = ? and request_hash is not null",
+                Long.class, owner.getId())).isOne();
+        if (withKeys) {
+            expireContentWindow(id);
+            assertThat(submit("달라진 조건", retryKey)).isEqualTo(id);
+            assertThat(submit("달라진 조건", firstKey)).isEqualTo(id);
+            assertThat(queued).containsExactly(id);
+        }
+        create(List.of(jobId), message, null, null).andExpect(status().isAccepted());
+        assertThat(queued).hasSize(2);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"READY", "FAILED", "PENDING", "NEEDS_INPUT"})
+    void 최초_접수_10분_경계는_재생으로_연장되지_않는다(String state) throws Exception {
+        long id = submit("2027-01-10 오전");
+        LocalDateTime boundary = LocalDateTime.now().withNano(0);
+        jdbc.update("update trip_drafts set status = ?, created_at = ? where id = ?", state, boundary.minusMinutes(10), id);
+        LocalDateTime before = boundary.minusNanos(1_000);
+        try (MockedStatic<LocalDateTime> time = mockStatic(LocalDateTime.class, CALLS_REAL_METHODS)) {
+            time.when(LocalDateTime::now).thenReturn(before);
+            assertThat(submit("2027-01-10 오전")).isEqualTo(id);
+            time.when(LocalDateTime::now).thenReturn(boundary);
+            if (state.equals("PENDING")) {
+                assertConflict(create("2027-01-10 오전", null).andReturn().getResponse(), id);
+                assertThat(queued).containsExactly(id);
+            } else {
+                long next = submit("2027-01-10 오전");
+                assertThat(next).isNotEqualTo(id);
+                assertThat(queued).containsExactly(id, next);
+            }
+        }
+    }
+
+    @Test
+    void 날짜가_다르면_충돌하고_원본이_다르면_독립적으로_접수한다() throws Exception {
+        long first = submit("2027-01-10 오전");
+        assertConflict(create("2027-01-11 오전", null).andReturn().getResponse(), first);
+        originalId = manualSource();
+        long independent = submit("2027-01-10 오전");
+        assertThat(queued).containsExactly(first, independent);
+    }
+
+    private void expireContentWindow(long id) {
+        jdbc.update("update trip_drafts set created_at = ? where id = ?", LocalDateTime.now().minusMinutes(11), id);
+    }
+
     private Long manualSource() {
         User owner = drafts.findById(originalId).orElseThrow().getUser();
         TripDraft manual = new TripDraft(owner, List.of(jobId), "직접 만든 원본");
@@ -541,7 +605,7 @@ class TripDraftReplacementQaTest {
             jdbc.update("update trip_drafts set updated_at = ? where id = ?", LocalDateTime.now().minusHours(1), first);
             recovery.failStaleJobs();
             assertThat(detail(first).path("status").asText()).isEqualTo("FAILED");
-            submit("당일치기");
+            submit("당일치기 오후 위주");
             return answer("11:00", "12:00");
         }).thenReturn(answer("13:00", "14:00"));
 
@@ -578,9 +642,16 @@ class TripDraftReplacementQaTest {
     }
 
     private ResultActions create(String message, String key, Long sourceId) throws Exception {
+        return create(List.of(jobId), message, key, sourceId);
+    }
+
+    private ResultActions create(List<Long> videoIds, String message, String key, Long sourceId) throws Exception {
+        Map<String, Object> body = new HashMap<>(Map.of("jobIds", videoIds, "message", message));
+        if (sourceId != null) {
+            body.put("replacesDraftId", sourceId);
+        }
         MockHttpServletRequestBuilder request = post("/api/trip-drafts").header("Authorization", bearer)
-                .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsBytes(Map.of(
-                        "jobIds", List.of(jobId), "message", message, "replacesDraftId", sourceId)));
+                .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsBytes(body));
         if (key != null) {
             request.header("Idempotency-Key", key);
         }

@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -70,12 +71,17 @@ public class TripPlannerService {
         this.processing = processing;
     }
 
+    static boolean validDraftInput(List<Long> jobIds, String message) {
+        return jobIds != null && !jobIds.isEmpty() && jobIds.size() <= MAX_VIDEOS
+                && jobIds.stream().noneMatch(Objects::isNull) && message != null && !message.isBlank();
+    }
+
     /**
      * replacesDraftId: "다시 짜기"로 대신할 예전 초안. 그 초안이 이 사용자의 것이고 홈에 보이던 초안이면 새 초안도 홈에
      * 보이게 한다 — 다시 짜기에 성공해도 홈·내 여행에서 초안이 사라졌다(4차 수정 확인 QA, #424). 아니면 무시한다.
      */
     Optional<TripDraft> prepareDraft(User user, List<Long> jobIds, String message, Long replacesDraftId) {
-        if (jobIds == null || jobIds.isEmpty() || jobIds.size() > MAX_VIDEOS || message == null || message.isBlank()) {
+        if (!validDraftInput(jobIds, message)) {
             return Optional.empty();
         }
         List<Long> distinct = jobIds.stream().distinct().toList();

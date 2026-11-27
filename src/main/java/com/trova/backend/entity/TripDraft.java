@@ -1,6 +1,8 @@
 package com.trova.backend.entity;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,7 +18,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,6 +33,7 @@ import java.util.stream.Collectors;
 @DynamicUpdate
 @Table(name = "trip_drafts", indexes = {
         @Index(name = "idx_draft_user_request_key", columnList = "user_id, request_key"),
+        @Index(name = "idx_draft_user_request_hash", columnList = "user_id, request_hash, created_at"),
         @Index(name = "idx_draft_user_replacement", columnList = "user_id, replaces_draft_id")
 })
 public class TripDraft {
@@ -126,8 +131,18 @@ public class TripDraft {
     @Column(name = "request_key", updatable = false)
     private UUID requestKey;
 
-    public void recordRequestKey(UUID key) {
+    @Column(name = "request_hash", length = 64, updatable = false)
+    private String requestHash;
+
+    @ElementCollection
+    @CollectionTable(name = "draft_replay_keys", joinColumns = @JoinColumn(name = "draft_id"),
+            indexes = @Index(name = "idx_draft_replay_key", columnList = "request_key"))
+    @Column(name = "request_key", nullable = false)
+    private Set<UUID> replayKeys = new HashSet<>();
+
+    public void recordRequest(UUID key, String hash) {
         this.requestKey = key;
+        this.requestHash = hash;
     }
 
     public void recordReplacementOf(TripDraft source) {

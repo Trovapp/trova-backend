@@ -92,8 +92,8 @@ public class TripDraftController {
         }
     }
 
-    @Operation(summary = "일정 초안 접수", description = "Idempotency-Key(UUID)가 같으면 같은 사용자에게 24시간 동안 최초 접수 응답을 돌려준다.")
-    @ApiResponse(responseCode = "202", description = "최초 접수 또는 같은 키 재시도",
+    @Operation(summary = "일정 초안 접수", description = "최초 접수 후 같은 사용자·본문은 10분, 접수된 Idempotency-Key(UUID)는 24시간 동안 최초 응답을 재생한다.")
+    @ApiResponse(responseCode = "202", description = "최초 접수 또는 같은 본문·키에 의한 재생",
             content = @Content(examples = @ExampleObject(value = "{\"draftId\":42,\"status\":\"PENDING\"}")))
     @ApiResponse(responseCode = "409", description = "같은 원본을 다시 짜는 중",
             content = @Content(examples = @ExampleObject(value = """

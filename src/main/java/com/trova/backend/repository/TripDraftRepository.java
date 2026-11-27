@@ -52,6 +52,23 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
             + "and d.createdAt > :cutoff")
     Optional<Long> findRecentRequest(Long userId, UUID key, LocalDateTime cutoff);
 
+    @Query("select d.id from TripDraft d join d.replayKeys k "
+            + "where d.user.id = :userId and k = :key and d.createdAt > :cutoff")
+    Optional<Long> findRecentReplayKey(Long userId, UUID key, LocalDateTime cutoff);
+
+    @Modifying
+    @Query(value = "insert into draft_replay_keys (draft_id, request_key) values (:draftId, :key)", nativeQuery = true)
+    void addReplayKey(Long draftId, UUID key);
+
+    @Modifying
+    @Query(value = "delete from draft_replay_keys where draft_id in "
+            + "(select id from trip_drafts where created_at <= :cutoff)", nativeQuery = true)
+    void clearExpiredReplayKeys(LocalDateTime cutoff);
+
+    @Query("select d.id from TripDraft d where d.user.id = :userId and d.requestHash = :hash "
+            + "and d.createdAt > :cutoff order by d.id desc limit 1")
+    Optional<Long> findRecentContent(Long userId, String hash, LocalDateTime cutoff);
+
     // 답변 API와 같은 행을 잠가 질문의 재개와 교체가 동시에 성공하는 것을 막는다.
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select d from TripDraft d where d.user.id = :userId and d.status in (PENDING, PROCESSING, NEEDS_INPUT) "
