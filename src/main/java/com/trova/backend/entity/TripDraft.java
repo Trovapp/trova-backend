@@ -48,6 +48,10 @@ public class TripDraft {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String message;
 
+    // PENDING에서 시작할 때마다 증가한다. 구버전 행은 첫 처리 또는 재전달 때 초기화한다.
+    @Column(name = "processing_round")
+    private Long processingRound;
+
     // 고른 영상들의 처리 작업 id(쉼표로 이음, 순서 유지).
     @Column(name = "job_ids", nullable = false)
     private String jobIds;
@@ -166,6 +170,11 @@ public class TripDraft {
     }
 
     public void markProcessing() {
+        if (processingRound == null) {
+            processingRound = 1L;
+        } else if (status == TripDraftStatus.PENDING) {
+            processingRound++;
+        }
         touch(TripDraftStatus.PROCESSING);
     }
 
@@ -230,6 +239,7 @@ public class TripDraft {
 
     public Long getId() { return id; }
     public User getUser() { return user; }
+    public Long getProcessingRound() { return processingRound; }
     public TripDraftStatus getStatus() { return status; }
     public String getMessage() { return message; }
     public List<Long> getJobIds() { return Arrays.stream(jobIds.split(",")).map(Long::valueOf).toList(); }

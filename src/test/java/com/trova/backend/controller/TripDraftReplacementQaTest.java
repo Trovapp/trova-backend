@@ -18,6 +18,7 @@ import com.trova.backend.repository.TripDraftRepository;
 import com.trova.backend.repository.UserRepository;
 import com.trova.backend.security.JwtService;
 import com.trova.backend.service.DraftAdmissionService;
+import com.trova.backend.service.DraftProcessingService;
 import com.trova.backend.service.OrphanedJobRecoveryService;
 import com.trova.backend.service.TripPlannerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,6 +107,7 @@ class TripDraftReplacementQaTest {
     @Autowired private JdbcTemplate jdbc;
     @Autowired private OrphanedJobRecoveryService recovery;
     @Autowired private DraftAdmissionService admissions;
+    @Autowired private DraftProcessingService processing;
     @MockitoBean private DraftJobQueue queue;
     @MockitoBean private ChatModel model;
     @MockitoBean private OpeningHoursService hours;
@@ -430,6 +432,76 @@ class TripDraftReplacementQaTest {
         jdbc.update("update trip_drafts set status = 'READY' where user_id = ? and message = '구버전 대체 작업'", userId);
         long retry = submit("다시 짜기");
         assertThat(queued).containsExactly(independent, retry);
+    }
+
+    @Test
+    void 비노출_원본의_새_접수_뒤_배포_전_질문의_늦은_답변은_큐에_들어가지_않는다() throws Exception {
+        Long listed = originalId;
+        long older = legacyQuestion();
+        originalId = manualSource();
+        long waiting = legacyQuestion();
+        long alsoWaiting = legacyQuestion();
+        long busy = legacyQuestion();
+        jdbc.update("update trip_drafts set status = 'PROCESSING' where id = ?", busy);
+
+        create("변경", null).andExpect(status().isServiceUnavailable());
+        assertThat(detail(waiting).path("status").asText()).isEqualTo("NEEDS_INPUT");
+        jdbc.update("update trip_drafts set status = 'READY' where id = ?", busy);
+        create(" ", null).andExpect(status().isBadRequest());
+        Long unlisted = originalId;
+        originalId = listed;
+        long tracked = submit("다른 원본");
+        originalId = unlisted;
+        assertThat(detail(waiting).path("status").asText()).isEqualTo("NEEDS_INPUT");
+        TripDraft trackedQuestion = drafts.findById(tracked).orElseThrow();
+        trackedQuestion.markNeedsInput("다른 원본의 질문", "{}");
+        drafts.save(trackedQuestion);
+
+        String key = UUID.randomUUID().toString();
+        long next = submit("변경", key);
+        assertThat(submit("재전송", key)).isEqualTo(next);
+        for (long superseded : List.of(waiting, alsoWaiting)) {
+            answerSplit(superseded).andExpect(status().isConflict());
+            assertThat(detail(superseded).path("status").asText()).isEqualTo("FAILED");
+        }
+        assertThat(detail(older).path("status").asText()).isEqualTo("NEEDS_INPUT");
+        assertThat(detail(tracked).path("status").asText()).isEqualTo("NEEDS_INPUT");
+        assertThat(queued).containsExactly(tracked, next);
+    }
+
+    private long legacyQuestion() {
+        Long userId = drafts.findById(originalId).orElseThrow().getUser().getId();
+        String message = UUID.randomUUID().toString();
+        jdbc.update("""
+                insert into trip_drafts (user_id, job_ids, message, status, auto_created, created_at, updated_at)
+                values (?, ?, ?, 'NEEDS_INPUT', false, current_timestamp, current_timestamp)
+                """, userId, jobId.toString(), message);
+        return jdbc.queryForObject("select id from trip_drafts where user_id = ? and message = ?",
+                Long.class, userId, message);
+    }
+
+    private ResultActions answerSplit(long draftId) throws Exception {
+        return mvc.perform(post("/api/trip-drafts/" + draftId + "/answer").header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"choice\":\"SPLIT\"}"));
+    }
+
+    @Test
+    void 답변_후_처리가_시작되면_이전_작업자의_늦은_질문을_버린다() throws Exception {
+        long id = submit("당일치기");
+        TripDraft slow = processing.start(id).orElseThrow();
+        TripDraft fast = processing.start(id).orElseThrow();
+        fast.markNeedsInput("지역 선택", "{}");
+        assertThat(processing.finish(id, fast)).isTrue();
+        answerSplit(id).andExpect(status().isAccepted());
+        TripDraft answered = processing.start(id).orElseThrow();
+        slow.markNeedsInput("늦은 지역 선택", "{}");
+        assertThat(processing.finish(id, slow)).isFalse();
+        assertThat(detail(id).path("status").asText()).isEqualTo("PROCESSING");
+        assertThat(answered.getAnswer()).isEqualTo("SPLIT");
+        answered.markReady("{}", "{}");
+        assertThat(processing.finish(id, answered)).isTrue();
+        assertThat(detail(id).path("status").asText()).isEqualTo("READY");
+        assertThat(cards()).containsExactly(id);
     }
 
     private Long manualSource() {

@@ -27,14 +27,14 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
             + "where d.status in :statuses and d.updatedAt < :threshold")
     int failStale(List<TripDraftStatus> statuses, LocalDateTime threshold, LocalDateTime now, String message);
 
-    // 외부 호출을 마친 작업자는 아직 PROCESSING인 행의 생성 결과만 기록한다.
+    // 답변 후 다시 PROCESSING이 되어도 이전 회차의 결과는 기록하지 않는다.
     @Modifying
     @Query("""
             update TripDraft d set d.status = :#{#result.status}, d.updatedAt = :#{#result.updatedAt},
                 d.days = :#{#result.days}, d.startDate = :#{#result.startDate}, d.requestSource = :#{#result.requestSource},
                 d.geminiCalls = :#{#result.geminiCalls}, d.summaryJson = :#{#result.summaryJson},
                 d.question = :#{#result.question}, d.draftJson = :#{#result.draftJson}, d.errorMessage = :#{#result.errorMessage}
-            where d.id = :id and d.status = PROCESSING
+            where d.id = :id and d.status = PROCESSING and d.processingRound = :#{#result.processingRound}
             """)
     int finishIfProcessing(Long id, @Param("result") TripDraft result);
 
@@ -58,10 +58,11 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
             + "and (d.replacesDraftId = :sourceId or d.unlistedSourceId = :sourceId) order by d.id")
     List<TripDraft> lockOpenReplacements(Long userId, Long sourceId);
 
-    @Query("select count(d) > 0 from TripDraft d where d.user.id = :userId and d.id > :sourceId "
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select d from TripDraft d where d.user.id = :userId and d.id > :sourceId "
             + "and d.sourceTracked is null and d.autoCreated = false and d.replacesDraftId is null "
-            + "and d.unlistedSourceId is null and d.status in (PENDING, PROCESSING)")
-    boolean hasPossibleLegacyReplacement(Long userId, Long sourceId);
+            + "and d.unlistedSourceId is null and d.status in (PENDING, PROCESSING, NEEDS_INPUT) order by d.id")
+    List<TripDraft> lockPossibleLegacyReplacements(Long userId, Long sourceId);
 
     @Modifying
     @Query(value = "update trip_drafts set request_key = null where request_key is not null and created_at <= :cutoff",

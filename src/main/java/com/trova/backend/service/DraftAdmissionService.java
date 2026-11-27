@@ -52,14 +52,13 @@ public class DraftAdmissionService {
             return new Admission(Outcome.INVALID, null);
         }
         TripDraft draft = prepared.get();
-        if (draft.getUnlistedSourceId() != null && drafts.hasPossibleLegacyReplacement(userId, sourceId)) {
+        List<TripDraft> legacy = draft.getUnlistedSourceId() == null
+                ? List.of() : drafts.lockPossibleLegacyReplacements(userId, sourceId);
+        if (legacy.stream().anyMatch(candidate -> candidate.getStatus() != TripDraftStatus.NEEDS_INPUT)) {
             return new Admission(Outcome.LEGACY_BUSY, null);
         }
-        for (TripDraft previous : open) {
-            if (previous.getStatus() == TripDraftStatus.NEEDS_INPUT) {
-                previous.markFailed("같은 원본에서 새 일정을 요청해 이 질문을 종료했어요.");
-            }
-        }
+        open.forEach(previous -> previous.markFailed("같은 원본에서 새 일정을 요청해 이 질문을 종료했어요."));
+        legacy.forEach(previous -> previous.markFailed("새 일정을 요청해 이전 버전의 질문을 종료했어요."));
         draft.recordRequestKey(key);
         return new Admission(Outcome.CREATED, drafts.save(draft).getId());
     }
