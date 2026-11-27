@@ -5,6 +5,8 @@ import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import java.util.Properties;
 import org.springframework.boot.info.BuildProperties;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -158,15 +160,27 @@ class ShipAndPingTest {
         assertThat(json.readTree(body).get("records").size()).isOne();
     }
 
-    @Test void 같은_빌드의_두_기동은_버전이_다르다() {
+    @Test void 같은_커밋으로_빈을_다시_만들어도_커밋_해시를_쓴다() {
         Properties properties = new Properties();
-        properties.setProperty("time", "2026-11-26T00:00:00Z");
+        properties.setProperty("commit", "ae2d1f0");
         BuildProperties build = new BuildProperties(properties);
         ShipAndPingConfig config = new ShipAndPingConfig();
         try (Sender first = config.shipAndPingSender(build); Sender second = config.shipAndPingSender(build)) {
-            assertThat(ReflectionTestUtils.getField(first, "version"))
-                    .isNotEqualTo(ReflectionTestUtils.getField(second, "version"));
+            assertThat(ReflectionTestUtils.getField(first, "version")).isEqualTo("ae2d1f0");
+            assertThat(ReflectionTestUtils.getField(second, "version")).isEqualTo("ae2d1f0");
         }
+    }
+
+    @Test void 커밋_속성이_없으면_unknown을_쓴다() {
+        BuildProperties build = new BuildProperties(new Properties());
+        try (Sender sender = new ShipAndPingConfig().shipAndPingSender(build)) {
+            assertThat(ReflectionTestUtils.getField(sender, "version")).isEqualTo("unknown");
+        }
+    }
+
+    @Test void 빌드에_기록된_커밋은_일곱_자리_해시_또는_unknown이다() throws Exception {
+        Properties properties = PropertiesLoaderUtils.loadProperties(new ClassPathResource("META-INF/build-info.properties"));
+        assertThat(properties.getProperty("build.commit")).matches("[0-9a-f]{7}|unknown");
     }
 
     @org.springframework.context.annotation.Profile("shipandping-standalone-test")
