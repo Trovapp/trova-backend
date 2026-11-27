@@ -209,7 +209,7 @@ public class TripDraftController {
     }
 
     @Operation(summary = "일정 초안 닫기", description = "홈에서 직접 닫을 때만 source=home을 보낸다. "
-            + "그 밖의 요청에서 최신 대체 초안이 숨김 상태이면 원본을 보존하고 204를 반환한다.")
+            + "그 밖의 요청에서 같은 원본의 대체 초안 중 숨긴 것이 하나라도 있으면 원본을 보존하고 204를 반환한다.")
     @PostMapping("/api/trip-drafts/{id}/dismiss")
     @Transactional
     public ResponseEntity<Void> dismiss(Authentication authentication, @PathVariable Long id,
@@ -219,7 +219,7 @@ public class TripDraftController {
                 .filter(d -> d.getUser().getId().equals(user.getId())).orElse(null);
         if (draft == null) return ResponseEntity.notFound().build();
         if (draft.getStatus() == TripDraftStatus.APPROVED) return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        if (!"home".equals(source) && tripDraftRepository.findLatestReplacementDismissed(user.getId(), id).orElse(false)) {
+        if (!"home".equals(source) && tripDraftRepository.existsDismissedReplacement(user.getId(), id)) {
             return ResponseEntity.noContent().build();
         }
         draft.dismiss();

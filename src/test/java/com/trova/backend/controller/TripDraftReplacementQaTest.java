@@ -192,19 +192,67 @@ class TripDraftReplacementQaTest {
         assertThat(cards()).isEmpty();
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void 숨긴_첫_대체의_늦은_닫기는_두번째_대체_접수와_실패_뒤에도_원본을_보존한다(boolean approveFirst) throws Exception {
+        when(model.call(any(Prompt.class))).thenReturn(answer("11:00", "12:00"));
+        JsonNode original = detail(originalId);
+        long previous = submit("당일치기");
+        dismissReplacement(previous, "PENDING");
+        planner.processNow(previous);
+        assertReadyAt(previous, "11:00");
+        long latest = submit("당일치기 오후 위주");
+        if (approveFirst) {
+            mvc.perform(post("/api/trip-drafts/" + previous + "/approve").header("Authorization", bearer))
+                    .andExpect(status().isOk());
+        }
+        // 이 영상이 여행에 저장되면 홈 목록은 같은 영상의 초안들을 제외한다.
+        List<Long> pendingCards = approveFirst ? List.of() : List.of(latest, originalId);
+        List<Long> afterFailureCards = approveFirst ? List.of() : List.of(originalId);
+        assertThat(cards()).isEqualTo(pendingCards);
+
+        String dismissOriginal = "/api/trip-drafts/" + originalId + "/dismiss";
+        mvc.perform(post(dismissOriginal).header("Authorization", bearer)).andExpect(status().isNoContent());
+        assertThat(detail(originalId)).isEqualTo(original);
+        assertThat(cards()).isEqualTo(pendingCards);
+
+        TripDraft running = processing.start(latest).orElseThrow();
+        running.markFailed("QA");
+        assertThat(processing.finish(latest, running)).isTrue();
+        assertThat(detail(latest).path("status").asText()).isEqualTo("FAILED");
+        assertThat(cards()).isEqualTo(afterFailureCards);
+        mvc.perform(post(dismissOriginal).param("source", "unknown").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        assertThat(detail(originalId)).isEqualTo(original);
+        assertThat(cards()).isEqualTo(afterFailureCards);
+
+        mvc.perform(post(dismissOriginal).param("source", "home").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        assertThat(detail(originalId).get("dismissed")).isEqualTo(BooleanNode.TRUE);
+        assertThat(cards()).isEmpty();
+    }
+
     @Test
-    void 이전_대체만_숨겼다면_표식_없는_요청도_원본을_닫는다() throws Exception {
+    void 늦은_닫기_뒤_보이는_두번째_대체가_완료되면_원본을_교체하고_승인할_수_있다() throws Exception {
         when(model.call(any(Prompt.class))).thenReturn(answer("11:00", "12:00"));
         long previous = submit("당일치기");
         dismissReplacement(previous, "PENDING");
         planner.processNow(previous);
         long latest = submit("당일치기 오후 위주");
-        assertThat(cards()).containsExactly(latest, originalId);
 
         mvc.perform(post("/api/trip-drafts/" + originalId + "/dismiss").header("Authorization", bearer))
                 .andExpect(status().isNoContent());
-        assertThat(detail(originalId).get("dismissed")).isEqualTo(BooleanNode.TRUE);
+        assertThat(cards()).containsExactly(latest, originalId);
+        planner.processNow(latest);
+        assertReadyAt(latest, "11:00");
         assertThat(cards()).containsExactly(latest);
+        mvc.perform(post("/api/trip-drafts/" + latest + "/approve").header("Authorization", bearer))
+                .andExpect(status().isOk());
+        mvc.perform(post("/api/trip-drafts/" + originalId + "/dismiss").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        assertThat(detail(originalId).get("dismissed")).isEqualTo(BooleanNode.TRUE);
+        assertThat(detail(latest).path("status").asText()).isEqualTo("APPROVED");
+        assertThat(cards()).isEmpty();
     }
 
     private void dismissReplacement(long replacement, String expectedStatus) throws Exception {
