@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -207,15 +208,21 @@ public class TripDraftController {
         return autoDraftQueryService.list(currentUserService.resolveUserId(authentication));
     }
 
+    @Operation(summary = "일정 초안 닫기", description = "홈에서 직접 닫을 때만 source=home을 보낸다. "
+            + "그 밖의 요청에서 최신 대체 초안이 숨김 상태이면 원본을 보존하고 204를 반환한다.")
     @PostMapping("/api/trip-drafts/{id}/dismiss")
     @Transactional
-    public ResponseEntity<Void> dismiss(Authentication authentication, @PathVariable Long id) {
+    public ResponseEntity<Void> dismiss(Authentication authentication, @PathVariable Long id,
+                                        @RequestParam(required = false) String source) {
         User user = currentUserService.resolve(authentication);
-        TripDraft draft = tripDraftRepository.findById(id).filter(d -> d.getUser().getId().equals(user.getId())).orElse(null);
+        TripDraft draft = tripDraftRepository.findByIdForUpdate(id)
+                .filter(d -> d.getUser().getId().equals(user.getId())).orElse(null);
         if (draft == null) return ResponseEntity.notFound().build();
         if (draft.getStatus() == TripDraftStatus.APPROVED) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        if (!"home".equals(source) && tripDraftRepository.findLatestReplacementDismissed(user.getId(), id).orElse(false)) {
+            return ResponseEntity.noContent().build();
+        }
         draft.dismiss();
-        tripDraftRepository.save(draft);
         return ResponseEntity.noContent().build();
     }
 }

@@ -48,6 +48,13 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
             """)
     void dismissSourceIfReplacementVisible(Long replacementId, LocalDateTime now);
 
+    @Query("""
+            select (d.dismissedAt is not null) from TripDraft d
+            where d.user.id = :userId and (d.replacesDraftId = :sourceId or d.unlistedSourceId = :sourceId)
+            order by d.id desc limit 1
+            """)
+    Optional<Boolean> findLatestReplacementDismissed(Long userId, Long sourceId);
+
     // 멈춘 초안 다시 보내기용(ADR 0043).
     @Query("select d.id from TripDraft d where d.status = :status and d.updatedAt > :from and d.updatedAt < :to")
     List<Long> findIdsByStatusAndUpdatedAtBetween(

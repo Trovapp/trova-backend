@@ -165,7 +165,46 @@ class TripDraftReplacementQaTest {
         assertReadyAt(replacement, "11:00");
         assertThat(detail(replacement).get("dismissed")).isEqualTo(BooleanNode.TRUE);
         assertThat(cards()).containsExactly(originalId);
+        // 구버전 다시 짜기 화면은 숨긴 READY 상세를 읽어도 원본 닫기를 보낸다.
+        mvc.perform(post("/api/trip-drafts/" + originalId + "/dismiss").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        assertThat(cards()).containsExactly(originalId);
         assertThat(detail(originalId).get("dismissed")).isEqualTo(BooleanNode.FALSE);
+    }
+
+    @Test
+    void 최신_대체를_숨겼어도_홈에서_직접_닫으면_원본을_숨긴다() throws Exception {
+        when(model.call(any(Prompt.class))).thenReturn(answer("11:00", "12:00"));
+        long replacement = submit("당일치기");
+        dismissReplacement(replacement, "PENDING");
+        planner.processNow(replacement);
+        assertReadyAt(replacement, "11:00");
+
+        String dismissOriginal = "/api/trip-drafts/" + originalId + "/dismiss";
+        mvc.perform(post(dismissOriginal).param("source", "unknown").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        assertThat(detail(originalId).get("dismissed")).isEqualTo(BooleanNode.FALSE);
+        assertThat(cards()).containsExactly(originalId);
+
+        mvc.perform(post(dismissOriginal).param("source", "home").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        assertThat(detail(originalId).get("dismissed")).isEqualTo(BooleanNode.TRUE);
+        assertThat(cards()).isEmpty();
+    }
+
+    @Test
+    void 이전_대체만_숨겼다면_표식_없는_요청도_원본을_닫는다() throws Exception {
+        when(model.call(any(Prompt.class))).thenReturn(answer("11:00", "12:00"));
+        long previous = submit("당일치기");
+        dismissReplacement(previous, "PENDING");
+        planner.processNow(previous);
+        long latest = submit("당일치기 오후 위주");
+        assertThat(cards()).containsExactly(latest, originalId);
+
+        mvc.perform(post("/api/trip-drafts/" + originalId + "/dismiss").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        assertThat(detail(originalId).get("dismissed")).isEqualTo(BooleanNode.TRUE);
+        assertThat(cards()).containsExactly(latest);
     }
 
     private void dismissReplacement(long replacement, String expectedStatus) throws Exception {
