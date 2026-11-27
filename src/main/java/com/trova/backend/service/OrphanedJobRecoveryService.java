@@ -2,7 +2,6 @@ package com.trova.backend.service;
 
 import com.trova.backend.entity.JobStatus;
 import com.trova.backend.entity.ProcessingJob;
-import com.trova.backend.entity.TripDraft;
 import com.trova.backend.entity.TripDraftStatus;
 import com.trova.backend.entity.TripReplanJob;
 import com.trova.backend.repository.ProcessingJobRepository;
@@ -78,11 +77,10 @@ public class OrphanedJobRecoveryService {
         processingJobs.forEach(job -> job.markAnalysisFailed(STALE_MESSAGE));
         List<TripReplanJob> replanJobs = tripReplanJobRepository.findByStatusInAndUpdatedAtBefore(IN_FLIGHT, threshold);
         replanJobs.forEach(job -> job.markFailed(STALE_MESSAGE));
-        List<TripDraft> drafts = tripDraftRepository.findByStatusInAndUpdatedAtBefore(DRAFT_IN_FLIGHT, threshold);
-        drafts.forEach(draft -> draft.markFailed(STALE_MESSAGE));
-        if (!processingJobs.isEmpty() || !replanJobs.isEmpty() || !drafts.isEmpty()) {
+        int drafts = tripDraftRepository.failStale(DRAFT_IN_FLIGHT, threshold, LocalDateTime.now(), STALE_MESSAGE);
+        if (!processingJobs.isEmpty() || !replanJobs.isEmpty() || drafts > 0) {
             log.warn("멈춘 작업 정리: 영상 처리 {}건, 일정 재구성 {}건, 일정 초안 {}건을 FAILED로 변경(기준 {}분 무갱신)",
-                    processingJobs.size(), replanJobs.size(), drafts.size(), STALE_AFTER.toMinutes());
+                    processingJobs.size(), replanJobs.size(), drafts, STALE_AFTER.toMinutes());
         }
     }
 }

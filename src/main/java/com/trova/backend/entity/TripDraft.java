@@ -11,6 +11,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
  * (2일차부터) 초안 일정, 시작 전 질문을 담는다. 승인 전까지는 여행(Trip)을 만들지 않는다.
  */
 @Entity
+// 닫기나 장소 변경 표시가 늦게 커밋돼도 다른 트랜잭션이 확정한 상태를 덮지 않는다.
+@DynamicUpdate
 @Table(name = "trip_drafts", indexes = {
         @Index(name = "idx_draft_user_request_key", columnList = "user_id, request_key"),
         @Index(name = "idx_draft_user_replacement", columnList = "user_id, replaces_draft_id")
@@ -110,6 +113,10 @@ public class TripDraft {
     // 홈 교체 대상이 아닌 직접 만든 초안도 같은 원본의 진행 작업을 확인할 수 있게 한다.
     @Column(name = "unlisted_source_id", updatable = false)
     private Long unlistedSourceId;
+
+    // 구버전 INSERT는 NULL. 원본 번호 없는 구버전 행과 신버전의 독립 요청을 구분한다.
+    @Column(name = "source_tracked", updatable = false)
+    private Boolean sourceTracked = true;
 
     // 작업자가 오래된 엔티티를 저장해도 정리한 키가 되살아나지 않도록 INSERT에서만 쓴다.
     @Column(name = "request_key", updatable = false)
@@ -240,6 +247,7 @@ public class TripDraft {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public boolean isAutoCreated() { return autoCreated; }
     public LocalDateTime getDismissedAt() { return dismissedAt; }
+    public Long getUnlistedSourceId() { return unlistedSourceId; }
     public Long getReplacesDraftId() { return replacesDraftId; }
     public LocalDateTime getPlacesChangedAt() { return placesChangedAt; }
 }

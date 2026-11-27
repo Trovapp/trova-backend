@@ -22,7 +22,26 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
     @Query("select d from TripDraft d where d.id = :id")
     Optional<TripDraft> findByIdForUpdate(@Param("id") Long id);
 
-    List<TripDraft> findByStatusInAndUpdatedAtBefore(List<TripDraftStatus> statuses, LocalDateTime threshold);
+    @Modifying
+    @Query("update TripDraft d set d.status = FAILED, d.errorMessage = :message, d.updatedAt = :now "
+            + "where d.status in :statuses and d.updatedAt < :threshold")
+    int failStale(List<TripDraftStatus> statuses, LocalDateTime threshold, LocalDateTime now, String message);
+
+    // 외부 호출을 마친 작업자는 아직 PROCESSING인 행의 생성 결과만 기록한다.
+    @Modifying
+    @Query("""
+            update TripDraft d set d.status = :#{#result.status}, d.updatedAt = :#{#result.updatedAt},
+                d.days = :#{#result.days}, d.startDate = :#{#result.startDate}, d.requestSource = :#{#result.requestSource},
+                d.geminiCalls = :#{#result.geminiCalls}, d.summaryJson = :#{#result.summaryJson},
+                d.question = :#{#result.question}, d.draftJson = :#{#result.draftJson}, d.errorMessage = :#{#result.errorMessage}
+            where d.id = :id and d.status = PROCESSING
+            """)
+    int finishIfProcessing(Long id, @Param("result") TripDraft result);
+
+    @Modifying
+    @Query("update TripDraft d set d.dismissedAt = :now "
+            + "where d.id = :id and d.dismissedAt is null and d.status <> APPROVED")
+    void dismissReplaced(Long id, LocalDateTime now);
 
     // 멈춘 초안 다시 보내기용(ADR 0043).
     @Query("select d.id from TripDraft d where d.status = :status and d.updatedAt > :from and d.updatedAt < :to")
@@ -33,9 +52,16 @@ public interface TripDraftRepository extends JpaRepository<TripDraft, Long> {
             + "and d.createdAt > :cutoff")
     Optional<Long> findRecentRequest(Long userId, UUID key, LocalDateTime cutoff);
 
-    @Query("select d.id from TripDraft d where d.user.id = :userId and d.status in :statuses "
-            + "and (d.replacesDraftId = :sourceId or d.unlistedSourceId = :sourceId) order by d.id limit 1")
-    Optional<Long> findActiveReplacement(Long userId, Long sourceId, List<TripDraftStatus> statuses);
+    // 답변 API와 같은 행을 잠가 질문의 재개와 교체가 동시에 성공하는 것을 막는다.
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select d from TripDraft d where d.user.id = :userId and d.status in (PENDING, PROCESSING, NEEDS_INPUT) "
+            + "and (d.replacesDraftId = :sourceId or d.unlistedSourceId = :sourceId) order by d.id")
+    List<TripDraft> lockOpenReplacements(Long userId, Long sourceId);
+
+    @Query("select count(d) > 0 from TripDraft d where d.user.id = :userId and d.id > :sourceId "
+            + "and d.sourceTracked is null and d.autoCreated = false and d.replacesDraftId is null "
+            + "and d.unlistedSourceId is null and d.status in (PENDING, PROCESSING)")
+    boolean hasPossibleLegacyReplacement(Long userId, Long sourceId);
 
     @Modifying
     @Query(value = "update trip_drafts set request_key = null where request_key is not null and created_at <= :cutoff",

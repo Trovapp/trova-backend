@@ -100,6 +100,7 @@ public class TripDraftController {
                     {"code":"DRAFT_REPLACEMENT_IN_PROGRESS","message":"이 일정을 이미 다시 짜고 있어요.",
                      "status":409,"traceId":"example","activeDraftId":42}
                     """)))
+    @ApiResponse(responseCode = "503", description = "구버전 작업의 원본을 확인할 수 없어 Retry-After 이후 재시도")
     @PostMapping("/api/trip-drafts")
     public ResponseEntity<?> create(Authentication authentication, @RequestBody CreateDraftRequest request,
                                     @RequestHeader(name = "Idempotency-Key", required = false) String header) {
@@ -126,6 +127,8 @@ public class TripDraftController {
             }
             case CONFLICT -> ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                     "code", "DRAFT_REPLACEMENT_IN_PROGRESS", "activeDraftId", result.draftId()));
+            case LEGACY_BUSY -> ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .header("Retry-After", "30").body(Map.of("code", "DRAFT_LEGACY_JOB_IN_PROGRESS"));
             case INVALID -> ResponseEntity.badRequest().build();
         };
     }

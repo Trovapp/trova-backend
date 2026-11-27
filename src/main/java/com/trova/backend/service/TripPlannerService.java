@@ -25,13 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * 일정 에이전트(#106): 요청 해석 → 고른 영상들의 장소 모으기 → (영상 지역이 멀면) 질문하고 멈춤 →
@@ -46,7 +44,6 @@ public class TripPlannerService {
     public static final String ANSWER_ONLY = "ONLY";
     static final String SPLIT_NOTE = "영상 지역이 서로 멀리 떨어져 있어요. 하루에는 한 지역의 장소만 넣고, 지역별로 날을 나누세요.";
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final Set<TripDraftStatus> RUNNABLE = EnumSet.of(TripDraftStatus.PENDING, TripDraftStatus.PROCESSING);
 
     private final Object[] draftLocks = createDraftLocks();
 
@@ -57,11 +54,12 @@ public class TripPlannerService {
     private final OpeningHoursService openingHoursService;
     private final TripPlanGraph tripPlanGraph;
     private final ApplicationEventPublisher events;
+    private final DraftProcessingService processing;
 
     public TripPlannerService(TripDraftRepository tripDraftRepository, ProcessingJobRepository processingJobRepository,
                               SavedPlaceRepository savedPlaceRepository, PlanRequestParser planRequestParser,
                               OpeningHoursService openingHoursService, TripPlanGraph tripPlanGraph,
-                              ApplicationEventPublisher events) {
+                              ApplicationEventPublisher events, DraftProcessingService processing) {
         this.tripDraftRepository = tripDraftRepository;
         this.processingJobRepository = processingJobRepository;
         this.savedPlaceRepository = savedPlaceRepository;
@@ -69,6 +67,7 @@ public class TripPlannerService {
         this.openingHoursService = openingHoursService;
         this.tripPlanGraph = tripPlanGraph;
         this.events = events;
+        this.processing = processing;
     }
 
     /**
@@ -124,19 +123,6 @@ public class TripPlannerService {
                 .map(id -> latestByVideo.getOrDefault(videoByJob.get(id), id))
                 .distinct()
                 .toList();
-    }
-
-    /** 다시 짠 초안이 준비되면 예전 초안을 홈에서 내린다 — 실패했을 때는 예전 초안이 그대로 남는다(#424). */
-    private void dismissReplaced(TripDraft draft) {
-        if (draft.getReplacesDraftId() == null) {
-            return;
-        }
-        tripDraftRepository.findById(draft.getReplacesDraftId())
-                .filter(old -> old.getDismissedAt() == null && old.getStatus() != TripDraftStatus.APPROVED)
-                .ifPresent(old -> {
-                    old.dismiss();
-                    tripDraftRepository.save(old);
-                });
     }
 
     /** 사용자의 분석 작업 전체와, 영상마다 가장 최근에 완료된 분석. */
@@ -212,18 +198,11 @@ public class TripPlannerService {
     }
 
     private void processSerially(Long draftId) {
-        TripDraft draft = tripDraftRepository.findById(draftId).orElse(null);
+        TripDraft draft = processing.start(draftId).orElse(null);
         if (draft == null) {
             return;
         }
-        if (!RUNNABLE.contains(draft.getStatus())) {
-            log.info("TripDraft {} 중복 처리 건너뜀({})", draftId, draft.getStatus());
-            return;
-        }
         try {
-            draft.markProcessing();
-            tripDraftRepository.save(draft);
-
             // 질문에 답하고 다시 들어온 경우 요청은 이미 읽었다 — Gemini를 다시 부르지 않는다.
             PlanRequestParser.PlanRequest request;
             if (draft.getDays() != null) {
@@ -243,13 +222,13 @@ public class TripPlannerService {
             PlanPlaceGatherer.Gathered gathered = PlanPlaceGatherer.gather(videos);
             if (gathered.totalPlaces() == 0) {
                 draft.markFailed("고른 영상에 저장된 장소가 없어요.");
-                tripDraftRepository.save(draft);
+                processing.finish(draftId, draft);
                 return;
             }
             if (gathered.question().isPresent() && !split) {
                 // 영업시간은 질문에 답한 뒤 실제로 쓸 장소만 받는다(무료 한도 보호).
                 draft.markNeedsInput(gathered.question().get(), summaryJson(gathered, 0));
-                tripDraftRepository.save(draft);
+                processing.finish(draftId, draft);
                 return;
             }
             List<SavedPlace> all = gathered.videos().stream().flatMap(v -> v.places().stream()).toList();
@@ -258,7 +237,7 @@ public class TripPlannerService {
             List<SavedPlace> visits = all.stream().filter(p -> !isLodging(p)).toList();
             if (visits.isEmpty()) {
                 draft.markFailed("고른 영상에 숙소 말고 갈 장소가 없어요.");
-                tripDraftRepository.save(draft);
+                processing.finish(draftId, draft);
                 return;
             }
             // 자동 초안은 공유마다 돌아서 유료 구간이 있는 영업시간 조회를 하지 않는다(#136, 비용 0원 원칙)
@@ -270,7 +249,7 @@ public class TripPlannerService {
             if (outcome.draft().isEmpty()) {
                 log.warn("TripDraft {} 초안 생성 실패: {}", draftId, outcome.failure());
                 draft.markFailed("일정 초안을 만들지 못했어요. 잠시 후 다시 시도해주세요.");
-                tripDraftRepository.save(draft);
+                processing.finish(draftId, draft);
                 return;
             }
             DraftGenerator.Draft plan = withLodging(outcome.draft().get(), lodging);
@@ -279,8 +258,9 @@ public class TripPlannerService {
             }
             draft.markReady(summaryJson(gathered, calls),
                     DraftGenerator.toJson(plan, outcome.fixes(), outcome.problems()));
-            tripDraftRepository.save(draft);
-            dismissReplaced(draft);
+            if (!processing.finish(draftId, draft)) {
+                return;
+            }
             if (draft.isAutoCreated()) {
                 // 공유만 하고 앱을 닫은 사람에게 준비됐다고 알린다(#185, ADR 0016). 직접 만든 초안은 화면에서 기다리고 있다.
                 int placeCount = plan.days().stream().mapToInt(d -> d.items().size()).sum();
@@ -298,7 +278,7 @@ public class TripPlannerService {
             log.error("TripDraft {} 처리 실패", draftId, e);
             // 앱에 내부 예외 문장을 보여주지 않는다(#95와 같은 원칙) — 원문은 로그에 있다.
             draft.markFailed("일정 초안을 만들지 못했어요. 잠시 후 다시 시도해주세요.");
-            tripDraftRepository.save(draft);
+            processing.finish(draftId, draft);
         }
     }
 

@@ -18,11 +18,9 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class DraftAdmissionService {
-    public enum Outcome { CREATED, REPLAY, CONFLICT, INVALID }
+    public enum Outcome { CREATED, REPLAY, CONFLICT, LEGACY_BUSY, INVALID }
     public record Admission(Outcome outcome, Long draftId) {}
 
-    private static final List<TripDraftStatus> ACTIVE = List.of(
-            TripDraftStatus.PENDING, TripDraftStatus.PROCESSING, TripDraftStatus.NEEDS_INPUT);
     private final UserRepository users;
     private final TripDraftRepository drafts;
     private final TripPlannerService planner;
@@ -43,10 +41,10 @@ public class DraftAdmissionService {
                 return new Admission(Outcome.REPLAY, replay.get());
             }
         }
-        if (sourceId != null) {
-            Optional<Long> active = drafts.findActiveReplacement(userId, sourceId, ACTIVE);
-            if (active.isPresent()) {
-                return new Admission(Outcome.CONFLICT, active.get());
+        List<TripDraft> open = sourceId == null ? List.of() : drafts.lockOpenReplacements(userId, sourceId);
+        for (TripDraft previous : open) {
+            if (previous.getStatus() == TripDraftStatus.PENDING || previous.getStatus() == TripDraftStatus.PROCESSING) {
+                return new Admission(Outcome.CONFLICT, previous.getId());
             }
         }
         Optional<TripDraft> prepared = planner.prepareDraft(user, jobIds, message, sourceId);
@@ -54,6 +52,14 @@ public class DraftAdmissionService {
             return new Admission(Outcome.INVALID, null);
         }
         TripDraft draft = prepared.get();
+        if (draft.getUnlistedSourceId() != null && drafts.hasPossibleLegacyReplacement(userId, sourceId)) {
+            return new Admission(Outcome.LEGACY_BUSY, null);
+        }
+        for (TripDraft previous : open) {
+            if (previous.getStatus() == TripDraftStatus.NEEDS_INPUT) {
+                previous.markFailed("같은 원본에서 새 일정을 요청해 이 질문을 종료했어요.");
+            }
+        }
         draft.recordRequestKey(key);
         return new Admission(Outcome.CREATED, drafts.save(draft).getId());
     }
