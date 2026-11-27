@@ -34,8 +34,14 @@ final class VideoResults {
         Map<Long, String> videoByJob = new HashMap<>();
         for (SavedPlaceListRow place : places) {
             // 같은 작업의 URL은 장소마다 다시 파싱하지 않고 이번 호출 안에서만 공유한다.
-            String video = videoByJob.computeIfAbsent(place.jobId(), id -> ShareUrl.videoKey(place.jobSourceUrl()));
-            latest.merge(video, place.jobId(), Math::max);
+            if (!videoByJob.containsKey(place.jobId())) {
+                String video = ShareUrl.videoKey(place.jobSourceUrl());
+                videoByJob.put(place.jobId(), video);
+                latest.merge(video, place.jobId(), Math::max);
+            }
+        }
+        if (latest.size() == videoByJob.size()) {
+            return places;
         }
         return places.stream()
                 .filter(place -> place.jobId().equals(latest.get(videoByJob.get(place.jobId()))))

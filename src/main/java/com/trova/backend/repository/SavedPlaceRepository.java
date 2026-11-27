@@ -28,19 +28,32 @@ public interface SavedPlaceRepository extends JpaRepository<SavedPlace, Long> {
             """)
     List<KakaoCategoryRow> findKakaoCategories(Long userId, List<String> googleIds);
 
-    String LIST_ROWS = """
+    String LIST_COLUMNS = """
             select new com.trova.backend.repository.SavedPlaceListRow(
                 p.id, j.id, j.sourceUrl, p.placeName, p.region, p.category, p.latitude, p.longitude,
                 p.sourceUrl, p.title, p.sourcePlatform, p.createdAt, p.dayNumber, p.orderInDay,
                 p.phone, p.address, p.roadAddress, p.kakaoCategoryName, p.kakaoPlaceUrl, p.videoNotes, p.nearbyBranchName)
-            from SavedPlace p join p.processingJob j
-            where p.user.id = :userId
             """;
 
-    @Query(LIST_ROWS + " order by p.createdAt desc, p.id desc")
+    // 새 공유는 정식 주소로 저장된다. 같은 주소의 재분석 이력은 넓은 장소 행을 반환하기 전에 줄인다.
+    // 장소가 없는 작업은 후보에서 빠지고, 주소 별칭은 기존 VideoResults가 최종 선택한다.
+    @Query(LIST_COLUMNS + """
+            from SavedPlace p join (
+                select max(job.id) as id, job.sourceUrl as sourceUrl
+                from SavedPlace candidate join candidate.processingJob job
+                where candidate.user.id = :userId
+                group by job.sourceUrl
+            ) j on j.id = p.processingJob.id
+            where p.user.id = :userId
+            order by p.createdAt desc, p.id desc
+            """)
     List<SavedPlaceListRow> findListRowsByUserId(Long userId);
 
-    @Query(LIST_ROWS + " and j.id = :jobId order by p.createdAt desc, p.id desc")
+    @Query(LIST_COLUMNS + """
+            from SavedPlace p join p.processingJob j
+            where p.user.id = :userId and j.id = :jobId
+            order by p.createdAt desc, p.id desc
+            """)
     List<SavedPlaceListRow> findListRowsByUserIdAndJobId(Long userId, Long jobId);
 
     @Query("""
