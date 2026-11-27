@@ -15,6 +15,10 @@ import com.trova.backend.service.ItineraryEditService;
 import com.trova.backend.service.ItineraryGenerationService;
 import com.trova.backend.service.PlaceRelocateService;
 import com.trova.backend.service.VideoKey;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +29,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.util.RawValue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +52,9 @@ public class PlacesController {
     private final FoundPlaceNameStore foundPlaceNameStore;
     private final PlaceRelocateService placeRelocateService;
 
+    private final PlaceListCache listCache;
+    private final JsonMapper json;
+
     public PlacesController(
             CurrentUserService currentUserService,
             SavedPlaceRepository savedPlaceRepository,
@@ -53,7 +62,9 @@ public class PlacesController {
             ItineraryGenerationService itineraryGenerationService,
             ItineraryEditService itineraryEditService,
             FoundPlaceNameStore foundPlaceNameStore,
-            PlaceRelocateService placeRelocateService
+            PlaceRelocateService placeRelocateService,
+            PlaceListCache listCache,
+            JsonMapper json
     ) {
         this.currentUserService = currentUserService;
         this.savedPlaceRepository = savedPlaceRepository;
@@ -62,6 +73,8 @@ public class PlacesController {
         this.itineraryEditService = itineraryEditService;
         this.foundPlaceNameStore = foundPlaceNameStore;
         this.placeRelocateService = placeRelocateService;
+        this.listCache = listCache;
+        this.json = json;
     }
 
     public record PlaceResponse(
@@ -141,8 +154,14 @@ public class PlacesController {
     }
 
     @GetMapping
-    public List<PlaceResponse> list(Authentication authentication) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = PlaceResponse.class))))
+    public RawValue list(Authentication authentication) {
         Long userId = currentUserService.resolveUserId(authentication);
+        return listCache.get(userId, () -> json.writeValueAsString(listPlaces(userId)));
+    }
+
+    private List<PlaceResponse> listPlaces(Long userId) {
         List<SavedPlaceListRow> places = savedPlaceRepository.findListRowsByUserId(userId);
         // 같은 영상의 결과가 여러 개면 대표 결과의 장소만 내려준다(#87, VideoResults). 데이터는 지우지 않는다.
         return VideoResults.latestRows(places).stream()

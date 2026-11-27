@@ -2,6 +2,7 @@ package com.trova.backend.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@EntityListeners(SavedPlaceChanges.class)
 @Table(name = "saved_places", indexes = {
         @Index(name = "idx_saved_places_user_created_id", columnList = "user_id, created_at, id")
 })
