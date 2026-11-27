@@ -100,9 +100,9 @@ class AlertTestEndpointsTest {
             assertThat(assertRecord("/api/_test/fail", 500).toString()).doesNotContain("private-fixture");
 
             assertThat(delayed.get(15, TimeUnit.SECONDS).statusCode()).isEqualTo(200);
-            assertThat(Duration.ofNanos(System.nanoTime() - start)).isGreaterThanOrEqualTo(Duration.ofSeconds(3));
+            assertThat(Duration.ofNanos(System.nanoTime() - start)).isGreaterThanOrEqualTo(Duration.ofSeconds(6));
             JsonNode slow = assertRecord("/api/_test/slow", 200);
-            assertThat(slow.get("duration_ms").asLong()).isGreaterThanOrEqualTo(3000);
+            assertThat(slow.get("duration_ms").asLong()).isGreaterThanOrEqualTo(6000);
         }
     }
 
