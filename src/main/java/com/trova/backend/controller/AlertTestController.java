@@ -32,7 +32,7 @@ class AlertTestController {
     CompletionStage<ResponseEntity<Void>> slow() {
         requireEnabled();
         return CompletableFuture.supplyAsync(() -> ResponseEntity.ok().build(),
-                CompletableFuture.delayedExecutor(3, TimeUnit.SECONDS));
+                CompletableFuture.delayedExecutor(6, TimeUnit.SECONDS));
     }
 
     private void requireEnabled() {
