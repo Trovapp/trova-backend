@@ -37,6 +37,7 @@ public class PlacesController {
 
     private static final Set<String> VALID_DIRECTIONS = Set.of("UP", "DOWN");
 
+    private final UserListReads listReads;
     private final CurrentUserService currentUserService;
     private final SavedPlaceRepository savedPlaceRepository;
     private final ProcessingJobRepository processingJobRepository;
@@ -53,8 +54,10 @@ public class PlacesController {
             ItineraryGenerationService itineraryGenerationService,
             ItineraryEditService itineraryEditService,
             FoundPlaceNameStore foundPlaceNameStore,
-            PlaceRelocateService placeRelocateService
+            PlaceRelocateService placeRelocateService,
+            UserListReads listReads
     ) {
+        this.listReads = listReads;
         this.currentUserService = currentUserService;
         this.savedPlaceRepository = savedPlaceRepository;
         this.processingJobRepository = processingJobRepository;
@@ -143,11 +146,11 @@ public class PlacesController {
     @GetMapping
     public List<PlaceResponse> list(Authentication authentication) {
         Long userId = currentUserService.resolveUserId(authentication);
-        List<SavedPlaceListRow> places = savedPlaceRepository.findListRowsByUserId(userId);
-        // 같은 영상의 결과가 여러 개면 대표 결과의 장소만 내려준다(#87, VideoResults). 데이터는 지우지 않는다.
-        return VideoResults.latestRows(places).stream()
-                .map(PlaceResponse::from)
-                .toList();
+        return listReads.places(userId, () -> {
+            List<SavedPlaceListRow> places = savedPlaceRepository.findListRowsByUserId(userId);
+            // 같은 영상의 결과가 여러 개면 대표 결과의 장소만 내려준다(#87).
+            return VideoResults.latestRows(places).stream().map(PlaceResponse::from).toList();
+        });
     }
 
     @GetMapping("/videos/{jobId}/history")

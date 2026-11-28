@@ -53,6 +53,7 @@ public class TripController {
 
     private static final Set<String> VALID_DIRECTIONS = Set.of("UP", "DOWN");
 
+    private final UserListReads listReads;
     private final CurrentUserService currentUserService;
     private final DailyQuotaService dailyQuotaService;
     private final ProcessingJobRepository processingJobRepository;
@@ -78,8 +79,10 @@ public class TripController {
             PlaceReviewService placeReviewService,
             AlternativeFinderService alternativeFinderService,
             GapRecommendationService gapRecommendationService,
-            DailyQuotaService dailyQuotaService
+            DailyQuotaService dailyQuotaService,
+            UserListReads listReads
     ) {
+        this.listReads = listReads;
         this.currentUserService = currentUserService;
         this.dailyQuotaService = dailyQuotaService;
         this.processingJobRepository = processingJobRepository;
@@ -257,9 +260,8 @@ public class TripController {
     public List<TripResponse> listTrips(Authentication authentication) {
         Long userId = currentUserService.resolveUserId(authentication);
         // 이름이 같은 여행을 목록에서 구분할 수 없었다(#123) — 장소 수와 가장 많이 나온 지역(최대 2개)을 함께 준다.
-        return tripService.listTripSummaries(userId).stream()
-                .map(s -> TripResponse.from(s.trip(), s.regions(), userId))
-                .toList();
+        return listReads.trips(userId, () -> tripService.listTripSummaries(userId).stream()
+                .map(s -> TripResponse.from(s.trip(), s.regions(), userId)).toList());
     }
 
     @GetMapping("/api/trips/{id}")
