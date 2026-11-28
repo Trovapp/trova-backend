@@ -1,6 +1,7 @@
 package com.trova.backend.security;
 
 import com.trova.backend.entity.User;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
@@ -38,19 +39,15 @@ class JwtServiceTest {
     }
 
     @Test
-    void 만료된_토큰은_검증에_실패한다() {
-        JwtService shortLivedService = new JwtService(SECRET, java.time.Duration.ofMillis(1));
+    void 같은_파서는_유효했던_토큰도_만료_뒤에는_거부한다() {
+        JwtService shortLivedService = new JwtService(SECRET, java.time.Duration.ofSeconds(3));
         User user = new User("google", "42", "테스트", null);
         setId(user, 7L);
         String token = shortLivedService.issue(user);
 
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        assertThatThrownBy(() -> jwtService.verify(token)).isInstanceOf(JwtException.class);
+        assertThat(shortLivedService.verify(token)).isEqualTo(7L);
+        org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(6)).untilAsserted(() ->
+                assertThatThrownBy(() -> shortLivedService.verify(token)).isInstanceOf(ExpiredJwtException.class));
     }
 
     @Test

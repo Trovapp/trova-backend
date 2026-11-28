@@ -44,6 +44,7 @@ public interface TripPlaceRepository extends JpaRepository<TripPlace, Long> {
     // 여행 목록 요약(#123, #153) — 엔티티 대신 (여행 id, 지역)만 읽는다. TripPlace를 엔티티로 읽으면 기본 EAGER
     // 연관(일차 → 여행 → 사용자) 때문에 장소가 있는 일차마다 SELECT가 하나씩 더 나갔다(일차 10개에 13개, 테스트 실측).
     // "같은 수면 먼저 나온 지역" 기준을 저장 순서가 아니라 일차·방문 순서로 고정한다.
+    @ListQueryTimeout
     @Query("select new com.trova.backend.repository.TripRegion(i.trip.id, tp.region) from TripPlace tp join tp.itinerary i "
             + "where i.trip in :trips order by i.trip.id, i.day, tp.visitOrder, tp.id")
     List<TripRegion> findRegionsByTripIn(@Param("trips") Collection<Trip> trips);
