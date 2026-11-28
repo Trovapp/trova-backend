@@ -3369,3 +3369,28 @@ Windows H2 캐시 테스트 20개가 통과했다. WSL Ubuntu·JDK 21 전체 `./
 SQL 기한을 문장당 3초에서 9초로 조정했다. 운영 200명 부하에서 네 목록을 섞어 측정한 클라이언트 p95는 4차 배포 후 12분 1.0초·첫 3분 1.9초였지만, 3차 배포 후 첫 3분은 8.8초였다. SQL 단독 측정값이 없으므로 이전의 느린 구간도 고려해 클라이언트 제한 10초 안에서 여유를 뒀다. 여행 목록의 두 문장에는 각각 기한을 적용한다. 후속 요청은 같은 로더를 3초까지 기다리며, 대기 시간이 지나도 새 DB 조회를 시작하지 않는다.
 
 H2에서 약 4.2초 지연시킨 장소 조회는 기존 3초 기한에서 503, 수정 후 200을 반환했고 다음 조회는 캐시에 적중했다. 12.8초 분량의 지연을 넣은 네 SQL은 각각 JDBC 취소 후 503을 반환했다. Windows 캐시 테스트 20개 통과. WSL Ubuntu·JDK 21 전체 `./gradlew test build`는 1,667개 통과, 조건부 13개 건너뜀, 실패 0개였다.
+
+## 2026-11-29 쉽앤핑 앱 프로필과 서버 기록 (#567)
+
+쉽앤핑 연결을 켠 서버에서 기존 수집 주소의 `/v1/profile`에 전체 프로필을 보낸다. 기존 서버 인증과 기능 지도를 재사용한다. 전송에 성공하면 서비스 계정 홈의 `.trova/shipandping-profile`에 지문만 원자적으로 저장한다. 같은 연결과 같은 프로필로 재시작하면 전송을 생략하고, 실패하면 다음 분에 재시도한다. 홈에 쓸 수 없으면 해당 프로세스 안에서만 중복을 막는다.
+
+| 프로필 값 | 저장소 근거 |
+| --- | --- |
+| Java · Spring Boot · postgres | `build.gradle`의 Java 도구 체인, Spring Boot 플러그인, PostgreSQL 드라이버 |
+| 장소 검색 · map · Google Places | `PlaceSearchService.java:21` |
+| 대화 메시지 보내기 · ai · Gemini | `ConversationService.java:76` |
+| 공유 영상 분석 요청 · map · Kakao Local | `PlaceExtractionService.java:165` |
+| 테스트 푸시 보내기 · other · Expo Push | `AdminPushController.java:55` |
+| JAR 교체 후 서비스 재시작 · 직전 백엔드 JAR 복원 · Grafana에서 서버 지표 확인 | `docs/runbooks/share-web-domain.md:69`, `docs/runbooks/api-domain.md:39`, `monitoring/grafana-cloud/README.md:3` |
+
+서비스의 기능 이름은 `src/main/resources/shipandping/feature-map.json`에서 가져왔다. 운영 호스팅·요금제·할당 CPU·메모리는 현재 값을 확인하지 않아 생략했다.
+
+기존 배치 워커는 매분 최상위 `resources`를 전송한다. 유휴 분에는 `records: []`를 보내고 표본이 없어도 `resources: {}`를 보낸다. OS MXBean에서 `process_cpu_pct`, `system_cpu_pct`, `mem_used_pct`를 얻는다. 기존 Micrometer 계기의 차분으로 `steal_pct`(전체 CPU 시간 대비 steal 시간)와 `gc_pause_ms`(정지 타이머 합계)를 구한다. Tomcat과 Hikari 게이지에서 `busy_threads`, `db_pool_in_use`, `db_pool_max`를 읽는다. 측정할 수 없는 지표는 생략한다.
+
+기본 수신 시각은 Tomcat Coyote 요청 시작 시각이다. `queue_ms`는 MVC 핸들러 진입까지, `duration_ms`는 종료까지이며 수신 이후 시간은 한 번만 포함한다. 수신 시각이 없으면 대기를 생략한다. 서버 시계 하나가 가장 이른 활성 요청의 기한에 깨어난다. 응답 기한의 기본값은 10초이며 비동기 컨텍스트의 실제 기한을 반영한다. 완료·끊김·기한 경합에서 하나만 기록하고 관측 시각을 `ts`로 쓴다. 응답을 보내기 전 끊김·기한 초과는 상태 0, 기한을 지난 완료는 timeout이다. Hibernate 실행·직접 JDBC와 관측 가능한 외부 호출은 요청 문맥에서 각각 600000ms까지 합산한다.
+
+운영 환경 변수 변경은 필수가 아니다. 모든 진입 경로에서 루프백 프록시가 외부 `X-Request-Start`를 직접 덮어쓰도록 보장한 경우에만 `SHIP_AND_PING_TRUST_LOOPBACK_PROXY`를 켤 수 있다. 기본 구성은 Tomcat 시각을 사용한다.
+
+WSL Ubuntu·JDK 21에서 `./gradlew --offline test build`가 5분 29초에 성공했다. 1,688개 중 1,674개 통과, 조건부 건너뜀 14개, 실패·오류 0개였다. 로컬 수집기로 성공한 프로필의 재시작 중복 억제와 변경 전송, 빈 배치, 수집 장애, 프록시 시각 검증, 대기 중복 합산 방지, 끊김과 기한의 단일 기록을 확인했다. 예비 Windows 실행에서는 기존 `AuxiliaryRunnerInterruptTest`의 임시 파일 잠금이 재현됐다. Linux 예비 실행에서 드러난 오류 디스패치 경로 유실은 MVC 진입 때 경로를 보존해 수정했다.
+
+기준 커밋 `2e92e3f`와 최종 소스를 같은 WSL 호스트에서 내장 Tomcat 두 개로 띄웠다. 각각 기존 인증·배치 경로와 루프백 수집기를 사용했다. 한 클라이언트가 `GET /api/_test/slow`에 1,000건씩 순차 요청하고 매 라운드 서버 순서를 뒤집었다. 서버당 5라운드 예열 뒤 11라운드를 측정했다. 라운드 평균의 중앙값은 HTTP 왕복 567.48 → 618.57µs/요청(+51.09µs, +9.0%), 서버 JVM CPU 1,080 → 1,070µs/요청이었다. 같은 라운드끼리 뺀 왕복 차이의 중앙값은 +3.28µs였다. 서버 CPU는 `/proc` 프로세스 사용자·커널 시간 차분이다. 이 측정은 DB·외부 API를 호출하지 않는 로컬 경로에 한정된다.

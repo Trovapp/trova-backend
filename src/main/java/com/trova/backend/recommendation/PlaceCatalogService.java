@@ -1,6 +1,7 @@
 package com.trova.backend.recommendation;
 
 import com.trova.backend.config.RequestDbQueryMetrics;
+import com.trova.backend.shipandping.RequestIoTime;
 import com.trova.backend.entity.Place;
 import com.trova.backend.repository.PlaceRepository;
 import jakarta.persistence.EntityManager;
@@ -108,7 +109,13 @@ public class PlaceCatalogService {
                     statement.setObject(index++, now);
                 }
                 RequestDbQueryMetrics.recordJdbcStatements(1);
-                boolean allNew = statement.executeUpdate() == sorted.size();
+                boolean allNew;
+                RequestIoTime timer = RequestIoTime.startDirectJdbc();
+                try {
+                    allNew = statement.executeUpdate() == sorted.size();
+                } finally {
+                    timer.jdbcExecuteStatementEnd();
+                }
                 if (!allNew) {
                     // 동시 삽입된 행의 좌표도 복구해야 한다. 먼저 이 묶음의 잠금을 풀어 기존 ID순을 지킨다.
                     connection.rollback(beforeInsert);

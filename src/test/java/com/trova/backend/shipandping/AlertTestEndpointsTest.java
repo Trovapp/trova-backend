@@ -51,8 +51,21 @@ class AlertTestEndpointsTest {
             return new Sender("test", uri, "test", Duration.ofMillis(50));
         }
 
+        @Bean org.springframework.boot.web.server.WebServerFactoryCustomizer<
+                org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory> localValve() {
+            return new ShipAndPingConfig().shipAndPingArrival(false);
+        }
+
+        @Bean org.springframework.web.servlet.config.annotation.WebMvcConfigurer localHandlerTiming() {
+            return new ShipAndPingConfig();
+        }
+
+        @Bean org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer localJdbcTiming() {
+            return new ShipAndPingConfig().shipAndPingJdbcTime();
+        }
+
         @Bean FilterRegistrationBean<RequestFilter> localRequestFilter(Sender sender) {
-            return new ShipAndPingConfig().shipAndPingFilter(sender);
+            return new ShipAndPingConfig().shipAndPingFilter(sender, Duration.ofSeconds(10));
         }
 
         @Override public void close() {
@@ -83,12 +96,15 @@ class AlertTestEndpointsTest {
             assertThat(elapsed).isLessThan(Duration.ofSeconds(1));
 
             JsonNode slow = assertRecord("/api/_test/slow", 200);
+            assertThat(slow.get("queue_ms").asLong()).isBetween(0L, slow.get("duration_ms").asLong());
+            assertThat(slow.get("timeout_ms").asLong()).isPositive();
             assertThat(slow.get("duration_ms").asLong()).isBetween(0L, 999L);
         }
     }
 
     private HttpRequest request(String path) {
         return HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
+                .header("X-Request-Start", Long.toString(System.currentTimeMillis() - 5000))
                 .timeout(Duration.ofSeconds(15)).GET().build();
     }
 

@@ -1,6 +1,7 @@
 package com.trova.backend.repository;
 
 import com.trova.backend.config.RequestDbQueryMetrics;
+import com.trova.backend.shipandping.RequestIoTime;
 import com.trova.backend.entity.ApiCallLog;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -41,6 +42,11 @@ public class ApiCallLogJdbcRepository {
         };
         List<Object[]> args = Collections.nCopies(count, row);
         RequestDbQueryMetrics.recordJdbcStatements(args.size());
-        jdbcTemplate.batchUpdate(INSERT_SQL, args);
+        RequestIoTime timer = RequestIoTime.startDirectJdbc();
+        try {
+            jdbcTemplate.batchUpdate(INSERT_SQL, args);
+        } finally {
+            timer.jdbcExecuteStatementEnd();
+        }
     }
 }
