@@ -2,10 +2,14 @@ package com.trova.backend.security;
 
 import com.trova.backend.entity.User;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
 
 class JwtServiceTest {
 
@@ -47,6 +51,21 @@ class JwtServiceTest {
         }
 
         assertThatThrownBy(() -> jwtService.verify(token)).isInstanceOf(JwtException.class);
+    }
+
+    @Test
+    void 같은_서명키의_검증_파서는_한_번만_만든다() {
+        User user = new User("google", "42", "테스트", null);
+        setId(user, 7L);
+        String app = jwtService.issue(user);
+        String admin = jwtService.issueAdminWeb(user);
+
+        try (MockedStatic<Jwts> factories = mockStatic(Jwts.class, CALLS_REAL_METHODS)) {
+            JwtService verifier = new JwtService(SECRET);
+            assertThat(verifier.parse(app).adminWeb()).isFalse();
+            assertThat(verifier.parse(admin).adminWeb()).isTrue();
+            factories.verify(Jwts::parser);
+        }
     }
 
     private void setId(User user, Long id) {

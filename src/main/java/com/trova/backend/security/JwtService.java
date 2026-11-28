@@ -2,6 +2,7 @@ package com.trova.backend.security;
 
 import com.trova.backend.entity.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class JwtService {
     }
 
     private final SecretKey key;
+    private final JwtParser parser;
     private final Duration expiry;
 
     @Autowired
@@ -36,6 +38,7 @@ public class JwtService {
 
     JwtService(String secret, Duration expiry) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.parser = Jwts.parser().verifyWith(key).build();
         this.expiry = expiry;
     }
 
@@ -70,11 +73,7 @@ public class JwtService {
     }
 
     public VerifiedToken parse(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        Claims claims = parser.parseSignedClaims(token).getPayload();
         boolean adminWeb = claims.getAudience() != null && claims.getAudience().contains(ADMIN_WEB_AUDIENCE);
         // 예전 토큰은 iat가 없을 수 있다.
         Instant issuedAt = claims.getIssuedAt() == null ? null : claims.getIssuedAt().toInstant();
