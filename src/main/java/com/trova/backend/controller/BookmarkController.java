@@ -17,6 +17,7 @@ import java.util.Optional;
 @RequestMapping("/api/bookmarks")
 public class BookmarkController {
 
+    private final UserListReads listReads;
     private final CurrentUserService currentUserService;
     private final BookmarkService bookmarkService;
     private final BookmarkRepository bookmarkRepository;
@@ -24,8 +25,10 @@ public class BookmarkController {
 
     public BookmarkController(
             CurrentUserService currentUserService, BookmarkService bookmarkService, BookmarkRepository bookmarkRepository,
-            TripService tripService
+            TripService tripService,
+            UserListReads listReads
     ) {
+        this.listReads = listReads;
         this.currentUserService = currentUserService;
         this.bookmarkService = bookmarkService;
         this.bookmarkRepository = bookmarkRepository;
@@ -100,9 +103,8 @@ public class BookmarkController {
     @GetMapping
     public List<BookmarkResponse> list(Authentication authentication) {
         Long userId = currentUserService.resolveUserId(authentication);
-        return bookmarkRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
-                .map(BookmarkResponse::from)
-                .toList();
+        return listReads.bookmarks(userId, () -> bookmarkRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream().map(BookmarkResponse::from).toList());
     }
 
     @PostMapping

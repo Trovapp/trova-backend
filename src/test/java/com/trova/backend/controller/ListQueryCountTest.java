@@ -106,7 +106,9 @@ class ListQueryCountTest {
     }
 
     private long statements(String path, String bearer, int expectedSize) throws Exception {
-        mockMvc.perform(get(path).header(HttpHeaders.AUTHORIZATION, bearer)).andExpect(status().isOk()); // 예열
+        // JWT 사용자의 존재 확인만 예열하고, 찜 목록의 N+1 단언은 캐시 미스에서 잰다.
+        String warmup = path.equals("/api/bookmarks") ? "/api/bookmarks/folders" : path;
+        mockMvc.perform(get(warmup).header(HttpHeaders.AUTHORIZATION, bearer)).andExpect(status().isOk());
         Statistics stats = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
         stats.clear();
         mockMvc.perform(get(path).header(HttpHeaders.AUTHORIZATION, bearer))
