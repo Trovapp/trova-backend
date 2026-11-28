@@ -1,5 +1,6 @@
 package com.trova.backend.recommendation;
 
+import com.trova.backend.shipandping.RequestIoTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -107,7 +108,7 @@ public class GooglePlacesApiClientImpl implements GooglePlacesApiClient {
 
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
             try {
-                return call.get();
+                return RequestIoTime.googlePlacesCall(call);
             } catch (HttpClientErrorException.TooManyRequests
                      | HttpServerErrorException
                      | ResourceAccessException e) {

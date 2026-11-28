@@ -1,6 +1,7 @@
 package com.trova.backend.repository;
 
 import com.trova.backend.config.RequestDbQueryMetrics;
+import com.trova.backend.shipandping.RequestIoTime;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -32,6 +33,11 @@ public class PlaceEmbeddingJdbcRepository {
                 .map(e -> new Object[]{e.getValue(), e.getKey()})
                 .toList();
         RequestDbQueryMetrics.recordJdbcStatements(args.size());
-        jdbcTemplate.batchUpdate(UPDATE_SQL, args);
+        RequestIoTime timer = RequestIoTime.startDirectJdbc();
+        try {
+            jdbcTemplate.batchUpdate(UPDATE_SQL, args);
+        } finally {
+            timer.jdbcExecuteStatementEnd();
+        }
     }
 }

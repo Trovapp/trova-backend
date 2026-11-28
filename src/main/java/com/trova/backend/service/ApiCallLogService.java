@@ -3,6 +3,7 @@ package com.trova.backend.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trova.backend.entity.ApiCallLog;
+import com.trova.backend.shipandping.RequestIoTime;
 import com.trova.backend.repository.ApiCallLogJdbcRepository;
 import com.trova.backend.repository.ApiCallLogRepository;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -52,6 +53,7 @@ public class ApiCallLogService {
         if (count <= 0) {
             return;
         }
+        RequestIoTime.recordExternal(provider, latencyMs);
         try {
             apiCallLogJdbcRepository.insertCopies(new ApiCallLog(
                     provider, operation, null, latencyMs, success, errorMessage, null, null, null), count);
@@ -91,6 +93,7 @@ public class ApiCallLogService {
             String errorMessage, Integer promptTokens, Integer responseTokens, Integer totalTokens,
             Integer attempts, Long waitedMs, ApiCallLog.TokenDetail tokenDetail
     ) {
+        RequestIoTime.recordExternal(provider, latencyMs);
         apiCallLogRepository.save(new ApiCallLog(
                 provider, operation, jobId, latencyMs, success, errorMessage,
                 promptTokens, responseTokens, totalTokens).withRetry(attempts, waitedMs).withTokenDetail(tokenDetail));

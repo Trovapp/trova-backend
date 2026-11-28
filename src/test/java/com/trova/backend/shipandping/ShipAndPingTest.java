@@ -4,6 +4,26 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import java.util.Properties;
+import java.nio.file.Files;
+import io.micrometer.core.instrument.FunctionCounter;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.http.MediaType;
+import java.util.Set;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.nio.file.Path;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import jakarta.servlet.AsyncEvent;
+import jakarta.servlet.AsyncListener;
+import org.apache.catalina.connector.ClientAbortException;
+import org.junit.jupiter.api.io.TempDir;
+import org.springframework.mock.web.MockAsyncContext;
+import tools.jackson.databind.JsonNode;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -73,6 +93,237 @@ class ShipAndPingTest {
         new RequestFilter(sender).doFilter(req, new MockHttpServletResponse(), (r, s) -> {});
     }
 
+    @Test void 프로필은_같은_인증으로_변경시에만_보내고_쉬는_분도_기록한다(
+            @TempDir Path dir) throws Exception {
+        String credential = UUID.randomUUID().toString();
+        LinkedBlockingQueue<String> profiles = new LinkedBlockingQueue<>();
+        server.createContext("/v1/profile", ex -> {
+            if ("POST".equals(ex.getRequestMethod()) &&
+                    ("Bearer " + credential).equals(ex.getRequestHeaders().getFirst("Authorization"))) {
+                profiles.add(new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            }
+            ex.sendResponseHeaders(204, -1);
+            ex.close();
+        });
+        server.removeContext("/v1/ingest");
+        server.createContext("/v1/ingest", ex -> {
+            bodies.add(new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            ex.sendResponseHeaders(503, -1);
+            ex.close();
+        });
+        for (int startup = 0; startup < 2; startup++) {
+            sender = new Sender(credential, endpoint, "build", Duration.ofSeconds(30));
+            sender.connect(AppProfile.current(), dir.resolve("receipt"), Map::of, Duration.ofMillis(35));
+            String batch = bodies.poll(5, TimeUnit.SECONDS);
+            assertThat(batch).isNotNull();
+            assertThat(json.readTree(batch).get("records").size()).isZero();
+            assertThat(json.readTree(batch).get("resources").isObject()).isTrue();
+            assertThat(json.readTree(batch).get("platform").asString()).isEqualTo("server");
+            sender.close();
+            bodies.clear();
+        }
+        assertThat(profiles).hasSize(1);
+        String profile = profiles.remove();
+        assertThat(profile).doesNotContain(credential, "://", "@");
+        JsonNode tree = json.readTree(profile);
+        assertThat(tree.get("services").size()).isLessThanOrEqualTo(40);
+        for (JsonNode service : tree.get("services")) {
+            for (String field : List.of("feature", "name")) {
+                assertThat(service.get(field).asString()).matches("[가-힣A-Za-z0-9 ]{1,40}");
+            }
+            assertThat(service.get("kind").asString()).isIn("map", "payment", "ai", "mail", "storage", "other");
+        }
+        assertThat(tree.get("rollback").asString()).matches("[가-힣A-Za-z0-9 ]{1,80}");
+        assertThat(tree.get("metrics").asString()).matches("[가-힣A-Za-z0-9 ]{1,120}");
+        assertThat(json.readTree(profile)).isEqualTo(json.readTree("""
+                {"language":"Java","framework":"Spring Boot","database":"postgres",
+                 "deploy":"JAR 교체 후 서비스 재시작","rollback":"직전 백엔드 JAR 복원","metrics":"Grafana에서 서버 지표 확인",
+                 "services":[{"feature":"장소 검색","kind":"map","name":"Google Places"},
+                             {"feature":"대화 메시지 보내기","kind":"ai","name":"Gemini"},
+                             {"feature":"공유 영상 분석 요청","kind":"map","name":"Kakao Local"},
+                             {"feature":"테스트 푸시 보내기","kind":"other","name":"Expo Push"}]}
+                """));
+        sender = new Sender(credential, endpoint, "build", Duration.ofSeconds(30));
+        sender.connect(Map.of("language", "Java"), dir.resolve("receipt"), Map::of, Duration.ofMillis(35));
+        assertThat(json.readTree(profiles.poll(5, TimeUnit.SECONDS)).size()).isOne();
+    }
+
+    @Test void 프로필_503은_영수증_없이_같은_본문으로_재시도하고_204에서_저장한다(@TempDir Path dir) throws Exception {
+        Path receipt = dir.resolve("receipt");
+        LinkedBlockingQueue<String> attempts = new LinkedBlockingQueue<>();
+        AtomicInteger count = new AtomicInteger();
+        CountDownLatch allowSuccess = new CountDownLatch(1);
+        server.createContext("/v1/profile", ex -> {
+            try (ex) {
+                attempts.add(new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+                int status = 503;
+                if (count.incrementAndGet() > 1) {
+                    try {
+                        if (allowSuccess.await(5, TimeUnit.SECONDS)) status = 204;
+                    } catch (InterruptedException interrupted) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+                ex.sendResponseHeaders(status, -1);
+            }
+        });
+        sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
+        sender.connect(AppProfile.current(), receipt, Map::of, Duration.ofMillis(50));
+        try {
+            String first = attempts.poll(5, TimeUnit.SECONDS);
+            assertThat(first).isNotNull();
+            assertThat(attempts.poll(5, TimeUnit.SECONDS)).isEqualTo(first);
+            assertThat(receipt).doesNotExist();
+        } finally {
+            allowSuccess.countDown();
+        }
+        assertThat(bodies.poll(5, TimeUnit.SECONDS)).isNotNull();
+        sender.close();
+        assertThat(receipt).isRegularFile();
+        assertThat(count.get()).isEqualTo(2);
+    }
+
+    @Test void CPU_steal은_두_표본의_모드별_시간_차분으로_계산한다() {
+        SimpleMeterRegistry registry = new SimpleMeterRegistry();
+        try {
+            AtomicInteger steal = new AtomicInteger(90);
+            AtomicInteger user = new AtomicInteger(10);
+            FunctionCounter.builder("host.cpu.time", steal, AtomicInteger::get).tag("mode", "steal").register(registry);
+            FunctionCounter.builder("host.cpu.time", user, AtomicInteger::get).tag("mode", "user").register(registry);
+            ServerResources resources = new ServerResources(registry);
+            steal.addAndGet(2);
+            user.addAndGet(6);
+            assertThat(resources.get().get("steal_pct").doubleValue()).isEqualTo(25.0);
+            assertThat(resources.get()).doesNotContainKey("steal_pct");
+        } finally {
+            registry.close();
+        }
+    }
+
+    @Test void 지도_호출_시간과_내부_로그가_외부_시간에_중복_합산되지_않는다() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestIoTime.Totals times = new RequestIoTime.Totals();
+        request.setAttribute(RequestIoTime.ATTRIBUTE, times);
+        ServletRequestAttributes attrs = new ServletRequestAttributes(request);
+        RequestContextHolder.setRequestAttributes(attrs);
+        try {
+            assertThat(RequestIoTime.googlePlacesCall(() -> "done")).isEqualTo("done");
+            Long measured = times.externalMillis();
+            assertThat(measured).isNotNull();
+            RequestIoTime.recordExternal("google-places", 123);
+            RequestIoTime.recordExternal("internal", 456);
+            RequestIoTime.recordExternal("kakao", 17);
+            assertThat(times.externalMillis()).isEqualTo(measured + 17);
+        } finally {
+            RequestContextHolder.resetRequestAttributes();
+            attrs.requestCompleted();
+        }
+    }
+
+    @Test void 자원은_실측한_개수와_구간의_GC_정지합을_보낸다() {
+        SimpleMeterRegistry registry = new SimpleMeterRegistry();
+        try {
+            Timer pauses = registry.timer("jvm.gc.pause");
+            pauses.record(30, TimeUnit.MILLISECONDS);
+            ServerResources sampler = new ServerResources(registry);
+            registry.gauge("hikaricp.connections.active", new AtomicInteger(3));
+            pauses.record(7, TimeUnit.MILLISECONDS);
+            Map<String, Number> values = sampler.get();
+            assertThat(values.get("gc_pause_ms").doubleValue()).isEqualTo(7);
+            assertThat(values.get("db_pool_in_use").intValue()).isEqualTo(3);
+            assertThat(values).doesNotContainKeys("db_pool_max", "event_loop_lag_ms");
+            for (Map.Entry<String, Number> field : values.entrySet()) {
+                if (field.getKey().endsWith("_pct")) assertThat(field.getValue().doubleValue()).isBetween(0.0, 100.0);
+            }
+        } finally {
+            registry.close();
+        }
+    }
+
+    @Test void 요청별_DB와_외부_시간은_합친_뒤_상한을_적용한다() {
+        RequestIoTime.Totals times = new RequestIoTime.Totals();
+        assertThat(times.dbMillis()).isNull();
+        assertThat(times.externalMillis()).isNull();
+        times.db(950000);
+        times.db(950000);
+        times.external(5);
+        times.external(6);
+        assertThat(times.dbMillis()).isEqualTo(1);
+        assertThat(times.externalMillis()).isEqualTo(11);
+        times.db(TimeUnit.MINUTES.toNanos(20));
+        times.external(Long.MAX_VALUE);
+        assertThat(times.dbMillis()).isEqualTo(600000);
+        assertThat(times.externalMillis()).isEqualTo(600000);
+    }
+
+    @Test void 프록시의_유효한_시각만_사용한다() {
+        long now = 1800000000123L;
+        assertThat(ArrivalValve.arrival(now, now - 15, "t=1800000000.001")).isEqualTo(now - 122);
+        assertThat(ArrivalValve.arrival(now, now - 15, "1800000000000")).isEqualTo(now - 123);
+        for (String invalid : List.of("0", "1800000000124", "1799999400122", "junk", "1e12", "-1")) {
+            assertThat(ArrivalValve.arrival(now, now - 15, invalid)).isEqualTo(now - 15);
+        }
+        assertThat(ArrivalValve.arrival(now, -1, null)).isZero();
+    }
+
+    @Test void 수신부터_기한을_재고_늦은_완료를_중복_기록하지_않는다() throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofMillis(15));
+        RequestFilter filter = new RequestFilter(sender, 220);
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/trips/1");
+        request.setAttribute(ArrivalValve.RECEIVED, System.currentTimeMillis() - 180);
+        filter.doFilter(request, new MockHttpServletResponse(), (r, s) -> {
+            try {
+                String batch = bodies.poll(4, TimeUnit.SECONDS);
+                assertThat(batch).isNotNull();
+                JsonNode row = json.readTree(batch).get("records").get(0);
+                assertThat(row.get("timeout_ms").asInt()).isEqualTo(220);
+                assertThat(row.get("error_kind").asString()).isEqualTo("timeout");
+                assertThat(row.get("status").asInt()).isZero();
+                assertThat(row.get("queue_ms").asLong()).isGreaterThanOrEqualTo(180);
+                assertThat(row.get("duration_ms").asLong()).isGreaterThanOrEqualTo(220);
+            } catch (InterruptedException e) {
+                throw new AssertionError(e);
+            }
+        });
+        sender.close();
+        assertThat(bodies).isEmpty();
+    }
+
+    @Test void 수신부터_응답까지_대기시간을_한번만_포함한다() throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/trips/1");
+        long received = System.currentTimeMillis() - 500;
+        request.setAttribute(ArrivalValve.RECEIVED, received);
+        new RequestFilter(sender).doFilter(request, new MockHttpServletResponse(), (r, s) ->
+                ((RequestFilter.Observation) r.getAttribute(RequestFilter.ACTIVE)).handlerStarted());
+        long upper = System.currentTimeMillis() - received + 2;
+        sender.close();
+        JsonNode record = json.readTree(bodies.remove()).get("records").get(0);
+        assertThat(record.get("queue_ms").asLong()).isBetween(499L, upper);
+        assertThat(record.get("duration_ms").asLong()).isBetween(record.get("queue_ms").asLong(), upper);
+    }
+
+    @Test void 수신시각_없는_요청과_비동기_끊김을_한번씩_기록한다() throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
+        요청();
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/trips/1");
+        request.setAsyncSupported(true);
+        new RequestFilter(sender).doFilter(request, new MockHttpServletResponse(), (r, s) -> r.startAsync());
+        MockAsyncContext context = (MockAsyncContext) request.getAsyncContext();
+        for (AsyncListener listener : context.getListeners()) {
+            listener.onError(new AsyncEvent(context, null, null,
+                    new ClientAbortException("private")));
+        }
+        context.complete();
+        sender.close();
+        JsonNode records = json.readTree(bodies.remove()).get("records");
+        assertThat(records.size()).isEqualTo(2);
+        assertThat(records.get(0).has("queue_ms")).isFalse();
+        assertThat(records.get(0).get("timeout_ms").asInt()).isEqualTo(10000);
+        assertThat(records.get(1).get("error_kind").asString()).isEqualTo("aborted");
+        assertThat(records.get(1).get("status").asInt()).isZero();
+    }
+
     @Test void 오십번째_요청에서_개인정보_없이_보낸다() throws Exception {
         sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
         for (int i = 0; i < 49; i++) 요청();
@@ -136,6 +387,85 @@ class ShipAndPingTest {
                 .map(row -> row.get("status").asInt()).toList()).containsExactly(429, 503, 200, 201);
     }
 
+    @ParameterizedTest
+    @ValueSource(longs = {60000, 0})
+    void SSE는_연결_수립만_보내고_이후_기한과_끊김을_기록하지_않는다(long emitterTimeout) throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofMillis(5));
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/trips/1/events");
+        request.setAsyncSupported(true);
+        // Spring may not have flushed the response headers until the first emitted event.
+        request.setAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE, Set.of(MediaType.TEXT_EVENT_STREAM));
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        new RequestFilter(sender).doFilter(request, response, (r, s) -> r.startAsync().setTimeout(emitterTimeout));
+        String sent = bodies.poll(2, TimeUnit.SECONDS);
+        assertThat(sent).as("최초 디스패치가 반환하면 열린 스트림의 수립 결과가 도착한다").isNotNull();
+        JsonNode record = json.readTree(sent).get("records").get(0);
+        assertThat(record.get("status").asInt()).isEqualTo(200);
+        assertThat(record.has("error_kind")).isFalse();
+        assertThat(record.get("timeout_ms").asLong()).isEqualTo(10000);
+        MockAsyncContext context = (MockAsyncContext) request.getAsyncContext();
+        for (AsyncListener listener : context.getListeners()) {
+            listener.onTimeout(new AsyncEvent(context));
+            listener.onError(new AsyncEvent(context, request, response, new ClientAbortException()));
+        }
+        context.complete();
+        sender.close();
+        assertThat(bodies).isEmpty();
+    }
+
+    @Test void SSE_수립이_기본_기한보다_늦어도_디스패치_반환_전에는_기록하지_않는다() throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofMillis(5));
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/trips/1/events");
+        request.setAsyncSupported(true);
+        request.setAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE, Set.of(MediaType.TEXT_EVENT_STREAM));
+        new RequestFilter(sender, 50).doFilter(request, new MockHttpServletResponse(), (r, s) -> {
+            r.startAsync().setTimeout(0);
+            try {
+                assertThat(bodies.poll(250, TimeUnit.MILLISECONDS)).isNull();
+            } catch (InterruptedException ex) {
+                throw new AssertionError(ex);
+            }
+        });
+        sender.close();
+        JsonNode records = json.readTree(bodies.remove()).get("records");
+        assertThat(records.size()).isOne();
+        assertThat(records.get(0).get("status").asInt()).isEqualTo(200);
+        assertThat(records.get(0).get("duration_ms").asLong()).isGreaterThanOrEqualTo(200);
+        assertThat(records.get(0).has("error_kind")).isFalse();
+    }
+
+    @Test void 단일_비동기_응답에_기한이_없으면_기본_기한을_지나도_완료를_기록한다() throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofMillis(5));
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/trips/1");
+        request.setAsyncSupported(true);
+        new RequestFilter(sender, 100).doFilter(request, new MockHttpServletResponse(),
+                (r, s) -> r.startAsync().setTimeout(0));
+        assertThat(bodies.poll(250, TimeUnit.MILLISECONDS)).isNull();
+        request.getAsyncContext().complete();
+        sender.close();
+        JsonNode record = json.readTree(bodies.remove()).get("records").get(0);
+        assertThat(record.get("status").asInt()).isEqualTo(200);
+        assertThat(record.get("timeout_ms").asLong()).isZero();
+        assertThat(record.has("error_kind")).isFalse();
+    }
+
+    @Test void 단일_비동기_응답은_컨텍스트의_기한에_한번만_기록한다() throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofMillis(5));
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/trips/1");
+        request.setAsyncSupported(true);
+        new RequestFilter(sender).doFilter(request, new MockHttpServletResponse(), (r, s) -> {
+            s.setContentType("application/json");
+            r.startAsync().setTimeout(100);
+        });
+        JsonNode row = json.readTree(bodies.poll(4, TimeUnit.SECONDS)).get("records").get(0);
+        assertThat(row.get("timeout_ms").asLong()).isEqualTo(100);
+        assertThat(row.get("duration_ms").asLong()).isGreaterThanOrEqualTo(100);
+        assertThat(row.get("error_kind").asString()).isEqualTo("timeout");
+        request.getAsyncContext().complete();
+        sender.close();
+        assertThat(bodies).isEmpty();
+    }
+
     @Test void 로그아웃은_인증_경로로_기록하고_OPTIONS는_제외한다() throws Exception {
         sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
         RequestFilter filter = new RequestFilter(sender);
@@ -186,6 +516,11 @@ class ShipAndPingTest {
     @org.springframework.context.annotation.Profile("shipandping-standalone-test")
     @RestController
     static class ErrorEndpoint {
+        @GetMapping("/api/abort")
+        String aborted() throws ClientAbortException {
+            throw new ClientAbortException();
+        }
+
         @GetMapping("/api/trips/{id}")
         String trip() {
             throw new ResponseStatusException(
@@ -193,8 +528,7 @@ class ShipAndPingTest {
         }
     }
 
-    @Test void MVC에서_처리한_예외도_원래_클래스만_보낸다() throws Exception {
-        sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
+    private MockMvc errorMvc() {
         MockMvc mvc =
                 MockMvcBuilders.standaloneSetup(new ErrorEndpoint())
                         .addFilters(new RequestFilter(sender)).build();
@@ -203,9 +537,27 @@ class ShipAndPingTest {
                         mvc.getDispatcherServlet().getWebApplicationContext().getBean("handlerExceptionResolver");
         List<HandlerExceptionResolver> resolvers =
                 new ArrayList<>(composite.getExceptionResolvers());
+        // Let MVC resolve the client disconnect so it does not propagate through the filter.
+        resolvers.add(0, (req, res, handler, ex) ->
+                ex instanceof ClientAbortException ? new org.springframework.web.servlet.ModelAndView() : null);
         new ShipAndPingConfig().extendHandlerExceptionResolvers(resolvers);
         composite.setExceptionResolvers(resolvers);
-        mvc.perform(MockMvcRequestBuilders.get("/api/trips/private-id"))
+        return mvc;
+    }
+
+    @Test void MVC_리졸버가_처리한_클라이언트_끊김도_aborted로_보낸다() throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
+        errorMvc().perform(MockMvcRequestBuilders.get("/api/abort"))
+                .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ClientAbortException.class));
+        sender.close();
+        JsonNode row = json.readTree(bodies.remove()).get("records").get(0);
+        assertThat(row.get("error_kind").asString()).isEqualTo("aborted");
+        assertThat(row.get("status").asInt()).isZero();
+    }
+
+    @Test void MVC에서_처리한_예외도_원래_클래스만_보낸다() throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
+        errorMvc().perform(MockMvcRequestBuilders.get("/api/trips/private-id"))
                 .andExpect(MockMvcResultMatchers.status().isConflict());
         sender.close();
         assertThat(bodies.poll()).contains("/api/trips/:id", "CONFLICT", "ResponseStatusException")
@@ -238,7 +590,7 @@ class ShipAndPingTest {
             exchange.close();
         });
         sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
-        RequestRecord record = new RequestRecord("request", "/api/trips", "GET", 200, 1, "now", null, null);
+        RequestRecord record = new RequestRecord("request", "/api/trips", "GET", 200, 1, "now", null, null, null, 10000, null, null);
         for (int i = 0; i < 50; i++) sender.offer(record);
         assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue();
         try {
@@ -268,7 +620,7 @@ class ShipAndPingTest {
             }
         });
         sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30), Duration.ofMillis(100));
-        RequestRecord record = new RequestRecord("request", "/api/trips", "GET", 200, 1, "now", null, null);
+        RequestRecord record = new RequestRecord("request", "/api/trips", "GET", 200, 1, "now", null, null, null, 10000, null, null);
         try {
             for (int i = 0; i < 50; i++) sender.offer(record);
             assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue();
@@ -282,10 +634,60 @@ class ShipAndPingTest {
         }
     }
 
+    @Test void 분간_배치를_64KiB로_분할해도_자원은_한_묶음에만_실린다(@TempDir Path dir) throws Exception {
+        sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
+        // Wait until the initial profile check has left the worker before queuing a sub-threshold batch.
+        CountDownLatch checking = new CountDownLatch(1);
+        CountDownLatch queued = new CountDownLatch(1);
+        server.createContext("/v1/profile", ex -> {
+            try (ex) {
+                checking.countDown();
+                try {
+                    queued.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                }
+                ex.sendResponseHeaders(204, -1);
+            }
+        });
+        sender.connect(AppProfile.current(), dir.resolve("receipt"), () -> Map.of("busy_threads", 3),
+                Duration.ofMillis(100));
+        try {
+            assertThat(checking.await(5, TimeUnit.SECONDS)).isTrue();
+            for (int i = 0; i < 4; i++) {
+                sender.offer(new RequestRecord("request", "/api/" + "x".repeat(20000), "GET", 200,
+                        1, "now", null, null, null, 10000, null, null));
+            }
+        } finally {
+            queued.countDown();
+        }
+        int records = 0;
+        int batches = 0;
+        int samples = 0;
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (records < 4 && System.nanoTime() < deadline) {
+            String body = bodies.poll(5, TimeUnit.SECONDS);
+            assertThat(body).isNotNull();
+            assertThat(body.getBytes(StandardCharsets.UTF_8).length).isLessThanOrEqualTo(65536);
+            JsonNode batch = json.readTree(body);
+            int count = batch.get("records").size();
+            if (count == 0) continue; // An idle tick may already have been waiting during the profile POST.
+            records += count;
+            batches++;
+            if (batch.has("resources")) {
+                assertThat(batch.get("resources").get("busy_threads").asInt()).isEqualTo(3);
+                samples++;
+            }
+        }
+        assertThat(records).isEqualTo(4);
+        assertThat(batches).isGreaterThan(1);
+        assertThat(samples).isOne();
+    }
+
     @Test void 크기와_건수_상한을_지키며_모든_기록을_보낸다() {
         sender = new Sender("test-key", endpoint, "build", Duration.ofSeconds(30));
         for (int i = 0; i < 180; i++) sender.offer(new RequestRecord("request", "/api/" + "가".repeat(700),
-                "GET", 200, 5, "2026-11-26T00:00:00Z", null, null));
+                "GET", 200, 5, "2026-11-26T00:00:00Z", null, null, null, 10000, null, null));
         sender.close();
         int total = 0;
         for (String body : bodies) {
