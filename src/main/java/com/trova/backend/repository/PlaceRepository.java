@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface PlaceRepository extends JpaRepository<Place, Long>, PlaceReviewUpdates {
+public interface PlaceRepository extends JpaRepository<Place, Long>, PlaceReviewUpdates, PlaceCatalogUpdates {
     // reviewSnippets(@ElementCollection, LAZY)를 findById 시점에 같이 조회한다.
     // PlaceReviewService가 이 결과를 짧게 읽고 바로 반환한 뒤 트랜잭션이 끝나므로,
     // 여기서 미리 fetch해두지 않으면(open-in-view: false 환경에서) 호출 측이
@@ -26,13 +26,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, PlaceReview
     // N+1 방지 — Plan B의 실측 부하테스트에서 후보를 하나씩 조회하다 걸렸던 문제라
     // 처음부터 배치 조회로 만든다.
     List<Place> findByGooglePlaceIdIn(List<String> googlePlaceIds);
-
-    // detached 후보 전체를 merge하면 다른 요청의 리뷰/전화 갱신을 덮을 수 있어 태그 두 컬럼만 저장한다.
-    @Modifying
-    @Transactional
-    @Query("update Place p set p.space = :space, p.spaceTaggedAt = :taggedAt where p.id = :id")
-    int updateSpaceTag(@Param("id") Long id, @Param("space") String space,
-                       @Param("taggedAt") LocalDateTime taggedAt);
 
     // 동시에 같은 장소를 저장하려는 요청이 있어도 유니크 제약 에러 없이 한쪽만 저장된다(#37).
     // 예외를 잡는 방식은 호출 측 트랜잭션(TripService.resolveDetailsPlace)이 Postgres에서
@@ -54,14 +47,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, PlaceReview
             @Param("userRatingCount") Integer userRatingCount, @Param("priceLevel") String priceLevel,
             @Param("latitude") Double latitude, @Param("longitude") Double longitude,
             @Param("address") String address, @Param("lastSyncedAt") LocalDateTime lastSyncedAt);
-
-    @Modifying
-    @Query("""
-            update Place p set p.latitude = :latitude, p.longitude = :longitude,
-                p.address = coalesce(p.address, :address)
-            where p.id = :id and (p.latitude is null or p.longitude is null)
-            """)
-    int repairMissingLocation(Long id, double latitude, double longitude, String address);
 
     // embedding은 pgvector 타입이라 Place 엔티티에 JPA 필드로 매핑하지 않는다 — H2
     // 테스트 DB가 vector 타입을 모르기 때문에(스키마 생성 시 전체 테스트 스위트가

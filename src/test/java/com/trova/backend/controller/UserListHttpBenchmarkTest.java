@@ -2,6 +2,8 @@ package com.trova.backend.controller;
 
 import com.sun.management.OperatingSystemMXBean;
 import com.trova.backend.entity.Bookmark;
+import com.trova.backend.entity.BookmarkFolder;
+import com.trova.backend.repository.BookmarkFolderRepository;
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.ProcessingJob;
 import com.trova.backend.entity.SavedPlace;
@@ -49,6 +51,7 @@ class UserListHttpBenchmarkTest {
     @Autowired private UserRepository users;
     @Autowired private TripRepository trips;
     @Autowired private BookmarkRepository bookmarks;
+    @Autowired private BookmarkFolderRepository folders;
     @Autowired private SavedPlaceRepository saved;
     @Autowired private ProcessingJobRepository jobs;
     @Autowired private PlaceRepository places;
@@ -62,30 +65,44 @@ class UserListHttpBenchmarkTest {
             LocalDate day = LocalDate.of(2026, 1, 1);
             trips.save(new Trip(user, "Trip", day, day));
             ProcessingJob job = jobs.save(new ProcessingJob(user, "https://example.test/video", SourcePlatform.YOUTUBE));
+            BookmarkFolder folder = folders.save(new BookmarkFolder(user, "Bench", "#999999"));
+            Bookmark bookmark = null;
             for (int row = 0; row < 5; row++) {
                 saved.save(new SavedPlace(job, user, "Place " + row, "Region", "cafe", 1.0, 1.0));
                 Place place = places.save(new Place("benchmark-" + account + "-" + row, "Bookmark", "cafe",
                         4.0, 1, null, 1.0, 1.0, "Region"));
-                bookmarks.save(new Bookmark(user, place));
+                bookmark = bookmarks.save(new Bookmark(user, place));
             }
             String bearer = "Bearer " + jwt.issue(user);
-            accounts.add(List.of(request("places", bearer), request("trips", bearer), request("bookmarks", bearer)));
+            String path = "bookmarks/" + bookmark.getId();
+            accounts.add(List.of(request("places", bearer).build(), request("trips", bearer).build(),
+                    request("bookmarks", bearer).build(), move(path, bearer, folder.getId()), move(path, bearer, null)));
         }
         try (HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build()) {
-            sample(client, accounts, 1, 10);
-            sample(client, accounts, 200, 60);
+            int errors = sample(client, accounts, 1, 10, false);
+            errors += sample(client, accounts, 200, 60, false);
+            errors += sample(client, accounts, 200, 60, true);
+            assertThat(errors).as("HTTP errors and timeouts across all phases").isZero();
         }
     }
 
-    private HttpRequest request(String path, String bearer) {
-        return HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/api/" + path))
-                .timeout(Duration.ofSeconds(10)).header("Authorization", bearer).build();
+    private HttpRequest move(String path, String bearer, Long folderId) {
+        return request(path, bearer).header("Content-Type", "application/json")
+                .method("PATCH", HttpRequest.BodyPublishers.ofString("{\"folderId\":" + folderId + "}")).build();
     }
 
-    private static void sample(HttpClient client, List<List<HttpRequest>> accounts, int vus, int seconds) throws Exception {
+    private HttpRequest.Builder request(String path, String bearer) {
+        return HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/api/" + path))
+                .timeout(Duration.ofSeconds(10)).header("Authorization", bearer);
+    }
+
+    private static int sample(HttpClient client, List<List<HttpRequest>> accounts, int vus, int seconds,
+                              boolean mixed) throws Exception {
         OperatingSystemMXBean os = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
         List<Long> times = Collections.synchronizedList(new ArrayList<>());
         AtomicInteger errors = new AtomicInteger();
+        AtomicInteger rejected = new AtomicInteger();
+        AtomicInteger writes = new AtomicInteger();
         List<Callable<Void>> workers = new ArrayList<>();
         long start = System.nanoTime();
         long deadline = start + TimeUnit.SECONDS.toNanos(seconds);
@@ -97,16 +114,20 @@ class UserListHttpBenchmarkTest {
                 int cycle = index;
                 while (System.nanoTime() < deadline) {
                     int slot = cycle++ % 5;
-                    HttpRequest request = requests.get(slot < 3 ? 0 : slot - 2);
+                    boolean write = mixed && index < 4;
+                    HttpRequest request = requests.get(write ? 3 + cycle % 2 : (slot < 3 ? 0 : slot - 2));
                     long before = System.nanoTime();
                     try {
-                        if (client.send(request, HttpResponse.BodyHandlers.discarding()).statusCode() != 200) {
+                        int code = client.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
+                        if (code == 429) rejected.incrementAndGet();
+                        if (code != 200) {
                             errors.incrementAndGet();
                         }
                     } catch (java.io.IOException ex) {
                         errors.incrementAndGet();
                     }
-                    times.add(System.nanoTime() - before);
+                    if (write) writes.incrementAndGet();
+                    else times.add(System.nanoTime() - before);
                     Thread.sleep(1000);
                 }
                 return null;
@@ -119,10 +140,11 @@ class UserListHttpBenchmarkTest {
         long used = os.getProcessCpuTime() - cpu;
         Collections.sort(times);
         System.out.printf(Locale.ROOT,
-                "LIST_BENCH vus=%d n=%d errors=%d p50_ms=%.2f p95_ms=%.2f rps=%.2f process_cpu_cores=%.3f%n",
-                vus, times.size(), errors.get(), percentile(times, .5), percentile(times, .95),
-                times.size() * 1e9 / elapsed, (double) used / elapsed);
+                "LIST_BENCH vus=%d mixed=%s gets=%d writes=%d errors=%d rejected=%d get_p50_ms=%.2f get_p95_ms=%.2f rps=%.2f process_cpu_cores=%.3f%n",
+                vus, mixed, times.size(), writes.get(), errors.get(), rejected.get(), percentile(times, .5), percentile(times, .95),
+                (times.size() + writes.get()) * 1e9 / elapsed, (double) used / elapsed);
         assertThat(times).isNotEmpty();
+        return errors.get();
     }
 
     private static double percentile(List<Long> sorted, double fraction) {

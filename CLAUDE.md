@@ -39,6 +39,7 @@ STT 방식 결정 배경(Whisper 셀프호스팅 대신 Gemini 오디오 직접 
 - 일정 재구성의 새 접수는 기존 장소 요청 한도에 포함하고, 같은 여행의 동시 접수는 단일 JVM에서 직렬화한다(기존 작업 재사용은 차감하지 않음, docs/adr/0025).
 - 같은 장소의 상세/요약/전화 조회는 `PlaceReviewService`에서 진행 중 작업을 공유한다. 단일 JVM 범위이며 실패 후 독립 재시도는 허용한다(docs/adr/0027).
 - 사용자 ID만 필요한 자주 불리는 조회 API는 `CurrentUserService.resolveUserId`로 사용자 존재를 메모리(`KnownUsers`)에서 확인한다. 단일 JVM 범위, 탈퇴 커밋 뒤 제거(docs/adr/0036).
+- 장소·북마크·여행 목록은 단일 JVM에서 사용자별로 20초간 재사용한다. 목록에 영향을 주는 쓰기는 Spring 트랜잭션에서 처리하고, 벌크 SQL도 성공 커밋 시 해당 목록을 무효화한다([ADR 0062](docs/adr/0062-user-list-cache.md)).
 - 관리자 API 조치는 `AdminActionService`를 통해 DB 변경과 실행 감사를 함께 커밋한다. 재실행 큐 전달과 정지 목록 반영은 커밋 뒤에 한다(docs/adr/0026).
 - 엔드포인트 목록은 코드(`controller` 패키지)가 기준이다 — 여기에 따로 적지 않는다.
   시작할 때의 핵심 흐름: `POST /api/shares`(URL 제출, 비동기 시작) → `GET /api/places/pending`(폴링) → `GET /api/places`

@@ -1,8 +1,9 @@
 package com.trova.backend.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.TransactionExecution;
-import org.springframework.web.server.ResponseStatusException;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -13,12 +14,11 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
 
 class UserListReadsTest {
     @Test
     void 오래_걸린_조회가_쓰기_커밋_이후_캐시를_덮지_않는다() throws Exception {
-        UserListReads reads = new UserListReads(2);
+        UserListReads reads = new UserListReads();
         CountDownLatch started = new CountDownLatch(1);
         CountDownLatch resume = new CountDownLatch(1);
         try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
@@ -29,7 +29,7 @@ class UserListReadsTest {
             }));
             try {
                 assertThat(started.await(5, TimeUnit.SECONDS)).isTrue();
-                reads.afterCommit(mock(TransactionExecution.class), null);
+                reads.invalidateTrips(Set.of(1L), false);
                 assertThat(reads.trips(1L, () -> List.of(trip()))).hasSize(1);
             } finally {
                 resume.countDown();
@@ -40,28 +40,69 @@ class UserListReadsTest {
     }
 
     @Test
-    void 포화된_미스는_429이고_히트와_실패_후_재시도는_가능하다() throws Exception {
-        UserListReads reads = new UserListReads(1);
-        reads.places(1L, List::of);
+    void 같은_사용자_40건이_한_로더를_기다려도_다른_사용자는_즉시_조회한다() throws Exception {
+        UserListReads reads = new UserListReads();
+        AtomicInteger loads = new AtomicInteger();
+        CountDownLatch callers = new CountDownLatch(40);
         CountDownLatch started = new CountDownLatch(1);
         CountDownLatch resume = new CountDownLatch(1);
-        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
-            Future<List<TripController.TripResponse>> slow = executor.submit(() -> reads.trips(2L, () -> {
-                started.countDown();
-                await(resume);
-                throw new IllegalStateException("load failed");
-            }));
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Future<List<TripController.TripResponse>>> waiting = new ArrayList<>();
+            for (int i = 0; i < 40; i++) {
+                waiting.add(executor.submit(() -> {
+                    callers.countDown();
+                    return reads.trips(2L, () -> {
+                        loads.incrementAndGet();
+                        started.countDown();
+                        await(resume);
+                        return List.of(trip());
+                    });
+                }));
+            }
             try {
-                assertThat(started.await(5, TimeUnit.SECONDS)).isTrue();
-                assertThat(reads.places(1L, List::of)).isEmpty();
-                assertThatThrownBy(() -> reads.bookmarks(3L, List::of))
-                        .isInstanceOfSatisfying(ResponseStatusException.class,
-                                error -> assertThat(error.getStatusCode().value()).isEqualTo(429));
+                await(started);
+                await(callers);
+                assertThat(reads.trips(3L, List::of)).isEmpty();
+                assertThat(waiting).noneMatch(Future::isDone);
             } finally {
                 resume.countDown();
             }
-            assertThatThrownBy(() -> slow.get(5, TimeUnit.SECONDS)).hasCauseInstanceOf(IllegalStateException.class);
-            assertThat(reads.trips(2L, () -> List.of(trip()))).hasSize(1);
+            for (Future<List<TripController.TripResponse>> result : waiting) {
+                assertThat(result.get(5, TimeUnit.SECONDS)).containsExactly(trip());
+            }
+            assertThat(loads.get()).isOne();
+        }
+    }
+
+    @Test
+    void 실패한_조회는_다음_요청이_다시_시도한다() {
+        UserListReads reads = new UserListReads();
+        assertThatThrownBy(() -> reads.trips(1L, () -> { throw new IllegalStateException("load failed"); }))
+                .isInstanceOf(IllegalStateException.class);
+        assertThat(reads.trips(1L, () -> List.of(trip()))).containsExactly(trip());
+    }
+
+    @Test
+    void 같은_해시의_다른_사용자는_느린_로더가_끝나기_전에_조회한다() throws Exception {
+        UserListReads reads = new UserListReads();
+        long collision = 1L << 32;
+        assertThat(Long.hashCode(collision)).isEqualTo(Long.hashCode(1L));
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch resume = new CountDownLatch(1);
+        try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+            Future<?> first = executor.submit(() -> reads.trips(1L, () -> {
+                started.countDown();
+                await(resume);
+                return List.of();
+            }));
+            try {
+                await(started);
+                Future<?> second = executor.submit(() -> reads.trips(collision, List::of));
+                second.get(2, TimeUnit.SECONDS);
+            } finally {
+                resume.countDown();
+            }
+            first.get(5, TimeUnit.SECONDS);
         }
     }
 
