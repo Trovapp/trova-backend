@@ -74,4 +74,24 @@ tasks.named('test') {
 	}
 }
 
-springBoot { buildInfo() }
+String buildCommit() {
+	try {
+		def git = providers.exec {
+			commandLine 'git', 'rev-parse', '--short=7', 'HEAD'
+			workingDir projectDir
+			ignoreExitValue = true
+		}
+		return git.result.get().exitValue == 0 ? git.standardOutput.asText.get().trim().take(7) : 'unknown'
+	} catch (GradleException ignored) {
+		// Git may be unavailable when building from a source archive.
+		return 'unknown'
+	}
+}
+
+springBoot {
+	buildInfo {
+		properties {
+			additional = [commit: buildCommit()]
+		}
+	}
+}
