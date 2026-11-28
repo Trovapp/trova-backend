@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerMapping;
@@ -27,6 +28,7 @@ final class RequestFilter extends OncePerRequestFilter {
     static final String ERROR_CLASS = RequestFilter.class.getName() + ".errorClass";
     static final String ABORTED = RequestFilter.class.getName() + ".aborted";
     static final String ACTIVE = RequestFilter.class.getName() + ".active";
+    private static final Set<MediaType> SSE_ONLY = Set.of(MediaType.TEXT_EVENT_STREAM);
     private static final Pattern VARIABLE = Pattern.compile("\\{[^/}]+}");
     private static final Set<String> METHODS = Set.of("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "TRACE");
     private final ConcurrentHashMap<String, String> templates = new ConcurrentHashMap<>();
@@ -67,11 +69,14 @@ final class RequestFilter extends OncePerRequestFilter {
             failure = e;
             throw e;
         } finally {
-            if (failure == null && request.isAsyncStarted()) {
+            if (failure == null && obs.isEventStream()) {
+                // ADR 0060 measures connection establishment when this dispatch returns.
+                obs.finish(null, null);
+            } else if (failure == null && request.isAsyncStarted()) {
                 try {
                     AsyncContext context = request.getAsyncContext();
                     obs.listen(context);
-                    if (context.getTimeout() > 0) obs.arm(context.getTimeout());
+                    obs.arm(Math.max(0, context.getTimeout()));
                 } catch (IllegalStateException alreadyDispatched) {
                     if (!obs.listening()) obs.finish(null, null);
                 }
@@ -135,8 +140,12 @@ final class RequestFilter extends OncePerRequestFilter {
         }
 
         synchronized void arm(long millis) {
-            if (finished || timeout == millis) return;
+            if (finished) return;
             timeout = millis;
+            if (millis == 0) {
+                sender.forget(this); // The servlet context explicitly disabled its deadline.
+                return;
+            }
             deadlineNanos = entered + TimeUnit.MILLISECONDS.toNanos(timeout - (initialQueue == null ? 0 : initialQueue));
             sender.watch(this);
         }
@@ -146,12 +155,28 @@ final class RequestFilter extends OncePerRequestFilter {
         void expire(long now) {
             if (now - deadlineNanos < 0) return;
             synchronized (this) {
-                if (now - deadlineNanos >= 0) finish("timeout", null);
+                if (finished || timeout == 0 || now - deadlineNanos < 0) return;
+                if (isEventStream()) {
+                    sender.forget(this); // The initial dispatch will record its actual status and duration.
+                } else {
+                    finish("timeout", null);
+                }
             }
         }
 
+        private boolean isEventStream() {
+            String type = response.getContentType();
+            if (type == null) {
+                // SseEmitter can defer writing its headers until the first event.
+                return SSE_ONLY.equals(request.getAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE));
+            }
+            int params = type.indexOf(';');
+            String mediaType = params < 0 ? type : type.substring(0, params).trim();
+            return MediaType.TEXT_EVENT_STREAM_VALUE.equalsIgnoreCase(mediaType);
+        }
+
         synchronized AsyncContext listen(AsyncContext context) {
-            if (!finished && attached != context) {
+            if (!finished && attached != context && !isEventStream()) {
                 context.addListener(this);
                 attached = context;
             }
@@ -167,7 +192,7 @@ final class RequestFilter extends OncePerRequestFilter {
             String ts = Instant.now().toString();
             sender.forget(this);
             boolean completed = kind == null && failure == null && !Boolean.TRUE.equals(request.getAttribute(ABORTED));
-            if (duration >= timeout) kind = "timeout";
+            if (timeout > 0 && duration >= timeout && !isEventStream()) kind = "timeout";
             else if (disconnected(failure) || Boolean.TRUE.equals(request.getAttribute(ABORTED))) kind = "aborted";
             int status = response.getStatus();
             String errorClass = (String) request.getAttribute(ERROR_CLASS);
