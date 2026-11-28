@@ -34,14 +34,16 @@ class PlaceListProjectionTest {
         em.persist(user);
         em.persist(other);
         save(user, "https://youtu.be/same?si=old", "old", false);
+        save(user, "https://www.youtube.com/watch?v=same", "exact older", false);
         SavedPlace latest = save(user, "https://www.youtube.com/watch?v=same", "new", true);
         SavedPlace second = new SavedPlace(latest.getProcessingJob(), user, "second", null, "cafe", null, null);
         em.persist(second);
         save(user, "legacy-invalid-url", "legacy", false);
         save(user, "https://www.instagram.com/reel/abc/?utm_source=x", "insta", true);
-        save(other, "https://youtu.be/same", "not mine", true);
+        save(other, "https://www.youtube.com/watch?v=same", "not mine", true);
+        em.persist(new SavedPlace(latest.getProcessingJob(), other, "foreign place", null, "cafe", null, null));
         // 장소가 없는 최신 작업은 기존 결과를 가리지 않는다.
-        em.persist(new ProcessingJob(user, "https://youtu.be/same", SourcePlatform.YOUTUBE));
+        em.persist(new ProcessingJob(user, "https://www.youtube.com/watch?v=same", SourcePlatform.YOUTUBE));
         em.flush();
         // 같은 생성 시각에도 id 내림차순이 유지돼야 한다.
         em.createQuery("update SavedPlace p set p.createdAt = :at")
@@ -58,12 +60,18 @@ class PlaceListProjectionTest {
         List<SavedPlaceListRow> rows = repository.findListRowsByUserId(user.getId());
         List<PlacesController.PlaceResponse> after = VideoResults.latestRows(rows).stream()
                 .map(PlacesController.PlaceResponse::from).toList();
+        assertThat(rows).extracting(SavedPlaceListRow::placeName).doesNotContain("exact older");
         assertThat(after).containsExactlyElementsOf(before);
         assertThat(after).extracting(PlacesController.PlaceResponse::placeName)
                 .containsExactly("insta", "legacy", "second", "new");
         assertThat(stats.getPrepareStatementCount()).isEqualTo(1);
         assertThat(stats.getEntityLoadCount()).isZero();
         assertThat(repository.findListRowsByUserId(-1L)).isEmpty();
+
+        // 대표 작업에서 이 사용자의 장소가 모두 삭제되면 직전 작업이 즉시 대표가 된다.
+        repository.deleteAllByIdInBatch(List.of(latest.getId(), second.getId()));
+        assertThat(VideoResults.latestRows(repository.findListRowsByUserId(user.getId())))
+                .extracting(SavedPlaceListRow::placeName).containsExactly("insta", "legacy", "exact older");
     }
 
     private SavedPlace save(User user, String url, String name, boolean enriched) {
