@@ -1,6 +1,9 @@
 package com.trova.backend.controller;
 
 import com.trova.backend.events.TripChangedEvent;
+import com.trova.backend.config.RequestDbQueryMetrics;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import com.trova.backend.entity.Bookmark;
 import com.trova.backend.entity.Itinerary;
 import com.trova.backend.entity.PlaceSource;
@@ -60,8 +63,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -94,6 +100,9 @@ class UserListCacheTest {
     @Autowired private TripService tripService;
     @Autowired private EntityManager em;
     @Autowired private UserListReads reads;
+
+    @Autowired private JdbcTemplate jdbc;
+    @MockitoSpyBean private RequestDbQueryMetrics queryInspector;
 
     private String read(String token, String list) throws Exception {
         return mvc.perform(get("/api/" + list).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
@@ -378,6 +387,44 @@ class UserListCacheTest {
             current = read(token, "bookmarks");
             assertThat(json.readTree(current).get(0).get(change.jsonField()))
                     .as(change.entityField()).isEqualTo(json.valueToTree(change.value()));
+        }
+    }
+
+    @Test
+    void 대기자_없이도_목록_SQL이_시간을_넘기면_503이고_다음_요청은_재시도한다() throws Exception {
+        User owner = users.save(new User("google", "cache-query-timeout", "Owner", null));
+        String token = jwt.issue(owner);
+        seedPlace(owner);
+        seedBookmark(owner);
+        Trip trip = seedTrip(owner);
+        tx.executeWithoutResult(status -> {
+            Itinerary day = new Itinerary(trip, 1, trip.getStartDate());
+            em.persist(day);
+            em.persist(new TripPlace(day, "Stop", "Busan", "cafe", 1.0, 1.0, null, null, 1, PlaceSource.NORMAL, null));
+        });
+        jdbc.execute("create alias if not exists LIST_TEST_SLEEP for 'java.lang.Thread.sleep(long)'");
+        // H2는 스캔 도중 취소를 확인한다. 취소가 없으면 64번 쉬고 정상 결과를 돌려준다.
+        String delay = "(select sum(case when mod(x, 128) = 0 then coalesce(LIST_TEST_SLEEP(100), 0) "
+                + "else 0 end) from system_range(1,8192)) = 0 and ";
+        AtomicReference<String> slowTable = new AtomicReference<>();
+        doAnswer(call -> {
+            String sql = (String) call.callRealMethod();
+            String table = slowTable.get();
+            return table != null && sql.contains(" from " + table + " ")
+                    ? sql.replaceFirst(" where ", " where " + delay) : sql;
+        }).when(queryInspector).inspect(anyString());
+
+        record Query(String list, String table) {}
+        for (Query query : List.of(new Query("places", "saved_places"), new Query("bookmarks", "bookmarks"),
+                new Query("trips", "trips"), new Query("trips", "trip_places"))) {
+            reads.invalidateTrips(Set.of(owner.getId()), false);
+            slowTable.set(query.table());
+            mvc.perform(get("/api/" + query.list()).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                    .andExpect(result -> assertThat(result.getResponse().getStatus()).as(query.table()).isEqualTo(503));
+            slowTable.set(null);
+            String current = read(token, query.list());
+            assertThat(current).isNotEqualTo("[]");
+            assertHit(token, query.list(), current);
         }
     }
 

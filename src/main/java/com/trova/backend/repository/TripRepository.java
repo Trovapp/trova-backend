@@ -50,6 +50,12 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
 
     List<Trip> findByUserOrderByCreatedAtDesc(User user);
     // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
-    @Query("select distinct t from Trip t left join fetch t.members where exists (select 1 from t.members m where m.user.id=:userId) order by t.createdAt desc, t.id desc")
+    @ListQueryTimeout
+    @Query("""
+            select distinct t from Trip t join fetch t.user
+            left join fetch t.members member left join fetch member.user
+            where exists (select 1 from t.members m where m.user.id=:userId)
+            order by t.createdAt desc, t.id desc
+            """)
     List<Trip> findTripsForMember(Long userId);
 }

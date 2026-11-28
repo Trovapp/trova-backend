@@ -37,6 +37,7 @@ public interface SavedPlaceRepository extends JpaRepository<SavedPlace, Long> {
             where p.user.id = :userId
             """;
 
+    @ListQueryTimeout
     @Query(LIST_ROWS + " order by p.createdAt desc, p.id desc")
     List<SavedPlaceListRow> findListRowsByUserId(Long userId);
 

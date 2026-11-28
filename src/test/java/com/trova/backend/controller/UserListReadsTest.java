@@ -112,7 +112,7 @@ class UserListReadsTest {
     }
 
     @Test
-    void 멈춘_로더를_기다리던_요청은_503으로_끝나고_새_조회가_캐시에_남는다() throws Exception {
+    void 대기_시간이_지나도_기존_로더가_끝날_때까지_같은_키를_다시_조회하지_않는다() throws Exception {
         UserListReads reads = new UserListReads();
         CountDownLatch started = new CountDownLatch(1);
         CountDownLatch release = new CountDownLatch(1);
@@ -135,11 +135,59 @@ class UserListReadsTest {
                         .isInstanceOf(ExecutionException.class).cause()
                         .isInstanceOfSatisfying(ResponseStatusException.class,
                                 error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE));
-                assertThat(reads.trips(1L, () -> List.of(trip()))).containsExactly(trip());
+                assertThatThrownBy(() -> reads.trips(1L, () -> {
+                    throw new AssertionError("overlapping load");
+                })).isInstanceOfSatisfying(ResponseStatusException.class,
+                        error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE));
             } finally {
                 release.countDown();
             }
             loader.get(5, TimeUnit.SECONDS);
+            assertThat(reads.trips(1L, () -> List.of(trip()))).isEmpty();
+        }
+    }
+
+    @Test
+    void 대기자_없는_단독_조회가_대기_기한보다_늦게_성공해도_다음_요청은_성공_결과를_쓴다() {
+        UserListReads reads = new UserListReads();
+        List<TripController.TripResponse> result = reads.trips(1L, () -> {
+            try {
+                Thread.sleep(3500);
+            } catch (InterruptedException e) {
+                throw new AssertionError(e);
+            }
+            return List.of(trip());
+        });
+        assertThat(result).containsExactly(trip());
+        assertThat(reads.trips(1L, () -> { throw new AssertionError("lost result"); })).isSameAs(result);
+    }
+
+    @Test
+    void 대기가_만료된_로더가_무효화_뒤_실패해도_새_캐시는_유지된다() throws Exception {
+        UserListReads reads = new UserListReads();
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        IllegalStateException failure = new IllegalStateException("old load");
+        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+            Future<?> old = executor.submit(() -> reads.trips(1L, () -> {
+                started.countDown();
+                try {
+                    if (!release.await(12, TimeUnit.SECONDS)) throw new AssertionError("loader not released");
+                } catch (InterruptedException e) {
+                    throw new AssertionError(e);
+                }
+                throw failure;
+            }));
+            try {
+                await(started);
+                assertThatThrownBy(() -> reads.trips(1L, List::of)).isInstanceOfSatisfying(
+                        ResponseStatusException.class, e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE));
+                reads.invalidateTrips(Set.of(1L), false);
+                assertThat(reads.trips(1L, () -> List.of(trip()))).containsExactly(trip());
+            } finally {
+                release.countDown();
+            }
+            assertThatThrownBy(() -> old.get(5, TimeUnit.SECONDS)).cause().isSameAs(failure);
             assertThat(reads.trips(1L, List::of)).containsExactly(trip());
         }
     }

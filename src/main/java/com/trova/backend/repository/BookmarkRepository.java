@@ -18,6 +18,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     List<Bookmark> findByUserOrderByCreatedAtDesc(User user);
     // 사용자 ID만으로 읽는 조회 API용(ADR 0036) — 사용자 행을 따로 읽지 않는다.
     // 장소·폴더·사용자를 한 쿼리로 같이 읽는다 — 찜마다 장소·폴더를 따로 읽던 N+1을 없앤다(#335).
+    @ListQueryTimeout
     @EntityGraph(attributePaths = {"place", "folder", "user"})
     List<Bookmark> findByUserIdOrderByCreatedAtDesc(Long userId);
     Optional<Bookmark> findByUserAndPlace(User user, Place place);

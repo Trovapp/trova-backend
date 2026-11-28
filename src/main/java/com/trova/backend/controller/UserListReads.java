@@ -2,6 +2,7 @@ package com.trova.backend.controller;
 
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.dao.QueryTimeoutException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,7 +12,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
 /** 단일 JVM에서 인증과 존재 확인을 마친 사용자 ID로 목록을 구분한다. */
 @Component
 final class UserListReads {
-    private static final int LOAD_TIMEOUT_SECONDS = 3;
+    private static final int WAIT_TIMEOUT_SECONDS = 3;
 
     private final AsyncCache<Long, List<PlacesController.PlaceResponse>> places = cache();
     private final AsyncCache<Long, List<BookmarkController.BookmarkResponse>> bookmarks = cache();
@@ -39,17 +40,15 @@ final class UserListReads {
     }
 
     private static <T> List<T> read(AsyncCache<Long, List<T>> cache, Long userId, Supplier<List<T>> load) {
-        if (TransactionSynchronizationManager.isActualTransactionActive()) return load.get();
+        if (TransactionSynchronizationManager.isActualTransactionActive()) return loadRows(load);
         CompletableFuture<List<T>> future = cache.getIfPresent(userId);
         if (future == null) {
             CompletableFuture<List<T>> pending = new CompletableFuture<>();
             future = cache.asMap().putIfAbsent(userId, pending);
             if (future == null) {
-                // 로더마다 타이머 하나를 둔다. 만료된 future는 Caffeine이 제거하고 모든 대기자가 깨어난다.
-                pending.orTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS);
                 // 맵에는 future만 등록한다. JDBC는 요청 스레드에서 맵 잠금을 놓은 뒤 실행한다.
                 try {
-                    List<T> rows = load.get();
+                    List<T> rows = loadRows(load);
                     pending.complete(rows);
                     return rows;
                 } catch (RuntimeException | Error failure) {
@@ -60,15 +59,25 @@ final class UserListReads {
             }
         }
         try {
-            return future.join();
-        } catch (CompletionException failure) {
-            if (failure.getCause() instanceof TimeoutException) {
-                cache.asMap().remove(userId, future);
-                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "목록 조회 대기 시간 초과", failure.getCause());
-            }
+            // 한 요청의 대기 종료는 공유 로더의 상태나 캐시 항목을 바꾸지 않는다.
+            return future.get(WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (TimeoutException timeout) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "목록 조회 대기 시간 초과", timeout);
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "목록 조회 대기 중단", interrupted);
+        } catch (ExecutionException failure) {
             if (failure.getCause() instanceof RuntimeException cause) throw cause;
             if (failure.getCause() instanceof Error cause) throw cause;
-            throw failure;
+            throw new IllegalStateException(failure.getCause());
+        }
+    }
+
+    private static <T> List<T> loadRows(Supplier<List<T>> load) {
+        try {
+            return load.get();
+        } catch (QueryTimeoutException timeout) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "목록 쿼리 시간 초과", timeout);
         }
     }
 
