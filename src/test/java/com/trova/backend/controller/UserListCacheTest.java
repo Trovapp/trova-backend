@@ -2,6 +2,17 @@ package com.trova.backend.controller;
 
 import com.trova.backend.events.TripChangedEvent;
 import com.trova.backend.entity.Bookmark;
+import com.trova.backend.entity.Itinerary;
+import com.trova.backend.entity.PlaceSource;
+import com.trova.backend.entity.TripPlace;
+import com.trova.backend.security.OAuth2UserInfo;
+import com.trova.backend.service.TripMembershipService;
+import com.trova.backend.service.TripService;
+import com.trova.backend.service.TripShareLinkService;
+import com.trova.backend.service.UserUpsertService;
+import jakarta.persistence.EntityManager;
+import org.hibernate.Hibernate;
+import org.springframework.test.util.ReflectionTestUtils;
 import com.trova.backend.entity.BookmarkFolder;
 import com.trova.backend.entity.Place;
 import com.trova.backend.entity.ProcessingJob;
@@ -76,6 +87,13 @@ class UserListCacheTest {
     @Autowired private MeterRegistry metrics;
     @Autowired private ProcessingJobLifecycleService lifecycle;
     @Autowired private JsonMapper json;
+
+    @Autowired private TripMembershipService memberships;
+    @Autowired private TripShareLinkService shareLinks;
+    @Autowired private UserUpsertService profiles;
+    @Autowired private TripService tripService;
+    @Autowired private EntityManager em;
+    @Autowired private UserListReads reads;
 
     private String read(String token, String list) throws Exception {
         return mvc.perform(get("/api/" + list).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
@@ -258,6 +276,109 @@ class UserListCacheTest {
         assertThat(places.repairMissingLocation(placeId, 12.5, 20.0, "Region")).isOne();
         assertThat(read(token, "bookmarks")).contains("\"latitude\":12.5");
         assertHit(other, "bookmarks", "[]");
+    }
+
+    @Test
+    void 편집자의_캐시된_여행_목록에_참여와_다른_멤버의_프로필과_새_제목이_반영된다() throws Exception {
+        User owner = users.save(new User("google", "cache-share-owner", "Owner", null));
+        User editor = users.save(new User("google", "cache-share-editor", "Editor", null));
+        String token = jwt.issue(editor);
+        Trip trip = seedTrip(owner);
+        String invite = shareLinks.createOrGet(trip, owner).link().getToken();
+        assertHit(token, "trips", read(token, "trips"));
+        memberships.join(invite, editor);
+        String shared = read(token, "trips");
+        assertThat(shared).contains("First trip", "Owner", "EDITOR");
+        assertHit(token, "trips", shared);
+
+        User newcomer = users.save(new User("google", "cache-share-new", "New member", null));
+        memberships.join(invite, newcomer);
+        String joined = read(token, "trips");
+        assertThat(joined).contains("New member", "\"memberCount\":3");
+        assertHit(token, "trips", joined);
+        profiles.upsert(new OAuth2UserInfo("google", "cache-share-owner", "New nickname", "/new-profile"));
+        String renamed = read(token, "trips");
+        assertThat(renamed).contains("New nickname", "/new-profile");
+        assertHit(token, "trips", renamed);
+
+        write(jwt.issue(owner), patch("/api/trips/" + trip.getId() + "/title"), "{\"title\":\"Shared title\"}", 200);
+        assertThat(read(token, "trips")).contains("Shared title").doesNotContain("First trip");
+    }
+
+    @Test
+    void 초기화하지_않은_일차로_장소를_추가하고_교체하고_지우면_편집자의_장소수와_지역이_갱신된다() throws Exception {
+        User owner = users.save(new User("google", "cache-stop-owner", "Owner", null));
+        User editor = users.save(new User("google", "cache-stop-editor", "Editor", null));
+        Trip trip = seedTrip(owner);
+        trip.getMembers().add(new TripMember(editor, TripMember.Role.EDITOR));
+        trips.save(trip);
+        Long dayId = tx.execute(status -> {
+            Itinerary day = new Itinerary(trip, 1, trip.getStartDate());
+            em.persist(day);
+            return day.getId();
+        });
+        String token = jwt.issue(editor);
+        String empty = read(token, "trips");
+        assertThat(empty).contains("\"placeCount\":0", "\"regions\":[]");
+        assertHit(token, "trips", empty);
+        Long stopId = tx.execute(status -> {
+            Itinerary day = em.getReference(Itinerary.class, dayId);
+            TripPlace stop = new TripPlace(day, "First", "Busan", "cafe", 1.0, 1.0,
+                    null, null, 1, PlaceSource.NORMAL, null);
+            assertThat(Hibernate.isInitialized(day)).isFalse();
+            em.persist(stop);
+            em.flush();
+            assertThat(Hibernate.isInitialized(day)).isFalse();
+            return stop.getId();
+        });
+        String added = read(token, "trips");
+        assertThat(added).contains("\"placeCount\":1", "\"regions\":[\"Busan\"]");
+        assertHit(token, "trips", added);
+        Place replacement = places.save(new Place("cache-replacement", "New", "cafe", 4.0, 1, null, 1.0, 1.0, null));
+        assertThat(tripService.replacePlace(owner, stopId, replacement.getGooglePlaceId())).isPresent();
+        String replaced = read(token, "trips");
+        assertThat(replaced).contains("\"placeCount\":1", "\"regions\":[]");
+        assertHit(token, "trips", replaced);
+        assertThat(tripService.removePlace(owner, stopId)).isTrue();
+        assertThat(read(token, "trips")).contains("\"placeCount\":0", "\"regions\":[]");
+    }
+
+    @Test
+    void 북마크_조회가_끝나기_전에_공간_태그를_커밋하면_오래된_결과를_재사용하지_않는다() throws Exception {
+        User owner = users.save(new User("google", "cache-pending-bookmark", "Owner", null));
+        Long placeId = seedBookmark(owner).getPlace().getId();
+        List<BookmarkController.BookmarkResponse> old = reads.bookmarks(owner.getId(), () -> {
+            List<BookmarkController.BookmarkResponse> snapshot = bookmarks.findByUserIdOrderByCreatedAtDesc(owner.getId())
+                    .stream().map(BookmarkController.BookmarkResponse::from).toList();
+            places.updateSpaceTag(placeId, "INDOOR", LocalDateTime.now());
+            return snapshot;
+        });
+        assertThat(old).singleElement().satisfies(row -> assertThat(row.space()).isNull());
+        String token = jwt.issue(owner);
+        String current = read(token, "bookmarks");
+        assertThat(current).contains("\"space\":\"INDOOR\"");
+        assertHit(token, "bookmarks", current);
+    }
+
+    @Test
+    void Place의_북마크_표시_속성을_하나씩_flush하면_다음_응답에_반영된다() throws Exception {
+        User owner = users.save(new User("google", "cache-flush", "Owner", null));
+        Long placeId = seedBookmark(owner).getPlace().getId();
+        String token = jwt.issue(owner);
+        record Change(String entityField, String jsonField, Object value) {}
+        String current = read(token, "bookmarks");
+        for (Change change : List.of(
+                new Change("name", "placeName", "Renamed"), new Change("category", "category", "park"),
+                new Change("googlePlaceId", "googlePlaceId", "cache-new-id"), new Change("mood", "mood", "quiet"),
+                new Change("space", "space", "INDOOR"), new Change("latitude", "latitude", 2.5),
+                new Change("longitude", "longitude", 3.5), new Change("address", "address", "New address"))) {
+            assertHit(token, "bookmarks", current);
+            tx.executeWithoutResult(status -> ReflectionTestUtils.setField(em.find(Place.class, placeId),
+                    change.entityField(), change.value()));
+            current = read(token, "bookmarks");
+            assertThat(json.readTree(current).get(0).get(change.jsonField()))
+                    .as(change.entityField()).isEqualTo(json.valueToTree(change.value()));
+        }
     }
 
     private Trip seedTrip(User user) {

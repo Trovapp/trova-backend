@@ -1,16 +1,21 @@
 package com.trova.backend.controller;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -103,6 +108,68 @@ class UserListReadsTest {
                 resume.countDown();
             }
             first.get(5, TimeUnit.SECONDS);
+        }
+    }
+
+    @Test
+    void 멈춘_로더를_기다리던_요청은_503으로_끝나고_새_조회가_캐시에_남는다() throws Exception {
+        UserListReads reads = new UserListReads();
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+            Future<?> loader = executor.submit(() -> reads.trips(1L, () -> {
+                started.countDown();
+                try {
+                    release.await();
+                } catch (InterruptedException e) {
+                    throw new AssertionError(e);
+                }
+                return List.of();
+            }));
+            try {
+                await(started);
+                Future<?> waiter = executor.submit(() -> reads.trips(1L, () -> {
+                    throw new AssertionError("unexpected second load");
+                }));
+                assertThatThrownBy(() -> waiter.get(6, TimeUnit.SECONDS))
+                        .isInstanceOf(ExecutionException.class).cause()
+                        .isInstanceOfSatisfying(ResponseStatusException.class,
+                                error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE));
+                assertThat(reads.trips(1L, () -> List.of(trip()))).containsExactly(trip());
+            } finally {
+                release.countDown();
+            }
+            loader.get(5, TimeUnit.SECONDS);
+            assertThat(reads.trips(1L, List::of)).containsExactly(trip());
+        }
+    }
+
+    @Test
+    void 같은_키에서_이미_대기하는_요청에도_로더의_원래_예외를_전달한다() throws Exception {
+        UserListReads reads = new UserListReads();
+        IllegalStateException failure = new IllegalStateException("load failed");
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+            Future<?> loader = executor.submit(() -> reads.trips(1L, () -> {
+                started.countDown();
+                await(release);
+                throw failure;
+            }));
+            await(started);
+            FutureTask<?> waiter = new FutureTask<>(() -> reads.trips(1L, () -> {
+                throw new AssertionError("unexpected second load");
+            }));
+            Thread thread = Thread.startVirtualThread(waiter);
+            try {
+                Awaitility.await().atMost(2, TimeUnit.SECONDS).until(() ->
+                        thread.getState() == Thread.State.WAITING || thread.getState() == Thread.State.TIMED_WAITING);
+            } finally {
+                release.countDown();
+            }
+            for (Future<?> request : List.of(loader, waiter)) {
+                assertThatThrownBy(() -> request.get(5, TimeUnit.SECONDS)).cause().isSameAs(failure);
+            }
         }
     }
 
