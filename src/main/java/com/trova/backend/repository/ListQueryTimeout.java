@@ -12,6 +12,6 @@ import java.lang.annotation.Target;
 /** 사용자 목록의 SQL 문마다 JDBC 쿼리 기한을 적용한다. JPA 힌트의 단위는 밀리초다. */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@QueryHints(@QueryHint(name = SpecHints.HINT_SPEC_QUERY_TIMEOUT, value = "3000"))
+@QueryHints(@QueryHint(name = SpecHints.HINT_SPEC_QUERY_TIMEOUT, value = "9000"))
 @interface ListQueryTimeout {
 }

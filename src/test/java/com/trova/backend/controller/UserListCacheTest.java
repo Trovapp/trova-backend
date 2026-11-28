@@ -403,26 +403,29 @@ class UserListCacheTest {
             em.persist(new TripPlace(day, "Stop", "Busan", "cafe", 1.0, 1.0, null, null, 1, PlaceSource.NORMAL, null));
         });
         jdbc.execute("create alias if not exists LIST_TEST_SLEEP for 'java.lang.Thread.sleep(long)'");
-        // H2는 스캔 도중 취소를 확인한다. 취소가 없으면 64번 쉬고 정상 결과를 돌려준다.
-        String delay = "(select sum(case when mod(x, 128) = 0 then coalesce(LIST_TEST_SLEEP(100), 0) "
-                + "else 0 end) from system_range(1,8192)) = 0 and ";
-        AtomicReference<String> slowTable = new AtomicReference<>();
+        // H2는 스캔 중 64번 쉰다. 200ms씩 쉬면 12.8초, 65ms씩 쉬면 약 4.2초다.
+        record Delay(String table, int sleepMillis) {}
+        AtomicReference<Delay> slowQuery = new AtomicReference<>();
         doAnswer(call -> {
             String sql = (String) call.callRealMethod();
-            String table = slowTable.get();
-            return table != null && sql.contains(" from " + table + " ")
-                    ? sql.replaceFirst(" where ", " where " + delay) : sql;
+            Delay delay = slowQuery.get();
+            if (delay == null || !sql.contains(" from " + delay.table() + " ")) return sql;
+            String predicate = "(select sum(case when mod(x, 128) = 0 then coalesce(LIST_TEST_SLEEP(%d), 0) "
+                    + "else 0 end) from system_range(1,8192)) = 0 and ";
+            return sql.replaceFirst(" where ", " where " + predicate.formatted(delay.sleepMillis()));
         }).when(queryInspector).inspect(anyString());
 
         record Query(String list, String table) {}
         for (Query query : List.of(new Query("places", "saved_places"), new Query("bookmarks", "bookmarks"),
                 new Query("trips", "trips"), new Query("trips", "trip_places"))) {
             reads.invalidateTrips(Set.of(owner.getId()), false);
-            slowTable.set(query.table());
+            slowQuery.set(new Delay(query.table(), 200));
             mvc.perform(get("/api/" + query.list()).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                     .andExpect(result -> assertThat(result.getResponse().getStatus()).as(query.table()).isEqualTo(503));
-            slowTable.set(null);
+            // 첫 로더의 SQL이 대기자 기한(3초)을 넘어도 정상 응답을 캐시해야 한다.
+            slowQuery.set(query.list().equals("places") ? new Delay(query.table(), 65) : null);
             String current = read(token, query.list());
+            slowQuery.set(null);
             assertThat(current).isNotEqualTo("[]");
             assertHit(token, query.list(), current);
         }
